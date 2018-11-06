@@ -1,51 +1,51 @@
-import React, { PureComponent } from 'react';
-import { connect } from 'dva';
-import Link from 'umi/link';
-import router from 'umi/router';
-import { Card, Row, Col, Icon, Avatar, Tag, Divider, Spin, Input } from 'antd';
-import GridContent from '@/components/PageHeaderWrapper/GridContent';
-import styles from './Center.less';
+import React, { PureComponent } from "react";
+import { connect } from "dva";
+import Link from "umi/link";
+import router from "umi/router";
+import { Card, Row, Col, Icon, Avatar, Tag, Divider, Spin, Input } from "antd";
+import GridContent from "@/components/PageHeaderWrapper/GridContent";
+import styles from "./Center.less";
 
 @connect(({ loading, user, project }) => ({
-  listLoading: loading.effects['list/fetch'],
-  currentUser: user.currentUser,
-  currentUserLoading: loading.effects['user/fetchCurrent'],
+  listLoading: loading.effects["list/fetch"],
+  currentUser: user.currentUser.basic,
+  currentUserLoading: loading.effects["user/fetchCurrent"],
   project,
-  projectLoading: loading.effects['project/fetchNotice'],
+  projectLoading: loading.effects["project/fetchNotice"]
 }))
 class Center extends PureComponent {
   state = {
     newTags: [],
     inputVisible: false,
-    inputValue: '',
+    inputValue: ""
   };
 
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'user/fetchCurrent',
+      type: "user/fetchCurrent"
     });
     dispatch({
-      type: 'list/fetch',
+      type: "list/fetch",
       payload: {
-        count: 8,
-      },
+        count: 8
+      }
     });
     dispatch({
-      type: 'project/fetchNotice',
+      type: "project/fetchNotice"
     });
   }
 
   onTabChange = key => {
     const { match } = this.props;
     switch (key) {
-      case 'articles':
+      case "articles":
         router.push(`${match.url}/articles`);
         break;
-      case 'applications':
+      case "applications":
         router.push(`${match.url}/applications`);
         break;
-      case 'projects':
+      case "projects":
         router.push(`${match.url}/projects`);
         break;
       default:
@@ -69,13 +69,19 @@ class Center extends PureComponent {
     const { state } = this;
     const { inputValue } = state;
     let { newTags } = state;
-    if (inputValue && newTags.filter(tag => tag.label === inputValue).length === 0) {
-      newTags = [...newTags, { key: `new-${newTags.length}`, label: inputValue }];
+    if (
+      inputValue &&
+      newTags.filter(tag => tag.label === inputValue).length === 0
+    ) {
+      newTags = [
+        ...newTags,
+        { key: `new-${newTags.length}`, label: inputValue }
+      ];
     }
     this.setState({
       newTags,
       inputVisible: false,
-      inputValue: '',
+      inputValue: ""
     });
   };
 
@@ -89,65 +95,62 @@ class Center extends PureComponent {
       projectLoading,
       match,
       location,
-      children,
+      children
     } = this.props;
 
     const operationTabList = [
       {
-        key: 'articles',
+        key: "articles",
         tab: (
           <span>
             文章 <span style={{ fontSize: 14 }}>(8)</span>
           </span>
-        ),
+        )
       },
       {
-        key: 'applications',
+        key: "applications",
         tab: (
           <span>
             应用 <span style={{ fontSize: 14 }}>(8)</span>
           </span>
-        ),
+        )
       },
       {
-        key: 'projects',
+        key: "projects",
         tab: (
           <span>
             项目 <span style={{ fontSize: 14 }}>(8)</span>
           </span>
-        ),
-      },
+        )
+      }
     ];
 
     return (
       <GridContent className={styles.userCenter}>
         <Row gutter={24}>
           <Col lg={7} md={24}>
-            <Card bordered={false} style={{ marginBottom: 24 }} loading={currentUserLoading}>
+            <Card
+              bordered={false}
+              style={{ marginBottom: 24 }}
+              loading={currentUserLoading}
+            >
               {currentUser && Object.keys(currentUser).length ? (
                 <div>
                   <div className={styles.avatarHolder}>
-                    <img alt="" src={currentUser.avatar} />
-                    <div className={styles.name}>{currentUser.name}</div>
-                    <div>{currentUser.signature}</div>
+                    <div className={styles.name}>{currentUser.username}</div>
                   </div>
                   <div className={styles.detail}>
                     <p>
-                      <i className={styles.title} />
-                      {currentUser.title}
-                    </p>
-                    <p>
-                      <i className={styles.group} />
-                      {currentUser.group}
-                    </p>
-                    <p>
                       <i className={styles.address} />
-                      {currentUser.geographic.province.label}
-                      {currentUser.geographic.city.label}
+                      {currentUser.email}
+                    </p>
+                    <p>
+                      <i className={styles.title} />
+                      {currentUser.lastName + " " + currentUser.firstName}
                     </p>
                   </div>
                   <Divider dashed />
-                  <div className={styles.tags}>
+                  {/* <div className={styles.tags}>
                     <div className={styles.tagsTitle}>标签</div>
                     {currentUser.tags.concat(newTags).map(item => (
                       <Tag key={item.key}>{item.label}</Tag>
@@ -172,9 +175,9 @@ class Center extends PureComponent {
                         <Icon type="plus" />
                       </Tag>
                     )}
-                  </div>
+                  </div>*/}
                   <Divider style={{ marginTop: 16 }} dashed />
-                  <div className={styles.team}>
+                  {/*  <div className={styles.team}>
                     <div className={styles.teamTitle}>团队</div>
                     <Spin spinning={projectLoading}>
                       <Row gutter={36}>
@@ -188,15 +191,15 @@ class Center extends PureComponent {
                         ))}
                       </Row>
                     </Spin>
-                  </div>
+                  </div>*/}
                 </div>
               ) : (
-                'loading...'
+                "loading..."
               )}
             </Card>
           </Col>
           <Col lg={17} md={24}>
-            <Card
+            {/*<Card
               className={styles.tabsCard}
               bordered={false}
               tabList={operationTabList}
@@ -205,7 +208,7 @@ class Center extends PureComponent {
               loading={listLoading}
             >
               {children}
-            </Card>
+            </Card>*/}
           </Col>
         </Row>
       </GridContent>
