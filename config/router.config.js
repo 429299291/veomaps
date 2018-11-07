@@ -98,7 +98,7 @@ export default [
           {
             path: '/list/table-list',
             name: 'searchtable',
-            component: './List/TableList',
+            component: './List/BikeList',
           },
           {
             path: '/list/basic-list',
@@ -145,8 +145,8 @@ export default [
         routes: [
           {
             path: "/bike-management/",
-            name: "searchtable",
-            component: "./List/TableList"
+            name: "Bike List",
+            component: "./Bike/BikeList"
           }
         ]
       },
