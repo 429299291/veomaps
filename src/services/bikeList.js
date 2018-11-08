@@ -3,7 +3,9 @@ import request from '@/utils/request';
 
 export async function queryBikes(params) {
   //return request(`/api/fake_list?${stringify(params)}`);
-  return request(`/admins/vehicles`);
+  return request(`/admins/vehicles`, {
+    method: 'GET'
+    });
 }
 
 export async function queryBike(id) {

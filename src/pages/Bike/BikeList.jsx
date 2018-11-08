@@ -36,7 +36,10 @@ const getValue = obj =>
     .map(key => obj[key])
     .join(',');
 const statusMap = ['default', 'processing', 'success', 'error'];
-const status = ['关闭', '运行中', '已上线', '异常'];
+const operationStatus = ['NORMAL', 'MANTAINANCE'];
+const connectStatus = ['Offline', 'Online'];
+const lockStatus = ['Unlock', 'lock'];
+const vehicleType = ['Bicycle', 'Scooter', 'E-Bike', 'Car'];
 
 const CreateForm = Form.create()(props => {
   const { modalVisible, form, handleAdd, handleModalVisible } = props;
@@ -283,60 +286,98 @@ class BikeList extends PureComponent {
 
   columns = [
     {
-      title: '规则名称',
-      dataIndex: 'name',
+      title: 'Vehicle Number',
+      dataIndex: 'vehicleNumber',
     },
     {
-      title: '描述',
-      dataIndex: 'desc',
-    },
-    {
-      title: '服务调用次数',
-      dataIndex: 'callNo',
-      sorter: true,
-      align: 'right',
-      render: val => `${val} 万`,
-      // mark to display a total number
-      needTotal: true,
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
+      title: 'Type',
+      dataIndex: 'vehicleType',
       filters: [
         {
-          text: status[0],
+          text: vehicleType[0],
           value: 0,
         },
         {
-          text: status[1],
+          text: vehicleType[1],
           value: 1,
         },
         {
-          text: status[2],
+          text: vehicleType[2],
           value: 2,
         },
         {
-          text: status[3],
+          text: vehicleType[3],
           value: 3,
-        },
+        }
       ],
       render(val) {
-        return <Badge status={statusMap[val]} text={status[val]} />;
+        return <p>{vehicleType[val]}</p>;
       },
     },
     {
-      title: '上次调度时间',
-      dataIndex: 'updatedAt',
+      title: 'Lock Status',
+      dataIndex: 'lockStatus',
+      filters: [
+        {
+          text: lockStatus[0],
+          value: 0,
+        },
+        {
+          text: lockStatus[1],
+          value: 1,
+        }
+      ],
+      render(val) {
+        return <Badge status={statusMap[val]} text={lockStatus[val]} />;
+      },
+    },
+    {
+      title: 'Operation Status',
+      dataIndex: 'operationStatus',
+      filters: [
+        {
+          text: operationStatus[0],
+          value: 0,
+        },
+        {
+          text: operationStatus[1],
+          value: 1,
+        }
+      ],
+      render(val) {
+        return <p>{operationStatus[val]}</p>;
+      },
+    },
+    {
+      title: 'Connect Status',
+      dataIndex: 'connectStatus',
+      filters: [
+        {
+          text: connectStatus[0],
+          value: 0,
+        },
+        {
+          text: connectStatus[1],
+          value: 1,
+        }
+      ],
+      render(val) {
+        return <p>{connectStatus[val]}</p>;
+      },
+    },
+    {
+      title: 'Last Updated',
+      dataIndex: 'updated',
       sorter: true,
       render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
     },
     {
-      title: '操作',
+      title: 'operation',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>配置</a>
-          <Divider type="vertical" />
-          <a href="">订阅警报</a>
+          <a onClick={() => this.handleUpdateModalVisible(true, record)}>Detail</a>
+          {/*<Divider type="vertical" />
+          <a href="">订阅警报</a>*/}
         </Fragment>
       ),
     },
@@ -345,13 +386,17 @@ class BikeList extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'rule/fetch',
+      type: 'bikes/fetch',
     });
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
     const { formValues } = this.state;
+
+    console.log(filtersArg);
+    console.log(sorter);
+    console.log(pagination);
 
     const filters = Object.keys(filtersArg).reduce((obj, key) => {
       const newObj = { ...obj };
@@ -370,7 +415,7 @@ class BikeList extends PureComponent {
     }
 
     dispatch({
-      type: 'rule/fetch',
+      type: 'bikes/fetch',
       payload: params,
     });
   };
@@ -382,7 +427,7 @@ class BikeList extends PureComponent {
       formValues: {},
     });
     dispatch({
-      type: 'rule/fetch',
+      type: 'bikes/fetch',
       payload: {},
     });
   };
@@ -402,7 +447,7 @@ class BikeList extends PureComponent {
     switch (e.key) {
       case 'remove':
         dispatch({
-          type: 'rule/remove',
+          type: 'bikes/remove',
           payload: {
             key: selectedRows.map(row => row.key),
           },
@@ -416,12 +461,6 @@ class BikeList extends PureComponent {
       default:
         break;
     }
-  };
-
-  handleSelectRows = rows => {
-    this.setState({
-      selectedRows: rows,
-    });
   };
 
   handleSearch = e => {
@@ -442,7 +481,7 @@ class BikeList extends PureComponent {
       });
 
       dispatch({
-        type: 'rule/fetch',
+        type: 'bikes/fetch',
         payload: values,
       });
     });
@@ -464,7 +503,7 @@ class BikeList extends PureComponent {
   handleAdd = fields => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'rule/add',
+      type: 'bikes/add',
       payload: {
         desc: fields.desc,
       },
@@ -477,7 +516,7 @@ class BikeList extends PureComponent {
   handleUpdate = fields => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'rule/update',
+      type: 'bikes/update',
       payload: {
         name: fields.name,
         desc: fields.desc,
@@ -514,13 +553,13 @@ class BikeList extends PureComponent {
           <Col md={8} sm={24}>
             <span className={styles.submitButtons}>
               <Button type="primary" htmlType="submit">
-                查询
+                Search
               </Button>
               <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-                重置
+                Reset
               </Button>
               <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
-                展开 <Icon type="down" />
+                more <Icon type="down" />
               </a>
             </span>
           </Col>
@@ -589,13 +628,13 @@ class BikeList extends PureComponent {
         <div style={{ overflow: 'hidden' }}>
           <div style={{ float: 'right', marginBottom: 24 }}>
             <Button type="primary" htmlType="submit">
-              查询
+              Search
             </Button>
             <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-              重置
+              Reset
             </Button>
             <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
-              收起 <Icon type="up" />
+              close <Icon type="up" />
             </a>
           </div>
         </div>
@@ -609,15 +648,16 @@ class BikeList extends PureComponent {
   }
 
   render() {
+
     const {
-      rule: { data },
+      bikes,
       loading,
     } = this.props;
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="remove">删除</Menu.Item>
-        <Menu.Item key="approval">批量审批</Menu.Item>
+        <Menu.Item key="remove">Delete</Menu.Item>
+        <Menu.Item key="approval">Batch Check</Menu.Item>
       </Menu>
     );
 
@@ -630,31 +670,19 @@ class BikeList extends PureComponent {
       handleUpdate: this.handleUpdate,
     };
     return (
-      <PageHeaderWrapper title="查询表格">
+      <PageHeaderWrapper title="Vehicle List">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
               <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
-                新建
+                Add
               </Button>
-              {selectedRows.length > 0 && (
-                <span>
-                  <Button>批量操作</Button>
-                  <Dropdown overlay={menu}>
-                    <Button>
-                      更多操作 <Icon type="down" />
-                    </Button>
-                  </Dropdown>
-                </span>
-              )}
             </div>
             <StandardTable
-              selectedRows={selectedRows}
               loading={loading}
-              data={data}
+              data={{list: bikes.data, pagination: 1}}
               columns={this.columns}
-              onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
             />
           </div>

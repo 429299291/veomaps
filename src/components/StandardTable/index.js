@@ -26,7 +26,7 @@ class StandardTable extends PureComponent {
 
   static getDerivedStateFromProps(nextProps) {
     // clean state
-    if (nextProps.selectedRows.length === 0) {
+    if (nextProps.selectedRows && nextProps.selectedRows.length === 0) {
       const needTotalList = initTotalList(nextProps.columns);
       return {
         selectedRowKeys: [],
@@ -66,6 +66,7 @@ class StandardTable extends PureComponent {
     const {
       data: { list, pagination },
       rowKey,
+      selectedRows,
       ...rest
     } = this.props;
 
@@ -86,7 +87,7 @@ class StandardTable extends PureComponent {
     return (
       <div className={styles.standardTable}>
         <div className={styles.tableAlert}>
-          <Alert
+          {selectedRows && <Alert
             message={
               <Fragment>
                 已选择 <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a> 项&nbsp;&nbsp;
@@ -106,11 +107,11 @@ class StandardTable extends PureComponent {
             }
             type="info"
             showIcon
-          />
+          />}
         </div>
         <Table
           rowKey={rowKey || 'key'}
-          rowSelection={rowSelection}
+          rowSelection={selectedRows === undefined ? undefined : rowSelection}
           dataSource={list}
           pagination={paginationProps}
           onChange={this.handleTableChange}

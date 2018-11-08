@@ -1,7 +1,7 @@
-import { queryBikes, queryBike, addFakeList, updateFakeList } from '@/services/bikeList';
+import { queryBikes, queryBike} from '@/services/bikeList';
 
 export default {
-  namespace: 'bike',
+  namespace: 'bikes',
 
   state: {
     data: [],
@@ -10,6 +10,11 @@ export default {
   effects: {
     *fetch({ payload }, { call, put }) {
       const response = yield call(queryBikes, payload);
+
+      if (Array.isArray(response) ) {
+        response.map(bike => bike.key = bike.id)
+      }
+
       yield put({
         type: 'queryList',
         payload: Array.isArray(response) ? response : [],

@@ -103,6 +103,8 @@ export default {
   'menu.account.center': 'Account Center',
   'menu.account.settings': 'Account Settings',
   'menu.account.trigger': 'Trigger Error',
+  'menu.Bike Management': 'Bike Management',
+  'menu.Bike Management.Bike List': 'Bike List',
   'menu.account.logout': 'Logout',
   'app.login.message-invalid-credentials': 'Invalid username or password（admin/ant.design）',
   'app.login.message-invalid-verification-code': 'Invalid verification code',
