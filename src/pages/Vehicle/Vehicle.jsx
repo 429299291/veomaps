@@ -24,7 +24,7 @@ import {
 import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
-import styles from "./Vehicle.less";
+import styles from './Vehicle.less';
 import { roundTo2Decimal } from "../../utils/mathUtil";
 
 const FormItem = Form.Item;
@@ -72,6 +72,10 @@ const CreateForm = Form.create()(props => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       form.resetFields();
+
+
+      fieldsValue.vehicleNumber = parseInt(fieldsValue.vehicleNumber, 10);
+
       handleAdd(fieldsValue);
     });
   };
@@ -84,7 +88,7 @@ const CreateForm = Form.create()(props => {
       onCancel={() => handleModalVisible()}
     >
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="ID">
-        {form.getFieldDecorator("bikeNumber", {
+        {form.getFieldDecorator("vehicleNumber", {
           rules: [
             {
               required: true,
@@ -169,7 +173,7 @@ const UpdateForm = Form.create()(props => {
   return (
     <Modal
       destroyOnClose
-      title="Add"
+      title="Update"
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleModalVisible()}

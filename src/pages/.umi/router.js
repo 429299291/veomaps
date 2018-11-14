@@ -45,14 +45,14 @@ let routes = [
     ],
     "routes": [
       {
-        "path": "/bike-management",
+        "path": "/vehicle-management",
         "icon": "car",
-        "name": "Bike Management",
+        "name": "Vehicle Management",
         "routes": [
           {
-            "path": "/bike-management/",
-            "name": "Bike List",
-            "component": dynamic({ loader: () => import('../Bike/BikeList'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
+            "path": "/vehicle-management/",
+            "name": "Vehicle List",
+            "component": dynamic({ loader: () => import('../Vehicle/Vehicle'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
             "exact": true
           },
           {
