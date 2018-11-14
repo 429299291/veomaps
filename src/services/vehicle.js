@@ -1,13 +1,13 @@
 import { stringify } from "qs";
 import request from "@/utils/request";
 
-export async function queryBikes(params) {
+export async function getVehicles(params) {
   return request(`/admins/vehicles?${stringify(params, { indices: false })}`, {
     method: "GET"
   });
 }
 
-export async function queryBikesCount(params) {
+export async function countVehicles(params) {
   return request(
     `/admins/vehicles/total?${stringify(params, { indices: false })}`,
     {
@@ -16,11 +16,11 @@ export async function queryBikesCount(params) {
   );
 }
 
-export async function queryBike(id) {
-  //return request(`/admins/vehicles/{id}`);
+export async function getVehicleDetail(id) {
+  //return request(`/admins/vehicles/${id}`);
 }
 
-export async function addBike(params) {
+export async function addVehicle(params) {
   return request(`/admins/vehicles`, {
     method: "POST",
     body: {
@@ -29,15 +29,15 @@ export async function addBike(params) {
   });
 }
 
-export async function removeBike(id) {
-  return request(`/admins/vehicles/{id}`, {
+export async function removeVehicle(id) {
+  return request(`/admins/vehicles/${id}`, {
     method: "DELETE"
   });
 }
 
-export async function updateBike(id) {
-  return request(`/admins/vehicles/{id}`, {
-    method: "PUT/",
+export async function updateVehicle(id, params) {
+  return request(`/admins/vehicles/${id}`, {
+    method: "PUT",
     body: {
       ...params
     }

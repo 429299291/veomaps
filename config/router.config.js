@@ -93,7 +93,7 @@ export default [
       /*      {
         path: '/list',
         icon: 'bike',
-        name: 'Bike Management',
+        name: 'Vehicle Management',
         routes: [
           {
             path: '/list/table-list',
@@ -139,14 +139,14 @@ export default [
         ],
       }, */
       {
-        path: "/bike-management",
+        path: "/vehicle-management",
         icon: "car",
-        name: "Bike Management",
+        name: "Vehicle Management",
         routes: [
           {
-            path: "/bike-management/",
-            name: "Bike List",
-            component: "./Bike/BikeList"
+            path: "/vehicle-management/",
+            name: "Vehicle List",
+            component: "./Vehicle/Vehicle"
           }
         ]
       },

@@ -24,7 +24,7 @@ import {
 import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
-import styles from "./BikeList.less";
+import styles from "./Vehicle.less";
 import { roundTo2Decimal } from "../../utils/mathUtil";
 
 const FormItem = Form.Item;
@@ -40,7 +40,7 @@ const statusMap = ["default", "processing", "success", "error"];
 const operationStatus = ["NORMAL", "MANTAINANCE"];
 const connectStatus = ["Offline", "Online"];
 const lockStatus = ["Unlock", "lock"];
-const vehicleType = ["Bicycle", "Scooter", "E-Bike", "Car"];
+const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "Car"];
 
 const errorStatus = [
   "Normal",
@@ -67,7 +67,7 @@ const getPowerPercent = power => {
 };
 
 const CreateForm = Form.create()(props => {
-  const { modalVisible, form, handleAdd, handleModalVisible } = props;
+  const { modalVisible, form, handleAdd, handleModalVisible, areas } = props;
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -78,41 +78,216 @@ const CreateForm = Form.create()(props => {
   return (
     <Modal
       destroyOnClose
-      title="新建规则"
+      title="Add"
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="描述">
-        {form.getFieldDecorator("desc", {
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="ID">
+        {form.getFieldDecorator("bikeNumber", {
           rules: [
             {
               required: true,
-              message: "请输入至少五个字符的规则描述！",
-              min: 5
+              message: "At least 8 Digits!",
+              min: 1
             }
           ]
-        })(<Input placeholder="请输入" />)}
+        })(<Input placeholder="Please Input" />)}
       </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="IMEI">
+        {form.getFieldDecorator("imei", {
+          rules: [
+            {
+              required: true,
+              message: "At least 15 Digits!",
+              min: 1
+            }
+          ]
+        })(<Input placeholder="Please Input" />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Type">
+        {form.getFieldDecorator("vehicleType", {
+          rules: [
+            {
+              required: true,
+              message: "You have pick a type"
+            }
+          ]
+        })(
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value="0">Bike</Option>
+            <Option value="1">Scooter</Option>
+            <Option value="2">E-Bike</Option>
+          </Select>
+        )}
+      </FormItem>
+      {areas && (
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area">
+          {form.getFieldDecorator("areaId", {
+            rules: [
+              {
+                required: true,
+                message: "You have pick a area"
+              }
+            ]
+          })(
+            <Select placeholder="select" style={{ width: "100%" }}>
+              {areas.map(area => (
+                <Option key={area.id} value={area.id}>
+                  {area.name}
+                </Option>
+              ))}
+            </Select>
+          )}
+        </FormItem>
+      )}
+    </Modal>
+  );
+});
+
+const UpdateForm = Form.create()(props => {
+  const {
+    form,
+    modalVisible,
+    handleUpdate,
+    handleModalVisible,
+    areas,
+    record
+  } = props;
+  const okHandle = () => {
+    if (form.isFieldsTouched())
+      form.validateFields((err, fieldsValue) => {
+        if (err) return;
+        form.resetFields();
+
+        fieldsValue.vehicleNumber = parseInt(fieldsValue.vehicleNumber, 10);
+
+        handleUpdate(record.id, fieldsValue);
+      });
+    else handleModalVisible();
+  };
+  return (
+    <Modal
+      destroyOnClose
+      title="Add"
+      visible={modalVisible}
+      onOk={okHandle}
+      onCancel={() => handleModalVisible()}
+    >
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="ID">
+        {form.getFieldDecorator("vehicleNumber", {
+          rules: [
+            {
+              required: true,
+              message: "At least 8 Digits!",
+              min: 1
+            }
+          ],
+          initialValue: record.vehicleNumber + ""
+        })(<Input placeholder="Please Input" />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="IMEI">
+        {form.getFieldDecorator("imei", {
+          rules: [
+            {
+              required: true,
+              message: "At least 15 Digits!",
+              min: 1
+            }
+          ],
+          initialValue: record.imei
+        })(<Input placeholder="Please Input" />)}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Lock Status"
+      >
+        {form.getFieldDecorator("lockStatus", {
+          initialValue: record.lockStatus
+        })(
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Unlock</Option>
+            <Option value={1}>Lock</Option>
+          </Select>
+        )}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Error Status"
+      >
+        {form.getFieldDecorator("errorStatus", {
+          initialValue: record.errorStatus
+        })(
+          <Select placeholder="select" style={{ width: "100%" }}>
+            {errorStatus.map((status, index) => (
+              <Option key={index} value={index}>
+                {status}
+              </Option>
+            ))}
+          </Select>
+        )}
+      </FormItem>
+
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Type">
+        {form.getFieldDecorator("vehicleType", {
+          rules: [
+            {
+              required: true,
+              message: "You have pick a type"
+            }
+          ],
+          initialValue: record.vehicleType
+        })(
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Bike</Option>
+            <Option value={1}>Scooter</Option>
+            <Option value={2}>E-Bike</Option>
+          </Select>
+        )}
+      </FormItem>
+      {areas && (
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area">
+          {form.getFieldDecorator("areaId", {
+            rules: [
+              {
+                required: true,
+                message: "You have pick a area"
+              }
+            ],
+            initialValue: record.areaId
+          })(
+            <Select placeholder="select" style={{ width: "100%" }}>
+              {areas.map(area => (
+                <Option key={area.id} value={area.id}>
+                  {area.name}
+                </Option>
+              ))}
+            </Select>
+          )}
+        </FormItem>
+      )}
     </Modal>
   );
 });
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ bikes, loading }) => ({
-  bikes,
-  loading: loading.models.bikes
+@connect(({ vehicles, areas, loading }) => ({
+  vehicles,
+  areas,
+  loading: loading.models.vehicles
 }))
 @Form.create()
-class BikeList extends PureComponent {
+class Vehicle extends PureComponent {
   state = {
     modalVisible: false,
     updateModalVisible: false,
+    detailModalVisible: false,
     expandForm: false,
     selectedRows: [],
-    formValues: {},
-    paginationValues: { page: 1, pageSize: 10 },
-    stepFormValues: {}
+    filterCriteria: { currentPage: 1, pageSize: 10 },
+    selectedRecord: {}
   };
 
   columns = [
@@ -128,25 +303,17 @@ class BikeList extends PureComponent {
       }
     },
     {
-      title: "Lock Status",
-      dataIndex: "lockStatus",
-      render(val) {
-        return <p>{lockStatus[val]}</p>;
-      }
-    },
-    {
-      title: "Error Status",
-      dataIndex: "errorStatus",
-      render(val) {
-        return <p>{errorStatus[val]}</p>;
-      }
-    },
-    {
-      title: "Connect Status",
+      title: "Status",
       dataIndex: "connectStatus",
-      render(val) {
-        return <p>{connectStatus[val]}</p>;
-      }
+      render: (text, record) => (
+        <Fragment>
+          <span>{lockStatus[record.lockStatus]}</span>
+          <Divider type="vertical" />
+          <span>{errorStatus[record.errorStatus]}</span>
+          <Divider type="vertical" />
+          <span>{connectStatus[record.connectStatus]}</span>
+        </Fragment>
+      )
     },
     {
       title: "Ride Count",
@@ -172,55 +339,43 @@ class BikeList extends PureComponent {
       render: (text, record) => (
         <Fragment>
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>
+            Update
+          </a>
+          <Divider type="vertical" />
+          <a onClick={() => this.handleDetailModalVisible(true, record)}>
             Detail
           </a>
-          {/*<Divider type="vertical" />
-          <a href="">订阅警报</a>*/}
         </Fragment>
       )
     }
   ];
 
   componentDidMount() {
-    const { dispatch } = this.props;
-
-    const params = {
-      currentPage: this.state.paginationValues.page,
-      pageSize: this.state.paginationValues.pageSize
-    };
-
-    dispatch({
-      type: "bikes/fetchCount",
-      payload: {}
-    });
-
-    dispatch({
-      type: "bikes/fetch",
-      payload: params
-    });
+    this.handleGetVehicles();
   }
+
+  handleGetVehicles = () => {
+    const { dispatch } = this.props;
+    const { filterCriteria } = this.state;
+
+    dispatch({
+      type: "vehicles/getCount",
+      payload: filterCriteria
+    });
+
+    dispatch({
+      type: "vehicles/get",
+      payload: filterCriteria
+    });
+  };
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
-    const { formValues } = this.state;
-
-    const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
-      newObj[key] = getValue(filtersArg[key]);
-      return newObj;
-    }, {});
+    const { filterCriteria } = this.state;
 
     const params = {
-      ...formValues,
-      ...filters
+      ...filterCriteria
     };
-
-    this.setState({
-      paginationValues: {
-        page: pagination.current,
-        pageSize: pagination.pageSize
-      }
-    });
 
     params.currentPage = pagination.current;
     params.pageSize = pagination.pageSize;
@@ -229,39 +384,30 @@ class BikeList extends PureComponent {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
 
+    this.setState({ filterCriteria: params });
+
     dispatch({
-      type: "bikes/fetch",
+      type: "vehicles/get",
       payload: params
     });
   };
 
   handleFormReset = () => {
     const { form, dispatch } = this.props;
+    const { filterCriteria } = this.state;
     form.resetFields();
-    this.setState({
-      formValues: {}
-    });
-
-    this.setState({
-      paginationValues: {
-        page: 1,
-        pageSize: this.state.paginationValues.pageSize
-      }
-    });
 
     const params = {
       currentPage: 1,
-      pageSize: this.state.paginationValues.pageSize
+      pageSize: filterCriteria.pageSize
     };
 
-    dispatch({
-      type: "bikes/fetchCount",
-      payload: {}
-    });
-    dispatch({
-      type: "bikes/fetch",
-      payload: params
-    });
+    this.setState(
+      {
+        filterCriteria: params
+      },
+      () => this.handleGetVehicles()
+    );
   };
 
   toggleForm = () => {
@@ -271,60 +417,23 @@ class BikeList extends PureComponent {
     });
   };
 
-  handleMenuClick = e => {
-    const { dispatch } = this.props;
-    const { selectedRows } = this.state;
-
-    if (!selectedRows) return;
-    switch (e.key) {
-      case "remove":
-        dispatch({
-          type: "bikes/remove",
-          payload: {
-            key: selectedRows.map(row => row.key)
-          },
-          callback: () => {
-            this.setState({
-              selectedRows: []
-            });
-          }
-        });
-        break;
-      default:
-        break;
-    }
-  };
-
   handleSearch = e => {
     e.preventDefault();
 
     const { dispatch, form } = this.props;
+    const { filterCriteria } = this.state;
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
-      console.log(fieldsValue);
-      const values = {
-        ...fieldsValue,
-        currentPage: 1,
-        pageSize: 10
-      };
+      const values = Object.assign({}, filterCriteria, fieldsValue);
 
-      console.log(values);
-
-      this.setState({
-        formValues: values
-      });
-
-      dispatch({
-        type: "bikes/fetchCount",
-        payload: values
-      });
-
-      dispatch({
-        type: "bikes/fetch",
-        payload: values
-      });
+      this.setState(
+        {
+          filterCriteria: values
+        },
+        () => this.handleGetVehicles()
+      );
     });
   };
 
@@ -337,35 +446,45 @@ class BikeList extends PureComponent {
   handleUpdateModalVisible = (flag, record) => {
     this.setState({
       updateModalVisible: !!flag,
-      stepFormValues: record || {}
+      selectedRecord: record || {}
+    });
+  };
+
+  handleDetailModalVisible = (flag, record) => {
+    this.setState({
+      detailModalVisible: !!flag,
+      selectedRecord: record || {}
+    });
+  };
+
+  handleDeleteModalVisible = (flag, record) => {
+    this.setState({
+      updateModalVisible: !!flag,
+      selectedRecord: record || {}
     });
   };
 
   handleAdd = fields => {
     const { dispatch } = this.props;
+
     dispatch({
-      type: "bikes/add",
-      payload: {
-        desc: fields.desc
-      }
+      type: "vehicles/add",
+      payload: fields
     });
 
-    message.success("添加成功");
+    //message.success("Add Success!");
     this.handleModalVisible();
   };
 
-  handleUpdate = fields => {
+  handleUpdate = (id, fields) => {
     const { dispatch } = this.props;
     dispatch({
-      type: "bikes/update",
-      payload: {
-        name: fields.name,
-        desc: fields.desc,
-        key: fields.key
-      }
+      type: "vehicles/update",
+      payload: fields,
+      id: id,
+      onSuccess: this.handleGetVehicles
     });
 
-    message.success("配置成功");
     this.handleUpdateModalVisible();
   };
 
@@ -415,6 +534,9 @@ class BikeList extends PureComponent {
     const {
       form: { getFieldDecorator }
     } = this.props;
+
+    const areas = this.props.areas.data;
+
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -486,6 +608,28 @@ class BikeList extends PureComponent {
             </FormItem>
           </Col>
         </Row>
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={6} sm={24}>
+            {areas && (
+              <FormItem
+                labelCol={{ span: 5 }}
+                wrapperCol={{ span: 15 }}
+                label="Area"
+              >
+                {getFieldDecorator("areaId")(
+                  <Select placeholder="select" style={{ width: "100%" }}>
+                    {areas.map(area => (
+                      <Option key={area.id} value={area.id}>
+                        {area.name}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>
+            )}
+          </Col>
+        </Row>
+
         <div style={{ overflow: "hidden" }}>
           <div style={{ float: "right", marginBottom: 24 }}>
             <Button type="primary" htmlType="submit">
@@ -509,13 +653,14 @@ class BikeList extends PureComponent {
   }
 
   render() {
-    const { bikes, loading } = this.props;
+    const { vehicles, areas, loading } = this.props;
     const {
-      selectedRows,
       modalVisible,
       updateModalVisible,
-      stepFormValues,
-      paginationValues
+      detailModalVisible,
+      deleteModalVisible,
+      selectedRecord,
+      filterCriteria
     } = this.state;
 
     const parentMethods = {
@@ -523,14 +668,14 @@ class BikeList extends PureComponent {
       handleModalVisible: this.handleModalVisible
     };
     const updateMethods = {
-      handleUpdateModalVisible: this.handleUpdateModalVisible,
+      handleModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate
     };
 
     const pagination = {
-      defaultCurrent: paginationValues.page,
-      pageSize: paginationValues.pageSize,
-      total: bikes.total
+      defaultCurrent: filterCriteria.currentPage,
+      pageSize: filterCriteria.pageSize,
+      total: vehicles.total
     };
 
     return (
@@ -549,23 +694,41 @@ class BikeList extends PureComponent {
             </div>
             <StandardTable
               loading={loading}
-              data={{ list: bikes.data, pagination: pagination }}
+              data={{ list: vehicles.data, pagination: pagination }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />
           </div>
         </Card>
-        <CreateForm {...parentMethods} modalVisible={modalVisible} />
-        {stepFormValues && Object.keys(stepFormValues).length ? (
-          <UpdateForm
-            {...updateMethods}
-            updateModalVisible={updateModalVisible}
-            values={stepFormValues}
-          />
-        ) : null}
+        <CreateForm
+          {...parentMethods}
+          modalVisible={modalVisible}
+          areas={areas.data}
+        />
+
+        <UpdateForm
+          {...updateMethods}
+          modalVisible={updateModalVisible}
+          record={selectedRecord}
+          areas={areas.data}
+        />
+
+        {selectedRecord &&
+          detailModalVisible && (
+            <Modal
+              destroyOnClose
+              title="Detail"
+              visible={detailModalVisible}
+              onCancel={() => this.handleDetailModalVisible()}
+            >
+              {Object.keys(selectedRecord).map(key => (
+                <p key={key}>{`${key} : ${selectedRecord[key]}`}</p>
+              ))}
+            </Modal>
+          )}
       </PageHeaderWrapper>
     );
   }
 }
 
-export default BikeList;
+export default Vehicle;
