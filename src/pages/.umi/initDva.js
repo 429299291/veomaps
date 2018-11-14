@@ -15,8 +15,8 @@ app.use(createLoading());
 });
 
 app.model({
-  namespace: "area",
-  ...require("/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/area.js")
+  namespace: "bike",
+  ...require("/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/bike.js")
     .default
 });
 app.model({
@@ -50,13 +50,13 @@ app.model({
     .default
 });
 app.model({
-  namespace: "vehicle",
-  ...require("/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/vehicle.js")
+  namespace: "register",
+  ...require("/Users/zhuangenze/Desktop/manhattan-admin-web/src/pages/User/models/register.js")
     .default
 });
 app.model({
-  namespace: "register",
-  ...require("/Users/zhuangenze/Desktop/manhattan-admin-web/src/pages/User/models/register.js")
+  namespace: "rule",
+  ...require("/Users/zhuangenze/Desktop/manhattan-admin-web/src/pages/List/models/rule.js")
     .default
 });
 app.model({
