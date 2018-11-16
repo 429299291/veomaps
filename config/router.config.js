@@ -151,6 +151,18 @@ export default [
         ]
       },
       {
+        path: "/geo-management",
+        icon: "global",
+        name: "Area Management",
+        routes: [
+          {
+            path: "/geo-management/",
+            name: "Geo Management",
+            component: "./Area/Geo"
+          }
+        ]
+      },
+      {
         path: "/profile",
         name: "profile",
         icon: "profile",

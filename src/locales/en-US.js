@@ -108,6 +108,8 @@ export default {
   "menu.account.trigger": "Trigger Error",
   "menu.Vehicle Management": "Vehicle Management",
   "menu.Vehicle Management.Vehicle List": "Vehicle List",
+  "menu.Area Management": "Area Management",
+  "menu.Area Management.Geo Management": "Geo Management",
   "menu.account.logout": "Logout",
   "app.login.message-invalid-credentials":
     "Invalid username or password（admin/ant.design）",

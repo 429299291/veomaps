@@ -476,7 +476,7 @@ class TableList extends PureComponent {
 
   handleModalVisible = flag => {
     this.setState({
-      modalVisible: !!flag
+      addModalVisible: !!flag
     });
   };
 

@@ -24,7 +24,7 @@ import {
 import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
-import styles from './Vehicle.less';
+import styles from "./Vehicle.less";
 import { roundTo2Decimal } from "../../utils/mathUtil";
 
 const FormItem = Form.Item;
@@ -72,7 +72,6 @@ const CreateForm = Form.create()(props => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       form.resetFields();
-
 
       fieldsValue.vehicleNumber = parseInt(fieldsValue.vehicleNumber, 10);
 
@@ -443,7 +442,7 @@ class Vehicle extends PureComponent {
 
   handleModalVisible = flag => {
     this.setState({
-      modalVisible: !!flag
+      addModalVisible: !!flag
     });
   };
 
