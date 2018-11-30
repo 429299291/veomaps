@@ -20,6 +20,16 @@ app.model({
     .default
 });
 app.model({
+  namespace: "coupon",
+  ...require("/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/coupon.js")
+    .default
+});
+app.model({
+  namespace: "customer",
+  ...require("/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/customer.js")
+    .default
+});
+app.model({
   namespace: "geo",
   ...require("/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/geo.js")
     .default
@@ -40,8 +50,18 @@ app.model({
     .default
 });
 app.model({
+  namespace: "membership",
+  ...require("/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/membership.js")
+    .default
+});
+app.model({
   namespace: "project",
   ...require("/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/project.js")
+    .default
+});
+app.model({
+  namespace: "ride",
+  ...require("/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/ride.js")
     .default
 });
 app.model({
@@ -62,20 +82,5 @@ app.model({
 app.model({
   namespace: "register",
   ...require("/Users/zhuangenze/Desktop/manhattan-admin-web/src/pages/User/models/register.js")
-    .default
-});
-app.model({
-  namespace: "profile",
-  ...require("/Users/zhuangenze/Desktop/manhattan-admin-web/src/pages/Profile/models/profile.js")
-    .default
-});
-app.model({
-  namespace: "error",
-  ...require("/Users/zhuangenze/Desktop/manhattan-admin-web/src/pages/Exception/models/error.js")
-    .default
-});
-app.model({
-  namespace: "geographic",
-  ...require("/Users/zhuangenze/Desktop/manhattan-admin-web/src/pages/Account/Settings/models/geographic.js")
     .default
 });

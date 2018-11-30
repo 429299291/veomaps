@@ -5,6 +5,9 @@ import hash from "hash.js";
 import { isAntdPro } from "./utils";
 
 const urlPrefix = "https://localhost:8444/api";
+//const urlPrefix = "https://develop.veoride.com:8444/api"
+//const urlPrefix = "https://manhattan-host.veoride.com:8444/api"
+
 export const ACCESS_TOKEN = "accessToken";
 
 const codeMessage = {
@@ -92,7 +95,7 @@ export default function request(url, options) {
         if (!response.ok || (json.code && json.code != 0)) {
           return Promise.reject(json);
         }
-        return json.data ? json.data : json;
+        return json && json.data;
       })
     )
     .catch(e => {

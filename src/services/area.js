@@ -28,7 +28,7 @@ export async function removeArea(id) {
 
 export async function updateArea(id, params) {
   return request(`/admins/areas/${id}`, {
-    method: "PUT/",
+    method: "PUT",
     body: {
       ...params
     }

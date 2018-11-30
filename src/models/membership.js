@@ -1,14 +1,14 @@
 import {
-  getAdminAreas,
-  getAreaDetail,
-  createArea,
-  removeArea,
-  updateArea
-} from "@/services/area";
+  getAdminMemberships,
+  getMembershipDetail,
+  createMembership,
+  removeMembership,
+  updateMembership
+} from "@/services/membership";
 import { message } from "antd";
 
 export default {
-  namespace: "areas",
+  namespace: "memberships",
 
   state: {
     total: 0,
@@ -17,10 +17,10 @@ export default {
 
   effects: {
     *get({ payload }, { call, put }) {
-      const response = yield call(getAdminAreas, payload);
+      const response = yield call(getAdminMemberships, payload);
 
       if (Array.isArray(response)) {
-        response.map(area => (area.key = area.id));
+        response.map(membership => (membership.key = membership.id));
       }
 
       yield put({
@@ -29,7 +29,7 @@ export default {
       });
     },
     *update({ id, payload, onSuccess, onError }, { call, put }) {
-      const response = yield call(updateArea, id, payload); // put
+      const response = yield call(updateMembership, id, payload); // put
 
       if (response) {
         message.success(`Add Success, ID : ${response}`);
@@ -40,7 +40,7 @@ export default {
       }
     },
     *remove({ id, payload, onSuccess, onError }, { call, put }) {
-      const response = yield call(removeArea, id); // delete
+      const response = yield call(removeMembership, id); // delete
 
       if (response) {
         message.success(`Add Success, ID : ${response}`);
@@ -51,7 +51,7 @@ export default {
       }
     },
     *add({ payload, onSuccess, onError }, { call, put }) {
-      const response = yield call(createArea, payload); // delete
+      const response = yield call(createMembership, payload); // delete
 
       if (response) {
         message.success(`Add Success, ID : ${response}`);
@@ -65,14 +65,9 @@ export default {
 
   reducers: {
     save(state, action) {
-      const areaNames = [];
-
-      action.payload.map(area => (areaNames[area.id] = area.name));
-
       return {
         ...state,
         data: action.payload,
-        areaNames: areaNames,
         total: action.payload.length
       };
     }

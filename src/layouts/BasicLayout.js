@@ -153,10 +153,6 @@ class BasicLayout extends React.PureComponent {
     return memoizeOneFormatter(routes);
   }
 
-  /**
-   * 获取面包屑映射
-   * @param {Object} menuData 菜单配置
-   */
   getBreadcrumbNameMap() {
     const routerMap = {};
     const mergeMenuAndRouter = data => {

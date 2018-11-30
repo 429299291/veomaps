@@ -3,7 +3,7 @@ import {
   createFence,
   updateFence,
   deleteFence,
-  getAreaCenter,
+  getAreaCenterByAreaId,
   createAreaCenter,
   updateAreaCenter,
   deleteAreaCenter
@@ -15,33 +15,45 @@ export default {
 
   state: {
     fences: [],
-    center: null
+    area: null
   },
 
   effects: {
     *getFences({ areaId }, { call, put }) {
       const response = yield call(getFencesByAreaId, areaId);
 
-      if (Array.isArray(response)) {
-        response.map(area => (area.key = area.id));
+      const isArray = Array.isArray(response);
+
+      if (isArray) {
+        //sort fences by fencetype so geo fence always be the first one to render so other fences in geofence will have higher priority of click event.
+        response.sort((a, b) => a.fenceType - b.fenceType);
       }
 
       yield put({
         type: "saveFence",
-        payload: Array.isArray(response) ? response : []
+        payload: isArray ? response : []
       });
     },
-    *addFence({ payload }, { call, put }) {
+    *addFence({ payload, onSuccess, onError }, { call, put }) {
       const response = yield call(createFence, payload); // post
 
       if (response) {
         message.success(`Add Success, ID : ${response}`);
+        onSuccess && onSuccess();
       } else {
         message.error(`Add Fail.`);
+        onError && onError();
       }
     },
-    *removeFence({ id }, { call, put }) {
-      const response = yield call(deleteFence, id); // post
+    *removeFence({ id, onSuccess, onError }, { call, put }) {
+      const response = yield call(deleteFence, id); // delete
+      if (response) {
+        message.success(`Delete Success, ID : ${response}`);
+        onSuccess && onSuccess();
+      } else {
+        message.error(`Delete Fail!`);
+        onError && onError();
+      }
     },
     *updateFence({ id, payload, onSuccess, onError }, { call, put }) {
       const response = yield call(updateFence, id, payload); // put
@@ -56,24 +68,22 @@ export default {
       }
     },
     *getCenter({ areaId }, { call, put }) {
-      const response = yield call(getAreaCenter, areaId);
-
-      if (Array.isArray(response)) {
-        response.map(area => (area.key = area.id));
-      }
+      const response = yield call(getAreaCenterByAreaId, areaId);
 
       yield put({
         type: "saveCenter",
-        payload: Array.isArray(response) ? response : []
+        payload: response
       });
     },
-    *addCenter({ payload }, { call, put }) {
+    *addCenter({ payload, onSuccess, onError }, { call, put }) {
       const response = yield call(createAreaCenter, payload); // post
 
       if (response) {
-        message.success(`Add Success, ID : ${response}`);
+        message.success(`Update Success!`);
+        onSuccess && onSuccess();
       } else {
-        message.error(`Add Fail.`);
+        message.error(`Update Fail.`);
+        onError && onError();
       }
     },
     *removeCenter({ id }, { call, put }) {
@@ -86,9 +96,10 @@ export default {
 
       if (response) {
         message.success(`Update Success!`);
-        onSuccess();
+        onSuccess && onSuccess();
       } else {
         message.error(`Update Fail.`);
+        onError && onError();
       }
     }
   },
@@ -103,7 +114,7 @@ export default {
     saveCenter(state, action) {
       return {
         ...state,
-        center: action.payload
+        area: action.payload
       };
     }
   }

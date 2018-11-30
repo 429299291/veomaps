@@ -429,7 +429,10 @@ class Vehicle extends PureComponent {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
-      const values = Object.assign({}, filterCriteria, fieldsValue);
+      const values = Object.assign({}, filterCriteria, fieldsValue, {
+        currentPage: 1,
+        pageSize: 10
+      });
 
       this.setState(
         {
@@ -442,7 +445,7 @@ class Vehicle extends PureComponent {
 
   handleModalVisible = flag => {
     this.setState({
-      addModalVisible: !!flag
+      createModalVisible: !!flag
     });
   };
 
@@ -676,7 +679,8 @@ class Vehicle extends PureComponent {
     };
 
     const pagination = {
-      defaultCurrent: filterCriteria.currentPage,
+      defaultCurrent: 1,
+      current: filterCriteria.currentPage,
       pageSize: filterCriteria.pageSize,
       total: vehicles.total
     };
@@ -700,6 +704,7 @@ class Vehicle extends PureComponent {
               data={{ list: vehicles.data, pagination: pagination }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
+              scroll={{ x: 1300 }}
             />
           </div>
         </Card>
