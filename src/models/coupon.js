@@ -3,7 +3,10 @@ import {
   getCouponDetail,
   createCoupon,
   removeCoupon,
-  updateCoupon
+  updateCoupon,
+  removeCustomerCoupon,
+  addCustomerCoupon,
+  getCustomerCoupons
 } from "@/services/coupon";
 import { message } from "antd";
 
@@ -28,6 +31,15 @@ export default {
         payload: Array.isArray(response) ? response : []
       });
     },
+    *getCustomerCoupons({ payload, onSuccess }, { call, put }) {
+      const response = yield call(getCustomerCoupons, payload);
+
+      if (Array.isArray(response)) {
+        response.map(coupon => (coupon.key = coupon.id));
+      }
+
+      onSuccess && onSuccess(Array.isArray(response) ? response : []);
+    },
     *update({ id, payload, onSuccess, onError }, { call, put }) {
       const response = yield call(updateCoupon, id, payload); // put
 
@@ -45,6 +57,36 @@ export default {
       if (response) {
         message.success(`Add Success, ID : ${response}`);
         onSuccess && onSuccess();
+      } else {
+        message.error(`Add Fail.`);
+        onError && onError();
+      }
+    },
+    *removeCustomerCoupon({ id, onSuccess, onError }, { call, put }) {
+      const response = yield call(removeCustomerCoupon, id); // delete
+
+      if (response) {
+        message.success(`Add Success, ID : ${response}`);
+        onSuccess && onSuccess();
+      } else {
+        message.error(`Add Fail.`);
+        onError && onError();
+      }
+    },
+    *addCouponToCustomer(
+      { customerId, couponId, onSuccess, onError, start },
+      { call, put }
+    ) {
+      const response = yield call(
+        addCustomerCoupon,
+        customerId,
+        couponId,
+        start
+      ); // delete
+
+      if (response) {
+        message.success(`Add Success, ID : ${response}`);
+        onSuccess && onSuccess(customerId);
       } else {
         message.error(`Add Fail.`);
         onError && onError();

@@ -22,9 +22,14 @@ app.model({ namespace: 'global', ...(require('/Users/zhuangenze/Desktop/manhatta
 app.model({ namespace: 'list', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/list.js').default) });
 app.model({ namespace: 'login', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/login.js').default) });
 app.model({ namespace: 'membership', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/membership.js').default) });
+app.model({ namespace: 'privilege', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/privilege.js').default) });
 app.model({ namespace: 'project', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/project.js').default) });
 app.model({ namespace: 'ride', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/ride.js').default) });
+app.model({ namespace: 'role', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/role.js').default) });
 app.model({ namespace: 'setting', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/setting.js').default) });
 app.model({ namespace: 'user', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/user.js').default) });
 app.model({ namespace: 'vehicle', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/vehicle.js').default) });
 app.model({ namespace: 'register', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/pages/User/models/register.js').default) });
+app.model({ namespace: 'activities', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/pages/Dashboard/models/activities.js').default) });
+app.model({ namespace: 'chart', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/pages/Dashboard/models/chart.js').default) });
+app.model({ namespace: 'monitor', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/pages/Dashboard/models/monitor.js').default) });

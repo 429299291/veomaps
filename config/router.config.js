@@ -15,80 +15,81 @@ export default [
     path: "/",
     component: "../layouts/BasicLayout",
     Routes: ["src/pages/Authorized"],
-    authority: ["admin"],
     routes: [
       // dashboard
+
+      { path: "/", redirect: "/dashboard/analysis" },
+      {
+        path: "/dashboard",
+        name: "dashboard",
+        icon: "dashboard",
+        authority: ["admin"],
+        routes: [
+          {
+            path: "/dashboard/analysis",
+            name: "analysis",
+            component: "./Dashboard/Analysis"
+          },
+          {
+            path: "/dashboard/monitor",
+            name: "monitor",
+            component: "./Dashboard/Monitor"
+          },
+          {
+            path: "/dashboard/workplace",
+            name: "workplace",
+            component: "./Dashboard/Workplace"
+          }
+        ]
+      },
       /*
-      { path: '/', redirect: '/dashboard/analysis' },
-      {
-        path: '/dashboard',
-        name: 'dashboard',
-        icon: 'dashboard',
-        routes: [
-          {
-            path: '/dashboard/analysis',
-            name: 'analysis',
-            component: './Dashboard/Analysis',
-          },
-          {
-            path: '/dashboard/monitor',
-            name: 'monitor',
-            component: './Dashboard/Monitor',
-          },
-          {
-            path: '/dashboard/workplace',
-            name: 'workplace',
-            component: './Dashboard/Workplace',
-          },
-        ],
-      },
-      // forms
-      {
-        path: '/form',
-        icon: 'form',
-        name: 'form',
-        routes: [
-          {
-            path: '/form/basic-form',
-            name: 'basicform',
-            component: './Forms/BasicForm',
-          },
-          {
-            path: '/form/step-form',
-            name: 'stepform',
-            component: './Forms/StepForm',
-            hideChildrenInMenu: true,
-            routes: [
-              {
-                path: '/form/step-form',
-                redirect: '/form/step-form/info',
-              },
-              {
-                path: '/form/step-form/info',
-                name: 'info',
-                component: './Forms/StepForm/Step1',
-              },
-              {
-                path: '/form/step-form/confirm',
-                name: 'confirm',
-                component: './Forms/StepForm/Step2',
-              },
-              {
-                path: '/form/step-form/result',
-                name: 'result',
-                component: './Forms/StepForm/Step3',
-              },
-            ],
-          },
-          {
-            path: '/form/advanced-form',
-            name: 'advancedform',
-            authority: ['admin'],
-            component: './Forms/AdvancedForm',
-          },
-        ],
-      },
-      */
+     // forms
+     {
+       path: '/form',
+       icon: 'form',
+       name: 'form',
+       routes: [
+         {
+           path: '/form/basic-form',
+           name: 'basicform',
+           component: './Forms/BasicForm',
+         },
+         {
+           path: '/form/step-form',
+           name: 'stepform',
+           component: './Forms/StepForm',
+           hideChildrenInMenu: true,
+           routes: [
+             {
+               path: '/form/step-form',
+               redirect: '/form/step-form/info',
+             },
+             {
+               path: '/form/step-form/info',
+               name: 'info',
+               component: './Forms/StepForm/Step1',
+             },
+             {
+               path: '/form/step-form/confirm',
+               name: 'confirm',
+               component: './Forms/StepForm/Step2',
+             },
+             {
+               path: '/form/step-form/result',
+               name: 'result',
+               component: './Forms/StepForm/Step3',
+             },
+           ],
+         },
+         {
+           path: '/form/advanced-form',
+           name: 'advancedform',
+           authority: ['admin'],
+           component: './Forms/AdvancedForm',
+         },
+       ],
+     },
+     */
       // list
       /*      {
         path: '/list',
@@ -159,6 +160,7 @@ export default [
         path: "/customer-management",
         icon: "user",
         name: "Customer Management",
+        authority: "get.customers",
         routes: [
           {
             path: "/customer-management",
@@ -195,6 +197,23 @@ export default [
         name: "Coupon Management",
         icon: "barcode",
         component: "./Coupon/Coupon"
+      },
+      {
+        path: "/employee-management/",
+        name: "Employee Management",
+        icon: "user",
+        routes: [
+          {
+            path: "/employee-management/role",
+            name: "Role Management",
+            component: "./Employee/Role"
+          },
+          {
+            path: "/employee-management/privilege",
+            name: "Privilege Management",
+            component: "./Employee/Privilege"
+          }
+        ]
       },
       // {
       //   path: "/profile",

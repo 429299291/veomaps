@@ -32,6 +32,15 @@ export default {
         total: total
       });
     },
+    *getCustomerDetail({ payload, customerId, onSuccess }, { call, put }) {
+      const data = yield call(getCustomerDetail, customerId);
+
+      if (data) {
+        onSuccess(data);
+      } else {
+        message.error(`Fail!`);
+      }
+    },
     *add({ payload }, { call, put }) {
       const response = yield call(createCustomer, payload); // post
 
@@ -48,13 +57,6 @@ export default {
       const response = yield call(updateCustomer, id, payload); // put
 
       response ? onSuccess(response) : onError();
-
-      if (response) {
-        message.success(`Update Success!`);
-        onSuccess();
-      } else {
-        message.error(`Update Fail.`);
-      }
     }
   },
 

@@ -6,7 +6,8 @@ import {
   removeRide,
   updateRide,
   getRideRoute,
-  endRide
+  endRide,
+  getCustomerRides
 } from "@/services/ride";
 import { message } from "antd";
 
@@ -33,6 +34,16 @@ export default {
         data: Array.isArray(data) ? data : [],
         total: total
       });
+    },
+    *getCustomerRides({ customerId, onSuccess }, { call, put }) {
+      const rides = yield call(getAdminRides, { customerId: customerId });
+
+      if (Array.isArray(rides)) {
+        rides.map(ride => (ride.key = ride.id));
+        onSuccess(rides);
+      } else {
+        message.error("Fail to get customer rides.");
+      }
     },
     *getRoute({ rideId, onSuccess, onFail }, { call, put }) {
       const path = yield call(getRideRoute, rideId);

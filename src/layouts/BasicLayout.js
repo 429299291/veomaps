@@ -107,6 +107,11 @@ class BasicLayout extends React.PureComponent {
       type: "areas/get"
     });
 
+    dispatch({
+      type: "coupons/get",
+      payload: {}
+    });
+
     this.renderRef = requestAnimationFrame(() => {
       this.setState({
         rendering: false

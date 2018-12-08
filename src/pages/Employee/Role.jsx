@@ -17,11 +17,11 @@ import {
 import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
-import styles from "./Area.less";
+import styles from "./Role.less";
 
 const FormItem = Form.Item;
 const { Step } = Steps;
-const { TextArea } = Input;
+const { TextRole } = Input;
 const { Option } = Select;
 const RadioGroup = Radio.Group;
 const getValue = obj =>
@@ -30,7 +30,7 @@ const getValue = obj =>
     .join(",");
 
 const CreateForm = Form.create()(props => {
-  const { modalVisible, form, handleAdd, handleModalVisible, areas } = props;
+  const { modalVisible, form, handleAdd, handleModalVisible, roles } = props;
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -53,21 +53,6 @@ const CreateForm = Form.create()(props => {
             {
               required: true,
               message: "name is required",
-              min: 1
-            }
-          ]
-        })(<Input placeholder="Please Input" />)}
-      </FormItem>
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="DESCRIPTION"
-      >
-        {form.getFieldDecorator("description", {
-          rules: [
-            {
-              required: true,
-              message: "At least 1 char!",
               min: 1
             }
           ]
@@ -116,33 +101,17 @@ const UpdateForm = Form.create()(props => {
           initialValue: record.name
         })(<Input placeholder="Please Input" />)}
       </FormItem>
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="DESCRIPTION"
-      >
-        {form.getFieldDecorator("description", {
-          rules: [
-            {
-              required: true,
-              message: "At least 1 char!",
-              min: 1
-            }
-          ],
-          initialValue: record.description
-        })(<Input placeholder="Please Input" />)}
-      </FormItem>
     </Modal>
   );
 });
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ areas, loading }) => ({
-  areas,
-  loading: loading.models.areas
+@connect(({ roles, loading }) => ({
+  roles,
+  loading: loading.models.roles
 }))
 @Form.create()
-class Area extends PureComponent {
+class Role extends PureComponent {
   state = {
     modalVisible: false,
     updateModalVisible: false,
@@ -159,8 +128,12 @@ class Area extends PureComponent {
       dataIndex: "name"
     },
     {
-      title: "Description",
-      dataIndex: "description"
+      title: "Created",
+      dataIndex: "created"
+    },
+    {
+      title: "Updated",
+      dataIndex: "updated"
     },
     {
       title: "Operation",
@@ -175,15 +148,15 @@ class Area extends PureComponent {
   ];
 
   componentDidMount() {
-    this.handleGetAreas();
+    this.handleGetRoles();
   }
 
-  handleGetAreas = () => {
+  handleGetRoles = () => {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
 
     dispatch({
-      type: "areas/get",
+      type: "roles/get",
       payload: filterCriteria
     });
   };
@@ -199,7 +172,7 @@ class Area extends PureComponent {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
 
-    this.setState({ filterCriteria: params }, () => this.handleGetAreas());
+    this.setState({ filterCriteria: params }, () => this.handleGetRoles());
   };
 
   handleFormReset = () => {
@@ -210,7 +183,7 @@ class Area extends PureComponent {
       {
         filterCriteria: {}
       },
-      () => this.handleGetAreas()
+      () => this.handleGetRoles()
     );
   };
 
@@ -229,7 +202,7 @@ class Area extends PureComponent {
         {
           filterCriteria: values
         },
-        () => this.handleGetAreas()
+        () => this.handleGetRoles()
       );
     });
   };
@@ -265,9 +238,9 @@ class Area extends PureComponent {
     const { dispatch } = this.props;
 
     dispatch({
-      type: "areas/add",
+      type: "roles/add",
       payload: fields,
-      onSuccess: this.handleGetAreas
+      onSuccess: this.handleGetRoles
     });
 
     //message.success("Add Success!");
@@ -278,46 +251,17 @@ class Area extends PureComponent {
     const { dispatch } = this.props;
 
     dispatch({
-      type: "areas/update",
+      type: "roles/update",
       payload: fields,
       id: id,
-      onSuccess: this.handleGetAreas
+      onSuccess: this.handleGetRoles
     });
 
     this.handleUpdateModalVisible();
   };
 
-  renderSimpleForm() {
-    const {
-      form: { getFieldDecorator }
-    } = this.props;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="Keywords">
-              {getFieldDecorator("nameOrDescription")(
-                <Input placeholder="name or description" />
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
-                Search
-              </Button>
-              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-                Reset
-              </Button>
-            </span>
-          </Col>
-        </Row>
-      </Form>
-    );
-  }
-
   render() {
-    const { areas, loading } = this.props;
+    const { roles, loading } = this.props;
     const {
       modalVisible,
       updateModalVisible,
@@ -335,12 +279,9 @@ class Area extends PureComponent {
     };
 
     return (
-      <PageHeaderWrapper title="Area List">
+      <PageHeaderWrapper title="Role List">
         <Card bordered={false}>
           <div className={styles.tableList}>
-            <div className={styles.tableListForm}>
-              {this.renderSimpleForm()}
-            </div>
             <div className={styles.tableListOperator}>
               <Button
                 icon="plus"
@@ -352,7 +293,7 @@ class Area extends PureComponent {
             </div>
             <StandardTable
               loading={loading}
-              data={{ list: areas.data, pagination: {} }}
+              data={{ list: roles.data, pagination: {} }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />
@@ -361,18 +302,18 @@ class Area extends PureComponent {
         <CreateForm
           {...parentMethods}
           modalVisible={modalVisible}
-          areas={areas.data}
+          roles={roles.data}
         />
 
         <UpdateForm
           {...updateMethods}
           modalVisible={updateModalVisible}
           record={selectedRecord}
-          areas={areas.data}
+          roles={roles.data}
         />
       </PageHeaderWrapper>
     );
   }
 }
 
-export default Area;
+export default Role;
