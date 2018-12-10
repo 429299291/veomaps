@@ -21,6 +21,7 @@ export default {
 
       if (response && response.accessToken) {
         localStorage.setItem(ACCESS_TOKEN, response.accessToken);
+
         setAuthority("admin");
         reloadAuthorized();
         yield put(routerRedux.replace("/"));
@@ -30,32 +31,9 @@ export default {
           description: "wrong password or username"
         });
       }
-
-      /*  yield put({
-        type: 'changeLoginStatus',
-        payload: response,
-      }); */
-      // Login successfully
-      /* if (response.status === 'ok') {
-        reloadAuthorized();
-        const urlParams = new URL(window.location.href);
-        const params = getPageQuery();
-        let { redirect } = params;
-        if (redirect) {
-          const redirectUrlParams = new URL(redirect);
-          if (redirectUrlParams.origin === urlParams.origin) {
-            redirect = redirect.substr(urlParams.origin.length);
-            if (redirect.startsWith('/#')) {
-              redirect = redirect.substr(2);
-            }
-          } else {
-            window.location.href = redirect;
-            return;
-          }
-        }
-        yield put(routerRedux.replace(redirect || '/'));
-      } */
     },
+
+    *updateToken({ payload }, { call, put }) {},
 
     *getCaptcha({ payload }, { call }) {
       yield call(getFakeCaptcha, payload);

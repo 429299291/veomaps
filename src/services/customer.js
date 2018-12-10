@@ -17,7 +17,9 @@ export async function getAdminCustomersTotal(params) {
 }
 
 export async function getCustomerDetail(id) {
-  return request(`/admins/customers/${id}`);
+  return request(`/admins/customers/${id}`, {
+    method: "GET"
+  });
 }
 
 export async function createCustomer(area) {

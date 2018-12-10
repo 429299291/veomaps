@@ -1,7 +1,8 @@
-import { fakeChartData } from '@/services/api';
+import { fakeChartData } from "@/services/api";
+import { getFakeChartData } from "../../../../mock/chart";
 
 export default {
-  namespace: 'chart',
+  namespace: "chart",
 
   state: {
     visitData: [],
@@ -14,33 +15,36 @@ export default {
     salesTypeDataOnline: [],
     salesTypeDataOffline: [],
     radarData: [],
-    loading: false,
+    loading: false
   },
 
   effects: {
     *fetch(_, { call, put }) {
-      const response = yield call(fakeChartData);
+      //const response = yield call(fakeChartData);
+
+      const response = getFakeChartData;
+
       yield put({
-        type: 'save',
-        payload: response,
+        type: "save",
+        payload: response
       });
     },
     *fetchSalesData(_, { call, put }) {
       const response = yield call(fakeChartData);
       yield put({
-        type: 'save',
+        type: "save",
         payload: {
-          salesData: response.salesData,
-        },
+          salesData: response.salesData
+        }
       });
-    },
+    }
   },
 
   reducers: {
     save(state, { payload }) {
       return {
         ...state,
-        ...payload,
+        ...payload
       };
     },
     clear() {
@@ -54,8 +58,8 @@ export default {
         salesTypeData: [],
         salesTypeDataOnline: [],
         salesTypeDataOffline: [],
-        radarData: [],
+        radarData: []
       };
-    },
-  },
+    }
+  }
 };

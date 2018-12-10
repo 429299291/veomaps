@@ -26,6 +26,27 @@ export async function removeCoupon(id) {
   });
 }
 
+export async function removeCustomerCoupon(id) {
+  return request(`/admins/coupons/customers/${id}`, {
+    method: "DELETE"
+  });
+}
+
+export async function addCustomerCoupon(customerId, couponId, start) {
+  return request(`/admins/coupons/${couponId}/customers/${customerId}`, {
+    method: "POST",
+    body: {
+      start: start
+    }
+  });
+}
+
+export async function getCustomerCoupons(customerId) {
+  return request(`/admins/coupons/customers/${customerId}`, {
+    method: "GET"
+  });
+}
+
 export async function updateCoupon(id, params) {
   return request(`/admins/coupons/${id}`, {
     method: "PUT",
