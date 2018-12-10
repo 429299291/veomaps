@@ -196,6 +196,12 @@ export default [
         icon: "barcode",
         component: "./Coupon/Coupon"
       },
+      {
+        path: "/price-management/",
+        name: "Price Management",
+        icon: "wallet",
+        component: "./Price/Price"
+      },
       // {
       //   path: "/profile",
       //   name: "profile",
