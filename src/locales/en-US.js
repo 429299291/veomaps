@@ -112,6 +112,7 @@ export default {
   "menu.Vehicle Management.Vehicle List": "Vehicle List",
   "menu.Vehicle Management.Riding History": "Riding History",
   "menu.Employee Management.Privilege Management": "Privilege Management",
+  "menu.Employee Management.Admin Management": "Admin Management",
   "menu.Membership Management": "Membership Management",
   "menu.Coupon Management": "Coupon Management",
   "menu.Area Management": "Area Management",

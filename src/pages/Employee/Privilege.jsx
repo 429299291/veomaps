@@ -28,7 +28,7 @@ class Privilege extends PureComponent {
   state = {
     selectedRoleId: null,
     selectedRolePrivileges: null,
-    checkBoxState: {}
+    checkBoxState: {} //{groupName: {"method url": {isChecked: true/false, id: number}}}}
   };
 
   componentDidMount() {
@@ -36,12 +36,13 @@ class Privilege extends PureComponent {
     this.handleGetPrivileges();
   }
 
-  handleGetRoles = () => {
+  handleGetRoles = onSuccess => {
     const { dispatch } = this.props;
 
     dispatch({
       type: "roles/get",
-      payload: {}
+      payload: {},
+      onSuccess: onSuccess
     });
   };
 
@@ -55,37 +56,41 @@ class Privilege extends PureComponent {
   };
 
   handleSubmit = e => {
-    e.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        const { dispatch } = this.props;
+    const { checkBoxState } = this.state;
 
-        const roleId = values.roleId;
+    const { dispatch } = this.props;
 
-        delete values.roleId;
+    const privilegeIds = [];
 
-        const validPrivilegeIds = Object.keys(values).filter(
-          key => values[key]
-        );
+    const hash = {};
 
-        console.log(roleId);
+    Object.keys(checkBoxState).map(groupName => {
+      Object.keys(checkBoxState[groupName]).map(url => {
+        const isChecked = checkBoxState[groupName][url].isChecked;
+        const privilegeId = checkBoxState[groupName][url].id;
 
-        console.log(validPrivilegeIds);
+        if (isChecked && !hash[privilegeId]) {
+          privilegeIds.push(privilegeId);
+          hash[privilegeId] = true;
+        }
+      });
+    });
 
-        // dispatch({
-        //   type: "privileges/updateRolePrivileges",
-        //   roleId: values.roleId,
-        //   privilegeIds: validPrivilegeIds
-        // });
+    console.log(privilegeIds);
 
-        //console.log('Received values of form: ', values);
-      }
+    dispatch({
+      type: "privileges/updateRolePrivileges",
+      roleId: this.state.selectedRoleId,
+      privilegeIds: privilegeIds,
+      onSuccess: () =>
+        this.handleGetRoles(roles =>
+          this.handleRoleChange(this.state.selectedRoleId, roles)
+        )
     });
   };
 
-  handleRoleChange = roleId => {
-    const { roles } = this.props;
-    const role = roles.data.filter(role => role.id === roleId)[0];
+  handleRoleChange = (roleId, roles) => {
+    const role = roles.filter(role => role.id === roleId)[0];
 
     const privileges = role.privileges;
 
@@ -95,12 +100,61 @@ class Privilege extends PureComponent {
             result[`${privilege.method} ${privilege.url}`] = privilege;
             return result;
           }, {})
-        : [];
+        : {};
+
+    const urlToPrivilegeIds = this.props.privileges.data.reduce(
+      (result, privilege) => {
+        result[`${privilege.method} ${privilege.url}`] = privilege.id;
+        return result;
+      },
+      {}
+    );
+
+    const checkBoxState = {};
+
+    Object.keys(UrlToPrivilege).map(groupName => {
+      checkBoxState[groupName] = {};
+      Object.keys(UrlToPrivilege[groupName]).map(url => {
+        checkBoxState[groupName][url] = {
+          isChecked: !!selectedRolePrivileges[url],
+          id: urlToPrivilegeIds[url]
+        };
+      });
+    });
 
     this.setState({
       selectedRoleId: roleId,
-      selectedRolePrivileges: selectedRolePrivileges
+      selectedRolePrivileges: selectedRolePrivileges,
+      checkBoxState: checkBoxState
     });
+  };
+
+  handleGroupCheckBoxChange = (isChecked, groupName) => {
+    const groupDetail = this.state.checkBoxState[groupName];
+
+    if (groupDetail) {
+      //change all checkbox in group to value of group checkbox
+      Object.keys(groupDetail).map(
+        key => (groupDetail[key].isChecked = isChecked)
+      );
+
+      //reset group state
+
+      const newCheckBoxState = Object.assign({}, this.state.checkBoxState);
+
+      this.setState(prevState => ({
+        ...prevState,
+        checkBoxState: newCheckBoxState
+      }));
+    }
+  };
+
+  handleSubPrivilegeCheckBoxChange = (value, groupName, url) => {
+    const checkBoxState = Object.assign({}, this.state.checkBoxState);
+
+    checkBoxState[groupName][url].isChecked = value;
+
+    this.setState({ checkBoxState: checkBoxState });
   };
 
   render() {
@@ -108,115 +162,80 @@ class Privilege extends PureComponent {
 
     const { roles, privileges } = this.props;
 
-    const { selectedRoleId, selectedRolePrivileges } = this.state;
+    const {
+      selectedRoleId,
+      selectedRolePrivileges,
+      checkBoxState
+    } = this.state;
 
     return (
       <PageHeaderWrapper title="Privilege List">
         <Card bordered={false}>
-          <Form onSubmit={this.handleSubmit} className="login-form">
-            <FormItem>
-              {getFieldDecorator("roleId", {
-                rules: [{ required: true, message: "Please select a role!" }],
-                onChange: roleId =>
-                  this.setState(
-                    { selectedRoleId: null, selectedRolePrivileges: null },
-                    () => this.handleRoleChange(roleId)
-                  )
-              })(
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  {roles.data.map(role => (
-                    <Option key={role.id} value={role.id}>
-                      {role.name}
-                    </Option>
-                  ))}
-                </Select>
-              )}
-            </FormItem>
+          <Select
+            placeholder="select"
+            style={{ width: "100%" }}
+            onChange={value =>
+              this.handleRoleChange(value, this.props.roles.data)
+            }
+          >
+            {roles.data.map(role => (
+              <Option key={role.id} value={role.id}>
+                {role.name}
+              </Option>
+            ))}
+          </Select>
 
-            {selectedRolePrivileges &&
-              Object.keys(UrlToPrivilege).map(groupName => {
-                const group = [];
-
-                let isAllChecked = true;
-
-                const fieldsValue = this.props.form.getFieldsValue();
-
-                const configs = Object.keys(UrlToPrivilege[groupName]).map(
-                  url => {
-                    const isRoleHasPrivilege = !!selectedRolePrivileges[url];
-                    const privilegeDetail = this.props.privileges.data.filter(
-                      p => url === `${p.method} ${p.url}`
-                    )[0];
-
-                    isAllChecked = isAllChecked && isRoleHasPrivilege;
-
-                    if (!privilegeDetail) {
-                      message.error(url + "is wrong in UrlToPrivilege!");
-                    }
-
-                    group.push(privilegeDetail.id);
-                    return {
-                      privilegeId: privilegeDetail.id,
-                      initialValue: isRoleHasPrivilege,
-                      name: UrlToPrivilege[groupName][url]
-                    };
+          {selectedRolePrivileges &&
+            Object.keys(checkBoxState).map(groupName => {
+              return (
+                <Card
+                  key={groupName}
+                  style={{ marginBottom: "1em" }}
+                  title={
+                    <Checkbox
+                      onChange={e =>
+                        this.handleGroupCheckBoxChange(
+                          e.target.checked,
+                          groupName
+                        )
+                      }
+                      checked={Object.keys(checkBoxState[groupName]).reduce(
+                        (result, key) =>
+                          checkBoxState[groupName][key].isChecked && result,
+                        true
+                      )}
+                    >
+                      {groupName}
+                    </Checkbox>
                   }
-                );
+                >
+                  {Object.keys(checkBoxState[groupName]).map(url => {
+                    const name = UrlToPrivilege[groupName][url];
 
-                const isCheckboxTouched =
-                  Object.keys(fieldsValue).filter(key => group.includes(key))
-                    .length === group.length;
+                    const checked = checkBoxState[groupName][url].isChecked;
 
-                if (isCheckboxTouched) {
-                  isAllChecked = group.reduce(
-                    (result, key) => result && !!fieldsValue[key],
-                    true
-                  );
-                }
-
-                return (
-                  <Card
-                    key={groupName}
-                    style={{ marginBottom: "1em" }}
-                    title={
+                    return (
                       <Checkbox
+                        key={checkBoxState[groupName][url].id}
+                        checked={checked}
                         onChange={e =>
-                          group.map(id => {
-                            const fieldValue = {};
-                            fieldValue[id] = e.target.checked;
-                            this.props.form.setFieldsValue(fieldValue);
-                          })
+                          this.handleSubPrivilegeCheckBoxChange(
+                            e.target.checked,
+                            groupName,
+                            url
+                          )
                         }
-                        checked={isAllChecked}
                       >
-                        {groupName}
+                        {name}
                       </Checkbox>
-                    }
-                  >
-                    {configs.map(config => {
-                      const { name, privilegeId, initialValue } = config;
-
-                      return (
-                        <FormItem
-                          key={privilegeId}
-                          style={{ marginBottom: "0.5em", marginLeft: "2em" }}
-                        >
-                          {getFieldDecorator(privilegeId + "", {
-                            valuePropName: "checked",
-                            initialValue: initialValue
-                          })(<Checkbox>{name}</Checkbox>)}
-                        </FormItem>
-                      );
-                    })}
-                  </Card>
-                );
-              })}
-            <FormItem>
-              <Button type="primary" htmlType="submit">
-                Save
-              </Button>
-            </FormItem>
-          </Form>
+                    );
+                  })}
+                </Card>
+              );
+            })}
+          <FormItem>
+            <Button onClick={this.handleSubmit}>Save</Button>
+          </FormItem>
         </Card>
       </PageHeaderWrapper>
     );

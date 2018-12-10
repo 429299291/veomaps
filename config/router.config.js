@@ -212,6 +212,11 @@ export default [
             path: "/employee-management/privilege",
             name: "Privilege Management",
             component: "./Employee/Privilege"
+          },
+          {
+            path: "/employee-management/admin",
+            name: "Admin Management",
+            component: "./Employee/Admin"
           }
         ]
       },

@@ -1,26 +1,26 @@
 import {
-  getAdminRoles,
-  getRoleDetail,
-  createRole,
-  removeRole,
-  updateRole
-} from "@/services/role";
+  getAdmins,
+  getAdminDetail,
+  createAdmin,
+  removeAdmin,
+  updateAdmin,
+  updateAdminPassword
+} from "@/services/admin";
 import { message } from "antd";
 
 export default {
-  namespace: "roles",
+  namespace: "admins",
 
   state: {
-    total: 0,
     data: []
   },
 
   effects: {
     *get({ payload, onSuccess }, { call, put }) {
-      const response = yield call(getAdminRoles, payload);
+      const response = yield call(getAdmins, payload);
 
       if (Array.isArray(response)) {
-        response.map(role => (role.key = role.id));
+        response.map(admin => (admin.key = admin.id));
       }
 
       if (typeof onSuccess === "function") {
@@ -33,7 +33,18 @@ export default {
       });
     },
     *update({ id, payload, onSuccess, onError }, { call, put }) {
-      const response = yield call(updateRole, id, payload); // put
+      const response = yield call(updateAdmin, id, payload); // put
+
+      if (response) {
+        message.success(`Add Success, ID : ${response}`);
+        onSuccess && onSuccess();
+      } else {
+        message.error(`Add Fail.`);
+        onError && onError();
+      }
+    },
+    *updatePassword({ id, newPassword, onSuccess, onError }, { call, put }) {
+      const response = yield call(updateAdminPassword, id, newPassword); // put
 
       if (response) {
         message.success(`Add Success, ID : ${response}`);
@@ -44,7 +55,7 @@ export default {
       }
     },
     *remove({ id, payload, onSuccess, onError }, { call, put }) {
-      const response = yield call(removeRole, id); // delete
+      const response = yield call(removeAdmin, id); // delete
 
       if (response) {
         message.success(`Add Success, ID : ${response}`);
@@ -55,7 +66,7 @@ export default {
       }
     },
     *add({ payload, onSuccess, onError }, { call, put }) {
-      const response = yield call(createRole, payload); // delete
+      const response = yield call(createAdmin, payload); // delete
 
       if (response) {
         message.success(`Add Success, ID : ${response}`);
@@ -69,15 +80,9 @@ export default {
 
   reducers: {
     save(state, action) {
-      const roleNames = [];
-
-      action.payload.map(role => (roleNames[role.id] = role.name));
-
       return {
         ...state,
-        data: action.payload,
-        roleNames: roleNames,
-        total: action.payload.length
+        data: action.payload
       };
     }
   }

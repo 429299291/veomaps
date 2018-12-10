@@ -261,6 +261,16 @@ let routes = [
             exact: true
           },
           {
+            path: "/employee-management/admin",
+            name: "Admin Management",
+            component: dynamic({
+              loader: () => import("../Employee/Admin"),
+              loading: require("/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index")
+                .default
+            }),
+            exact: true
+          },
+          {
             component: () =>
               React.createElement(
                 require("/Users/zhuangenze/Desktop/manhattan-admin-web/node_modules/umi-build-dev/lib/plugins/404/NotFound.js")

@@ -43,5 +43,22 @@ export default {
     "PUT /api/admins/areas/{area_id}": "update.area.detail",
     "GET /api/admins/areas": "get.areas",
     "POST /api/admins/areas": "create.area"
+  },
+  "Coupon Management": {
+    "DELETE /api/admins/coupons/{couponId}": "delete.coupon",
+    "PUT /api/admins/coupons/{couponId}": "update.coupon.detail",
+    "GET /api/admins/coupons": "get.coupons",
+    "GET /api/admins/coupons/customers/{customerId}": "get.customer.coupons",
+    "DELETE /api/admins/coupons/customers/{customerCouponId}":
+      "delete.customer.coupons",
+    "POST /api/admins/coupons": "create.coupon",
+    "POST /api/admins/coupons/{couponId}/customers/{customerId}":
+      "assign.coupon.to.customer"
+  },
+  "Membership Management": {
+    "DELETE /api/admins/memberships/{membershipId}": "delete.membership",
+    "PUT /api/admins/memberships/{membershipId}": "update.membership.detail",
+    "GET /api/admins/memberships": "get.memberships",
+    "POST /api/admins/memberships": "create.membership"
   }
 };

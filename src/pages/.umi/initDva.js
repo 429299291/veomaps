@@ -14,6 +14,7 @@ app.use(createLoading());
   app.use(plugin);
 });
 
+app.model({ namespace: 'admin', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/admin.js').default) });
 app.model({ namespace: 'area', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/area.js').default) });
 app.model({ namespace: 'coupon', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/coupon.js').default) });
 app.model({ namespace: 'customer', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/customer.js').default) });
