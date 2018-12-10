@@ -23,5 +23,5 @@ chrome-user-data
 *.swp
 *.swo
 package-lock.json
-./temp/
+.temp/
 src/pages/.umi
