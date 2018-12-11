@@ -160,6 +160,7 @@ export default {
   "app.analysis.per-capita-search": "Per Capita Search",
   "app.analysis.online-top-search": "Customer Ride ranking",
   "app.analysis.the-proportion-of-sales": "The Proportion Of Rides",
+  "menu.Price Management": "Price Management",
   "app.analysis.channel.all": "ALL",
   "app.analysis.channel.online": "Online",
   "app.analysis.channel.stores": "Stores",

@@ -322,7 +322,7 @@ class CustomerDetail extends PureComponent {
             icon={<Icon type="question-circle-o" style={{ color: "red" }} />}
             onConfirm={() => this.handleDeleteCoupon(record.id)}
           >
-            {authority.includes("delete customer coupon") && (
+            {authority.includes("delete.customer.coupon") && (
               <a href="#" style={{ color: "red" }}>
                 Delete
               </a>

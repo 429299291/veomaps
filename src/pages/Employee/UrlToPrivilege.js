@@ -60,5 +60,11 @@ export default {
     "PUT /api/admins/memberships/{membershipId}": "update.membership.detail",
     "GET /api/admins/memberships": "get.memberships",
     "POST /api/admins/memberships": "create.membership"
+  },
+  "Price Management": {
+    "DELETE /api/admins/prices/{id}": "delete.price",
+    "PUT /api/admins/prices/{id}": "update.price.detail",
+    "GET /api/admins/prices": "get.prices",
+    "POST /api/admins/prices": "create.price"
   }
 };

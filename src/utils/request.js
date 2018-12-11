@@ -4,9 +4,9 @@ import router from "umi/router";
 import hash from "hash.js";
 import { isAntdPro } from "./utils";
 
-const urlPrefix = "https://localhost:8444/api";
+//const urlPrefix = "https://localhost:8444/api";
 //const urlPrefix = "https://develop.veoride.com:8444/api"
-//const urlPrefix = "https://manhattan-host.veoride.com:8444/api"
+const urlPrefix = "https://manhattan-host.veoride.com:8444/api"
 
 export const ACCESS_TOKEN = "accessToken";
 
@@ -16,7 +16,7 @@ const codeMessage = {
   202: "一个请求已经进入后台排队（异步任务）。",
   204: "删除数据成功。",
   400: "发出的请求有错误，服务器没有进行新建或修改数据的操作。",
-  401: "用户没有权限（令牌、用户名、密码错误）。",
+  401: "User don't have permission（token、username、password）。",
   403: "用户得到授权，但是访问是被禁止的。",
   404: "发出的请求针对的是不存在的记录，服务器没有进行操作。",
   406: "请求的格式不可得。",
@@ -34,7 +34,7 @@ const checkStatus = response => {
   }
   const errortext = codeMessage[response.status] || response.statusText;
   notification.error({
-    message: `请求错误 ${response.status}: ${response.url}`,
+    message: `Request Error ${response.status}: ${response.url}`,
     description: errortext
   });
   const error = new Error(errortext);
@@ -90,6 +90,7 @@ export default function request(url, options) {
   const newOptions = Object.assign({}, defaults, options);
 
   return fetch(url, newOptions)
+    .then(checkStatus)
     .then(response =>
       response.json().then(json => {
         if (!response.ok || (json.code && json.code != 0)) {
@@ -104,6 +105,7 @@ export default function request(url, options) {
         window.g_app._store.dispatch({
           type: "login/logout"
         });
+        router.push("/user/login");
         return;
       }
       // environment should not be used

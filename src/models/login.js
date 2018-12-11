@@ -22,8 +22,6 @@ export default {
       if (response && response.accessToken) {
         localStorage.setItem(ACCESS_TOKEN, response.accessToken);
 
-        setAuthority("admin");
-        reloadAuthorized();
         yield put(routerRedux.replace("/"));
       } else {
         notification.error({

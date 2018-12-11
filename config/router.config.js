@@ -23,7 +23,7 @@ export default [
         path: "/dashboard",
         name: "dashboard",
         icon: "dashboard",
-        authority: ["admin"],
+        authority: "get.dashboard",
         routes: [
           {
             path: "/dashboard/analysis",
@@ -202,6 +202,7 @@ export default [
         path: "/price-management/",
         name: "Price Management",
         icon: "wallet",
+        authority: "get.price",
         component: "./Price/Price"
       },
       {
