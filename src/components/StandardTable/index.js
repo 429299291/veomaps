@@ -94,9 +94,9 @@ class StandardTable extends PureComponent {
             <Alert
               message={
                 <Fragment>
-                  已选择{" "}
+                  Selected{" "}
                   <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a>{" "}
-                  项&nbsp;&nbsp;
+                  Item&nbsp;&nbsp;
                   {needTotalList.map(item => (
                     <span style={{ marginLeft: 8 }} key={item.dataIndex}>
                       {item.title}
@@ -110,7 +110,7 @@ class StandardTable extends PureComponent {
                     onClick={this.cleanSelectedKeys}
                     style={{ marginLeft: 24 }}
                   >
-                    清空
+                    Clear
                   </a>
                 </Fragment>
               }

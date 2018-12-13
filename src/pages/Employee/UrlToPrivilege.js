@@ -30,7 +30,7 @@ export default {
   "Geo Management": {
     "GET /api/admins/geo/fences": "get.fences",
     "GET /api/admins/geo/area_center": "get.area.center",
-    "DELETE /api/admins/geo/fences/{fenceId}": "delete.fence",
+    "DELETE /api/admins/geo/fences/{fenceId}":  "delete.fence",
     "POST /api/admins/geo/fences": "create.fence",
     "PUT /api/admins/geo/fences/{fenceId}": "update.fence",
     "POST /api/admins/geo/area_center": "create.center",
@@ -66,5 +66,11 @@ export default {
     "PUT /api/admins/prices/{id}": "update.price.detail",
     "GET /api/admins/prices": "get.prices",
     "POST /api/admins/prices": "create.price"
+  },
+  "Vehicle Error Management": {
+    "DELETE /api/admins/errors/{id}": "delete.error",
+    "PUT /api/admins/errors/{id}": "update.error.detail",
+    "GET /api/admins/errors": "get.errors",
+    "POST /api/admins/errors/batch_pass": "batch.pass.error"
   }
 };

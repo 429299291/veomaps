@@ -145,14 +145,19 @@ export default [
         name: "Vehicle Management",
         routes: [
           {
-            path: "/vehicle-management/",
+            path: "/vehicle-management",
             name: "Vehicle List",
             component: "./Vehicle/Vehicle"
           },
           {
-            path: "/vehicle-management/ride-management",
+            path: "/vehicle-management/ride",
             name: "Riding History",
             component: "./Vehicle/Ride"
+          },
+          {
+            path: "/vehicle-management/error",
+            name: "Error Report",
+            component: "./Vehicle/Error"
           }
         ]
       },

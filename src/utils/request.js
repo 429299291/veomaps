@@ -4,9 +4,9 @@ import router from "umi/router";
 import hash from "hash.js";
 import { isAntdPro } from "./utils";
 
-//const urlPrefix = "https://localhost:8444/api";
+const urlPrefix = "https://localhost:8444/api";
 //const urlPrefix = "https://develop.veoride.com:8444/api"
-const urlPrefix = "https://manhattan-host.veoride.com:8444/api"
+//const urlPrefix = "https://manhattan-host.veoride.com:8444/api";
 
 export const ACCESS_TOKEN = "accessToken";
 
@@ -105,6 +105,7 @@ export default function request(url, options) {
         window.g_app._store.dispatch({
           type: "login/logout"
         });
+        localStorage.removeItem(ACCESS_TOKEN);
         router.push("/user/login");
         return;
       }
@@ -121,37 +122,4 @@ export default function request(url, options) {
         router.push("/exception/404");
       }
     });
-
-  /* return fetch(url, newOptions)
-    .then(checkStatus)
-    .then(response => cachedSave(response, hashcode))
-    .then(response => {
-      // DELETE and 204 do not return data by default
-      // using .json will report an error.
-      if (newOptions.method === 'DELETE' || response.status === 204) {
-        return response.text();
-      }
-      return response.json();
-    })
-    .catch(e => {
-      const status = e.name;
-      if (status === 401) {
-        window.g_app._store.dispatch({
-          type: 'login/logout',
-        });
-        return;
-      }
-      // environment should not be used
-      if (status === 403) {
-        router.push('/exception/403');
-        return;
-      }
-      if (status <= 504 && status >= 500) {
-        router.push('/exception/500');
-        return;
-      }
-      if (status >= 404 && status < 422) {
-        router.push('/exception/404');
-      }
-    }); */
 }

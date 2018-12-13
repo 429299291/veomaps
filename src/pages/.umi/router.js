@@ -81,15 +81,21 @@ let routes = [
         "name": "Vehicle Management",
         "routes": [
           {
-            "path": "/vehicle-management/",
+            "path": "/vehicle-management",
             "name": "Vehicle List",
             "component": dynamic({ loader: () => import('../Vehicle/Vehicle'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
             "exact": true
           },
           {
-            "path": "/vehicle-management/ride-management",
+            "path": "/vehicle-management/ride",
             "name": "Riding History",
             "component": dynamic({ loader: () => import('../Vehicle/Ride'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
+            "exact": true
+          },
+          {
+            "path": "/vehicle-management/error",
+            "name": "Error Report",
+            "component": dynamic({ loader: () => import('../Vehicle/Error'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
             "exact": true
           },
           {
@@ -154,6 +160,7 @@ let routes = [
         "path": "/price-management/",
         "name": "Price Management",
         "icon": "wallet",
+        "authority": "get.price",
         "component": dynamic({ loader: () => import('../Price/Price'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
         "exact": true
       },

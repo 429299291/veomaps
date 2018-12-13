@@ -161,6 +161,7 @@ export default {
   "app.analysis.online-top-search": "Customer Ride ranking",
   "app.analysis.the-proportion-of-sales": "The Proportion Of Rides",
   "menu.Price Management": "Price Management",
+  "menu.Vehicle Management.Error Report": "Error Report",
   "app.analysis.channel.all": "ALL",
   "app.analysis.channel.online": "Online",
   "app.analysis.channel.stores": "Stores",

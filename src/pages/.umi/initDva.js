@@ -18,6 +18,7 @@ app.model({ namespace: 'admin', ...(require('/Users/zhuangenze/Desktop/manhattan
 app.model({ namespace: 'area', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/area.js').default) });
 app.model({ namespace: 'coupon', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/coupon.js').default) });
 app.model({ namespace: 'customer', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/customer.js').default) });
+app.model({ namespace: 'error', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/error.js').default) });
 app.model({ namespace: 'geo', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/geo.js').default) });
 app.model({ namespace: 'global', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/global.js').default) });
 app.model({ namespace: 'list', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/list.js').default) });
