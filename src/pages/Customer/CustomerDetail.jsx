@@ -392,10 +392,27 @@ class CustomerDetail extends PureComponent {
     }
   ];
 
+
+  customerPaymentColumn = [
+    {
+      title: "Amount",
+      dataIndex: "amount"
+    },
+    {
+      title: "Created",
+      dataIndex: "created",
+      render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
+    }
+  ];
+
+
+
+
   componentDidMount = () => {
     this.handleGetCustomerCoupons(this.props.customerId);
     this.handleGetCustomerDetail(this.props.customerId);
     this.handleGetCustomerRides(this.props.customerId);
+    this.handleGetCustomerPayments(this.props.customerId);
   };
 
   handleEndRideVisible = (flag, record) => {
@@ -442,6 +459,15 @@ class CustomerDetail extends PureComponent {
       type: "coupons/getCustomerCoupons",
       payload: customerId,
       onSuccess: response => this.setState({ customerCoupons: response })
+    });
+  };
+
+  handleGetCustomerPayments = customerId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "customers/customerPayments",
+      payload: customerId,
+      onSuccess: response => this.setState({ customerPayments: response })
     });
   };
 
@@ -493,9 +519,10 @@ class CustomerDetail extends PureComponent {
     const {
       customerCoupons,
       customerDetail,
+      customerPayments,
       customerRides,
       isEndRideVisible,
-      selectedRide
+      selectedRide,
     } = this.state;
 
     const {
@@ -571,6 +598,14 @@ class CustomerDetail extends PureComponent {
                   ride={selectedRide}
                 />
               )}
+            </Card>
+
+            <Card title="Payment History" style={{ marginTop: "2em" }}>
+              <Table
+                dataSource={customerPayments}
+                columns={this.customerPaymentColumn}
+                scroll={{ x: 1300 }}
+              />
             </Card>
           </div>
         )}

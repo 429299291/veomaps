@@ -4,7 +4,8 @@ import {
   getCustomerDetail,
   createCustomer,
   removeCustomer,
-  updateCustomer
+  updateCustomer,
+  getCustomerPayments
 } from "@/services/customer";
 import { message } from "antd";
 
@@ -31,6 +32,15 @@ export default {
         data: Array.isArray(data) ? data : [],
         total: total
       });
+    },
+    *customerPayments({ payload, onSuccess }, { call, put }) {
+      const response = yield call(getCustomerPayments, payload);
+
+      if (Array.isArray(response)) {
+        response.map(coupon => (coupon.key = coupon.id));
+      }
+
+      onSuccess && onSuccess(Array.isArray(response) ? response : []);
     },
     *getCustomerDetail({ payload, customerId, onSuccess }, { call, put }) {
       const data = yield call(getCustomerDetail, customerId);

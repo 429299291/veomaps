@@ -7,6 +7,15 @@ export async function getAdminCustomers(params) {
   });
 }
 
+export async function getCustomerPayments(customerId) {
+  return request(`/admins/customers/${customerId}/charge_history`, {
+    method: "GET"
+  });
+}
+
+
+
+
 export async function getAdminCustomersTotal(params) {
   return request(
     `/admins/customers/count?${stringify(params, { indices: false })}`,
