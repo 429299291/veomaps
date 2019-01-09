@@ -26,7 +26,16 @@ export default {
 
       if (isArray) {
         //sort fences by fencetype so geo fence always be the first one to render so other fences in geofence will have higher priority of click event.
-        response.sort((a, b) => a.fenceType - b.fenceType);
+        //geoFence 0 and subGeoFence 5 should always has priority, so the response should be organized into form like [0,5,...]
+        response.sort((a, b) => {
+
+          a = a.fenceType;
+          b = b.fenceType;
+
+          const aP =  a === 5 ? 1 : a === 1  ? 5 : a;
+          const bP =  b === 5 ? 1 : b === 1  ? 5 : b;
+          return aP - bP;
+        });
       }
 
       yield put({

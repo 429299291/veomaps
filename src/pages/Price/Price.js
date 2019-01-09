@@ -107,6 +107,21 @@ const CreateForm = Form.create()(props => {
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
+        label="Initial Charge"
+      >
+        {form.getFieldDecorator("chargeInitial", {
+          rules: [
+            {
+              required: true,
+              message: "Initial Charge is required"
+            }
+          ],
+          initialValue: 0
+        })(<InputNumber placeholder="Please Input" />)}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
         label="Vehicle Type"
       >
         {form.getFieldDecorator("vehicleType", {})(
@@ -203,6 +218,21 @@ const UpdateForm = Form.create()(props => {
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
+        label="Initial Charge"
+      >
+        {form.getFieldDecorator("chargeInitial", {
+          rules: [
+            {
+              required: true,
+              message: "Initial Charge is required"
+            }
+          ],
+          initialValue: record.chargeInitial
+        })(<InputNumber placeholder="Please Input" />)}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
         label="Vehicle Type"
       >
         {form.getFieldDecorator("vehicleType", {
@@ -260,7 +290,11 @@ class Price extends PureComponent {
     {
       title: "Vehicle Type",
       dataIndex: "vehicleType",
-      render: data => <span>{data ? vehicleType[data] : "general"}</span>
+      render: data => <span>{vehicleType[data]}</span>
+    },
+    {
+      title: "Initial Charge",
+      dataIndex: "chargeInitial"
     },
     {
       title: "Operation",

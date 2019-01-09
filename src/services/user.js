@@ -20,3 +20,9 @@ export async function getMe() {
     method: "GET"
   });
 }
+
+export async function updateToken() {
+  return request("/admins/auth/new_token", {
+    method: "GET"
+  });
+}

@@ -11,7 +11,10 @@ export default {
       "add.coupon.to.customer",
     "PUT /api/admins/rides/{rideId}/end": "end.customer.ride",
     "DELETE /api/admins/coupons/customers/{customerCouponId}":
-      "delete.customer.coupon"
+      "delete.customer.coupon",
+    "GET /api/admins/customers/{customerId}/charge_history" : "get.customer.payment",
+    "GET /api/admins/memberships/customers/{customerId}/available" : "get.customer.available.membership",
+    "POST /api/admins/memberships/customers/{customerId}/buy" : "customer.buy.membership"
   },
   "Vehicle List": {
     "GET /api/admins/vehicles": "get.vehicles",
@@ -68,9 +71,26 @@ export default {
     "POST /api/admins/prices": "create.price"
   },
   "Vehicle Error Management": {
-    "DELETE /api/admins/errors/{id}": "delete.error",
-    "PUT /api/admins/errors/{id}": "update.error.detail",
+    "DELETE /api/admins/errors/{errorId}": "delete.error",
+    "PUT /api/admins/errors/{errorId}": "update.error.detail",
     "GET /api/admins/errors": "get.errors",
     "POST /api/admins/errors/batch_pass": "batch.pass.error"
+  },
+  "Role Management": {
+    "DELETE /api/admins/roles/{roleId}": "delete.role",
+    "PUT /api/admins/roles/{roleId}": "update.role.detail",
+    "GET /api/admins/roles/details": "get.roles.details",
+    "POST /api/admins/roles": "add.role"
+  },
+  "Privilege Management": {
+    "GET /api/admins/privileges": "get.privileges",
+    "PUT /api/admins/roles/{roleId}/update_privileges": "update.role.privilege",
+  },
+  "Admin Management": {
+    "DELETE /api/admins/{adminId}": "delete.admin",
+    "PUT /api/admins/{adminId}": "update.admin.detail",
+    "POST /api/admins/{adminId}/update_password": "update.admin.password",
+    "GET /api/admins": "get.admins",
+    "POST /api/admins/register": "add.admin"
   }
 };

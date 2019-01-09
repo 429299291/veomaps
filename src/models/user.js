@@ -38,6 +38,8 @@ export default {
           return result;
         }, []);
 
+        permissions.push("basic.admin");
+
         setAuthority(permissions);
         reloadAuthorized();
       }

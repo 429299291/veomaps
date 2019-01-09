@@ -33,6 +33,10 @@ import {
   withScriptjs
 } from "react-google-maps";
 
+import { getAuthority } from "@/utils/authority";
+
+const authority = getAuthority();
+
 const FormItem = Form.Item;
 const { Step } = Steps;
 const { TextArea } = Input;
@@ -289,16 +293,26 @@ class Ride extends PureComponent {
     const { filterCriteria } = this.state;
 
     if (!!flag) {
-      dispatch({
-        type: "rides/getRoute",
-        rideId: record.id,
-        onSuccess: path =>
-          this.setState({
-            selectedRidePath: path,
-            detailModalVisible: true,
-            selectedRecord: record
-          })
-      });
+
+      if (authority.includes("get.ride.route")) {
+        dispatch({
+          type: "rides/getRoute",
+          rideId: record.id,
+          onSuccess: path =>
+            this.setState({
+              selectedRidePath: path,
+              detailModalVisible: true,
+              selectedRecord: record
+            })
+        });
+      } else {
+        this.setState({
+          detailModalVisible: true,
+          selectedRecord: record
+        });
+      }
+
+
     } else {
       this.setState({
         detailModalVisible: false,

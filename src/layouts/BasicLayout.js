@@ -96,6 +96,9 @@ class BasicLayout extends React.PureComponent {
 
   componentDidMount() {
     const { dispatch } = this.props;
+
+
+
     dispatch({
       type: "user/fetchCurrent"
     });
@@ -105,6 +108,10 @@ class BasicLayout extends React.PureComponent {
 
     dispatch({
       type: "areas/get"
+    });
+
+    dispatch({
+      type: "login/updateToken"
     });
 
     dispatch({

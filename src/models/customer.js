@@ -5,7 +5,10 @@ import {
   createCustomer,
   removeCustomer,
   updateCustomer,
-  getCustomerPayments
+  getCustomerPayments,
+  updateMembership,
+  getMembership,
+  getAvailableMemberships
 } from "@/services/customer";
 import { message } from "antd";
 
@@ -49,6 +52,29 @@ export default {
         onSuccess(data);
       } else {
         message.error(`Fail!`);
+      }
+    },
+    *updateMembership({  customerId, params, onSuccess }, { call, put }) {
+      const data = yield call(updateMembership, customerId, params);
+
+      if (data) {
+        onSuccess(data);
+      } else {
+        message.error(`Fail!`);
+      }
+    },
+    *getMembership({  customerId, onSuccess }, { call, put }) {
+      const data = yield call(getMembership, customerId);
+
+      if (data) {
+        onSuccess(data);
+      }
+    },
+    *getAvailableMemberships({  customerId, onSuccess }, { call, put }) {
+      const data = yield call(getAvailableMemberships, customerId);
+
+      if (data) {
+        onSuccess(data);
       }
     },
     *add({ payload }, { call, put }) {

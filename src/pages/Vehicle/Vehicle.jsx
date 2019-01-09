@@ -26,6 +26,8 @@ import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
 import styles from "./Vehicle.less";
 import { roundTo2Decimal } from "../../utils/mathUtil";
+import CustomerDetail from "../Customer/CustomerDetail";
+import VehicleDetail from "./VehicleDetail";
 
 const FormItem = Form.Item;
 const { Step } = Steps;
@@ -661,10 +663,9 @@ class Vehicle extends PureComponent {
   render() {
     const { vehicles, areas, loading } = this.props;
     const {
-      modalVisible,
+      createModalVisible,
       updateModalVisible,
       detailModalVisible,
-      deleteModalVisible,
       selectedRecord,
       filterCriteria
     } = this.state;
@@ -710,7 +711,7 @@ class Vehicle extends PureComponent {
         </Card>
         <CreateForm
           {...parentMethods}
-          modalVisible={modalVisible}
+          modalVisible={createModalVisible}
           areas={areas.data}
         />
 
@@ -721,19 +722,32 @@ class Vehicle extends PureComponent {
           areas={areas.data}
         />
 
-        {selectedRecord &&
-          detailModalVisible && (
-            <Modal
-              destroyOnClose
-              title="Detail"
-              visible={detailModalVisible}
-              onCancel={() => this.handleDetailModalVisible()}
-            >
-              {Object.keys(selectedRecord).map(key => (
-                <p key={key}>{`${key} : ${selectedRecord[key]}`}</p>
-              ))}
-            </Modal>
-          )}
+        {/*{selectedRecord &&*/}
+          {/*detailModalVisible && (*/}
+            {/*<Modal*/}
+              {/*destroyOnClose*/}
+              {/*title="Detail"*/}
+              {/*visible={detailModalVisible}*/}
+              {/*onCancel={() => this.handleDetailModalVisible()}*/}
+            {/*>*/}
+              {/*{Object.keys(selectedRecord).map(key => (*/}
+                {/*<p key={key}>{`${key} : ${selectedRecord[key]}`}</p>*/}
+              {/*))}*/}
+            {/*</Modal>*/}
+          {/*)}*/}
+
+
+        {detailModalVisible && (
+          <VehicleDetail
+            isVisible={detailModalVisible}
+            handleDetailVisible={this.handleDetailModalVisible}
+            vehicleId={selectedRecord.id}
+            handleGetVehicles={this.handleGetVehicles}
+            record = {selectedRecord}
+          />
+        )}
+
+
       </PageHeaderWrapper>
     );
   }

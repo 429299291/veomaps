@@ -21,7 +21,8 @@ import {
   Steps,
   Radio,
   Popconfirm,
-  Table
+  Table,
+  Checkbox
 } from "antd";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 import { getAuthority } from "@/utils/authority";
@@ -207,6 +208,76 @@ const UpdateForm = Form.create()(props => {
   );
 });
 
+const MembershipForm = Form.create()(props => {
+  const { form, memberships, handleBuyMembership } = props;
+  const okHandle = () => {
+    if (form.isFieldsTouched())
+      form.validateFields((err, fieldsValue) => {
+        if (err) return;
+        form.resetFields();
+
+        //console.log(fieldsValue);
+
+        handleBuyMembership(fieldsValue);
+      });
+  };
+
+  return (
+    <div>
+
+      {memberships && (
+        <FormItem
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 15 }}
+          label="Membership"
+        >
+          {form.getFieldDecorator("membershipId", {
+            rules: [
+              {
+                required: true,
+                message: "You have pick a membership"
+              }
+            ]
+          })(
+            <Select placeholder="select" style={{ width: "100%" }}>
+              {memberships.map((membership, index) => (
+                <Option key={index} value={membership.id}>
+                  {"Title: " + membership.title + ", Free Minutes: " + membership.freeMinutes}
+                </Option>
+              ))}
+            </Select>
+          )}
+        </FormItem>
+      )}
+
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is AutoRenew">
+        {form.getFieldDecorator("autoRenew")(
+          <Checkbox />
+        )}
+      </FormItem>
+
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Paid By Balance">
+        {form.getFieldDecorator("paidWithBalance")(
+          <Checkbox />
+        )}
+      </FormItem>
+
+      <Row>
+        <Col>
+          <Button
+            icon="plus"
+            type="primary"
+            onClick={okHandle}
+            disabled={!form.isFieldsTouched()}
+          >
+            Update Customer
+          </Button>
+        </Col>
+      </Row>
+    </div>
+  );
+});
+
 const AddCouponForm = Form.create()(props => {
   const { form, coupons, handleAddCustomerCoupon } = props;
 
@@ -275,10 +346,11 @@ const AddCouponForm = Form.create()(props => {
   );
 });
 
-@connect(({ coupons, areas, loading }) => ({
+@connect(({ coupons, areas, loading, customers }) => ({
   areas,
   coupons,
-  loading: loading.models.geo
+  customers,
+  loading: loading.models.customers && loading.models.coupons && loading.models.areas
 }))
 class CustomerDetail extends PureComponent {
   state = {
@@ -287,7 +359,9 @@ class CustomerDetail extends PureComponent {
     customerDetail: null,
     customerRides: null,
     isEndRideVisible: false,
-    selectedRide: null
+    selectedRide: null,
+    customerMembership: null,
+    availableMemberships: null
   };
 
   customerCouponColumns = [
@@ -322,7 +396,7 @@ class CustomerDetail extends PureComponent {
             icon={<Icon type="question-circle-o" style={{ color: "red" }} />}
             onConfirm={() => this.handleDeleteCoupon(record.id)}
           >
-            {authority.includes("delete.customer.coupon") && (
+            {authority.includes("delete.customer.coupons") && (
               <a href="#" style={{ color: "red" }}>
                 Delete
               </a>
@@ -409,10 +483,14 @@ class CustomerDetail extends PureComponent {
 
 
   componentDidMount = () => {
-    this.handleGetCustomerCoupons(this.props.customerId);
-    this.handleGetCustomerDetail(this.props.customerId);
-    this.handleGetCustomerRides(this.props.customerId);
-    this.handleGetCustomerPayments(this.props.customerId);
+    const {customerId} = this.props;
+
+    this.handleGetCustomerCoupons(customerId);
+    this.handleGetCustomerDetail(customerId);
+    this.handleGetCustomerRides(customerId);
+    this.handleGetCustomerPayments(customerId);
+    this.handleGetCustomerMembership(customerId);
+    this.handleGetAvailableCustomerMemberships(customerId);
   };
 
   handleEndRideVisible = (flag, record) => {
@@ -515,6 +593,40 @@ class CustomerDetail extends PureComponent {
     });
   };
 
+
+  handleGetCustomerMembership = () => {
+    const { dispatch, customerId } = this.props;
+    dispatch({
+      type: "customers/getMembership",
+      customerId: customerId,
+      onSuccess: response => {
+        this.setState({customerMembership: response})
+      }
+    });
+  };
+
+  handleGetAvailableCustomerMemberships = () => {
+    const { dispatch, customerId } = this.props;
+    dispatch({
+      type: "customers/getAvailableMemberships",
+      customerId: customerId,
+      onSuccess: response => {
+        this.setState({availableMemberships: response})
+      }
+    });
+  };
+
+
+  handleBuyMembership = params => {
+    const { dispatch, customerId } = this.props;
+    dispatch({
+      type: "customers/updateMembership",
+      customerId: customerId,
+      params: params,
+      onSuccess: () => this.handleGetCustomerMembership()
+    });
+  }
+
   render() {
     const {
       customerCoupons,
@@ -523,6 +635,8 @@ class CustomerDetail extends PureComponent {
       customerRides,
       isEndRideVisible,
       selectedRide,
+      customerMembership,
+      availableMemberships
     } = this.state;
 
     const {
@@ -541,7 +655,7 @@ class CustomerDetail extends PureComponent {
     return (
       <Modal
         destroyOnClose
-        title="Add Coupon to Customer"
+        title="Customer Detail"
         visible={isVisible}
         onOk={() => handleDetailVisible(false)}
         onCancel={() => handleDetailVisible(false)}
@@ -572,7 +686,7 @@ class CustomerDetail extends PureComponent {
                   </Col>
                 </Row>
 
-                {authority.includes("add.coupon.to.customer") && (
+                {authority.includes("assign.coupon.to.customer") && (
                   <AddCouponForm
                     coupons={this.filterCouponsByAreaId(
                       coupons.data,
@@ -584,6 +698,7 @@ class CustomerDetail extends PureComponent {
               </Card>
             )}
 
+            {authority.includes("get.rides") &&
             <Card title="Customer Rides" style={{ marginTop: "2em" }}>
               <Table
                 dataSource={customerRides}
@@ -598,15 +713,32 @@ class CustomerDetail extends PureComponent {
                   ride={selectedRide}
                 />
               )}
-            </Card>
+            </Card> }
 
+            {authority.includes("get.customer.payment") &&
             <Card title="Payment History" style={{ marginTop: "2em" }}>
               <Table
                 dataSource={customerPayments}
                 columns={this.customerPaymentColumn}
                 scroll={{ x: 1300 }}
               />
+            </Card>}
+            {authority.includes("get.customer.available.membership") &&
+            <Card title="Membership" style={{ marginTop: "2em" }}>
+              {customerMembership && Object.keys(customerMembership).map(
+                (key, index) => <div key={index}>
+                  {`${key} :  ${customerMembership[key]}`}
+                </div>
+              )}
+              {authority.includes("customer.buy.membership") &&
+                <MembershipForm
+                  memberships={availableMemberships}
+                  handleBuyMembership={this.handleBuyMembership}
+                />
+              }
+
             </Card>
+            }
           </div>
         )}
       </Modal>

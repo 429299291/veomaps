@@ -33,6 +33,10 @@ const getValue = obj =>
 
 const intervals = ["Day", "Week", "Month", "Year"];
 
+import { getAuthority } from "@/utils/authority";
+
+const authority = getAuthority();
+
 const CreateForm = Form.create()(props => {
   const {
     modalVisible,
@@ -124,6 +128,19 @@ const CreateForm = Form.create()(props => {
             ))}
           </Select>
         )}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Priority"
+      >
+        {form.getFieldDecorator("priority", {
+          rules: [
+            {
+              required: true
+            }
+          ]
+        })(<InputNumber placeholder="Please Input" />)}
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
@@ -314,6 +331,16 @@ const UpdateForm = Form.create()(props => {
           </Select>
         )}
       </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Priority">
+        {form.getFieldDecorator("priority", {
+          rules: [
+            {
+              required: true
+            }
+          ],
+          initialValue: record.priority
+        })(<InputNumber placeholder="Please Input" />)}
+      </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
@@ -442,6 +469,10 @@ class Membership extends PureComponent {
       dataIndex: "freeMinutes"
     },
     {
+      title: "Priority",
+      dataIndex: "priority"
+    },
+    {
       title: "Renewable",
       dataIndex: "renewable",
       render: renewable => <span>{renewable ? "Yes" : "No"}</span>
@@ -460,19 +491,24 @@ class Membership extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>
-            Update
-          </a>
-          <Divider type="vertical" />
-          <Popconfirm
-            title="Are you Sure？"
-            icon={<Icon type="question-circle-o" style={{ color: "red" }} />}
-            onConfirm={() => this.handleDelete(record.id)}
-          >
-            <a href="#" style={{ color: "red" }}>
-              Delete
+          {authority.includes("update.membership.detail") &&
+            <a onClick={() => this.handleUpdateModalVisible(true, record)}>
+              Update
             </a>
-          </Popconfirm>
+          }
+          <Divider type="vertical" />
+          {authority.includes("delete.membership") &&
+            <Popconfirm
+              title="Are you Sure？"
+              icon={<Icon type="question-circle-o" style={{ color: "red" }}/>}
+              onConfirm={() => this.handleDelete(record.id)}
+            >
+
+              <a href="#" style={{ color: "red" }}>
+                Delete
+              </a>
+            </Popconfirm>
+          }
         </Fragment>
       )
     }
@@ -663,13 +699,16 @@ class Membership extends PureComponent {
               {this.renderSimpleForm()}
             </div>
             <div className={styles.tableListOperator}>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={() => this.handleCreateModalVisible(true)}
-              >
-                Add
-              </Button>
+              {authority.includes("create.membership") &&
+                <Button
+                  icon="plus"
+                  type="primary"
+                  onClick={() => this.handleCreateModalVisible(true)}
+                >
+                  Add
+                </Button>
+              }
+
             </div>
             <StandardTable
               loading={loading}

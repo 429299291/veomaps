@@ -16,6 +16,11 @@ import {
 } from "antd";
 import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
+
+import { getAuthority } from "@/utils/authority";
+
+const authority = getAuthority();
+
 const { RangePicker } = DatePicker;
 
 import styles from "./Error.less";
@@ -27,7 +32,7 @@ const FormItem = Form.Item;
 const TextArea = Input.TextArea;
 
 const ErrorReviewStatus = ["waiting for review","under review","pass","reject"];
-const ErrorType = ["Can't Lock","Damage", "Fuck", "Yet"];
+const ErrorType = ["Can't Lock","Damage", "Lost", "Old"];
 
 const UpdateForm = Form.create()(props => {
   const {
@@ -150,19 +155,24 @@ class Error extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
+          {authority.includes("update.error.detail") &&
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>
             Process
-          </a>
+          </a>}
+
           <Divider type="vertical" />
+
+          {authority.includes("update.error.detail") &&
           <Popconfirm
             title="Are you sure？"
-            icon={<Icon type="question-circle-o" style={{ color: "red" }} />}
+            icon={<Icon type="question-circle-o" style={{ color: "red" }}/>}
             onConfirm={() => this.handleDelete(record.id)}
           >
             <a href="#" style={{ color: "red" }}>
               Delete
             </a>
           </Popconfirm>
+          }
 
         </Fragment>
       )

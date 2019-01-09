@@ -54,3 +54,24 @@ export async function updateCustomer(id, params) {
     }
   });
 }
+
+export async function getMembership(customerId) {
+  return request(`/admins/memberships/customers/${customerId}`, {
+    method: "GET"
+  });
+}
+
+export async function getAvailableMemberships(customerId) {
+  return request(`/admins/memberships/customers/${customerId}/available`, {
+    method: "GET"
+  });
+}
+
+export async function updateMembership(customerId, params) {
+  return request(`/admins/memberships/customers/${customerId}/buy`, {
+    method: "POST",
+    body: {
+      ...params
+    }
+  });
+}

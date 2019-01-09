@@ -19,6 +19,10 @@ import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
 import styles from "./Area.less";
 
+import { getAuthority } from "@/utils/authority";
+
+const authority = getAuthority();
+
 const FormItem = Form.Item;
 const { Step } = Steps;
 const { TextArea } = Input;
@@ -166,9 +170,11 @@ class Area extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
+          {authority.includes("update.area.detail") &&
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>
             Update
-          </a>
+          </a>}
+
         </Fragment>
       )
     }
@@ -342,13 +348,16 @@ class Area extends PureComponent {
               {this.renderSimpleForm()}
             </div>
             <div className={styles.tableListOperator}>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={() => this.handleModalVisible(true)}
-              >
-                Add
-              </Button>
+              {authority.includes("create.area") &&
+                <Button
+                  icon="plus"
+                  type="primary"
+                  onClick={() => this.handleModalVisible(true)}
+                >
+                  Add
+                </Button>
+              }
+
             </div>
             <StandardTable
               loading={loading}

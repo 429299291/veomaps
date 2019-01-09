@@ -17,6 +17,10 @@ import {
 import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
+import { getAuthority } from "@/utils/authority";
+
+const authority = getAuthority();
+
 import styles from "./Role.less";
 
 const FormItem = Form.Item;
@@ -139,9 +143,12 @@ class Role extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>
-            Update
-          </a>
+          {
+            authority.includes("update.role.detail") &&
+            <a onClick={() => this.handleUpdateModalVisible(true, record)}>
+              Update
+            </a>
+          }
         </Fragment>
       )
     }
@@ -283,13 +290,16 @@ class Role extends PureComponent {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={() => this.handleModalVisible(true)}
-              >
-                Add
-              </Button>
+              {authority.includes("add.role") &&
+                <Button
+                  icon="plus"
+                  type="primary"
+                  onClick={() => this.handleModalVisible(true)}
+                >
+                  Add
+                </Button>
+              }
+
             </div>
             <StandardTable
               loading={loading}

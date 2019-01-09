@@ -15,6 +15,10 @@ import React from "react";
 import UrlToPrivilege from "./UrlToPrivilege";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
+import { getAuthority } from "@/utils/authority";
+
+const authority = getAuthority();
+
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -234,7 +238,11 @@ class Privilege extends PureComponent {
               );
             })}
           <FormItem>
-            <Button onClick={this.handleSubmit}>Save</Button>
+            {
+              authority.includes("update.role.privilege") && selectedRoleId &&
+              <Button onClick={this.handleSubmit}>Save</Button>
+            }
+
           </FormItem>
         </Card>
       </PageHeaderWrapper>

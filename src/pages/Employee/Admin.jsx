@@ -22,6 +22,10 @@ import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
 import styles from "./Admin.less";
 
+import { getAuthority } from "@/utils/authority";
+
+const authority = getAuthority();
+
 const FormItem = Form.Item;
 const { Step } = Steps;
 const { TextAdmin } = Input;
@@ -437,7 +441,7 @@ class Admin extends PureComponent {
     {
       title: "Role",
       dataIndex: "role",
-      render: (text, record) => <span>{this.getRoleNameById(record.id)}</span>
+      render: (text, record) => <span>{this.getRoleNameById(record.roleId)}</span>
     },
     {
       title: "Areas",
@@ -450,27 +454,39 @@ class Admin extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>
-            Update
-          </a>
+          {authority.includes("update.admin.detail") &&
+            <a onClick={() => this.handleUpdateModalVisible(true, record)}>
+              Update
+            </a>
+          }
+
           <Divider type="vertical" />
 
-          <a
-            href="#"
-            onClick={() => this.handleUpdatePasswordModalVisible(true, record)}
-          >
-            Update Password
-          </a>
-          <Divider type="vertical" />
-          <Popconfirm
-            title="Are you Sure？"
-            icon={<Icon type="question-circle-o" style={{ color: "red" }} />}
-            onConfirm={() => this.handleDelete(record.id)}
-          >
-            <a href="#" style={{ color: "red" }}>
-              Delete
+
+          {authority.includes("update.admin.password") &&
+            <a
+              href="#"
+              onClick={() => this.handleUpdatePasswordModalVisible(true, record)}
+            >
+              Update Password
             </a>
-          </Popconfirm>
+          }
+
+
+          <Divider type="vertical" />
+
+          {authority.includes("delete.admin") &&
+            <Popconfirm
+              title="Are you Sure？"
+              icon={<Icon type="question-circle-o" style={{ color: "red" }} />}
+              onConfirm={() => this.handleDelete(record.id)}
+            >
+              <a href="#" style={{ color: "red" }}>
+                Delete
+              </a>
+            </Popconfirm>
+          }
+
         </Fragment>
       )
     }
@@ -679,13 +695,16 @@ class Admin extends PureComponent {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={() => this.handleModalVisible(true)}
-              >
-                Add
-              </Button>
+              {authority.includes("add.admin") &&
+                <Button
+                  icon="plus"
+                  type="primary"
+                  onClick={() => this.handleModalVisible(true)}
+                >
+                  Add
+                </Button>
+              }
+
             </div>
             <StandardTable
               scroll={{ x: 1300 }}

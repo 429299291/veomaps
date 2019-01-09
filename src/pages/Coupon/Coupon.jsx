@@ -21,6 +21,10 @@ import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
 import styles from "./Coupon.less";
 
+import { getAuthority } from "@/utils/authority";
+
+const authority = getAuthority();
+
 const FormItem = Form.Item;
 const { Step } = Steps;
 const { TextCoupon } = Input;
@@ -292,19 +296,26 @@ class Coupon extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>
-            Update
-          </a>
-          <Divider type="vertical" />
-          <Popconfirm
-            title="Are you sure？"
-            icon={<Icon type="question-circle-o" style={{ color: "red" }} />}
-            onConfirm={() => this.handleDelete(record.id)}
-          >
-            <a href="#" style={{ color: "red" }}>
-              Delete
+          {authority.includes("update.coupon.detail") &&
+            <a onClick={() => this.handleUpdateModalVisible(true, record)}>
+              Update
             </a>
-          </Popconfirm>
+          }
+
+          <Divider type="vertical" />
+
+          {authority.includes("update.coupon.detail") &&
+            <Popconfirm
+              title="Are you sure？"
+              icon={<Icon type="question-circle-o" style={{ color: "red" }} />}
+              onConfirm={() => this.handleDelete(record.id)}
+            >
+              <a href="#" style={{ color: "red" }}>
+                Delete
+              </a>
+            </Popconfirm>
+          }
+
         </Fragment>
       )
     }
@@ -498,13 +509,16 @@ class Coupon extends PureComponent {
               {this.renderSimpleForm()}
             </div>
             <div className={styles.tableListOperator}>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={() => this.handleCreateModalVisible(true)}
-              >
-                Add
-              </Button>
+              {authority.includes("create.coupon") &&
+                <Button
+                  icon="plus"
+                  type="primary"
+                  onClick={() => this.handleCreateModalVisible(true)}
+                >
+                  Add
+                </Button>
+              }
+
             </div>
             <StandardTable
               loading={loading}

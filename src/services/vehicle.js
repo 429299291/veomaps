@@ -7,6 +7,12 @@ export async function getVehicles(params) {
   });
 }
 
+export async function getVehicleOrders(vehicleId) {
+  return request(`/admins/vehicles/${vehicleId}/orders`, {
+    method: "GET"
+  });
+}
+
 export async function countVehicles(params) {
   return request(
     `/admins/vehicles/total?${stringify(params, { indices: false })}`,

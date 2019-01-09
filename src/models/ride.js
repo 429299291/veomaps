@@ -45,6 +45,16 @@ export default {
         message.error("Fail to get customer rides.");
       }
     },
+    *getVehicleRides({ vehicleId, onSuccess }, { call, put }) {
+      const rides = yield call(getAdminRides, { vehicleId: vehicleId });
+
+      if (Array.isArray(rides)) {
+        rides.map(ride => (ride.key = ride.id));
+        onSuccess(rides);
+      } else {
+        message.error("Fail to get customer rides.");
+      }
+    },
     *getRoute({ rideId, onSuccess, onFail }, { call, put }) {
       const path = yield call(getRideRoute, rideId);
 

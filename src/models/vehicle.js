@@ -4,7 +4,8 @@ import {
   getVehicleDetail,
   addVehicle,
   removeVehicle,
-  updateVehicle
+  updateVehicle,
+  getVehicleOrders
 } from "@/services/vehicle";
 import { message } from "antd";
 
@@ -31,6 +32,16 @@ export default {
         data: Array.isArray(data) ? data : [],
         total: total
       });
+    },
+    *getOrders({ id, onSuccess }, { call, put }) {
+      const data = yield call(getVehicleOrders, id);
+
+
+      if (Array.isArray(data)) {
+        data.map(item => (item.key = item.id));
+      }
+
+      onSuccess && onSuccess(data);
     },
     *add({ payload }, { call, put }) {
       const response = yield call(addVehicle, payload); // post

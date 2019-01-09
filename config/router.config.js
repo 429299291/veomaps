@@ -15,6 +15,7 @@ export default [
     path: "/",
     component: "../layouts/BasicLayout",
     Routes: ["src/pages/Authorized"],
+    authority: "basic.admin",
     routes: [
       // dashboard
 
@@ -147,17 +148,20 @@ export default [
           {
             path: "/vehicle-management",
             name: "Vehicle List",
-            component: "./Vehicle/Vehicle"
+            component: "./Vehicle/Vehicle",
+            authority: "get.vehicles",
           },
           {
             path: "/vehicle-management/ride",
             name: "Riding History",
-            component: "./Vehicle/Ride"
+            component: "./Vehicle/Ride",
+            authority: "get.rides",
           },
           {
             path: "/vehicle-management/error",
             name: "Error Report",
-            component: "./Vehicle/Error"
+            component: "./Vehicle/Error",
+            authority: "get.errors"
           }
         ]
       },
@@ -182,32 +186,36 @@ export default [
           {
             path: "/area/geo-management/",
             name: "Geo Management",
-            component: "./Area/Geo"
+            component: "./Area/Geo",
+            authority: "get.fences"
           },
           {
             path: "/area/area-management/",
             name: "Area Management",
-            component: "./Area/Area"
+            component: "./Area/Area",
+            authority: "get.areas"
           }
         ]
       },
       {
-        path: "/membership-management/",
+        path: "/membership-management",
         name: "Membership Management",
         icon: "wallet",
-        component: "./Membership/Membership"
+        component: "./Membership/Membership",
+        authority: "get.memberships"
       },
       {
         path: "/coupon-management/",
         name: "Coupon Management",
         icon: "barcode",
-        component: "./Coupon/Coupon"
+        component: "./Coupon/Coupon",
+        authority: "get.coupons"
       },
       {
         path: "/price-management/",
         name: "Price Management",
         icon: "wallet",
-        authority: "get.price",
+        authority: "get.prices",
         component: "./Price/Price"
       },
       {
@@ -218,17 +226,20 @@ export default [
           {
             path: "/employee-management/role",
             name: "Role Management",
-            component: "./Employee/Role"
+            component: "./Employee/Role",
+            authority: "get.roles.details"
           },
           {
             path: "/employee-management/privilege",
             name: "Privilege Management",
-            component: "./Employee/Privilege"
+            component: "./Employee/Privilege",
+            authority: "get.privileges"
           },
           {
             path: "/employee-management/admin",
             name: "Admin Management",
-            component: "./Employee/Admin"
+            component: "./Employee/Admin",
+            authority: "get.admins"
           }
         ]
       },
