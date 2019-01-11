@@ -91,6 +91,9 @@ export default {
     "PUT /api/admins/{adminId}": "update.admin.detail",
     "POST /api/admins/{adminId}/update_password": "update.admin.password",
     "GET /api/admins": "get.admins",
-    "POST /api/admins/register": "add.admin"
+    "GET /api/admins/me": "get.me",
+    "PUT /api/admins/me": "update.me",
+    "POST /api/admins/register": "add.admin",
+    "POST /api/admins/register_by_email": "register.admin.email"
   }
 };

@@ -12,7 +12,8 @@ import {
   Button,
   Modal,
   Steps,
-  Radio
+  Radio,
+  notification
 } from "antd";
 import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
@@ -39,6 +40,14 @@ const CreateForm = Form.create()(props => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       form.resetFields();
+
+      //disable adding super admin
+      if (fieldsValue.name === "Super Admin") {
+        form.resetFields();
+        handleModalVisible(false);
+        notification.error({message: "Operation Denied", description: "You can't create super admin"});
+      }
+
 
       handleAdd(fieldsValue);
     });
@@ -144,7 +153,7 @@ class Role extends PureComponent {
       render: (text, record) => (
         <Fragment>
           {
-            authority.includes("update.role.detail") &&
+            authority.includes("update.role.detail") && record.name !== "Super Admin" &&
             <a onClick={() => this.handleUpdateModalVisible(true, record)}>
               Update
             </a>

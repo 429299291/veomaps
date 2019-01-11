@@ -22,6 +22,8 @@ const authority = getAuthority();
 const FormItem = Form.Item;
 const Option = Select.Option;
 
+const superAdminId = 1;
+
 @connect(({ roles, privileges, loading }) => ({
   roles,
   privileges,
@@ -32,7 +34,8 @@ class Privilege extends PureComponent {
   state = {
     selectedRoleId: null,
     selectedRolePrivileges: null,
-    checkBoxState: {} //{groupName: {"method url": {isChecked: true/false, id: number}}}}
+    checkBoxState: {}, //{groupName: {"method url": {isChecked: true/false, id: number}}}},
+    isUpdated: false
   };
 
   componentDidMount() {
@@ -129,7 +132,8 @@ class Privilege extends PureComponent {
     this.setState({
       selectedRoleId: roleId,
       selectedRolePrivileges: selectedRolePrivileges,
-      checkBoxState: checkBoxState
+      checkBoxState: checkBoxState,
+      isUpdated: false
     });
   };
 
@@ -148,7 +152,8 @@ class Privilege extends PureComponent {
 
       this.setState(prevState => ({
         ...prevState,
-        checkBoxState: newCheckBoxState
+        checkBoxState: newCheckBoxState,
+        isUpdated: true
       }));
     }
   };
@@ -158,10 +163,11 @@ class Privilege extends PureComponent {
 
     checkBoxState[groupName][url].isChecked = value;
 
-    this.setState({ checkBoxState: checkBoxState });
+    this.setState({ checkBoxState: checkBoxState, isUpdated : true });
   };
 
   render() {
+
     const { getFieldDecorator } = this.props.form;
 
     const { roles, privileges } = this.props;
@@ -169,8 +175,11 @@ class Privilege extends PureComponent {
     const {
       selectedRoleId,
       selectedRolePrivileges,
-      checkBoxState
+      checkBoxState,
+      isUpdated
     } = this.state;
+
+    console.log(isUpdated);
 
     return (
       <PageHeaderWrapper title="Privilege List">
@@ -208,6 +217,8 @@ class Privilege extends PureComponent {
                           checkBoxState[groupName][key].isChecked && result,
                         true
                       )}
+
+                      disabled={selectedRoleId === superAdminId}
                     >
                       {groupName}
                     </Checkbox>
@@ -229,6 +240,8 @@ class Privilege extends PureComponent {
                             url
                           )
                         }
+
+                        disabled={selectedRoleId === superAdminId}
                       >
                         {name}
                       </Checkbox>
@@ -240,7 +253,7 @@ class Privilege extends PureComponent {
           <FormItem>
             {
               authority.includes("update.role.privilege") && selectedRoleId &&
-              <Button onClick={this.handleSubmit}>Save</Button>
+              <Button onClick={this.handleSubmit} disabled={selectedRoleId === superAdminId || !isUpdated} >Save</Button>
             }
 
           </FormItem>

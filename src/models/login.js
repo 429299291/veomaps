@@ -16,7 +16,7 @@ export default {
   },
 
   effects: {
-    *login({ payload }, { call, put }) {
+    *login({ payload, onSuccess }, { call, put }) {
       const response = yield call(accountLogin, payload);
 
       if (response && response.accessToken) {
@@ -25,6 +25,10 @@ export default {
 
         setAuthority("basic.admin");
         reloadAuthorized();
+
+        if (typeof onSuccess === "function") {
+          onSuccess();
+        }
 
         yield put(routerRedux.replace("/"));
       } else {

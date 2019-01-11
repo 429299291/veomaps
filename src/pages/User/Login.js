@@ -51,7 +51,10 @@ class LoginPage extends Component {
         type: "login/login",
         payload: {
           ...payload
-        }
+        },
+        onSuccess: () => dispatch({
+          type: "user/fetchCurrent"
+        })
       });
     }
   };

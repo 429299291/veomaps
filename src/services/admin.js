@@ -43,3 +43,12 @@ export async function updateAdminPassword(adminId, newPassword) {
     }
   });
 }
+
+export async function registerByEmail(email) {
+  return request(`/admins/register_by_email`, {
+    method: "POST",
+    body: email
+  });
+}
+
+

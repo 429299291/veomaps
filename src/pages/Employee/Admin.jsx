@@ -26,6 +26,8 @@ import { getAuthority } from "@/utils/authority";
 
 const authority = getAuthority();
 
+const superAdminId = 1;
+
 const FormItem = Form.Item;
 const { Step } = Steps;
 const { TextAdmin } = Input;
@@ -35,6 +37,67 @@ const getValue = obj =>
   Object.keys(obj)
     .map(key => obj[key])
     .join(",");
+
+
+
+const isVeoRideEmail = (rule, value, callback) => {
+  const splitEmail = value.split("@");
+  if (splitEmail.length === 2 && splitEmail[1] === "veoride.com") {
+    callback();
+    return;
+  }
+  callback("Credit Must be Number!");
+};
+
+const EmailRegisterForm = Form.create()(props => {
+  const {
+    modalVisible,
+    form,
+    handleSubmit,
+    handleModalVisible,
+  } = props;
+  const okHandle = () => {
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+
+
+      form.resetFields();
+
+      handleSubmit(fieldsValue);
+    });
+  };
+  return (
+    <Modal
+      destroyOnClose
+      title="Register by Email"
+      visible={modalVisible}
+      onOk={okHandle}
+      onCancel={() => handleModalVisible()}
+      width="600px"
+    >
+      <FormItem
+        labelCol={{ span: 7 }}
+        wrapperCol={{ span: 15 }}
+        label="VeoRide Email"
+      >
+        {form.getFieldDecorator("email", {
+          rules: [
+            {
+              required: true,
+              message: "email cant be empty.",
+              min: 5
+            },
+            {
+              message: "password is required, at least 5 chars",
+              validator: isVeoRideEmail
+            }
+          ]
+        })(<Input placeholder="Please Input" />)}
+      </FormItem>
+    </Modal>
+  );
+});
+
 
 const CreateForm = Form.create()(props => {
   const {
@@ -57,6 +120,12 @@ const CreateForm = Form.create()(props => {
       fieldsValue.confirmPassword = undefined;
 
       form.resetFields();
+
+      if (fieldsValue.areaIds.includes("all")) {
+
+        fieldsValue.areaIds = areas.map(area => area.id);
+      }
+
 
       handleAdd(fieldsValue);
     });
@@ -156,11 +225,15 @@ const CreateForm = Form.create()(props => {
             ]
           })(
             <Select placeholder="select" style={{ width: "100%" }}>
-              {roles.map(role => (
-                <Option key={role.id} value={role.id}>
-                  {role.name}
-                </Option>
-              ))}
+              {roles.map(role =>
+                {
+                  if (role.id === superAdminId)
+                    return;
+                  else
+                    return <Option key={role.id} value={role.id}> {role.name} </Option>
+                }
+
+              )}
             </Select>
           )}
         </FormItem>
@@ -252,6 +325,12 @@ const UpdateForm = Form.create()(props => {
         if (err) return;
         form.resetFields();
 
+        if (fieldsValue.areaIds.includes("all")) {
+
+          fieldsValue.areaIds = areas.map(area => area.id);
+        }
+
+
         handleUpdate(record.id, fieldsValue);
       });
     else handleModalVisible();
@@ -337,11 +416,15 @@ const UpdateForm = Form.create()(props => {
             initialValue: record.roleId
           })(
             <Select placeholder="select" style={{ width: "100%" }}>
-              {roles.map(role => (
-                <Option key={role.id} value={role.id}>
-                  {role.name}
-                </Option>
-              ))}
+              {roles.map(role =>
+                {
+                  if (role.id === superAdminId)
+                    return;
+                  else
+                    return <Option key={role.id} value={role.id}> {role.name} </Option>
+                }
+
+              )}
             </Select>
           )}
         </FormItem>
@@ -359,13 +442,17 @@ const UpdateForm = Form.create()(props => {
                 message: "area is required"
               }
             ],
-            initialValue: record.areaIds
+            initialValue: record.areaIds,
+            normalize: values => values.includes("all") ? values.filter(value => value === "all") : values
           })(
             <Select
               placeholder="select"
               style={{ width: "100%" }}
               mode="multiple"
             >
+              <Option key={"all"} value={"all"}>
+                All
+              </Option>
               {areas.map(area => (
                 <Option key={area.id} value={area.id}>
                   {area.name}
@@ -416,7 +503,8 @@ class Admin extends PureComponent {
     selectedRows: [],
     filterCriteria: {},
     selectedRecord: {},
-    updatePasswordModalVisible: false
+    updatePasswordModalVisible: false,
+    registerEmailModalVisible: false
   };
 
   columns = [
@@ -453,6 +541,9 @@ class Admin extends PureComponent {
     {
       title: "Operation",
       render: (text, record) => (
+        record.roleId === superAdminId ?
+          <span />
+          :
         <Fragment>
           {authority.includes("update.admin.detail") &&
             <a onClick={() => this.handleUpdateModalVisible(true, record)}>
@@ -499,7 +590,7 @@ class Admin extends PureComponent {
   }
 
   getRoleNameById = roleId => {
-    if (this.props.roles.length === 0) return "";
+    if (this.props.roles.length === 0 || !roleId) return "";
     else return this.props.roles.filter(role => role.id === roleId)[0].name;
   };
 
@@ -628,6 +719,26 @@ class Admin extends PureComponent {
     });
   };
 
+  handleEmailRegisterModalVisible = (flag) => {
+    this.setState({
+      registerEmailModalVisible: !!flag
+    });
+  };
+
+  handleEmailRegister = fields => {
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: "admins/emailRegister",
+      payload: fields,
+      onSuccess: this.handleGetAdmins
+    });
+
+    //message.success("Add Success!");
+    this.handleEmailRegisterModalVisible();
+  };
+
+
   handleAdd = fields => {
     const { dispatch } = this.props;
 
@@ -673,7 +784,8 @@ class Admin extends PureComponent {
       updateModalVisible,
       detailModalVisible,
       selectedRecord,
-      updatePasswordModalVisible
+      updatePasswordModalVisible,
+      registerEmailModalVisible
     } = this.state;
 
     const parentMethods = {
@@ -690,20 +802,39 @@ class Admin extends PureComponent {
       handleUpdatePassword: this.handleUpdatePassword
     };
 
+    const emailRegisterMethods = {
+      handleModalVisible: this.handleEmailRegisterModalVisible,
+      handleSubmit: this.handleEmailRegister
+    };
+
     return (
       <PageHeaderWrapper title="Admin List">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
               {authority.includes("add.admin") &&
+              <Button
+                icon="plus"
+                type="primary"
+                onClick={() => this.handleModalVisible(true)}
+              >
+                Add
+              </Button>
+              }
+
+
+              {authority.includes("register.admin.email") &&
                 <Button
                   icon="plus"
                   type="primary"
-                  onClick={() => this.handleModalVisible(true)}
+                  onClick={() => this.handleEmailRegisterModalVisible(true)}
+                  style={{marginLeft: "0.5em"}}
                 >
-                  Add
+                  Register By Email
                 </Button>
+
               }
+
 
             </div>
             <StandardTable
@@ -740,6 +871,15 @@ class Admin extends PureComponent {
           roles={roles}
           areas={areas}
         />
+
+        <EmailRegisterForm
+          {...emailRegisterMethods}
+          modalVisible={registerEmailModalVisible}
+        />
+
+
+
+
       </PageHeaderWrapper>
     );
   }
