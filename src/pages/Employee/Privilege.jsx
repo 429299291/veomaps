@@ -83,8 +83,6 @@ class Privilege extends PureComponent {
       });
     });
 
-    console.log(privilegeIds);
-
     dispatch({
       type: "privileges/updateRolePrivileges",
       roleId: this.state.selectedRoleId,
@@ -163,11 +161,10 @@ class Privilege extends PureComponent {
 
     checkBoxState[groupName][url].isChecked = value;
 
-    this.setState({ checkBoxState: checkBoxState, isUpdated : true });
+    this.setState({ checkBoxState: checkBoxState, isUpdated: true });
   };
 
   render() {
-
     const { getFieldDecorator } = this.props.form;
 
     const { roles, privileges } = this.props;
@@ -217,7 +214,6 @@ class Privilege extends PureComponent {
                           checkBoxState[groupName][key].isChecked && result,
                         true
                       )}
-
                       disabled={selectedRoleId === superAdminId}
                     >
                       {groupName}
@@ -240,7 +236,6 @@ class Privilege extends PureComponent {
                             url
                           )
                         }
-
                         disabled={selectedRoleId === superAdminId}
                       >
                         {name}
@@ -251,11 +246,15 @@ class Privilege extends PureComponent {
               );
             })}
           <FormItem>
-            {
-              authority.includes("update.role.privilege") && selectedRoleId &&
-              <Button onClick={this.handleSubmit} disabled={selectedRoleId === superAdminId || !isUpdated} >Save</Button>
-            }
-
+            {authority.includes("update.role.privilege") &&
+              selectedRoleId && (
+                <Button
+                  onClick={this.handleSubmit}
+                  disabled={selectedRoleId === superAdminId || !isUpdated}
+                >
+                  Save
+                </Button>
+              )}
           </FormItem>
         </Card>
       </PageHeaderWrapper>

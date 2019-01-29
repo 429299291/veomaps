@@ -28,6 +28,13 @@ function formatter(data, parentAuthority, parentName) {
         return null;
       }
 
+      //filter account setting on sidebar
+      if (item.name === "account") {
+        return null;
+      }
+
+
+
       let locale = "menu";
       if (parentName) {
         locale = `${parentName}.${item.name}`;
@@ -102,9 +109,6 @@ class BasicLayout extends React.PureComponent {
     dispatch({
       type: "user/fetchCurrent"
     });
-    dispatch({
-      type: "setting/getSetting"
-    });
 
     dispatch({
       type: "areas/get"
@@ -114,10 +118,7 @@ class BasicLayout extends React.PureComponent {
       type: "login/updateToken"
     });
 
-    dispatch({
-      type: "coupons/get",
-      payload: {}
-    });
+
 
     this.renderRef = requestAnimationFrame(() => {
       this.setState({
@@ -247,6 +248,7 @@ class BasicLayout extends React.PureComponent {
       children,
       location: { pathname }
     } = this.props;
+
     const { isMobile, menuData } = this.state;
     const isTop = PropsLayout === "topmenu";
     const routerConfig = this.matchParamsPath(pathname);

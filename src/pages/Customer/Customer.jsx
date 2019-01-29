@@ -340,6 +340,7 @@ const CouponForm = Form.create()(props => {
   customers,
   areas,
   coupons,
+  selectedAreaId : areas.selectedAreaId,
   loading: loading.models.customers
 }))
 @Form.create()
@@ -397,25 +398,34 @@ class Customer extends PureComponent {
   ];
 
   componentDidMount() {
+    console.log(authority.includes("update.customer.detail") );
     this.handleGetCustomers();
     this.handleGetCoupons();
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+
+    if (prevProps.selectedAreaId !== this.props.selectedAreaId) {
+      this.handleGetCustomers();
+      this.handleGetCoupons();
+    }
+  }
+
   handleGetCoupons = () => {
-    const { dispatch } = this.props;
+    const { dispatch, selectedAreaId } = this.props;
     dispatch({
       type: "coupons/get",
-      payload: {}
+      payload: {areaId: selectedAreaId}
     });
   };
 
   handleGetCustomers = () => {
-    const { dispatch } = this.props;
+    const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
 
     dispatch({
       type: "customers/get",
-      payload: filterCriteria
+      payload: selectedAreaId ? Object.assign({},filterCriteria, {areaId: selectedAreaId} ) : filterCriteria,
     });
   };
 

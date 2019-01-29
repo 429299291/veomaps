@@ -21,7 +21,10 @@ export default {
 
       if (response && response.accessToken) {
         localStorage.setItem(ACCESS_TOKEN, response.accessToken);
-        localStorage.setItem(TOKEN_CREATE_DATE, new Date().getTime().toString());
+        localStorage.setItem(
+          TOKEN_CREATE_DATE,
+          new Date().getTime().toString()
+        );
 
         setAuthority("basic.admin");
         reloadAuthorized();
@@ -39,26 +42,27 @@ export default {
       }
     },
     *updateToken({ payload }, { call, put }) {
-
-      const millSecondDiff = (new Date().getTime() - parseInt(localStorage.getItem(TOKEN_CREATE_DATE)));
+      const millSecondDiff =
+        new Date().getTime() -
+        parseInt(localStorage.getItem(TOKEN_CREATE_DATE));
 
       const daysDiff = Math.floor(millSecondDiff / (1000 * 60 * 60 * 24));
 
-      if (daysDiff < 1)
-        return;
+      if (daysDiff < 1) return;
 
       const response = yield call(updateToken, payload);
 
       if (response && response.accessToken) {
         localStorage.setItem(ACCESS_TOKEN, response.accessToken);
-        localStorage.setItem(TOKEN_CREATE_DATE, new Date().getTime().toString());
-
+        localStorage.setItem(
+          TOKEN_CREATE_DATE,
+          new Date().getTime().toString()
+        );
       } else {
         notification.error({
           message: "Token Refresh Failed"
         });
       }
-
     },
 
     *getCaptcha({ payload }, { call }) {

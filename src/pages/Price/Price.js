@@ -258,6 +258,7 @@ const UpdateForm = Form.create()(props => {
 @connect(({ areas, price, loading }) => ({
   areas,
   price,
+  selectedAreaId: areas.selectedAreaId,
   loading: loading.models.price
 }))
 @Form.create()
@@ -318,17 +319,26 @@ class Price extends PureComponent {
     }
   ];
 
-  componentDidMount() {
-    this.handleGetAreas();
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+
+    if (prevProps.selectedAreaId !== this.props.selectedAreaId) {
+      this.handleGetPrices();
+    }
+
   }
 
-  handleGetAreas = () => {
-    const { dispatch } = this.props;
+  componentDidMount() {
+    this.handleGetPrices();
+  }
+
+  handleGetPrices = () => {
+    const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
 
     dispatch({
       type: "price/get",
-      payload: filterCriteria
+      payload: Object.assign({}, filterCriteria, {areaId: selectedAreaId})
     });
   };
 
@@ -352,7 +362,7 @@ class Price extends PureComponent {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
 
-    this.setState({ filterCriteria: params }, () => this.handleGetAreas());
+    this.setState({ filterCriteria: params }, () => this.handleGetPrices());
   };
 
   handleFormReset = () => {
@@ -363,7 +373,7 @@ class Price extends PureComponent {
       {
         filterCriteria: {}
       },
-      () => this.handleGetAreas()
+      () => this.handleGetPrices()
     );
   };
 
@@ -380,7 +390,7 @@ class Price extends PureComponent {
         {
           filterCriteria: values
         },
-        () => this.handleGetAreas()
+        () => this.handleGetPrices()
       );
     });
   };
@@ -417,7 +427,7 @@ class Price extends PureComponent {
     dispatch({
       type: "price/add",
       payload: fields,
-      onSuccess: this.handleGetAreas
+      onSuccess: this.handleGetPrices
     });
 
     this.handleCreateModalVisible();
@@ -429,7 +439,7 @@ class Price extends PureComponent {
       type: "price/update",
       payload: fields,
       id: id,
-      onSuccess: this.handleGetAreas
+      onSuccess: this.handleGetPrices
     });
 
     this.handleUpdateModalVisible();
@@ -441,7 +451,7 @@ class Price extends PureComponent {
     dispatch({
       type: "price/remove",
       id: id,
-      onSuccess: this.handleGetAreas
+      onSuccess: this.handleGetPrices
     });
   };
 
@@ -488,6 +498,20 @@ class Price extends PureComponent {
     );
   }
 
+  filterAreaPrice(prices, areas) {
+
+
+
+    if (Array.isArray(prices) && Array.isArray(areas)) {
+      const areaIds = {}
+      areas.map(area => areaIds[area.id] = true);
+
+      return prices.filter(price => areaIds[price.areaId])
+    }
+
+    return prices
+  }
+
   render() {
     const { areas, areaPrice, loading, price } = this.props;
     const {
@@ -511,9 +535,9 @@ class Price extends PureComponent {
       <PageHeaderWrapper title="Area List">
         <Card bordered={false}>
           <div className={styles.tableList}>
-            <div className={styles.tableListForm}>
-              {this.renderSimpleForm()}
-            </div>
+            {/*<div className={styles.tableListForm}>*/}
+              {/*{this.renderSimpleForm()}*/}
+            {/*</div>*/}
             <div className={styles.tableListOperator}>
               <Button
                 icon="plus"

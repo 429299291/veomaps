@@ -132,7 +132,8 @@ const RouteMap = compose(
 /* eslint react/no-multi-comp:0 */
 @connect(({ rides, areas, loading }) => ({
   rides,
-  areas,
+  areas: areas.data,
+  selectedAreaId : areas.selectedAreaId,
   loading: loading.models.rides
 }))
 @Form.create()
@@ -194,7 +195,7 @@ class Ride extends PureComponent {
   ];
 
   componentDidMount() {
-    this.handleGetRides();
+    this.handleSearch();
   }
 
   handleGetRides = () => {
@@ -249,9 +250,9 @@ class Ride extends PureComponent {
   };
 
   handleSearch = e => {
-    e.preventDefault();
+    typeof e === 'object' && e.preventDefault();
 
-    const { form } = this.props;
+    const { form, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
 
     form.validateFields((err, fieldsValue) => {
@@ -269,7 +270,8 @@ class Ride extends PureComponent {
 
       const values = Object.assign({}, filterCriteria, fieldsValue, {
         currentPage: 1,
-        pageSize: 10
+        pageSize: 10,
+        areaId: selectedAreaId
       });
 
       this.setState(
@@ -332,6 +334,14 @@ class Ride extends PureComponent {
     });
     this.handleEndRideVisible();
   };
+
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+
+    if (prevProps.selectedAreaId !== this.props.selectedAreaId) {
+      this.handleSearch();
+    }
+  }
 
   handleUpdate = (id, fields) => {
     const { dispatch } = this.props;

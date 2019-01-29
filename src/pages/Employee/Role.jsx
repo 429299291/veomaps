@@ -45,9 +45,11 @@ const CreateForm = Form.create()(props => {
       if (fieldsValue.name === "Super Admin") {
         form.resetFields();
         handleModalVisible(false);
-        notification.error({message: "Operation Denied", description: "You can't create super admin"});
+        notification.error({
+          message: "Operation Denied",
+          description: "You can't create super admin"
+        });
       }
-
 
       handleAdd(fieldsValue);
     });
@@ -152,12 +154,12 @@ class Role extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          {
-            authority.includes("update.role.detail") && record.name !== "Super Admin" &&
-            <a onClick={() => this.handleUpdateModalVisible(true, record)}>
-              Update
-            </a>
-          }
+          {authority.includes("update.role.detail") &&
+            record.name !== "Super Admin" && (
+              <a onClick={() => this.handleUpdateModalVisible(true, record)}>
+                Update
+              </a>
+            )}
         </Fragment>
       )
     }
@@ -299,7 +301,7 @@ class Role extends PureComponent {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
-              {authority.includes("add.role") &&
+              {authority.includes("add.role") && (
                 <Button
                   icon="plus"
                   type="primary"
@@ -307,8 +309,7 @@ class Role extends PureComponent {
                 >
                   Add
                 </Button>
-              }
-
+              )}
             </div>
             <StandardTable
               loading={loading}

@@ -49,3 +49,9 @@ export async function updateVehicle(id, params) {
     }
   });
 }
+
+export async function unlockVehicle(id) {
+  return request(`/admins/vehicles/${id}/unlock`, {
+    method: "PUT"
+  });
+}

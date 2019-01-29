@@ -26,3 +26,25 @@ export async function updateToken() {
     method: "GET"
   });
 }
+
+
+
+
+export async function updateMe(me) {
+  return request(`/admins/me`, {
+    method: "PUT",
+    body: {
+      ...me
+    }
+  });
+}
+
+
+export async function updatePassword(newPassword) {
+  return request(`/admins/me/update_password`, {
+    method: "PUT",
+    body: {
+      newPassword: newPassword
+    }
+  });
+}

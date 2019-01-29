@@ -44,31 +44,18 @@ let routes = [
     "routes": [
       {
         "path": "/",
-        "redirect": "/dashboard/analysis",
+        "redirect": "/vehicle-management",
         "exact": true
       },
       {
         "path": "/dashboard",
         "name": "dashboard",
         "icon": "dashboard",
-        "authority": "get.dashboard",
         "routes": [
           {
-            "path": "/dashboard/analysis",
-            "name": "analysis",
-            "component": dynamic({ loader: () => import('../Dashboard/Analysis'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
-            "exact": true
-          },
-          {
-            "path": "/dashboard/monitor",
-            "name": "monitor",
-            "component": dynamic({ loader: () => import('../Dashboard/Monitor'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
-            "exact": true
-          },
-          {
-            "path": "/dashboard/workplace",
-            "name": "workplace",
-            "component": dynamic({ loader: () => import('../Dashboard/Workplace'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
+            "path": "/dashboard",
+            "name": "dashboard",
+            "component": dynamic({ loader: () => import('../Dashboard/Dashboard'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
             "exact": true
           },
           {
@@ -176,6 +163,7 @@ let routes = [
         "path": "/employee-management/",
         "name": "Employee Management",
         "icon": "user",
+        "authority": "get.admins",
         "routes": [
           {
             "path": "/employee-management/role",
@@ -197,6 +185,51 @@ let routes = [
             "component": dynamic({ loader: () => import('../Employee/Admin'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
             "authority": "get.admins",
             "exact": true
+          },
+          {
+            "component": () => React.createElement(require('/Users/zhuangenze/Desktop/manhattan-admin-web/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })
+          }
+        ]
+      },
+      {
+        "name": "account",
+        "icon": "user",
+        "path": "/account",
+        "routes": [
+          {
+            "path": "/account/settings",
+            "name": "settings",
+            "component": dynamic({ loader: () => import('../Account/Settings/Info'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
+            "routes": [
+              {
+                "path": "/account/settings",
+                "redirect": "/account/settings/base",
+                "exact": true
+              },
+              {
+                "path": "/account/settings/base",
+                "component": dynamic({ loader: () => import('../Account/Settings/BaseView'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
+                "exact": true
+              },
+              {
+                "path": "/account/settings/security",
+                "component": dynamic({ loader: () => import('../Account/Settings/SecurityView'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
+                "exact": true
+              },
+              {
+                "path": "/account/settings/binding",
+                "component": dynamic({ loader: () => import('../Account/Settings/BindingView'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
+                "exact": true
+              },
+              {
+                "path": "/account/settings/notification",
+                "component": dynamic({ loader: () => import('../Account/Settings/NotificationView'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
+                "exact": true
+              },
+              {
+                "component": () => React.createElement(require('/Users/zhuangenze/Desktop/manhattan-admin-web/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })
+              }
+            ]
           },
           {
             "component": () => React.createElement(require('/Users/zhuangenze/Desktop/manhattan-admin-web/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })

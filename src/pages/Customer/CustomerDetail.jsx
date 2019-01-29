@@ -137,11 +137,26 @@ const UpdateForm = Form.create()(props => {
           initialValue: record.fullName
         })(<Input placeholder="Please Input" />)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="EMAIL">
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Email">
         {form.getFieldDecorator("email", {
           rules: [{ validator: checkEmailFormat }],
           initialValue: record.email
         })(<Input placeholder="Please Input" />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Email Status">
+        {form.getFieldDecorator("emailStatus", {
+          initialValue: record.emailStatus
+        })(<Select placeholder="select" style={{ width: "100%" }}>
+          <Option key={2} value={2}>
+            Educational
+          </Option>
+          <Option key={1} value={1}>
+            Normal
+          </Option>
+          <Option key={0} value={0}>
+            Unverified
+          </Option>
+        </Select>)}
       </FormItem>
 
       {customerStatus && (
@@ -485,6 +500,7 @@ class CustomerDetail extends PureComponent {
   componentDidMount = () => {
     const {customerId} = this.props;
 
+    this.handleGetCoupons();
     this.handleGetCustomerCoupons(customerId);
     this.handleGetCustomerDetail(customerId);
     this.handleGetCustomerRides(customerId);
@@ -499,6 +515,15 @@ class CustomerDetail extends PureComponent {
       selectedRide: record
     });
   };
+
+
+  handleGetCoupons = () => {
+    const {dispatch} = this.props;
+    dispatch({
+      type: "coupons/get",
+      payload: {}
+    });
+  }
 
   handleEndRide = (rideId, minutes) => {
     const { dispatch, customerId } = this.props;

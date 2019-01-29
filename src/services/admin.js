@@ -20,6 +20,7 @@ export async function createAdmin(admin) {
   });
 }
 
+
 export async function removeAdmin(id) {
   return request(`/admins/${id}`, {
     method: "DELETE"
@@ -50,5 +51,3 @@ export async function registerByEmail(email) {
     body: email
   });
 }
-
-

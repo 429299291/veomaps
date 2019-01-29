@@ -438,6 +438,7 @@ const UpdateForm = Form.create()(props => {
 @connect(({ memberships, areas, loading }) => ({
   memberships,
   areas,
+  selectedAreaId: areas.selectedAreaId,
   loading: loading.models.memberships
 }))
 @Form.create()
@@ -518,13 +519,22 @@ class Membership extends PureComponent {
     this.handleGetMemberships();
   }
 
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+
+    if (prevProps.selectedAreaId !== this.props.selectedAreaId ) {
+      this.handleGetMemberships();
+    }
+
+  }
+
   handleGetMemberships = () => {
-    const { dispatch } = this.props;
+    const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
 
     dispatch({
       type: "memberships/get",
-      payload: filterCriteria
+      payload: selectedAreaId ? Object.assign({}, filterCriteria, {areaId: selectedAreaId}) : filterCriteria
     });
   };
 
@@ -640,25 +650,6 @@ class Membership extends PureComponent {
               )}
             </FormItem>
           </Col>
-          {areas && (
-            <Col md={8} sm={24}>
-              <FormItem
-                labelCol={{ span: 5 }}
-                wrapperCol={{ span: 15 }}
-                label="Area"
-              >
-                {getFieldDecorator("areaId")(
-                  <Select placeholder="select" style={{ width: "100%" }}>
-                    {areas.map(area => (
-                      <Option key={area.id} value={area.id}>
-                        {area.name}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-          )}
           <Col md={8} sm={24}>
             <span className={styles.submitButtons}>
               <Button type="primary" htmlType="submit">

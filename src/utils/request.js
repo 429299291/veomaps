@@ -11,7 +11,7 @@ const urlPrefix = "https://manhattan-host.veoride.com:8444/api";
 
 export const ACCESS_TOKEN = "accessToken";
 
-export const TOKEN_CREATE_DATE = "tokenCreateDate"
+export const TOKEN_CREATE_DATE = "tokenCreateDate";
 
 const codeMessage = {
   200: "The server successfully returned the requested data.",
@@ -109,6 +109,8 @@ export default function request(url, options) {
           type: "login/logout"
         });
         localStorage.removeItem(ACCESS_TOKEN);
+        localStorage.removeItem(TOKEN_CREATE_DATE);
+        localStorage.removeItem("veoride-authority");
         router.push("/user/login");
         return;
       }

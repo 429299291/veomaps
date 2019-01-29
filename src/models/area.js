@@ -3,7 +3,8 @@ import {
   getAreaDetail,
   createArea,
   removeArea,
-  updateArea
+  updateArea,
+  getAllAreas
 } from "@/services/area";
 import { message } from "antd";
 
@@ -12,7 +13,8 @@ export default {
 
   state: {
     total: 0,
-    data: []
+    data: [],
+    selectedAreaId: null
   },
 
   effects: {
@@ -26,6 +28,21 @@ export default {
       yield put({
         type: "save",
         payload: Array.isArray(response) ? response : []
+      });
+    },
+    *getAll({ payload, onSuccess }, { call, put }) {
+      const response = yield call(getAllAreas, payload);
+
+
+      if (typeof onSuccess == "function") {
+        onSuccess(response);
+      }
+    },
+    *selectArea({ areaId }, { call, put }) {
+
+      yield put({
+        type: "saveSelectArea",
+        payload: areaId
       });
     },
     *update({ id, payload, onSuccess, onError }, { call, put }) {
@@ -74,6 +91,13 @@ export default {
         data: action.payload,
         areaNames: areaNames,
         total: action.payload.length
+      };
+    },
+    saveSelectArea(state, action) {
+
+      return {
+        ...state,
+        selectedAreaId: action.payload,
       };
     }
   }

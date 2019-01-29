@@ -1,6 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import { formatMessage, FormattedMessage } from 'umi/locale';
+import {UpdatePasswordForm} from "../../Employee/Admin";
 import { List } from 'antd';
+import { connect } from "dva";
 // import { getTimeDistance } from '@/utils/utils';
 
 const passwordStrength = {
@@ -21,8 +23,34 @@ const passwordStrength = {
     </font>
   ),
 };
-
+@connect(({ user }) => ({
+  currentUser: user.currentUser,
+}))
 class SecurityView extends Component {
+  state = {
+    updatePasswordModalVisible: false,
+  };
+
+  handleUpdatePasswordModalVisible = (flag) => {
+    this.setState({
+      updatePasswordModalVisible: !!flag
+    });
+  };
+
+  handleUpdatePassword = (id, password) => {
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: "user/updatePassword",
+      newPassword: password,
+      onSuccess: () =>  dispatch({
+        type: 'login/logout',
+      })
+    });
+
+    this.handleUpdatePasswordModalVisible();
+  };
+
   getData = () => [
     {
       title: formatMessage({ id: 'app.settings.security.password' }, {}),
@@ -33,56 +61,21 @@ class SecurityView extends Component {
         </Fragment>
       ),
       actions: [
-        <a>
+        <a onClick={() => this.handleUpdatePasswordModalVisible(true)}>
           <FormattedMessage id="app.settings.security.modify" defaultMessage="Modify" />
         </a>,
       ],
-    },
-    {
-      title: formatMessage({ id: 'app.settings.security.phone' }, {}),
-      description: `${formatMessage(
-        { id: 'app.settings.security.phone-description' },
-        {}
-      )}：138****8293`,
-      actions: [
-        <a>
-          <FormattedMessage id="app.settings.security.modify" defaultMessage="Modify" />
-        </a>,
-      ],
-    },
-    {
-      title: formatMessage({ id: 'app.settings.security.question' }, {}),
-      description: formatMessage({ id: 'app.settings.security.question-description' }, {}),
-      actions: [
-        <a>
-          <FormattedMessage id="app.settings.security.set" defaultMessage="Set" />
-        </a>,
-      ],
-    },
-    {
-      title: formatMessage({ id: 'app.settings.security.email' }, {}),
-      description: `${formatMessage(
-        { id: 'app.settings.security.email-description' },
-        {}
-      )}：ant***sign.com`,
-      actions: [
-        <a>
-          <FormattedMessage id="app.settings.security.modify" defaultMessage="Modify" />
-        </a>,
-      ],
-    },
-    {
-      title: formatMessage({ id: 'app.settings.security.mfa' }, {}),
-      description: formatMessage({ id: 'app.settings.security.mfa-description' }, {}),
-      actions: [
-        <a>
-          <FormattedMessage id="app.settings.security.bind" defaultMessage="Bind" />
-        </a>,
-      ],
-    },
+    }
   ];
 
   render() {
+    const {updatePasswordModalVisible} = this.state;
+
+    const updatePasswordMethods = {
+      handleUpdatePasswordModalVisible: this.handleUpdatePasswordModalVisible,
+      handleUpdatePassword: this.handleUpdatePassword
+    };
+
     return (
       <Fragment>
         <List
@@ -93,6 +86,11 @@ class SecurityView extends Component {
               <List.Item.Meta title={item.title} description={item.description} />
             </List.Item>
           )}
+        />
+
+        <UpdatePasswordForm
+          {...updatePasswordMethods}
+          updatePasswordModalVisible={updatePasswordModalVisible}
         />
       </Fragment>
     );

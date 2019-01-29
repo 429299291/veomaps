@@ -5,7 +5,8 @@ import {
   removeAdmin,
   updateAdmin,
   updateAdminPassword,
-  registerByEmail
+  registerByEmail,
+  updateMe
 } from "@/services/admin";
 import { message } from "antd";
 
@@ -59,8 +60,7 @@ export default {
     *emailRegister({ id, payload, onSuccess, onError }, { call, put }) {
       const response = yield call(registerByEmail, payload); // delete
 
-
-      console.log()
+      console.log();
 
       if (response) {
         message.success(`Register Success, ID : ${response}`);

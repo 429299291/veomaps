@@ -52,6 +52,11 @@ const errorStatus = [
   "Waiting for Activation"
 ];
 
+const formatTime = val => {
+  const local = moment(val).format('YYYY-MM-DD HH:mm:ss');
+  return local;
+}
+
 const getPowerPercent = power => {
   if (power >= 420) return 100;
   else if (power < 420 && power >= 411) return 95 + ((power - 411) * 5) / 9;
@@ -87,6 +92,7 @@ const CreateForm = Form.create()(props => {
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
+      width="700px"
     >
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="ID">
         {form.getFieldDecorator("vehicleNumber", {
@@ -105,6 +111,17 @@ const CreateForm = Form.create()(props => {
             {
               required: true,
               message: "At least 15 Digits!",
+              min: 1
+            }
+          ]
+        })(<Input placeholder="Please Input" />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Mac Address">
+        {form.getFieldDecorator("mac", {
+          rules: [
+            {
+              required: true,
+              message: "At least 8 Digits!",
               min: 1
             }
           ]
@@ -191,18 +208,6 @@ const UpdateForm = Form.create()(props => {
           initialValue: record.vehicleNumber + ""
         })(<Input placeholder="Please Input" />)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="IMEI">
-        {form.getFieldDecorator("imei", {
-          rules: [
-            {
-              required: true,
-              message: "At least 15 Digits!",
-              min: 1
-            }
-          ],
-          initialValue: record.imei
-        })(<Input placeholder="Please Input" />)}
-      </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
@@ -280,7 +285,8 @@ const UpdateForm = Form.create()(props => {
 /* eslint react/no-multi-comp:0 */
 @connect(({ vehicles, areas, loading }) => ({
   vehicles,
-  areas,
+  areas: areas.data,
+  selectedAreaId : areas.selectedAreaId,
   loading: loading.models.vehicles
 }))
 @Form.create()
@@ -321,6 +327,12 @@ class Vehicle extends PureComponent {
       )
     },
     {
+      title: "HeartTime",
+      dataIndex: "heartTime",
+      sorter: true,
+      render: val => <span>{formatTime(val)}</span>
+    },
+    {
       title: "Ride Count",
       dataIndex: "rideCount",
       sorter: true,
@@ -340,6 +352,14 @@ class Vehicle extends PureComponent {
       }
     },
     {
+      title: "Imei",
+      dataIndex: "imei"
+    },
+    {
+      title: "Mac",
+      dataIndex: "mac"
+    },
+    {
       title: "operation",
       render: (text, record) => (
         <Fragment>
@@ -356,7 +376,7 @@ class Vehicle extends PureComponent {
   ];
 
   componentDidMount() {
-    this.handleGetVehicles();
+    this.handleSearch();
   }
 
   handleGetVehicles = () => {
@@ -422,10 +442,18 @@ class Vehicle extends PureComponent {
     });
   };
 
-  handleSearch = e => {
-    e.preventDefault();
 
-    const { dispatch, form } = this.props;
+  componentDidUpdate(prevProps, prevState, snapshot) {
+
+    if (prevProps.selectedAreaId !== this.props.selectedAreaId) {
+      this.handleSearch();
+    }
+  }
+
+  handleSearch = e => {
+    typeof e === 'object' && e.preventDefault();
+
+    const { dispatch, form, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
 
     form.validateFields((err, fieldsValue) => {
@@ -433,7 +461,8 @@ class Vehicle extends PureComponent {
 
       const values = Object.assign({}, filterCriteria, fieldsValue, {
         currentPage: 1,
-        pageSize: 10
+        pageSize: 10,
+        areaId: selectedAreaId
       });
 
       this.setState(
@@ -543,7 +572,7 @@ class Vehicle extends PureComponent {
       form: { getFieldDecorator }
     } = this.props;
 
-    const areas = this.props.areas.data;
+    const { areas }= this.props;
 
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -614,27 +643,6 @@ class Vehicle extends PureComponent {
                 </Select>
               )}
             </FormItem>
-          </Col>
-        </Row>
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={6} sm={24}>
-            {areas && (
-              <FormItem
-                labelCol={{ span: 5 }}
-                wrapperCol={{ span: 15 }}
-                label="Area"
-              >
-                {getFieldDecorator("areaId")(
-                  <Select placeholder="select" style={{ width: "100%" }}>
-                    {areas.map(area => (
-                      <Option key={area.id} value={area.id}>
-                        {area.name}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              </FormItem>
-            )}
           </Col>
         </Row>
 
@@ -712,14 +720,14 @@ class Vehicle extends PureComponent {
         <CreateForm
           {...parentMethods}
           modalVisible={createModalVisible}
-          areas={areas.data}
+          areas={areas}
         />
 
         <UpdateForm
           {...updateMethods}
           modalVisible={updateModalVisible}
           record={selectedRecord}
-          areas={areas.data}
+          areas={areas}
         />
 
         {/*{selectedRecord &&*/}

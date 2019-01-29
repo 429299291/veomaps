@@ -1,9 +1,11 @@
 import React, { PureComponent } from 'react';
-import { Icon } from 'antd';
+import { Icon, Select } from 'antd';
 import Link from 'umi/link';
 import Debounce from 'lodash-decorators/debounce';
 import styles from './index.less';
 import RightContent from './RightContent';
+
+const Option = Select.Option;
 
 export default class GlobalHeader extends PureComponent {
   componentWillUnmount() {
@@ -22,8 +24,21 @@ export default class GlobalHeader extends PureComponent {
     onCollapse(!collapsed);
     this.triggerResizeEvent();
   };
+
+  handleAreaSelect = value => {
+    const { dispatch } = this.props;
+
+
+    dispatch({
+      type: 'areas/selectArea',
+      areaId: value === "all" ? null : value,
+    });
+  }
+
   render() {
-    const { collapsed, isMobile, logo } = this.props;
+    const { collapsed, isMobile, logo, areas } = this.props;
+
+
     return (
       <div className={styles.header}>
         {isMobile && (
@@ -36,6 +51,23 @@ export default class GlobalHeader extends PureComponent {
           type={collapsed ? 'menu-unfold' : 'menu-fold'}
           onClick={this.toggle}
         />
+        {areas && areas.length > 0 &&
+          <span style={{padding: "22px 24px", fontSize: "15px"}}>
+            <span>Area: </span>
+            <Select
+              onChange={this.handleAreaSelect}
+              className="area-select"
+              style={{ width: 200, marginLeft: "1em" }}
+              defaultValue={"all"}
+            >
+              <Option value="all">All</Option>
+              {areas.map(area =>
+                <Option  value={area.id} key={area.id}>
+                  {area.name}
+                </Option>)}
+            </Select>
+          </span>}
+
         <RightContent {...this.props} />
       </div>
     );

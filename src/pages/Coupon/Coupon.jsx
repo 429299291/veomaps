@@ -256,6 +256,7 @@ const UpdateForm = Form.create()(props => {
 @connect(({ coupons, areas, loading }) => ({
   coupons,
   areas,
+  selectedAreaId: areas.selectedAreaId,
   loading: loading.models.coupons
 }))
 @Form.create()
@@ -325,18 +326,26 @@ class Coupon extends PureComponent {
     this.handleGetCoupons();
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+
+    if (prevProps.selectedAreaId !== this.props.selectedAreaId) {
+      this.handleGetCoupons();
+    }
+
+  }
+
   handleGetCoupons = () => {
-    const { dispatch } = this.props;
+    const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
 
     dispatch({
       type: "coupons/get",
-      payload: filterCriteria
+      payload: selectedAreaId ? Object.assign({}, filterCriteria, {areaId: selectedAreaId}) :  filterCriteria
     });
   };
 
   handleStandardTableChange = (filtersArg, sorter) => {
-    const { filterCriteria } = this.state;
+    const {   } = this.state;
 
     const params = {
       ...filterCriteria
@@ -450,25 +459,6 @@ class Coupon extends PureComponent {
               {getFieldDecorator("name")(<Input placeholder="name" />)}
             </FormItem>
           </Col>
-          {areas && (
-            <Col md={8} sm={24}>
-              <FormItem
-                labelCol={{ span: 5 }}
-                wrapperCol={{ span: 15 }}
-                label="Area"
-              >
-                {getFieldDecorator("areaId")(
-                  <Select placeholder="select" style={{ width: "100%" }}>
-                    {areas.map(area => (
-                      <Option key={area.id} value={area.id}>
-                        {area.name}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-          )}
           <Col md={8} sm={24}>
             <span className={styles.submitButtons}>
               <Button type="primary" htmlType="submit">

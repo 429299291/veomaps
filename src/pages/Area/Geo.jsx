@@ -33,7 +33,14 @@ const fenceType = [
   "restricted parking",
   "sub-geofence"
 ];
-const fenceTypeColor = ["#b72126", "#1300ff", "#65b30a", "#00b8aa", "#ff0000", "#b72126"];
+const fenceTypeColor = [
+  "#b72126",
+  "#1300ff",
+  "#65b30a",
+  "#00b8aa",
+  "#ff0000",
+  "#b72126"
+];
 
 import { compose, withProps } from "recompose";
 import {
@@ -84,13 +91,11 @@ const MyMapComponent = compose(
     : [];
 
 
-  console.log(window.google.maps.SymbolPath);
-
-  const dashLineDot= {
+  const dashLineDot = {
     path: window.google.maps.SymbolPath.CIRCLE,
     fillOpacity: 1,
     scale: 2
-  }
+  };
 
   return (
     <GoogleMap
@@ -134,18 +139,16 @@ const MyMapComponent = compose(
           onClick={e => handleExistedFenceClick(e, fence)}
           options={{
             strokeColor: fenceTypeColor[fence.fenceType],
-            strokeOpacity: fence.fenceType === 5 ? 0 :  0.75,
-            strokeWeight: fence.fenceType === 5 ? 0 :  2,
+            strokeOpacity: fence.fenceType === 5 ? 0 : 0.75,
+            strokeWeight: fence.fenceType === 5 ? 0 : 2,
             fillColor: fenceTypeColor[fence.fenceType],
-            fillOpacity: (fence.fenceType === 0 || fence.fenceType === 5)  ? 0 : 0.35
+            fillOpacity:
+              fence.fenceType === 0 || fence.fenceType === 5 ? 0 : 0.35
           }}
         />
       ))}
 
-
-      {fences
-        .filter(fence => fence.fenceType === 5)
-        .map(fence => (
+      {fences.filter(fence => fence.fenceType === 5).map(fence => (
         <Polyline
           path={fence.fenceCoordinates}
           geodesic={true}
@@ -154,11 +157,13 @@ const MyMapComponent = compose(
             strokeColor: fenceTypeColor[fence.fenceType],
             strokeOpacity: 0.75,
             strokeWeight: 2,
-            icons:[{
-              icon: dashLineDot,
-              offset: '0',
-              repeat: '10px'
-            }],
+            icons: [
+              {
+                icon: dashLineDot,
+                offset: "0",
+                repeat: "10px"
+              }
+            ],
             fillColor: fenceTypeColor[5],
             fillOpacity: 0
           }}
@@ -195,7 +200,7 @@ const CreateFenceForm = Form.create()(props => {
   return (
     <Modal
       destroyOnClose
-      title= {`${fence ? "Edit" : "Add" } Fence`}
+      title={`${fence ? "Edit" : "Add"} Fence`}
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleModalVisible(false)}
@@ -242,28 +247,32 @@ const CreateFenceForm = Form.create()(props => {
           )}
         </FormItem>
       )}
-      {(currFenceType === 0 || currFenceType === 5) &&
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Has Forced Parking">
-        {form.getFieldDecorator("hasForce", {
-          initialValue: fence ? (fence.hasForce ? 1 : 0 ): undefined,
-          rules: [
-            {
-              required: true,
-              message: "You have to define if have forced parking area"
-            }
-          ]
-        })(
-          <Select placeholder="select" style={{ width: "100%" }}>
-            <Select.Option key={1} value={1}>
-              Yes
-            </Select.Option>
-            <Select.Option key={0} value={0}>
-              No
-            </Select.Option>
-          </Select>
-        )}
-      </FormItem>
-      }
+      {(currFenceType === 0 || currFenceType === 5) && (
+        <FormItem
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 15 }}
+          label="Has Forced Parking"
+        >
+          {form.getFieldDecorator("hasForce", {
+            initialValue: fence ? (fence.hasForce ? 1 : 0) : undefined,
+            rules: [
+              {
+                required: true,
+                message: "You have to define if have forced parking area"
+              }
+            ]
+          })(
+            <Select placeholder="select" style={{ width: "100%" }}>
+              <Select.Option key={1} value={1}>
+                Yes
+              </Select.Option>
+              <Select.Option key={0} value={0}>
+                No
+              </Select.Option>
+            </Select>
+          )}
+        </FormItem>
+      )}
     </Modal>
   );
 });
@@ -271,11 +280,11 @@ const CreateFenceForm = Form.create()(props => {
 @connect(({ geo, areas, loading }) => ({
   geo,
   areas,
+  selectedAreaId: areas.selectedAreaId,
   loading: loading.models.geo
 }))
 class Geo extends PureComponent {
   state = {
-    currentAreaId: -1,
     addFenceModalVisible: false,
     updateFenceModalVisible: false,
     deleteFenceModalVisible: false,
@@ -290,17 +299,12 @@ class Geo extends PureComponent {
   };
 
   componentDidMount() {
-    const areas = this.props.areas.data;
-    if (areas && areas.length > 0) {
-      const defaultAreaId = areas[0].id;
-      this.setState({ currentAreaId: defaultAreaId }, () =>
-        this.getAreaGeoInfo()
-      );
-    }
+    if (this.props.selectedAreaId)
+      this.getAreaGeoInfo();
   }
 
   getAreaGeoInfo = () => {
-    const areaId = this.state.currentAreaId;
+    const areaId = this.props.selectedAreaId;
 
     const { dispatch } = this.props;
 
@@ -369,9 +373,9 @@ class Geo extends PureComponent {
   };
 
   handleCreateFenceNextStep = values => {
-    const { currentAreaId } = this.state;
+    const { selectedAreaId } = this.props;
     values.fenceCoordinates = [];
-    values.areaId = currentAreaId;
+    values.areaId = selectedAreaId;
     this.setState({ isEditingFenceModalVisible: false, editingFence: values });
   };
 
@@ -389,10 +393,9 @@ class Geo extends PureComponent {
       isEditingFence,
       isEditingCenter,
       editingFence,
-      editingCenter,
-      currentAreaId
+      editingCenter
     } = this.state;
-    const { dispatch, geo } = this.props;
+    const { dispatch, geo, selectedAreaId } = this.props;
 
     if (isEditingCenter) {
       if (geo.area) {
@@ -409,7 +412,7 @@ class Geo extends PureComponent {
       } else {
         dispatch({
           type: "geo/addCenter",
-          payload: { areaId: currentAreaId, center: editingCenter },
+          payload: { areaId: selectedAreaId, center: editingCenter },
           onSuccess: this.getAreaGeoInfo,
           onError: this.cancelEditing
         });
@@ -421,11 +424,21 @@ class Geo extends PureComponent {
 
       dispatch({
         type: "geo/addFence",
-        payload: editingFence,
+        payload: Object.assign({}, editingFence, {areaId: selectedAreaId}) ,
         onSuccess: this.getAreaGeoInfo
       });
     }
   };
+
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+
+    if (prevProps.selectedAreaId !== this.props.selectedAreaId && this.props.selectedAreaId) {
+        this.getAreaGeoInfo();
+    }
+  }
+
+
 
   handleUpdateFence = updatedFence => {
     const { dispatch } = this.props;
@@ -488,8 +501,8 @@ class Geo extends PureComponent {
 
     return (
       <div>
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow} >
-          { isEditing ?
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
+          {isEditing ? (
             <Col md={24} sm={24}>
               <Button
                 icon="plus"
@@ -529,32 +542,31 @@ class Geo extends PureComponent {
                   Undo
                 </Button>
               )}
-
             </Col>
-            :
+          ) : (
             <Col md={24} sm={24}>
-            {authority.includes("update.fence") &&
-            <Button
-              type="primary"
-              onClick={() => this.handleEditCenter(true)}
-              disabled={isEditing}
-              className={styles.editButton}
-            >
-              Edit Center
-            </Button>
-            }
-            {authority.includes("create.fence") &&
-              <Button
-                type="primary"
-                onClick={() => this.handleCreateFence(true)}
-                disabled={isEditing}
-                className={styles.editButton}
-              >
-              Add Fence
-              </Button>
-            }
-          </Col>
-          }
+              {authority.includes("update.fence") && (
+                <Button
+                  type="primary"
+                  onClick={() => this.handleEditCenter(true)}
+                  disabled={isEditing}
+                  className={styles.editButton}
+                >
+                  Edit Center
+                </Button>
+              )}
+              {authority.includes("create.fence") && (
+                <Button
+                  type="primary"
+                  onClick={() => this.handleCreateFence(true)}
+                  disabled={isEditing}
+                  className={styles.editButton}
+                >
+                  Add Fence
+                </Button>
+              )}
+            </Col>
+          )}
         </Row>
       </div>
     );
@@ -590,9 +602,13 @@ class Geo extends PureComponent {
   };
 
   render() {
-    const { geo, areas : { data: areas}, loading } = this.props;
     const {
-      currentAreaId,
+      geo,
+      areas: { data: areas },
+      loading,
+      selectedAreaId,
+    } = this.props;
+    const {
       addFenceModalVisible,
       updateFenceModalVisible,
       deleteFenceModalVisible,
@@ -609,84 +625,61 @@ class Geo extends PureComponent {
 
     return (
       <PageHeaderWrapper title="Geo Management">
-        <Card bordered={false}>
-
+        {selectedAreaId && <Card bordered={false}>
           <div>
-            <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-              <Col md={6} sm={24}>
-                {areas &&
-                areas.length > 0 && (
-                  <Select
-                    defaultValue={areas[0].id}
-                    placeholder="select"
-                    style={{ width: "100%", display: "inline" }}
-
-                    disabled={isEditing}
-                    onChange={areaId =>
-                      this.setState({ currentAreaId: areaId }, () =>
-                        this.getAreaGeoInfo()
-                      )
-                    }
-                  >
-                    {areas.map(area => (
-                      <Select.Option key={area.id} value={area.id}>
-                        {area.name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                )}
-              </Col>
-            </Row>
-            {!isEditing &&
-              selectedExistedFence ? (
-                <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
-                  <Col md={24} sm={24}>
-                    {authority.includes("update.fence") &&
-                      <Button
-                        type="primary"
-                        onClick={() => this.handleEditFence()}
-                        disabled={isEditing}
-                        className={styles.editButton}
-                      >
-                        Edit Fence
-                      </Button>
-                    }
-                    {authority.includes("delete.fence") &&
-                      <Button
-                        type="danger"
-                        onClick={() =>
-                          this.setState({ isDeleteFenceModalVisible: true })
-                        }
-                        disabled={isEditing}
-                        className={styles.editButton}
-                      >
-                        DELETE
-                      </Button>
-                    }
-                    {authority.includes("delete.fence") &&
+            {!isEditing && selectedExistedFence ? (
+              <Row
+                gutter={{ md: 8, lg: 24, xl: 48 }}
+                className={styles.editRow}
+              >
+                <Col md={24} sm={24}>
+                  {authority.includes("update.fence") && (
+                    <Button
+                      type="primary"
+                      onClick={() => this.handleEditFence()}
+                      disabled={isEditing}
+                      className={styles.editButton}
+                    >
+                      Edit Fence
+                    </Button>
+                  )}
+                  {authority.includes("delete.fence") && (
+                    <Button
+                      type="danger"
+                      onClick={() =>
+                        this.setState({ isDeleteFenceModalVisible: true })
+                      }
+                      disabled={isEditing}
+                      className={styles.editButton}
+                    >
+                      DELETE
+                    </Button>
+                  )}
+                  {authority.includes("delete.fence") && (
                     <Button
                       type="default"
                       onClick={() =>
-                        this.setState({ isEditing: false, selectedExistedFence: null})
+                        this.setState({
+                          isEditing: false,
+                          selectedExistedFence: null
+                        })
                       }
                       disabled={isEditing}
                       className={styles.editButton}
                     >
                       Cancel
                     </Button>
-                    }
-                    <span>
-                      Name: {selectedExistedFence.name} Type:{" "}
-                      {fenceType[selectedExistedFence.fenceType]}
-                    </span>
-
-                  </Col>
-                </Row>
-              )
-              :
+                  )}
+                  <span>
+                    Name: {selectedExistedFence.name} Type:{" "}
+                    {fenceType[selectedExistedFence.fenceType]}
+                  </span>
+                </Col>
+              </Row>
+            ) : (
               <div>{this.renderHeader(areas.data, isEditing)}</div>
-            }
-            <div style={{marginBottom: "1em"}} />
+            )}
+            <div style={{ marginBottom: "1em" }} />
             <MyMapComponent
               onMapClick={this.handleMapClick}
               handleExistedFenceClick={this.handleExistedFenceClick}
@@ -696,11 +689,17 @@ class Geo extends PureComponent {
             />
           </div>
           <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
-            <Col md={24} sm={24} style={{float: "right"}}>
-              {fenceTypeColor.map((color, index) => <div className={styles.fenceColorIndex} key={index} style={{backgroundColor: fenceTypeColor[index]}}>{`${fenceType[index]}`}</div>)}
+            <Col md={24} sm={24} style={{ float: "right" }}>
+              {fenceTypeColor.map((color, index) => (
+                <div
+                  className={styles.fenceColorIndex}
+                  key={index}
+                  style={{ backgroundColor: fenceTypeColor[index] }}
+                >{`${fenceType[index]}`}</div>
+              ))}
             </Col>
           </Row>
-        </Card>
+        </Card> }
         <CreateFenceForm
           handleNext={
             selectedExistedFence

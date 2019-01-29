@@ -7,6 +7,12 @@ export async function getAdminAreas(params) {
   });
 }
 
+export async function getAllAreas() {
+  return request(`/admins/areas/all`, {
+    method: "GET"
+  });
+}
+
 export async function getAreaDetail(id) {
   return request(`/admins/areas/${id}`);
 }

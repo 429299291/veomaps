@@ -85,7 +85,7 @@ const EndRideForm = Form.create()(props => {
 });
 
 const UpdateForm = Form.create()(props => {
-  const { form, handleUpdate, areas, record } = props;
+  const { form, handleUpdate, areas, record, unlockVehicle } = props;
   const okHandle = () => {
     if (form.isFieldsTouched())
       form.validateFields((err, fieldsValue) => {
@@ -131,25 +131,9 @@ const UpdateForm = Form.create()(props => {
         wrapperCol={{ span: 15 }}
         label="Status"
       >
-        {form.getFieldDecorator("status", {
-          rules: [
-            {
-              required: true,
-              message: "You have pick a status"
-            }
-          ],
-          initialValue: record.lockStatus
-        })(
-          <Select placeholder="select" style={{ width: "100%" }}>
-
-              <Option  value={0}>
-                UnLock
-              </Option>
-            <Option  value={1}>
-              Lock
-            </Option>
-          </Select>
-        )}
+        <div>
+          {record.lockStatus === 0 ? "Unlock" : "Lock"}
+        </div>
       </FormItem>
 
       {areas && (
@@ -180,9 +164,18 @@ const UpdateForm = Form.create()(props => {
             icon="plus"
             type="primary"
             onClick={okHandle}
-            disabled={!form.isFieldsTouched()}
+            disabled={!form.isFieldsTouched() && !authority.includes("update.vehicle.detail")}
+            style={{marginRight: "1em"}}
           >
             Update Vehicle
+          </Button>
+          <Button
+            icon="plus"
+            type="primary"
+            onClick={unlockVehicle}
+            disabled={!authority.includes("unlock.vehicle")}
+          >
+            Unlock Remotely
           </Button>
         </Col>
       </Row>
@@ -326,11 +319,9 @@ class VehicleDetail extends PureComponent {
 
 
   componentDidMount = () => {
-    this.handleGetVehicleCoupons(this.props.vehicleId);
     this.handleGetVehicleDetail(this.props.vehicleId);
     this.handleGetVehicleOrders(this.props.vehicleId);
     this.handleGetVehicleRides(this.props.vehicleId);
-    this.handleGetVehiclePayments(this.props.vehicleId);
   };
 
   handleEndRideVisible = (flag, record) => {
@@ -351,23 +342,7 @@ class VehicleDetail extends PureComponent {
     this.handleEndRideVisible();
   };
 
-  handleGetVehicleCoupons = vehicleId => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: "coupons/getVehicleCoupons",
-      payload: vehicleId,
-      onSuccess: response => this.setState({ vehicleCoupons: response })
-    });
-  };
 
-  handleGetVehiclePayments = vehicleId => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: "vehicles/vehiclePayments",
-      payload: vehicleId,
-      onSuccess: response => this.setState({ vehiclePayments: response })
-    });
-  };
 
   handleGetVehicleDetail = vehicleId => {
     const { dispatch } = this.props;
@@ -380,6 +355,8 @@ class VehicleDetail extends PureComponent {
 
   handleGetVehicleOrders = id => {
     const { dispatch } = this.props;
+
+    authority.includes("get.vehicle.orders") &&
     dispatch({
       type: "vehicles/getOrders",
       id: id,
@@ -389,24 +366,13 @@ class VehicleDetail extends PureComponent {
 
   handleGetVehicleRides = vehicleId => {
     const { dispatch } = this.props;
+
+    authority.includes("get.rides") &&
     dispatch({
       type: "rides/getVehicleRides",
       vehicleId: vehicleId,
       onSuccess: response => this.setState({ vehicleRides: response })
     });
-  };
-
-  handleDeleteCoupon = vehicleCouponId => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: "coupons/removeVehicleCoupon",
-      id: vehicleCouponId,
-      onSuccess: () => this.handleGetVehicleCoupons(this.props.vehicleId)
-    });
-  };
-
-  filterCouponsByAreaId = (coupons, areaId) => {
-    return coupons.filter(coupon => coupon.areaId === areaId);
   };
 
   handleUpdate = (id, fields) => {
@@ -415,6 +381,18 @@ class VehicleDetail extends PureComponent {
       type: "vehicles/update",
       payload: fields,
       id: id,
+      onSuccess: () => {
+        this.props.handleGetVehicles();
+        this.handleGetVehicleDetail(vehicleId);
+      }
+    });
+  };
+
+  unlockVehicle = () => {
+    const { dispatch, vehicleId } = this.props;
+    dispatch({
+      type: "vehicles/unlock",
+      id: vehicleId,
       onSuccess: () => {
         this.props.handleGetVehicles();
         this.handleGetVehicleDetail(vehicleId);
@@ -460,9 +438,11 @@ class VehicleDetail extends PureComponent {
                   areas={areas.data}
                   record={record}
                   handleUpdate={this.handleUpdate}
+                  unlockVehicle={this.unlockVehicle}
                 />
               </Card>
 
+            {authority.includes("get.rides")  &&
             <Card title="Vehicle Rides" style={{ marginTop: "2em" }}>
               <Table
                 dataSource={vehicleRides}
@@ -478,7 +458,9 @@ class VehicleDetail extends PureComponent {
                 />
               )}
             </Card>
+            }
 
+            {authority.includes("get.vehicle.orders") &&
             <Card title="Vehicle Orders" style={{ marginTop: "2em" }}>
               <Table
                 dataSource={vehicleOrders}
@@ -486,6 +468,7 @@ class VehicleDetail extends PureComponent {
                 scroll={{ x: 1300 }}
               />
             </Card>
+            }
 
           </div>
       </Modal>

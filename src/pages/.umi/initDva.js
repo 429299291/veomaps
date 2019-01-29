@@ -18,6 +18,7 @@ app.model({ namespace: 'admin', ...(require('/Users/zhuangenze/Desktop/manhattan
 app.model({ namespace: 'area', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/area.js').default) });
 app.model({ namespace: 'coupon', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/coupon.js').default) });
 app.model({ namespace: 'customer', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/customer.js').default) });
+app.model({ namespace: 'dashboard', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/dashboard.js').default) });
 app.model({ namespace: 'error', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/error.js').default) });
 app.model({ namespace: 'geo', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/geo.js').default) });
 app.model({ namespace: 'global', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/global.js').default) });
@@ -36,3 +37,4 @@ app.model({ namespace: 'register', ...(require('/Users/zhuangenze/Desktop/manhat
 app.model({ namespace: 'activities', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/pages/Dashboard/models/activities.js').default) });
 app.model({ namespace: 'chart', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/pages/Dashboard/models/chart.js').default) });
 app.model({ namespace: 'monitor', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/pages/Dashboard/models/monitor.js').default) });
+app.model({ namespace: 'geographic', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/pages/Account/Settings/models/geographic.js').default) });

@@ -33,20 +33,24 @@ import { getTimeDistance } from "@/utils/utils";
 
 import styles from "./Analysis.less";
 
-const { TabPane } = Tabs;
-const { RangePicker } = DatePicker;
-
 const rankingListData = [];
+
 for (let i = 0; i < 7; i += 1) {
-  rankingListData.push({
-    title: `工专路 ${i} 号店`,
-    total: 323234
-  });
+   rankingListData.push({
+        title: `工专路 ${i} 号店`,
+        total: 323234
+    });
 }
 
-@connect(({ chart, loading }) => ({
+
+const {RangePicker} = DatePicker;
+const { TabPane } = Tabs;
+
+
+
+@connect(({ chart, areas, loading }) => ({
   chart,
-  loading: loading.effects["chart/fetch"]
+  loading: loading.effects["chart/fetch"] || loading.models.areas
 }))
 class Analysis extends Component {
   constructor(props) {

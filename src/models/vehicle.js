@@ -5,7 +5,8 @@ import {
   addVehicle,
   removeVehicle,
   updateVehicle,
-  getVehicleOrders
+  getVehicleOrders,
+  unlockVehicle
 } from "@/services/vehicle";
 import { message } from "antd";
 
@@ -54,6 +55,16 @@ export default {
     },
     *remove({ id }, { call, put }) {
       const response = yield call(removeVehicle, id); // post
+    },
+    *unlock({ id, onSuccess }, { call, put }) {
+      const response = yield call(unlockVehicle, id); // post
+
+      if (response) {
+        message.success(`Unlock Success, ID : ${response}`);
+        typeof onSuccess === "function" && onSuccess();
+      } else {
+        message.error(`Unlock Fail.`);
+      }
     },
     *update({ id, payload, onSuccess }, { call, put }) {
       const response = yield call(updateVehicle, id, payload); // put

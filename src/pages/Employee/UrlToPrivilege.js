@@ -12,9 +12,14 @@ export default {
     "PUT /api/admins/rides/{rideId}/end": "end.customer.ride",
     "DELETE /api/admins/coupons/customers/{customerCouponId}":
       "delete.customer.coupon",
-    "GET /api/admins/customers/{customerId}/charge_history" : "get.customer.payment",
-    "GET /api/admins/memberships/customers/{customerId}/available" : "get.customer.available.membership",
-    "POST /api/admins/memberships/customers/{customerId}/buy" : "customer.buy.membership"
+    "GET /api/admins/customers/{customerId}/charge_history":
+      "get.customer.payment",
+    "GET /api/admins/memberships/customers/{customerId}":
+      "get.customer.membership",
+    "GET /api/admins/memberships/customers/{customerId}/available":
+      "get.customer.available.membership",
+    "POST /api/admins/memberships/customers/{customerId}/buy":
+      "customer.buy.membership"
   },
   "Vehicle List": {
     "GET /api/admins/vehicles": "get.vehicles",
@@ -22,7 +27,8 @@ export default {
     "GET /api/admins/vehicles/{id}": "get.vehicles.detail",
     "PUT /api/admins/vehicles/{id}": "update.vehicle.detail",
     "POST /api/admins/vehicles": "create.vehicle",
-    "PUT /api/admins/vehicles/{id}/unlock": "unlock.vehicle"
+    "PUT /api/admins/vehicles/{id}/unlock": "unlock.vehicle",
+    "GET /api/admins/vehicles/{id}/orders": "get.vehicle.orders",
   },
   "Riding History": {
     "GET /api/admins/rides": "get.rides",
@@ -33,7 +39,7 @@ export default {
   "Geo Management": {
     "GET /api/admins/geo/fences": "get.fences",
     "GET /api/admins/geo/area_center": "get.area.center",
-    "DELETE /api/admins/geo/fences/{fenceId}":  "delete.fence",
+    "DELETE /api/admins/geo/fences/{fenceId}": "delete.fence",
     "POST /api/admins/geo/fences": "create.fence",
     "PUT /api/admins/geo/fences/{fenceId}": "update.fence",
     "POST /api/admins/geo/area_center": "create.center",
@@ -45,6 +51,7 @@ export default {
     "DELETE /api/admins/areas/{area_id}": "delete.area",
     "PUT /api/admins/areas/{area_id}": "update.area.detail",
     "GET /api/admins/areas": "get.areas",
+    "GET /api/admins/areas/all": "get.all.areas",
     "POST /api/admins/areas": "create.area"
   },
   "Coupon Management": {
@@ -84,7 +91,7 @@ export default {
   },
   "Privilege Management": {
     "GET /api/admins/privileges": "get.privileges",
-    "PUT /api/admins/roles/{roleId}/update_privileges": "update.role.privilege",
+    "PUT /api/admins/roles/{roleId}/update_privileges": "update.role.privilege"
   },
   "Admin Management": {
     "DELETE /api/admins/{adminId}": "delete.admin",
@@ -94,6 +101,10 @@ export default {
     "GET /api/admins/me": "get.me",
     "PUT /api/admins/me": "update.me",
     "POST /api/admins/register": "add.admin",
-    "POST /api/admins/register_by_email": "register.admin.email"
+    "POST /api/admins/register_by_email": "register.admin.email",
+    "PUT /api/admins/me/update_password": "update.me.password"
+  },
+  "Dashboard": {
+    "GET /api/admins/vehicles/location_details/{areaId}": "get.vehicle.location",
   }
 };

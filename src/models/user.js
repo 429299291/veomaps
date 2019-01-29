@@ -1,8 +1,9 @@
-import { query as queryUsers, getMe } from "@/services/user";
+import { query as queryUsers, getMe, updateMe, updatePassword } from "@/services/user";
 import UrlToPrivilege from "../pages/Employee/UrlToPrivilege";
 import { setAuthority } from "@/utils/authority";
 import { reloadAuthorized } from "@/utils/Authorized";
 import * as routerRedux from "react-router-redux";
+import { message } from "antd";
 
 export default {
   namespace: "user",
@@ -12,6 +13,9 @@ export default {
     currentUser: {}
   },
 
+
+
+
   effects: {
     *fetch(_, { call, put }) {
       const response = yield call(queryUsers);
@@ -20,7 +24,29 @@ export default {
         payload: response
       });
     },
-    *fetchCurrent(_, { call, put }) {
+    *updateMe({ id, payload, onSuccess, onError }, { call, put }) {
+      const response = yield call(updateMe,  payload); // put
+
+      if (response) {
+        message.success(`Add Success, ID : ${response}`);
+        onSuccess && onSuccess();
+      } else {
+        message.error(`Add Fail.`);
+        onError && onError();
+      }
+    },
+    *updatePassword({ newPassword, onSuccess, onError }, { call, put }) {
+      const response = yield call(updatePassword,  newPassword); // put
+
+      if (response) {
+        message.success(`Change password Success.`);
+        onSuccess && onSuccess();
+      } else {
+        message.error(`Change password Fail.`);
+        onError && onError();
+      }
+    },
+    *fetchCurrent({ onSuccess }, { call, put }) {
       const response = yield call(getMe);
 
       const flatUrlToPrivileges = Object.keys(UrlToPrivilege)
@@ -48,6 +74,11 @@ export default {
         type: "saveCurrentUser",
         payload: response
       });
+
+
+      if (typeof onSuccess === "function") {
+        onSuccess();
+      }
     }
   },
 

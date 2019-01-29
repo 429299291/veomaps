@@ -112,6 +112,7 @@ const UpdateForm = Form.create()(props => {
 @connect(({ errors, loading, areas }) => ({
   errors: errors.data,
   areas: areas.data,
+  selectedAreaId: areas.selectedAreaId,
   loading: loading.models.errors
 }))
 @Form.create()
@@ -184,12 +185,13 @@ class Error extends PureComponent {
   }
 
   handleGetErrors = () => {
-    const { dispatch } = this.props;
+    const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
+
 
     dispatch({
       type: "errors/get",
-      payload: filterCriteria,
+      payload: selectedAreaId ? Object.assign({},filterCriteria, {areaId: selectedAreaId} ) : filterCriteria,
       onSuccess: () => this.setState({selectedRows: []})
     });
   };
@@ -315,6 +317,12 @@ class Error extends PureComponent {
     });
   };
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+
+    if (prevProps.selectedAreaId !== this.props.selectedAreaId) {
+      this.handleGetErrors();
+    }
+  }
 
   handleSelectRows = rows => {
 

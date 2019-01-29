@@ -20,15 +20,15 @@ class Info extends Component {
       security: (
         <FormattedMessage id="app.settings.menuMap.security" defaultMessage="Security Settings" />
       ),
-      binding: (
-        <FormattedMessage id="app.settings.menuMap.binding" defaultMessage="Account Binding" />
-      ),
-      notification: (
-        <FormattedMessage
-          id="app.settings.menuMap.notification"
-          defaultMessage="New Message Notification"
-        />
-      ),
+      // binding: (
+      //   <FormattedMessage id="app.settings.menuMap.binding" defaultMessage="Account Binding" />
+      // ),
+      // notification: (
+      //   <FormattedMessage
+      //     id="app.settings.menuMap.notification"
+      //     defaultMessage="New Message Notification"
+      //   />
+      // ),
     };
     const key = location.pathname.replace(`${match.path}/`, '');
     this.state = {
@@ -59,6 +59,7 @@ class Info extends Component {
 
   getmenu = () => {
     const { menuMap } = this.state;
+
     return Object.keys(menuMap).map(item => <Item key={item}>{menuMap[item]}</Item>);
   };
 
@@ -95,9 +96,7 @@ class Info extends Component {
 
   render() {
     const { children, currentUser } = this.props;
-    if (!currentUser.userid) {
-      return '';
-    }
+
     const { mode, selectKey } = this.state;
     return (
       <GridContent>
