@@ -8,7 +8,8 @@ import {
   getCustomerPayments,
   updateMembership,
   getMembership,
-  getAvailableMemberships
+  getAvailableMemberships,
+  refund
 } from "@/services/customer";
 import { message } from "antd";
 
@@ -61,6 +62,16 @@ export default {
         onSuccess(data);
       } else {
         message.error(`Fail!`);
+      }
+    },
+    *refund({  id, params, onSuccess }, { call, put }) {
+      const data = yield call(refund, id, params);
+
+      if (data) {
+        message.success("Refund Success!");
+        onSuccess();
+      } else {
+        message.error(`Refund Fail!`);
       }
     },
     *getMembership({  customerId, onSuccess }, { call, put }) {

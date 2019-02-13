@@ -19,7 +19,8 @@ export default {
     "GET /api/admins/memberships/customers/{customerId}/available":
       "get.customer.available.membership",
     "POST /api/admins/memberships/customers/{customerId}/buy":
-      "customer.buy.membership"
+      "customer.buy.membership",
+    "POST /api/admins/customers/{customerId}/refund": "refund.customer.charge"
   },
   "Vehicle List": {
     "GET /api/admins/vehicles": "get.vehicles",

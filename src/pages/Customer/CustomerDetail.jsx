@@ -26,7 +26,8 @@ import {
 } from "antd";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 import { getAuthority } from "@/utils/authority";
-import Customer from "./Customer";
+import styles from "./CustomerDetail.less";
+
 
 const FormItem = Form.Item;
 
@@ -41,6 +42,7 @@ const customerStatus = ["NORMAL", "FROZEN", "ERROR"];
 
 const vehicleType = ["Bicycle", "Scooter", "E-Ride", "Car"];
 const lockOperationWay = ["GPRS", "BLUETOOTH"];
+const REFUND_TYPE = {"FULL": 0, "CUSTOMER_FAULT": 1, "OTHER": 2};
 
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -109,12 +111,13 @@ const UpdateForm = Form.create()(props => {
   };
 
   const checkEmailFormat = (rule, value, callback) => {
-    if (value === "" || isEmailRegex.test(value)) {
+    if (value === null || value === "" || isEmailRegex.test(value)) {
       callback();
       return;
     }
     callback("Please input correct email format");
   };
+
 
   return (
     <div>
@@ -155,6 +158,18 @@ const UpdateForm = Form.create()(props => {
           </Option>
           <Option key={0} value={0}>
             Unverified
+          </Option>
+        </Select>)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Migrated">
+        {form.getFieldDecorator("migrated", {
+          initialValue: record.migrated
+        })(<Select placeholder="select" style={{ width: "100%" }}>
+          <Option key={1} value={true}>
+            Yes
+          </Option>
+          <Option key={0} value={false}>
+            No
           </Option>
         </Select>)}
       </FormItem>
@@ -231,7 +246,6 @@ const MembershipForm = Form.create()(props => {
         if (err) return;
         form.resetFields();
 
-        //console.log(fieldsValue);
 
         handleBuyMembership(fieldsValue);
       });
@@ -361,6 +375,252 @@ const AddCouponForm = Form.create()(props => {
   );
 });
 
+const RefundForm = Form.create()(props => {
+  const {
+    isRefundFormVisible,
+    handleRefundFormVisible,
+    form,
+    handleRefund,
+    customer,
+    needPickupFee,
+    handleNeedPickupFee,
+    selectedCharge,
+    handleRefundTypeChange,
+    refundType
+  } = props;
+
+  const okHandle = () => {
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      form.resetFields();
+
+      const params = {}
+
+      params.stripeChargeId = selectedCharge.stripeChargeId;
+      params.pickupFee = fieldsValue.pickupFee;
+      params.refundNote = fieldsValue.refundNote;
+      switch (refundType) {
+        case REFUND_TYPE.FULL:
+          params.refundAmount = selectedCharge.amount - (selectedCharge.refundAmount ? selectedCharge.refundAmount : 0);
+          break;
+        case REFUND_TYPE.CUSTOMER_FAULT:
+          const amount = selectedCharge.amount;
+          params.refundAmount = amount - 0.3 - amount*0.029 - 1;
+          break;
+        case REFUND_TYPE.OTHER:
+          params.refundAmount = fieldsValue.refundAmount;
+          break;
+
+      }
+
+      handleRefund(customer.id, params);
+      handleRefundFormVisible(false);
+
+    });
+  };
+
+  const refundNoteColumns = [{
+    title: 'Note',
+    dataIndex: 'note',
+  }, {
+    title: 'Amount',
+    dataIndex: 'amount',
+  }, {
+    title: 'Created',
+    dataIndex: "created",
+    render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
+  }, {
+    title: 'Operator',
+    dataIndex: 'operator'
+  }];
+
+  const checkMoneyFormat = (rule, value, callback) => {
+
+
+
+    if (isNaN(value)) {
+      callback("Please input a correct number.");
+      return;
+    }
+
+
+    if (value < 0) {
+      callback("Amount must be larger than 0.");
+      return;
+    }
+
+    const refundAmount =  selectedCharge.refundAmount === null ? 0 : selectedCharge.refundAmount;
+    if (value + refundAmount > selectedCharge.amount) {
+      callback("Amount exceeds limit.");
+      return;
+    }
+
+    callback();
+
+    return;
+  };
+
+  return (
+    <Modal
+      destroyOnClose
+      title="Refund"
+      visible={isRefundFormVisible}
+      width={800}
+      onOk={okHandle}
+      onCancel={() => handleRefundFormVisible(false)}
+    >
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Charge Amount"
+      >
+        <span>{selectedCharge.amount + " usd"}</span>
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Stripe Charge Token"
+      >
+        <span>{selectedCharge.stripeChargeId}</span>
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Stripe Customer Token"
+      >
+        <span>{selectedCharge.stripeCustomerId}</span>
+      </FormItem>
+
+
+      {
+        selectedCharge.refundAmount &&
+        <FormItem
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 15 }}
+          label="Refunded Amount"
+        >
+          <span>{selectedCharge.refundAmount}</span>
+        </FormItem>
+      }
+
+      {
+        selectedCharge.refundNote &&
+          <Card title="Refund History">
+            <Table
+                columns={refundNoteColumns}
+                dataSource={JSON.parse(selectedCharge.refundNote)}
+                scroll={{ x: 800 }}
+            />
+          </Card>
+      }
+
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Refund Type"
+      >
+        <Select
+          placeholder="select"
+          onSelect={value => handleRefundTypeChange(value)}
+          value={refundType}
+          style={{ width: "100%" }}>
+          <Option key={1} value={REFUND_TYPE.FULL}>
+            Full Amount
+          </Option>
+          <Option key={0} value={REFUND_TYPE.CUSTOMER_FAULT}>
+            Customer Fault
+          </Option>
+          <Option key={0} value={REFUND_TYPE.OTHER}>
+            Other
+          </Option>
+        </Select>
+
+      </FormItem>
+
+      {refundType == REFUND_TYPE.OTHER &&
+        <FormItem
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 15 }}
+          label="Refund Amount"
+        >
+          {form.getFieldDecorator("refundAmount", {
+            rules: [
+              {
+                validator: checkMoneyFormat
+              },
+            ],
+            initialValue: 0
+          })(<InputNumber
+            formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            parser={value => value.replace(/\$\s?|(,*)/g, '')}
+          />)}
+        </FormItem>
+      }
+
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Note"
+      >
+        {form.getFieldDecorator("refundNote", {
+          rules: [
+            {
+              required: true,
+              message: "note can't be empty"
+            }
+          ]
+        })(<Input.TextArea
+          rows={4}
+        />)}
+      </FormItem>
+
+
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Need Pickup Fee?"
+      >
+        <Checkbox
+          onChange={e =>
+            handleNeedPickupFee(e.target.checked)
+          }
+          checked={needPickupFee}
+        />
+      </FormItem>
+
+
+      {needPickupFee &&
+
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Pick Up Fee"
+      >
+        {form.getFieldDecorator("pickupFee", {
+          rules: [
+            {
+              validator: (rule, value, callback) => {
+                if (value < 100 && value > 0) {
+                  callback();
+                  return
+                }
+                callback("pick up fee too large, please contact your supervisor to refund this.");
+              }
+            }
+          ],
+          initialValue: 0
+        })(<InputNumber
+            formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            parser={value => value.replace(/\$\s?|(,*)/g, '')}
+        />)}
+
+      </FormItem>
+      }
+
+    </Modal>
+  );
+});
+
 @connect(({ coupons, areas, loading, customers }) => ({
   areas,
   coupons,
@@ -376,7 +636,11 @@ class CustomerDetail extends PureComponent {
     isEndRideVisible: false,
     selectedRide: null,
     customerMembership: null,
-    availableMemberships: null
+    availableMemberships: null,
+    isRefundFormVisible: false,
+    selectedCharge: null,
+    refundType: REFUND_TYPE.FULL,
+    needPickupFee: null,
   };
 
   customerCouponColumns = [
@@ -488,11 +752,54 @@ class CustomerDetail extends PureComponent {
       dataIndex: "amount"
     },
     {
+      title: "Description",
+      dataIndex: "description"
+    },
+    {
+      title: "Stripe Id",
+      dataIndex: "stripeChargeId"
+    },
+    {
+      title: "Amount Refunded",
+      dataIndex: "refundAmount"
+    },
+    {
+      title: "Refund",
+      render: (text, record) => (
+        <Fragment>
+          {authority.includes("refund.customer.charge") && (
+            <Popconfirm
+              title="Are you Sure？"
+              icon={
+                <Icon type="question-circle-o" style={{ color: "red" }} />
+              }
+              onConfirm={() => this.handleRefundFormVisible(true, record)}
+            >
+              <a>Refund</a>
+            </Popconfirm>
+          )}
+        </Fragment>
+      )
+    },
+    {
       title: "Created",
       dataIndex: "created",
       render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
     }
   ];
+
+  handleRefundFormVisible= (flag, record) =>  {
+    this.setState({
+      isRefundFormVisible: !!flag,
+      selectedCharge: record
+    });
+  }
+
+
+  handleNeedPickupFee = value => {
+    console.log(value);
+    this.setState({needPickupFee: value})
+  }
 
 
 
@@ -516,6 +823,10 @@ class CustomerDetail extends PureComponent {
     });
   };
 
+
+  handleRefundTypeChange = type => {
+    this.setState({refundType: type})
+  }
 
   handleGetCoupons = () => {
     const {dispatch} = this.props;
@@ -618,6 +929,18 @@ class CustomerDetail extends PureComponent {
     });
   };
 
+  handleRefund = (id, params) => {
+    const { dispatch, customerId } = this.props;
+
+    dispatch({
+      type: "customers/refund",
+      params: params,
+      id: id,
+      onSuccess: () => this.handleGetCustomerPayments(customerId)
+    });
+
+  };
+
 
   handleGetCustomerMembership = () => {
     const { dispatch, customerId } = this.props;
@@ -652,6 +975,7 @@ class CustomerDetail extends PureComponent {
     });
   }
 
+
   render() {
     const {
       customerCoupons,
@@ -661,7 +985,11 @@ class CustomerDetail extends PureComponent {
       isEndRideVisible,
       selectedRide,
       customerMembership,
-      availableMemberships
+      availableMemberships,
+      isRefundFormVisible,
+      selectedCharge,
+      refundType,
+      needPickupFee
     } = this.state;
 
     const {
@@ -675,6 +1003,13 @@ class CustomerDetail extends PureComponent {
     const endRideMethod = {
       handleEndRide: this.handleEndRide,
       handleEndRideVisible: this.handleEndRideVisible
+    };
+
+    const refundMethod = {
+      handleRefundFormVisible: this.handleRefundFormVisible,
+      handleRefund: this.handleRefund,
+      handleRefundTypeChange: this.handleRefundTypeChange,
+      handleNeedPickupFee: this.handleNeedPickupFee
     };
 
     return (
@@ -696,30 +1031,6 @@ class CustomerDetail extends PureComponent {
                   record={customerDetail}
                   handleUpdate={this.handleUpdate}
                 />
-              </Card>
-            )}
-
-            {authority.includes("get.customer.coupons") && (
-              <Card title="Customer Coupons" style={{ marginTop: "2em" }}>
-                <Row>
-                  <Col>
-                    <Table
-                      dataSource={customerCoupons}
-                      columns={this.customerCouponColumns}
-                      scroll={{ x: 1300 }}
-                    />
-                  </Col>
-                </Row>
-
-                {authority.includes("assign.coupon.to.customer") && (
-                  <AddCouponForm
-                    coupons={this.filterCouponsByAreaId(
-                      coupons.data,
-                      customerDetail.areaId
-                    )}
-                    handleAddCustomerCoupon={this.handleAddCustomerCoupon}
-                  />
-                )}
               </Card>
             )}
 
@@ -747,7 +1058,43 @@ class CustomerDetail extends PureComponent {
                 columns={this.customerPaymentColumn}
                 scroll={{ x: 1300 }}
               />
+
+              {isRefundFormVisible && (
+                <RefundForm
+                  isRefundFormVisible={isRefundFormVisible}
+                  selectedCharge={selectedCharge}
+                  customer={customerDetail}
+                  {...refundMethod}
+                  refundType={refundType}
+                  needPickupFee={needPickupFee}
+                />
+              )}
             </Card>}
+
+            {authority.includes("get.customer.coupons") && (
+              <Card title="Customer Coupons" style={{ marginTop: "2em" }}>
+                <Row>
+                  <Col>
+                    <Table
+                      dataSource={customerCoupons}
+                      columns={this.customerCouponColumns}
+                      scroll={{ x: 1300 }}
+                    />
+                  </Col>
+                </Row>
+
+                {authority.includes("assign.coupon.to.customer") && (
+                  <AddCouponForm
+                    coupons={this.filterCouponsByAreaId(
+                      coupons.data,
+                      customerDetail.areaId
+                    )}
+                    handleAddCustomerCoupon={this.handleAddCustomerCoupon}
+                  />
+                )}
+              </Card>
+            )}
+
             {authority.includes("get.customer.available.membership") &&
             <Card title="Membership" style={{ marginTop: "2em" }}>
               {customerMembership && Object.keys(customerMembership).map(

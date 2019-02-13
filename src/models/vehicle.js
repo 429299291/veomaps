@@ -6,7 +6,7 @@ import {
   removeVehicle,
   updateVehicle,
   getVehicleOrders,
-  unlockVehicle
+  unlockVehicle,
 } from "@/services/vehicle";
 import { message } from "antd";
 
@@ -33,6 +33,14 @@ export default {
         data: Array.isArray(data) ? data : [],
         total: total
       });
+    },
+    *getVehicleDetail({vehicleId, onSuccess}, {call, put}) {
+      const data = yield call(getVehicleDetail, vehicleId);
+      if (data) {
+        onSuccess(data);
+      } else {
+        message.error("fail to fetch vehicle location", + data);
+      }
     },
     *getOrders({ id, onSuccess }, { call, put }) {
       const data = yield call(getVehicleOrders, id);

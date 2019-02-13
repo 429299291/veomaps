@@ -78,10 +78,6 @@ const EmailRegisterForm = Form.create()(props => {
               required: true,
               message: "email cant be empty.",
               min: 5
-            },
-            {
-              message: "It must be veoride email",
-              validator: isVeoRideEmail
             }
           ]
         })(<Input placeholder="Please Input" />)}

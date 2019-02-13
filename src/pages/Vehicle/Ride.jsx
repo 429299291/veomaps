@@ -53,6 +53,7 @@ const lockStatus = ["Unlock", "lock"];
 const rideType = ["USING", "FINISHED"];
 const vehicleType = ["Bicycle", "Scooter", "E-Ride", "Car"];
 const lockOperationWay = ["GPRS", "BLUETOOTH"];
+const rideState = ["unconfirmed","success","error"];
 
 const rideStatus = ["NORMAL", "FROZEN", "ERROR"];
 
@@ -113,7 +114,7 @@ const RouteMap = compose(
   const center = path[Math.round(path.length / 2)];
 
   return (
-    <GoogleMap defaultZoom={11} center={center}>
+    <GoogleMap defaultZoom={15} center={center}>
       <Marker position={path[0]} />
       <Marker position={path[path.length - 1]} />
       <Polyline
@@ -170,10 +171,16 @@ class Ride extends PureComponent {
       render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
     },
     {
+      title: "state",
+      dataIndex: "state",
+      sorter: true,
+      render: val => <span>{rideState[val]}</span>
+    },
+    {
       title: "End",
       dataIndex: "end",
       sorter: true,
-      render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
+      render: val => <span>{val ? moment(val).format("YYYY-MM-DD HH:mm:ss") : "not finished"}</span>
     },
     {
       title: "operation",

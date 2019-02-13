@@ -55,6 +55,15 @@ export async function updateCustomer(id, params) {
   });
 }
 
+export async function refund(id, params) {
+  return request(`/admins/customers/${id}/refund`, {
+    method: "POST",
+    body: {
+      ...params
+    }
+  });
+}
+
 export async function getMembership(customerId) {
   return request(`/admins/memberships/customers/${customerId}`, {
     method: "GET"

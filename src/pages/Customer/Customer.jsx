@@ -46,6 +46,7 @@ const connectStatus = ["Offline", "Online"];
 const lockStatus = ["Unlock", "lock"];
 const customerType = ["Bicycle", "Scooter", "E-Customer", "Car"];
 
+
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -204,6 +205,11 @@ const CouponForm = Form.create()(props => {
       key: "freeMinutes"
     },
     {
+      title: "Free Minutes",
+      dataIndex: "freeMinutes",
+      key: "freeMinutes"
+    },
+    {
       title: "Start",
       dataIndex: "start",
       key: "start",
@@ -341,6 +347,7 @@ const CouponForm = Form.create()(props => {
   areas,
   coupons,
   selectedAreaId : areas.selectedAreaId,
+  areaNames: areas.areaNames,
   loading: loading.models.customers
 }))
 @Form.create()
@@ -368,8 +375,16 @@ class Customer extends PureComponent {
       sorter: true
     },
     {
+      title: "Area",
+      render: (text, record) => this.props.areaNames && this.props.areaNames[record.areaId]
+    },
+    {
       title: "email",
       dataIndex: "email"
+    },
+    {
+      title: "Charge",
+      dataIndex: "charge"
     },
     {
       title: "Balance",
@@ -398,7 +413,6 @@ class Customer extends PureComponent {
   ];
 
   componentDidMount() {
-    console.log(authority.includes("update.customer.detail") );
     this.handleGetCustomers();
     this.handleGetCoupons();
   }
@@ -453,12 +467,8 @@ class Customer extends PureComponent {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
 
-    this.setState({ filterCriteria: params });
+    this.setState({ filterCriteria: params }, () =>  this.handleGetCustomers());
 
-    dispatch({
-      type: "customers/get",
-      payload: params
-    });
   };
 
   handleFormReset = () => {

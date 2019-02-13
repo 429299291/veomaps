@@ -56,7 +56,6 @@ export default {
       }
     },
     *add({ payload, onSuccess, onError }, { call, put }) {
-      payload["chargeInitial"] = 0;
       payload["created"] = new Date().toUTCString();
       payload["updated"] = new Date().toUTCString();
 

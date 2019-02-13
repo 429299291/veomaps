@@ -22,9 +22,6 @@ export async function countVehicles(params) {
   );
 }
 
-export async function getVehicleDetail(id) {
-  //return request(`/admins/vehicles/${id}`);
-}
 
 export async function addVehicle(params) {
   return request(`/admins/vehicles`, {
@@ -34,6 +31,15 @@ export async function addVehicle(params) {
     }
   });
 }
+
+export async function getVehicleDetail(id) {
+  return request(`/admins/vehicles/${id}/detail`, {
+    method: "GET",
+  });
+}
+
+
+
 
 export async function removeVehicle(id) {
   return request(`/admins/vehicles/${id}`, {

@@ -26,6 +26,14 @@ import {
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 import { getAuthority } from "@/utils/authority";
 import Vehicle from "./Vehicle";
+import errorVehicle from "../../assets/bike_report_lock.png";
+import errorVehicleUnlock from "../../assets/bike_report.png";
+import lowBattery from "../../assets/bike_mark_low_lock.png";
+import vehicleUnlock from "../../assets/bike_mark.png";
+import ebike from "../../assets/ebike_mark.png";
+import bike from "../../assets/bike_mark_lock.png";
+import { compose, withProps } from "recompose";
+import { GoogleMap, Marker, withGoogleMap, withScriptjs } from "react-google-maps";
 
 const FormItem = Form.Item;
 
@@ -44,6 +52,57 @@ const lockOperationWay = ["GPRS", "BLUETOOTH"];
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const vehicleOrders = ["sign in", "heart", "unlock", "lock", "location", "info", "find", "version", "ip", "error", "alert", "heart period", "iccid", "shut down","ok","mac info"];
+
+
+const getVehicleIcon = (vehicleDetail) => {
+  if (vehicleDetail.errorStatus === 1) {
+    if (vehicleDetail.lockStatus === 1) {
+      return errorVehicle;
+    } else {
+      return errorVehicleUnlock;
+    }
+  }
+
+  if (vehicleDetail.power <=350) {
+    return lowBattery;
+  }
+
+  if (vehicleDetail.lockStatus === 0) {
+    return vehicleUnlock;
+  }
+
+  if (vehicleDetail.vehicleType === 2) {
+    return ebike;
+  }
+
+  return bike;
+}
+
+const LocationMap = compose(
+  withProps({
+    googleMapURL:
+      "https://maps.googleapis.com/maps/api/js?key=AIzaSyDPnV_7djRAy8m_RuM5T0QIHU5R-07s3Ic&v=3.exp&libraries=geometry,drawing,places",
+    loadingElement: <div style={{ height: `100%` }} />,
+    containerElement: <div style={{ height: `400px` }} />,
+    mapElement: <div style={{ height: `100%` }} />
+  }),
+  withScriptjs,
+  withGoogleMap
+)(props => {
+  const { record, vehicleDetail } = props;
+
+  const location = (({ x, y }) => ({ lat: y, lng:x }))(vehicleDetail.location);
+
+  return (
+    <GoogleMap defaultZoom={15} center={location}>
+      <Marker
+        position={location}
+        icon={getVehicleIcon(record)}
+      />
+    </GoogleMap>
+  );
+});
+
 
 const EndRideForm = Form.create()(props => {
   const {
@@ -406,6 +465,7 @@ class VehicleDetail extends PureComponent {
       isEndRideVisible,
       vehicleOrders,
       selectedRide,
+      vehicleDetail
     } = this.state;
 
     const {
@@ -433,6 +493,8 @@ class VehicleDetail extends PureComponent {
         style={{ background: "#ECECEC" }}
       >
           <div>
+
+
               <Card title="Update Vehicle">
                 <UpdateForm
                   areas={areas.data}
@@ -441,6 +503,18 @@ class VehicleDetail extends PureComponent {
                   unlockVehicle={this.unlockVehicle}
                 />
               </Card>
+
+
+            {
+              vehicleDetail && vehicleDetail.location &&
+              <Card title="Location">
+                <LocationMap
+                  vehicleDetail={vehicleDetail}
+                  record={record}
+                />
+              </Card>
+            }
+
 
             {authority.includes("get.rides")  &&
             <Card title="Vehicle Rides" style={{ marginTop: "2em" }}>

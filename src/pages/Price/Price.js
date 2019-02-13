@@ -532,7 +532,7 @@ class Price extends PureComponent {
     };
 
     return (
-      <PageHeaderWrapper title="Area List">
+      <PageHeaderWrapper title="Price List">
         <Card bordered={false}>
           <div className={styles.tableList}>
             {/*<div className={styles.tableListForm}>*/}

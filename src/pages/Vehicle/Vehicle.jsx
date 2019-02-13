@@ -29,6 +29,7 @@ import { roundTo2Decimal } from "../../utils/mathUtil";
 import CustomerDetail from "../Customer/CustomerDetail";
 import VehicleDetail from "./VehicleDetail";
 
+
 const FormItem = Form.Item;
 const { Step } = Steps;
 const { TextArea } = Input;
@@ -56,6 +57,7 @@ const formatTime = val => {
   const local = moment(val).format('YYYY-MM-DD HH:mm:ss');
   return local;
 }
+
 
 const getPowerPercent = power => {
   if (power >= 420) return 100;
