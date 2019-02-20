@@ -29,7 +29,7 @@ export default {
     "PUT /api/admins/vehicles/{id}": "update.vehicle.detail",
     "POST /api/admins/vehicles": "create.vehicle",
     "PUT /api/admins/vehicles/{id}/unlock": "unlock.vehicle",
-    "GET /api/admins/vehicles/{id}/orders": "get.vehicle.orders",
+    "GET /api/admins/vehicles/{id}/orders": "get.vehicle.orders"
   },
   "Riding History": {
     "GET /api/admins/rides": "get.rides",
@@ -105,7 +105,10 @@ export default {
     "POST /api/admins/register_by_email": "register.admin.email",
     "PUT /api/admins/me/update_password": "update.me.password"
   },
-  "Dashboard": {
-    "GET /api/admins/vehicles/location_details/{areaId}": "get.vehicle.location",
+  "Technician Management": {
+    "GET /api/admins/technicians": "get.technicians"
+  },
+  Dashboard: {
+    "GET /api/admins/vehicles/location_details/{areaId}": "get.vehicle.location"
   }
 };
