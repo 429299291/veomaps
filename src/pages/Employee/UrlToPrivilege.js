@@ -106,7 +106,9 @@ export default {
     "PUT /api/admins/me/update_password": "update.me.password"
   },
   "Technician Management": {
-    "GET /api/admins/technicians": "get.technicians"
+    "DELETE /api/admins/technicians/{technicianId}": "delete.technician",
+    "GET /api/admins/technicians": "get.technicians",
+    "POST /api/admins/technicians/register_by_email": "register.techncian.email"
   },
   Dashboard: {
     "GET /api/admins/vehicles/location_details/{areaId}": "get.vehicle.location"
