@@ -30,7 +30,7 @@ export default [
             path: "/dashboard",
             name: "dashboard",
             component: "./Dashboard/Dashboard"
-          },
+          }
           // {
           //   path: "/dashboard/analysis",
           //   name: "analysis",
@@ -57,13 +57,13 @@ export default [
             path: "/vehicle-management",
             name: "Vehicle List",
             component: "./Vehicle/Vehicle",
-            authority: "get.vehicles",
+            authority: "get.vehicles"
           },
           {
             path: "/vehicle-management/ride",
             name: "Riding History",
             component: "./Vehicle/Ride",
-            authority: "get.rides",
+            authority: "get.rides"
           },
           {
             path: "/vehicle-management/error",
@@ -185,6 +185,12 @@ export default [
             ]
           }
         ]
+      },
+      {
+        path: "/technician-management/",
+        name: "Technician Management",
+        icon: "user",
+        component: "./Technician/Technician"
       },
       {
         component: "404"
