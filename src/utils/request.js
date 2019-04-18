@@ -4,8 +4,13 @@ import router from "umi/router";
 import hash from "hash.js";
 import { isAntdPro } from "./utils";
 
+<<<<<<< HEAD
 //const urlPrefix = "https://localhost:8444/api";
 const urlPrefix = "https://develop.veoride.com:8444/api"
+=======
+const urlPrefix = "https://localhost:8444/api";
+// const urlPrefix = "https://develop.veoride.com:8444/api"
+>>>>>>> 0df05a003103383a4624b2f940deec015afd3d33
 //const urlPrefix = "https://manhattan-dev.veoride.com:8444/api";
 //const urlPrefix = "https://manhattan-host.veoride.com:8444/api";
 

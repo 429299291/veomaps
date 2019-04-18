@@ -112,7 +112,12 @@ export default {
     "POST /api/admins/register_by_email": "register.admin.email",
     "PUT /api/admins/me/update_password": "update.me.password"
   },
-  "Dashboard": {
-    "GET /api/admins/vehicles/location_details/{areaId}": "get.vehicle.location",
+  "Technician Management": {
+    "DELETE /api/admins/technicians/{technicianId}": "delete.technician",
+    "GET /api/admins/technicians": "get.technicians",
+    "POST /api/admins/technicians/register_by_email": "register.techncian.email"
+  },
+  Dashboard: {
+    "GET /api/admins/vehicles/location_details/{areaId}": "get.vehicle.location"
   }
 };
