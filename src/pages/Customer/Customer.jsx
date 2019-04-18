@@ -30,6 +30,15 @@ import styles from "./Customer.less";
 import { roundTo2Decimal } from "../../utils/mathUtil";
 
 import { getAuthority } from "@/utils/authority";
+import {formatPhoneNumber} from "@/utils/utils"
+import { exportCSVFile } from "../../utils/utils";
+
+const customerCsvHeader = {
+  uid: "uid",
+  email: "email",
+  credit: "Balance",
+  phoneModel: "Phone Model"
+};
 
 const FormItem = Form.Item;
 const { Step } = Steps;
@@ -367,7 +376,8 @@ class Customer extends PureComponent {
   columns = [
     {
       title: "phone",
-      dataIndex: "phone"
+      dataIndex: "phone",
+      render: val => formatPhoneNumber(val+"")
     },
     {
       title: "Full Name",
@@ -381,10 +391,6 @@ class Customer extends PureComponent {
     {
       title: "email",
       dataIndex: "email"
-    },
-    {
-      title: "Charge",
-      dataIndex: "charge"
     },
     {
       title: "Balance",
@@ -499,8 +505,8 @@ class Customer extends PureComponent {
       if (err) return;
 
       if (fieldsValue.created) {
-        fieldsValue.registerStart = fieldsValue.created[0].format("MM-DD-YYYY");
-        fieldsValue.registerEnd = fieldsValue.created[1].format("MM-DD-YYYY");
+        fieldsValue.registerStart = moment(fieldsValue.created[0]).utcOffset(0).format("MM-DD-YYYY HH:mm:ss");
+        fieldsValue.registerEnd = moment(fieldsValue.created[1]).utcOffset(0).format("MM-DD-YYYY HH:mm:ss");
         fieldsValue.created = undefined;
       }
 
@@ -595,7 +601,10 @@ class Customer extends PureComponent {
         </Row>
 
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={{ span: 8, offset: 16 }} sm={24}>
+          <Col md={4} sm={24}>
+            {`count: ${this.props.customers.total}`}
+          </Col>
+          <Col md={{ span: 8, offset: 12 }} sm={24}>
             <span className={styles.submitButtons} style={{ float: "right" }}>
               <Button type="primary" htmlType="submit">
                 Search
@@ -624,8 +633,64 @@ class Customer extends PureComponent {
     });
   };
 
+  formatCsvData = customers => {
+    const {areaNames, selectedAreaId} = this.props;
+
+    return customers.map(customer => {
+      customer.created = moment(customers.created).format("YYYY-MM-DD HH:mm:ss");
+      customer.area = areaNames[customer.areaId];
+
+      return {
+        uid: customer.id,
+        email: customer.email,
+        credit: customer.credit,
+        phoneModel: customer.phoneModel
+      };
+    })
+  }
+
+  handleExportData = () => {
+    const { form, selectedAreaId } = this.props;
+    const { filterCriteria } = this.state;
+
+
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+
+      if (fieldsValue.created) {
+        fieldsValue.registerStart =  moment(fieldsValue.created[0]).utcOffset(0).format("MM-DD-YYYY HH:mm:ss");
+        fieldsValue.registerEnd = moment(fieldsValue.created[1]).utcOffset(0).format("MM-DD-YYYY HH:mm:ss");
+        fieldsValue.created = undefined;
+      }
+
+      const values = Object.assign({}, filterCriteria, fieldsValue, {areaId: selectedAreaId}   , {
+        currentPage: null,
+        pageSize: null
+      });
+
+      this.setState(
+        {
+          filterCriteria: values
+        },
+        this.finishExportData
+      );
+    });
+  }
+
+  finishExportData() {
+    const { filterCriteria } = this.state;
+    const { areaNames, selectedAreaId, dispatch } = this.props;
+    dispatch({
+      type: "customers/getAll",
+      payload: filterCriteria,
+      onSuccess: data => {
+        exportCSVFile(customerCsvHeader, this.formatCsvData(data), areaNames[selectedAreaId])
+      }
+    })
+  }
+
   render() {
-    const { customers, areas, loading, coupons, dispatch } = this.props;
+    const { customers, areas, loading, coupons, dispatch, selectedAreaId } = this.props;
     const {
       modalVisible,
       updateModalVisible,
@@ -652,6 +717,9 @@ class Customer extends PureComponent {
       total: customers.total
     };
 
+
+
+
     return (
       <PageHeaderWrapper title="Customer List">
         <Card bordered={false}>
@@ -659,15 +727,6 @@ class Customer extends PureComponent {
             <div className={styles.tableListForm}>
               {this.renderSimpleForm()}
             </div>
-            {/*<div className={styles.tableListOperator}>*/}
-            {/*<Button*/}
-            {/*icon="plus"*/}
-            {/*type="primary"*/}
-            {/*onClick={() => this.handleModalVisible(true)}*/}
-            {/*>*/}
-            {/*Haha*/}
-            {/*</Button>*/}
-            {/*</div>*/}
             <StandardTable
               loading={loading}
               data={{ list: customers.data, pagination: pagination }}
@@ -676,6 +735,14 @@ class Customer extends PureComponent {
               scroll={{ x: 1300 }}
             />
           </div>
+
+          {selectedAreaId >= 1 && <div>
+                        <Button style={{marginTop: "1em"}} onClick={this.handleExportData} >
+                            Export
+                        </Button>
+                      </div>
+          }
+
         </Card>
 
         <UpdateForm
@@ -711,21 +778,6 @@ class Customer extends PureComponent {
           />
         )}
 
-        {/*{selectedRecord &&*/}
-        {/*detailModalVisible && (*/}
-        {/*<Modal*/}
-        {/*destroyOnClose*/}
-        {/*title="Detail"*/}
-        {/*visible={detailModalVisible}*/}
-        {/*onCancel={() => this.handleDetailModalVisible()}*/}
-        {/*onOk={() => this.handleDetailModalVisible()}*/}
-        {/*width={"80%"}*/}
-        {/*>*/}
-        {/*{Object.keys(selectedRecord).map(key => (*/}
-        {/*<p key={key}>{`${key} : ${selectedRecord[key]}`}</p>*/}
-        {/*))}*/}
-        {/*</Modal>*/}
-        {/*)}*/}
       </PageHeaderWrapper>
     );
   }

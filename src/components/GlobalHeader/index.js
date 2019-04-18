@@ -52,12 +52,12 @@ export default class GlobalHeader extends PureComponent {
           onClick={this.toggle}
         />
         {areas && areas.length > 0 &&
-          <span style={{padding: "22px 24px", fontSize: "15px"}}>
+          <span style={{padding: "12px 24px", fontSize: "15px"}}>
             <span>Area: </span>
             <Select
               onChange={this.handleAreaSelect}
               className="area-select"
-              style={{ width: 200, marginLeft: "1em" }}
+              style={{ width: 150, marginLeft: "1em" }}
               defaultValue={"all"}
             >
               <Option value="all">All</Option>

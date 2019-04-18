@@ -19,7 +19,7 @@ export default [
     routes: [
       // dashboard
 
-      { path: "/", redirect: "/vehicle-management" },
+      { path: "/", redirect: "/vehicle-management/vehicle" },
       {
         path: "/dashboard",
         name: "dashboard",
@@ -54,7 +54,7 @@ export default [
         name: "Vehicle Management",
         routes: [
           {
-            path: "/vehicle-management",
+            path: "/vehicle-management/vehicle",
             name: "Vehicle List",
             component: "./Vehicle/Vehicle",
             authority: "get.vehicles",

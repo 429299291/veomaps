@@ -25,7 +25,6 @@ import {
 } from "antd";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 import { getAuthority } from "@/utils/authority";
-import Vehicle from "./Vehicle";
 import errorVehicle from "../../assets/bike_report_lock.png";
 import errorVehicleUnlock from "../../assets/bike_report.png";
 import lowBattery from "../../assets/bike_mark_low_lock.png";
@@ -33,7 +32,7 @@ import vehicleUnlock from "../../assets/bike_mark.png";
 import ebike from "../../assets/ebike_mark.png";
 import bike from "../../assets/bike_mark_lock.png";
 import { compose, withProps } from "recompose";
-import { GoogleMap, Marker, withGoogleMap, withScriptjs } from "react-google-maps";
+import { GoogleMap, Marker, withGoogleMap, withScriptjs, Polygon, Polyline } from "react-google-maps";
 
 const FormItem = Form.Item;
 
@@ -42,16 +41,18 @@ const { TextArea } = Input;
 const { Option } = Select;
 const RadioGroup = Radio.Group;
 
+import {fenceType, fenceTypeColor} from "@/constant";
+
 const authority = getAuthority();
 
 const errorStatus = ["NORMAL", "FROZEN", "ERROR"];
 
-const vehicleType = ["Bicycle", "Scooter", "E-Ride", "Car"];
+const vehicleType = ["Bicycle", "Scooter", "E-Bike", "Car"];
 const lockOperationWay = ["GPRS", "BLUETOOTH"];
 
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-const vehicleOrders = ["sign in", "heart", "unlock", "lock", "location", "info", "find", "version", "ip", "error", "alert", "heart period", "iccid", "shut down","ok","mac info"];
+const vehicleOrders = ["","sign in", "heart", "unlock", "lock", "location", "info", "find", "version", "ip", "error", "alert", "heart period", "iccid", "shut down","ok","mac info"];
 
 
 const getVehicleIcon = (vehicleDetail) => {
@@ -89,12 +90,72 @@ const LocationMap = compose(
   withScriptjs,
   withGoogleMap
 )(props => {
-  const { record, vehicleDetail } = props;
+  const { record, fences,  vehicleDetail } = props;
 
   const location = (({ x, y }) => ({ lat: y, lng:x }))(vehicleDetail.location);
 
+  const dashLineDot = {
+    path: window.google.maps.SymbolPath.CIRCLE,
+    fillOpacity: 1,
+    scale: 2
+  };
+
   return (
     <GoogleMap defaultZoom={15} center={location}>
+      {fences.map(fence => (
+        <Polygon
+          path={fence.fenceCoordinates}
+          geodesic={true}
+          key={fence.id}
+          options={{
+            strokeColor: fenceTypeColor[fence.fenceType],
+            strokeOpacity: fence.fenceType === 5 ? 0 : 0.75,
+            strokeWeight: fence.fenceType === 5 ? 0 : 2,
+            fillColor: fenceTypeColor[fence.fenceType],
+            fillOpacity:
+              fence.fenceType === 0 || fence.fenceType === 5 ? 0 : 0.35
+          }}
+        />
+      ))}
+
+    {authority.includes("get.fences") && fences && fences.map(fence => (
+        <Polygon
+          path={fence.fenceCoordinates}
+          geodesic={true}
+          key={fence.id}
+          options={{
+            strokeColor: fenceTypeColor[fence.fenceType],
+            strokeOpacity: fence.fenceType === 5 ? 0 : 0.75,
+            strokeWeight: fence.fenceType === 5 ? 0 : 2,
+            fillColor: fenceTypeColor[fence.fenceType],
+            fillOpacity:
+              fence.fenceType === 0 || fence.fenceType === 5 ? 0 : 0.35
+          }}
+        />
+      ))}
+
+      {authority.includes("get.fences") && fences && fences.filter(fence => fence.fenceType === 5).map(fence => (
+        <Polyline
+          path={fence.fenceCoordinates}
+          geodesic={true}
+          key={fence.id}
+          options={{
+            strokeColor: fenceTypeColor[fence.fenceType],
+            strokeOpacity: 0.75,
+            strokeWeight: 2,
+            icons: [
+              {
+                icon: dashLineDot,
+                offset: "0",
+                repeat: "10px"
+              }
+            ],
+            fillColor: fenceTypeColor[5],
+            fillOpacity: 0
+          }}
+        />
+      ))}
+
       <Marker
         position={location}
         icon={getVehicleIcon(record)}
@@ -144,7 +205,7 @@ const EndRideForm = Form.create()(props => {
 });
 
 const UpdateForm = Form.create()(props => {
-  const { form, handleUpdate, areas, record, unlockVehicle } = props;
+  const { form, handleUpdate, areas, record, unlockVehicle, updateLocation, alertVehicle } = props;
   const okHandle = () => {
     if (form.isFieldsTouched())
       form.validateFields((err, fieldsValue) => {
@@ -165,7 +226,7 @@ const UpdateForm = Form.create()(props => {
           wrapperCol={{ span: 15 }}
           label="Status"
         >
-          {form.getFieldDecorator("status", {
+          {form.getFieldDecorator("errorStatus", {
             rules: [
               {
                 required: true,
@@ -192,6 +253,26 @@ const UpdateForm = Form.create()(props => {
       >
         <div>
           {record.lockStatus === 0 ? "Unlock" : "Lock"}
+        </div>
+      </FormItem>
+
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Imei"
+      >
+        <div>
+          {record.imei}
+        </div>
+      </FormItem>
+
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Mac"
+      >
+        <div>
+          {record.mac}
         </div>
       </FormItem>
 
@@ -224,7 +305,7 @@ const UpdateForm = Form.create()(props => {
             type="primary"
             onClick={okHandle}
             disabled={!form.isFieldsTouched() && !authority.includes("update.vehicle.detail")}
-            style={{marginRight: "1em"}}
+            style={{marginRight: "1em", marginTop: "0.5em"}}
           >
             Update Vehicle
           </Button>
@@ -233,8 +314,27 @@ const UpdateForm = Form.create()(props => {
             type="primary"
             onClick={unlockVehicle}
             disabled={!authority.includes("unlock.vehicle")}
+            style={{marginRight: "1em", marginTop: "0.5em"}}
           >
             Unlock Remotely
+          </Button>
+          <Button
+            icon="plus"
+            type="primary"
+            onClick={alertVehicle}
+            disabled={!authority.includes("alert.vehicle")}
+            style={{marginRight: "1em", marginTop: "0.5em"}}
+          >
+            Beep Remotely
+          </Button>
+          <Button
+            icon="plus"
+            type="primary"
+            onClick={updateLocation}
+            disabled={!authority.includes("update.vehicle.location")}
+            style={{marginTop: "0.5em"}}
+          >
+            Update Location
           </Button>
         </Col>
       </Row>
@@ -244,9 +344,10 @@ const UpdateForm = Form.create()(props => {
 
 
 
-@connect(({ coupons, areas, loading }) => ({
+@connect(({ coupons, areas, geo, loading }) => ({
   areas,
-  loading: loading.models.geo
+  geo,
+  loading: loading.models.geo || loading.models.areas
 }))
 class VehicleDetail extends PureComponent {
   state = {
@@ -379,8 +480,29 @@ class VehicleDetail extends PureComponent {
 
   componentDidMount = () => {
     this.handleGetVehicleDetail(this.props.vehicleId);
+    this.handleGetVehicle(this.props.vehicleId);
     this.handleGetVehicleOrders(this.props.vehicleId);
     this.handleGetVehicleRides(this.props.vehicleId);
+  };
+
+
+  getAreaGeoInfo = vehicleAreaId => {
+    const { dispatch } = this.props;
+
+    authority.includes("get.fences") && dispatch({
+      type: "geo/getFences",
+      areaId: vehicleAreaId
+    });
+  };
+
+
+  handleGetVehicle = vehicleId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "vehicles/getVehicle",
+      vehicleId: vehicleId,
+      onSuccess: response => this.setState({ record: response }, () => this.getAreaGeoInfo(response.areaId))
+    });
   };
 
   handleEndRideVisible = (flag, record) => {
@@ -405,6 +527,7 @@ class VehicleDetail extends PureComponent {
 
   handleGetVehicleDetail = vehicleId => {
     const { dispatch } = this.props;
+    authority.includes("get.vehicles.detail") &&
     dispatch({
       type: "vehicles/getVehicleDetail",
       vehicleId: vehicleId,
@@ -435,29 +558,58 @@ class VehicleDetail extends PureComponent {
   };
 
   handleUpdate = (id, fields) => {
-    const { dispatch, vehicleId } = this.props;
+    const { dispatch, vehicleId, handleGetVehicles } = this.props;
     dispatch({
       type: "vehicles/update",
       payload: fields,
       id: id,
       onSuccess: () => {
-        this.props.handleGetVehicles();
-        this.handleGetVehicleDetail(vehicleId);
+        handleGetVehicles && handleGetVehicles();
+        this.handleGetVehicle(vehicleId);
       }
     });
   };
 
   unlockVehicle = () => {
-    const { dispatch, vehicleId } = this.props;
+    const { dispatch, vehicleId, handleGetVehicles } = this.props;
     dispatch({
       type: "vehicles/unlock",
       id: vehicleId,
       onSuccess: () => {
-        this.props.handleGetVehicles();
-        this.handleGetVehicleDetail(vehicleId);
+        handleGetVehicles && handleGetVehicles();
+        setTimeout(() => {
+          this.handleGetVehicleDetail(vehicleId);
+          this.handleGetVehicleOrders(vehicleId);
+          }, 1500)
       }
     });
   };
+
+  alertVehicle = () => {
+    const { dispatch, vehicleId } = this.props;
+    dispatch({
+      type: "vehicles/alertVehicle",
+      vehicleId: vehicleId
+    });
+  };
+
+
+  
+
+
+  updateLocation = () => {
+    const { dispatch, vehicleId } = this.props;
+    dispatch({
+      type: "vehicles/updateLocation",
+      id: vehicleId,
+      onSuccess: () => {
+        setTimeout(() => {
+          this.handleGetVehicleDetail(vehicleId);
+          this.handleGetVehicleOrders(vehicleId);
+        }, 3000)
+      }
+    });
+  }
 
   render() {
     const {
@@ -465,6 +617,7 @@ class VehicleDetail extends PureComponent {
       isEndRideVisible,
       vehicleOrders,
       selectedRide,
+      record,
       vehicleDetail
     } = this.state;
 
@@ -474,7 +627,7 @@ class VehicleDetail extends PureComponent {
       isVisible,
       handleDetailVisible,
       vehicle,
-      record
+      geo
     } = this.props;
 
     const endRideMethod = {
@@ -496,20 +649,23 @@ class VehicleDetail extends PureComponent {
 
 
               <Card title="Update Vehicle">
-                <UpdateForm
+                {record && <UpdateForm
                   areas={areas.data}
                   record={record}
                   handleUpdate={this.handleUpdate}
                   unlockVehicle={this.unlockVehicle}
-                />
+                  updateLocation={this.updateLocation}
+                  alertVehicle={this.alertVehicle}
+                />}
               </Card>
 
 
             {
-              vehicleDetail && vehicleDetail.location &&
+              authority.includes("get.vehicles.detail") && vehicleDetail && vehicleDetail.location && record &&
               <Card title="Location">
                 <LocationMap
                   vehicleDetail={vehicleDetail}
+                  fences={geo.fences}
                   record={record}
                 />
               </Card>

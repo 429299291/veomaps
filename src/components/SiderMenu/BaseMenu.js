@@ -6,6 +6,8 @@ import memoizeOne from 'memoize-one';
 import pathToRegexp from 'path-to-regexp';
 import { urlToList } from '../_utils/pathTools';
 import styles from './index.less';
+import { routerRedux } from "dva/router";
+import { stringify } from "qs";
 
 const { SubMenu } = Menu;
 
@@ -160,12 +162,17 @@ export default class BaseMenu extends PureComponent {
     return `/${path || ''}`.replace(/\/+/g, '/');
   };
 
+  handleMenuClick = (e, l) => {
+    //this.props.dispatch({type: "user/updateRoute", url: e.key});
+  }
+
   render() {
     const {
       openKeys,
       theme,
       mode,
       location: { pathname },
+      isUserFetched
     } = this.props;
     // if pathname can't match, use the nearest parent's key
     let selectedKeys = this.getSelectedMenuKeys(pathname);
@@ -180,6 +187,7 @@ export default class BaseMenu extends PureComponent {
     }
     const { handleOpenChange, style, menuData } = this.props;
     return (
+      isUserFetched &&
       <Menu
         key="Menu"
         mode={mode}
@@ -187,6 +195,7 @@ export default class BaseMenu extends PureComponent {
         onOpenChange={handleOpenChange}
         selectedKeys={selectedKeys}
         style={style}
+        onClick={this.handleMenuClick}
         className={mode === 'horizontal' ? 'top-nav-menu' : ''}
         {...props}
       >

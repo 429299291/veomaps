@@ -68,6 +68,7 @@ export default {
   "component.globalHeader.message.empty": "You have viewed all messsages.",
   "component.globalHeader.event": "Event",
   "menu.Employee Management.Role Management": "Role Management",
+  "menu.dashboard.dashboard": "Dashboard",
   "menu.Employee Management": "Employee Management",
   "component.globalHeader.event.empty": "You have viewed all events.",
   "component.noticeIcon.clear": "Clear",

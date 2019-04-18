@@ -44,7 +44,7 @@ let routes = [
     "routes": [
       {
         "path": "/",
-        "redirect": "/vehicle-management",
+        "redirect": "/vehicle-management/vehicle",
         "exact": true
       },
       {
@@ -69,7 +69,7 @@ let routes = [
         "name": "Vehicle Management",
         "routes": [
           {
-            "path": "/vehicle-management",
+            "path": "/vehicle-management/vehicle",
             "name": "Vehicle List",
             "component": dynamic({ loader: () => import('../Vehicle/Vehicle'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
             "authority": "get.vehicles",

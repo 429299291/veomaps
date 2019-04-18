@@ -15,7 +15,7 @@ export default {
       const vehicles = yield call(getVehicleLocationDetail, areaId);
 
       if (Array.isArray(vehicles)) {
-        vehicles.map(vehicle => (vehicle.key = vehicle.id));
+        vehicles.map(vehicle => (vehicle.key = vehicle.vehicleId));
       }
 
       yield put({

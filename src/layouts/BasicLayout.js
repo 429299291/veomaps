@@ -17,6 +17,9 @@ import Footer from "./Footer";
 import Header from "./Header";
 import Context from "./MenuContext";
 import Exception403 from "../pages/Exception/403";
+import TabController from './TabController';
+
+
 
 const { Content } = Layout;
 
@@ -98,8 +101,13 @@ class BasicLayout extends React.PureComponent {
   state = {
     rendering: true,
     isMobile: false,
-    menuData: this.getMenuData()
+    menuData: this.getMenuData(),
+    isMobile: window.innerWidth <= 600
   };
+
+  resize() {
+    this.setState({isMobile: window.innerWidth <= 600});
+}
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -118,7 +126,7 @@ class BasicLayout extends React.PureComponent {
       type: "login/updateToken"
     });
 
-
+    window.addEventListener("resize", this.resize.bind(this));
 
     this.renderRef = requestAnimationFrame(() => {
       this.setState({
@@ -192,13 +200,13 @@ class BasicLayout extends React.PureComponent {
     const currRouterData = this.matchParamsPath(pathname);
 
     if (!currRouterData) {
-      return "Ant Design Pro";
+      return "Manhattan";
     }
     const message = formatMessage({
       id: currRouterData.locale || currRouterData.name,
       defaultMessage: currRouterData.name
     });
-    return `${message} - Ant Design Pro`;
+    return `${message}`;
   };
 
   getLayoutStyle = () => {
@@ -228,6 +236,16 @@ class BasicLayout extends React.PureComponent {
     });
   };
 
+  getAuthorizedChildComponent = (children, routerConfig) => {
+
+    return  <Authorized
+            authority={routerConfig && routerConfig.authority}
+            noMatch={<Exception403 />}
+            >
+              {children}
+            </Authorized>
+  }
+
   renderSettingDrawer() {
     // Do not render SettingDrawer in production
     // unless it is deployed in preview.pro.ant.design as demo
@@ -246,20 +264,37 @@ class BasicLayout extends React.PureComponent {
       navTheme,
       layout: PropsLayout,
       children,
-      location: { pathname }
+      location: { pathname },
+      match
     } = this.props;
+
+
+    const pageTitle = this.getPageTitle(pathname);
+
+    const tasParams = {
+      keys: location.pathname,
+      location,
+      dispatch:this.props.dispatch,
+      match,
+      name: pageTitle,
+      component: this.getAuthorizedChildComponent(children, routerConfig)
+    }
+
 
     const { isMobile, menuData } = this.state;
     const isTop = PropsLayout === "topmenu";
     const routerConfig = this.matchParamsPath(pathname);
+    
+    
     const layout = (
       <Layout>
-        {isTop && !isMobile ? null : (
+        {isTop && !isMobile  ? null : (
           <SiderMenu
             logo={logo}
             Authorized={Authorized}
             theme={navTheme}
             onCollapse={this.handleMenuCollapse}
+            isUserFetched={this.props.isUserFetched}
             menuData={menuData}
             isMobile={isMobile}
             {...this.props}
@@ -271,20 +306,32 @@ class BasicLayout extends React.PureComponent {
             minHeight: "100vh"
           }}
         >
-          <Header
-            menuData={menuData}
-            handleMenuCollapse={this.handleMenuCollapse}
-            logo={logo}
-            isMobile={isMobile}
-            {...this.props}
-          />
+          { this.props.isUserFetched &&
+              <Header
+              menuData={menuData}
+              handleMenuCollapse={this.handleMenuCollapse}
+              logo={logo}
+              isMobile={isMobile}
+              {...this.props}
+              />
+          }
           <Content style={this.getContentStyle()}>
-            <Authorized
-              authority={routerConfig && routerConfig.authority}
-              noMatch={<Exception403 />}
-            >
-              {children}
-            </Authorized>
+            
+            {this.state.isMobile ? 
+            
+            
+             this.props.isUserFetched &&
+              <Authorized
+                authority={routerConfig && routerConfig.authority}
+                noMatch={<Exception403 />}
+              >
+                {children}
+              </Authorized>
+            : 
+            
+            <TabController {...tasParams } className={"tabController"} />
+            
+            }
           </Content>
           <Footer />
         </Layout>
@@ -292,7 +339,7 @@ class BasicLayout extends React.PureComponent {
     );
     return (
       <React.Fragment>
-        <DocumentTitle title={this.getPageTitle(pathname)}>
+        <DocumentTitle title={pageTitle}>
           <ContainerQuery query={query}>
             {params => (
               <Context.Provider value={this.getContext()}>
@@ -307,8 +354,9 @@ class BasicLayout extends React.PureComponent {
   }
 }
 
-export default connect(({ global, setting }) => ({
+export default connect(({ global, setting, user }) => ({
   collapsed: global.collapsed,
   layout: setting.layout,
+  isUserFetched: user.isUserFetched,
   ...setting
 }))(BasicLayout);

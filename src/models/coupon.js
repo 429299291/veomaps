@@ -6,7 +6,8 @@ import {
   updateCoupon,
   removeCustomerCoupon,
   addCustomerCoupon,
-  getCustomerCoupons
+  getCustomerCoupons,
+  generateCodeCoupon
 } from "@/services/coupon";
 import { message } from "antd";
 
@@ -49,6 +50,15 @@ export default {
       } else {
         message.error(`Add Fail.`);
         onError && onError();
+      }
+    },
+    *generateCodeCoupon({ id, payload }, { call, put }) {
+      const response = yield call(generateCodeCoupon, id, payload); // delete
+
+      if (response) {
+        message.success(`Successfully add coupon with code`);
+      } else {
+        message.error(`Fail to Add coupon with code`);
       }
     },
     *remove({ id, payload, onSuccess, onError }, { call, put }) {

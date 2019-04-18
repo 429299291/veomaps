@@ -28,6 +28,17 @@ export default {
         payload: Array.isArray(response) ? response : []
       });
     },
+    *getDetail({ membershipId, onSuccess, onError }, { call, put }) {
+      const response = yield call(getMembershipDetail, membershipId);
+
+      if (response) {
+        message.success(`Get Membership Detail Success, ID : ${membershipId}`);
+        onSuccess && onSuccess(response);
+      } else {
+        message.error(`Get Membership Detail Fail, ID : ${membershipId}`);
+        onError && onError();
+      }
+    },
     *update({ id, payload, onSuccess, onError }, { call, put }) {
       const response = yield call(updateMembership, id, payload); // put
 

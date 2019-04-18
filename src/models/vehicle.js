@@ -2,11 +2,17 @@ import {
   getVehicles,
   countVehicles,
   getVehicleDetail,
+  getVehicle,
   addVehicle,
   removeVehicle,
   updateVehicle,
   getVehicleOrders,
   unlockVehicle,
+  updateLocation,
+  alertVehicle,
+  getVehicleLocations,
+  updateAllLocations,
+  getStartPoints
 } from "@/services/vehicle";
 import { message } from "antd";
 
@@ -34,12 +40,53 @@ export default {
         total: total
       });
     },
+    *getStartPoints({areaId, onSuccess}, {call, put}) {
+      const data = yield call(getStartPoints, areaId);
+      if (data) {
+        onSuccess && onSuccess(data);
+      } else {
+        message.error("fail to fetch vehicle location" + data);
+      }
+    },
     *getVehicleDetail({vehicleId, onSuccess}, {call, put}) {
       const data = yield call(getVehicleDetail, vehicleId);
       if (data) {
         onSuccess(data);
       } else {
-        message.error("fail to fetch vehicle location", + data);
+        message.error("fail to fetch vehicle location" + data);
+      }
+    },
+    *updateAllLocations({payload, areaId}, {call, put}) {
+      const data = yield call(updateAllLocations, payload, areaId);
+      if (data) {
+        message.success("Successfully to update" + data.successfullySend + "vehicle location out of " + data.totalToSend + " total bikes.");
+      } else {
+        message.error("fail to update all vehicle location "+ data);
+      }
+    },
+    *getVehicleLocation({payload, onSuccess}, {call, put}) {
+      const data = yield call(getVehicleLocations, payload);
+      if (data) {
+        onSuccess(data);
+      } else {
+        message.error("fail to fetch vehicle location" + data);
+      }
+    },
+
+    *alertVehicle({vehicleId, onSuccess}, {call, put}) {
+      const data = yield call(alertVehicle, vehicleId);
+      if (data) {
+        message.success("Successfully beep vehicle.");
+      } else {
+        message.error("fail to beep vehicle " + data);
+      }
+    },
+    *getVehicle({vehicleId, onSuccess}, {call, put}) {
+      const data = yield call(getVehicle, vehicleId);
+      if (data) {
+        onSuccess(data);
+      } else {
+        message.error("fail to fetch vehicle location" + data);
       }
     },
     *getOrders({ id, onSuccess }, { call, put }) {
@@ -72,6 +119,16 @@ export default {
         typeof onSuccess === "function" && onSuccess();
       } else {
         message.error(`Unlock Fail.`);
+      }
+    },
+    *updateLocation({ id, onSuccess }, { call, put }) {
+      const response = yield call(updateLocation, id); // post
+
+      if (response) {
+        message.success(`Update location Success`);
+        typeof onSuccess === "function" && onSuccess();
+      } else {
+        message.error(`Update location Fail`);
       }
     },
     *update({ id, payload, onSuccess }, { call, put }) {

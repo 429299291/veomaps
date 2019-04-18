@@ -14,7 +14,7 @@ import {
   Radio,
   Divider,
   InputNumber,
-  Popconfirm
+  Popconfirm, DatePicker
 } from "antd";
 import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
@@ -252,6 +252,100 @@ const UpdateForm = Form.create()(props => {
   );
 });
 
+
+const GenerateCouponWithCodeForm = Form.create()(props => {
+  const {
+    form,
+    modalVisible,
+    handleGenerateCouponWithCode,
+    handleModalVisible,
+    record
+  } = props;
+  const okHandle = () => {
+    if (form.isFieldsTouched())
+      form.validateFields((err, fieldsValue) => {
+        if (err) return;
+        form.resetFields();
+
+        fieldsValue.vehicleType = record.vehicleType;
+
+        handleGenerateCouponWithCode(record.id, fieldsValue);
+      });
+    else handleModalVisible();
+  };
+
+  const checkAmount = (rule, value, callback) => {
+    if (value > 0) {
+      callback();
+      return;
+    }
+
+    callback("Amount must be larger than zero.");
+  };
+
+  return (
+    <Modal
+      destroyOnClose
+      title="Generate Coupon with Code"
+      visible={modalVisible}
+      onOk={okHandle}
+      onCancel={() => handleModalVisible()}
+    >
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Start Time"
+      >
+        {form.getFieldDecorator("start", {
+          rules: [
+            {
+              required: true,
+              message: "You have to pick a time to start!"
+            }
+          ]
+        })(
+          <DatePicker
+            showTime
+            format="YYYY-MM-DD HH:mm:ss"
+            placeholder="Select Start Time"
+          />
+        )}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Amount"
+      >
+        {form.getFieldDecorator("amount", {
+          rules: [
+            {
+              required: true
+            },
+            {
+              validator: checkAmount
+            }
+          ]
+        })(<InputNumber placeholder="Please Input" />)}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Code"
+      >
+        {form.getFieldDecorator("code", {
+          rules: [
+            {
+              required: true
+            }
+          ]
+        })(<Input placeholder="Please Input" />)}
+      </FormItem>
+    </Modal>
+  );
+});
+
+
+
 /* eslint react/no-multi-comp:0 */
 @connect(({ coupons, areas, loading }) => ({
   coupons,
@@ -264,6 +358,7 @@ class Coupon extends PureComponent {
   state = {
     createModalVisible: false,
     updateModalVisible: false,
+    generateCodeCouponVisible: false,
     expandForm: false,
     selectedRows: [],
     filterCriteria: {},
@@ -303,6 +398,14 @@ class Coupon extends PureComponent {
             </a>
           }
 
+
+          <Divider type="vertical" />
+
+          {authority.includes("generate.code.coupon") &&
+          <a onClick={() => this.handleGenerateCodeCouponModalVisible(true, record)}>
+            Generate Coupon with Code
+          </a>
+          }
           <Divider type="vertical" />
 
           {authority.includes("update.coupon.detail") &&
@@ -403,6 +506,27 @@ class Coupon extends PureComponent {
     });
   };
 
+
+  handleGenerateCodeCouponModalVisible = (flag, record) => {
+    this.setState({
+      generateCodeCouponVisible: !!flag,
+      selectedRecord: record || {}
+    });
+  }
+
+
+  handleGenerateCouponWithCode = (id, payload) => {
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: "coupons/generateCodeCoupon",
+      payload: payload,
+      id: id
+    });
+
+    this.handleGenerateCodeCouponModalVisible();
+  };
+
   handleDeleteModalVisible = (flag, record) => {
     this.setState({
       updateModalVisible: !!flag,
@@ -479,7 +603,8 @@ class Coupon extends PureComponent {
     const {
       createModalVisible,
       updateModalVisible,
-      selectedRecord
+      selectedRecord,
+      generateCodeCouponVisible
     } = this.state;
 
     const parentMethods = {
@@ -489,6 +614,11 @@ class Coupon extends PureComponent {
     const updateMethods = {
       handleModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate
+    };
+
+    const codeCouponMethods = {
+      handleModalVisible: this.handleGenerateCodeCouponModalVisible,
+      handleGenerateCouponWithCode: this.handleGenerateCouponWithCode
     };
 
     return (
@@ -531,6 +661,12 @@ class Coupon extends PureComponent {
           record={selectedRecord}
           coupons={coupons.data}
           areas={areas.data}
+        />
+
+        <GenerateCouponWithCodeForm
+          {...codeCouponMethods}
+          modalVisible={generateCodeCouponVisible}
+          record={selectedRecord}
         />
       </PageHeaderWrapper>
     );

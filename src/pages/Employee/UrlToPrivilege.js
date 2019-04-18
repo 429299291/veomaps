@@ -9,7 +9,6 @@ export default {
     "GET /api/admins/coupons": "get.customer.coupons",
     "POST /api/admins/coupons/{couponId}/customers/{customerId}":
       "add.coupon.to.customer",
-    "PUT /api/admins/rides/{rideId}/end": "end.customer.ride",
     "DELETE /api/admins/coupons/customers/{customerCouponId}":
       "delete.customer.coupon",
     "GET /api/admins/customers/{customerId}/charge_history":
@@ -24,18 +23,23 @@ export default {
   },
   "Vehicle List": {
     "GET /api/admins/vehicles": "get.vehicles",
+    "GET /api/admins/vehicles/{id}": "get.vehicle",
     "GET /api/admins/vehicles/total": "get.vehicles.total",
-    "GET /api/admins/vehicles/{id}": "get.vehicles.detail",
+    "GET /api/admins/vehicles/{id}/detail": "get.vehicles.detail",
     "PUT /api/admins/vehicles/{id}": "update.vehicle.detail",
     "POST /api/admins/vehicles": "create.vehicle",
     "PUT /api/admins/vehicles/{id}/unlock": "unlock.vehicle",
+    "PUT /api/admins/vehicles/{id}/location": "update.vehicle.location",
+    "PUT /api/admins/vehicles/locations/{areaId}": "update.all.vehicle.location",
     "GET /api/admins/vehicles/{id}/orders": "get.vehicle.orders",
+    "POST /api/admins/vehicles/{id}/find": "alert.vehicle",
   },
   "Riding History": {
     "GET /api/admins/rides": "get.rides",
     "GET /api/admins/rides/count": "get.rides.total",
     "PUT /api/admins/rides/{rideId}/end": "end.ride",
-    "GET /api/admins/rides/{rideId}/route": "get.ride.route"
+    "GET /api/admins/rides/{rideId}/route": "get.ride.route",
+    "GET /api/admins/rides/{areaId}/start_points": "get.area.start.points"
   },
   "Geo Management": {
     "GET /api/admins/geo/fences": "get.fences",
@@ -64,12 +68,14 @@ export default {
       "delete.customer.coupons",
     "POST /api/admins/coupons": "create.coupon",
     "POST /api/admins/coupons/{couponId}/customers/{customerId}":
-      "assign.coupon.to.customer"
+      "assign.coupon.to.customer",
+    "POST /api/admins/coupons/{couponId}" : "generate.code.coupon"
   },
   "Membership Management": {
     "DELETE /api/admins/memberships/{membershipId}": "delete.membership",
     "PUT /api/admins/memberships/{membershipId}": "update.membership.detail",
     "GET /api/admins/memberships": "get.memberships",
+    "GET /api/admins/memberships/{membershipId}/detail": "get.membership.detail",
     "POST /api/admins/memberships": "create.membership"
   },
   "Price Management": {
@@ -82,7 +88,8 @@ export default {
     "DELETE /api/admins/errors/{errorId}": "delete.error",
     "PUT /api/admins/errors/{errorId}": "update.error.detail",
     "GET /api/admins/errors": "get.errors",
-    "POST /api/admins/errors/batch_pass": "batch.pass.error"
+    "POST /api/admins/errors/batch_pass": "batch.pass.error",
+    "GET /api/admins/errors/{errorId}/image_paths": "get.image.paths",
   },
   "Role Management": {
     "DELETE /api/admins/roles/{roleId}": "delete.role",

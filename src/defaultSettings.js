@@ -1,6 +1,6 @@
 module.exports = {
   navTheme: "light",
-  primaryColor: "#13C2C2",
+  primaryColor: "#53bab6",
   layout: "sidemenu",
   contentWidth: "Fluid",
   fixedHeader: false,

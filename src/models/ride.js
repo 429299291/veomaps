@@ -35,6 +35,17 @@ export default {
         total: total
       });
     },
+    *getAll({ payload, onSuccess }, { call, put }) {
+
+      const data = yield call(getAdminRides, payload);
+      
+      if (data) {
+        onSuccess && onSuccess(data);
+      } else {
+        message.error("Fail to get all rides.");
+      }
+      
+    },
     *getCustomerRides({ customerId, onSuccess }, { call, put }) {
       const rides = yield call(getAdminRides, { customerId: customerId });
 

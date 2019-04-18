@@ -23,24 +23,11 @@ import {
 } from "antd";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
+import {fenceType, fenceTypeColor} from "@/constant";
+
 const FormItem = Form.Item;
 
-const fenceType = [
-  "geofence",
-  "force parking area",
-  "recommend parking",
-  "lucky zone",
-  "restricted parking",
-  "sub-geofence"
-];
-const fenceTypeColor = [
-  "#b72126",
-  "#1300ff",
-  "#65b30a",
-  "#00b8aa",
-  "#ff0000",
-  "#b72126"
-];
+
 
 import { compose, withProps } from "recompose";
 import {

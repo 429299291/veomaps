@@ -40,7 +40,7 @@ const authority = getAuthority();
 
 const customerStatus = ["NORMAL", "FROZEN", "ERROR"];
 
-const vehicleType = ["Bicycle", "Scooter", "E-Ride", "Car"];
+const vehicleType = ["Bicycle", "Scooter", "E-Bike", "Car"];
 const lockOperationWay = ["GPRS", "BLUETOOTH"];
 const REFUND_TYPE = {"FULL": 0, "CUSTOMER_FAULT": 1, "OTHER": 2};
 
@@ -87,16 +87,12 @@ const EndRideForm = Form.create()(props => {
 });
 
 const UpdateForm = Form.create()(props => {
-  const { form, handleUpdate, areas, record } = props;
+  const { form, handleUpdate, areas, record, customerActiveDays } = props;
   const okHandle = () => {
     if (form.isFieldsTouched())
       form.validateFields((err, fieldsValue) => {
         if (err) return;
         form.resetFields();
-
-        if (fieldsValue.email === "") fieldsValue.email = null;
-
-        if (fieldsValue.fullName === "") fieldsValue.fullName = null;
 
         handleUpdate(record.id, fieldsValue);
       });
@@ -222,6 +218,22 @@ const UpdateForm = Form.create()(props => {
         </FormItem>
       )}
 
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Phone Model">
+        <span> {record.phoneModel} </span>
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="App Version">
+        <span> {record.appVersion} </span>
+      </FormItem>
+
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Register Date">
+        <span> { moment(record.created).format("YYYY/MM/DD hh:mm:ss")} </span>
+      </FormItem>
+
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Active Days">
+          <span> {customerActiveDays} </span>
+        </FormItem> 
+      
+
       <Row>
         <Col>
           <Button
@@ -244,6 +256,12 @@ const MembershipForm = Form.create()(props => {
     if (form.isFieldsTouched())
       form.validateFields((err, fieldsValue) => {
         if (err) return;
+
+        if (fieldsValue.free) {
+          fieldsValue.autoRenew = false;
+          fieldsValue.paidWithBalance = true;
+        }
+
         form.resetFields();
 
 
@@ -264,7 +282,7 @@ const MembershipForm = Form.create()(props => {
             rules: [
               {
                 required: true,
-                message: "You have pick a membership"
+                message: "You have to pick a membership"
               }
             ]
           })(
@@ -278,6 +296,12 @@ const MembershipForm = Form.create()(props => {
           )}
         </FormItem>
       )}
+
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Free">
+        {form.getFieldDecorator("free")(
+          <Checkbox />
+        )}
+      </FormItem>
 
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is AutoRenew">
         {form.getFieldDecorator("autoRenew")(
@@ -641,6 +665,7 @@ class CustomerDetail extends PureComponent {
     selectedCharge: null,
     refundType: REFUND_TYPE.FULL,
     needPickupFee: null,
+    customerActiveDays: null
   };
 
   customerCouponColumns = [
@@ -726,10 +751,10 @@ class CustomerDetail extends PureComponent {
     },
     {
       title: "operation",
-      render: (text, record) => (
-        <Fragment>
+      render: (text, record) => {
+        return <Fragment>
           {!record.end &&
-            authority.includes("end.customer.ride") && (
+            authority.includes("end.ride") && (
               <Popconfirm
                 title="Are you Sure？"
                 icon={
@@ -741,7 +766,7 @@ class CustomerDetail extends PureComponent {
               </Popconfirm>
             )}
         </Fragment>
-      )
+      }
     }
   ];
 
@@ -797,7 +822,6 @@ class CustomerDetail extends PureComponent {
 
 
   handleNeedPickupFee = value => {
-    console.log(value);
     this.setState({needPickupFee: value})
   }
 
@@ -837,12 +861,15 @@ class CustomerDetail extends PureComponent {
   }
 
   handleEndRide = (rideId, minutes) => {
-    const { dispatch, customerId } = this.props;
+    const { dispatch, customerId, handleGetRides } = this.props;
     dispatch({
       type: "rides/endRide",
       rideId: rideId,
       minutes: minutes,
-      onSuccess: () => this.handleGetCustomerRides(customerId)
+      onSuccess: () => {
+        this.handleGetCustomerRides(customerId); 
+        handleGetRides();
+      }
     });
     this.handleEndRideVisible();
   };
@@ -869,6 +896,7 @@ class CustomerDetail extends PureComponent {
 
   handleGetCustomerCoupons = customerId => {
     const { dispatch } = this.props;
+
     dispatch({
       type: "coupons/getCustomerCoupons",
       payload: customerId,
@@ -878,6 +906,7 @@ class CustomerDetail extends PureComponent {
 
   handleGetCustomerPayments = customerId => {
     const { dispatch } = this.props;
+
     dispatch({
       type: "customers/customerPayments",
       payload: customerId,
@@ -887,6 +916,8 @@ class CustomerDetail extends PureComponent {
 
   handleGetCustomerDetail = customerId => {
     const { dispatch } = this.props;
+
+
     dispatch({
       type: "customers/getCustomerDetail",
       customerId: customerId,
@@ -896,10 +927,22 @@ class CustomerDetail extends PureComponent {
 
   handleGetCustomerRides = customerId => {
     const { dispatch } = this.props;
+
     dispatch({
       type: "rides/getCustomerRides",
       customerId: customerId,
-      onSuccess: response => this.setState({ customerRides: response })
+      onSuccess: response => {
+        //group ride to calculate active date
+
+        const activeDate = {}
+
+        response.map(ride => {
+
+          const day = moment(ride.start).format("YYYY-MM-DD") ;
+          activeDate[day] = true; 
+        })
+        this.setState({ customerRides: response, customerActiveDays: Object.keys(activeDate).length });
+      }
     });
   };
 
@@ -917,13 +960,14 @@ class CustomerDetail extends PureComponent {
   };
 
   handleUpdate = (id, fields) => {
-    const { dispatch, customerId } = this.props;
+    const { dispatch, customerId, handleGetCustomers } = this.props;
     dispatch({
       type: "customers/update",
       payload: fields,
       id: id,
       onSuccess: () => {
-        this.props.handleGetCustomers();
+        handleGetCustomers && handleGetCustomers();
+        message.success("customer update success!");
         this.handleGetCustomerDetail(customerId);
       }
     });
@@ -944,6 +988,7 @@ class CustomerDetail extends PureComponent {
 
   handleGetCustomerMembership = () => {
     const { dispatch, customerId } = this.props;
+
     dispatch({
       type: "customers/getMembership",
       customerId: customerId,
@@ -989,7 +1034,8 @@ class CustomerDetail extends PureComponent {
       isRefundFormVisible,
       selectedCharge,
       refundType,
-      needPickupFee
+      needPickupFee,
+      customerActiveDays
     } = this.state;
 
     const {
@@ -1030,12 +1076,15 @@ class CustomerDetail extends PureComponent {
                   areas={areas.data}
                   record={customerDetail}
                   handleUpdate={this.handleUpdate}
+                  customerActiveDays={customerActiveDays}
                 />
               </Card>
             )}
 
             {authority.includes("get.rides") &&
             <Card title="Customer Rides" style={{ marginTop: "2em" }}>
+              {customerRides && <div style={{marginBottom: "1em"}}> count : {customerRides.length}</div>  }
+            
               <Table
                 dataSource={customerRides}
                 columns={this.customerRideColumns}
@@ -1099,7 +1148,7 @@ class CustomerDetail extends PureComponent {
             <Card title="Membership" style={{ marginTop: "2em" }}>
               {customerMembership && Object.keys(customerMembership).map(
                 (key, index) => <div key={index}>
-                  {`${key} :  ${customerMembership[key]}`}
+                  {`${key} :  ${(key === 'startTime' || key === 'endTime') ? moment(customerMembership[key]).format("YYYY-MM-DD HH:mm:ss") : customerMembership[key]}`}
                 </div>
               )}
               {authority.includes("customer.buy.membership") &&

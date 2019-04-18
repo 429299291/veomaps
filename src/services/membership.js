@@ -11,7 +11,10 @@ export async function getAdminMemberships(params) {
 }
 
 export async function getMembershipDetail(id) {
-  return request(`/admins/memberships/${id}`);
+  return request(`/admins/memberships/${id}/detail`,    
+  {
+    method: "GET"
+  });
 }
 
 export async function createMembership(membership) {

@@ -19,8 +19,13 @@ import {
   Badge,
   Divider,
   Steps,
-  Radio
+  Radio,
+  Tabs,
+  Checkbox
 } from "antd";
+
+const TabPane = Tabs.TabPane;
+
 import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
@@ -28,6 +33,10 @@ import styles from "./Vehicle.less";
 import { roundTo2Decimal } from "../../utils/mathUtil";
 import CustomerDetail from "../Customer/CustomerDetail";
 import VehicleDetail from "./VehicleDetail";
+
+import { getAuthority } from "@/utils/authority";
+
+const authority = getAuthority();
 
 
 const FormItem = Form.Item;
@@ -45,11 +54,13 @@ const connectStatus = ["Offline", "Online"];
 const lockStatus = ["Unlock", "lock"];
 const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "Car"];
 
+import { exportCSVFile } from "../../utils/utils";
+
 const errorStatus = [
   "Normal",
   "Error",
   "Auto Error",
-  "Scrapped",
+  "Deactivated",
   "Waiting for Activation"
 ];
 
@@ -57,6 +68,31 @@ const formatTime = val => {
   const local = moment(val).format('YYYY-MM-DD HH:mm:ss');
   return local;
 }
+
+import VehicleMap from "@/components/Map/VehicleMap";
+
+const vehicleCsvHeader = {
+  vehicleId: "vehicleId",
+  vehicleNumber: "vehicleNumber",
+  vehicleType: "vehicleType",
+  lockStatus: "lockStatus",
+  isReported: "isReported",
+  areaId: "areaId",
+  imei: "imei",
+  errorStatus: "errorStatus",
+  connectStatus: "connectStatus",
+  power: "power",
+  vehiclePower: "vehiclePower",
+  isTurnedOn: "isTurnedOn",
+  heartTime: "heartTime",
+  wirelessTech: "wirelessTech",
+  mac: "mac",
+  iccid: "iccid",
+  firmware: "firmware",
+  lat: "lat",
+  lng: "lng",
+  key: "vehicleId"
+};
 
 
 const getPowerPercent = power => {
@@ -285,11 +321,13 @@ const UpdateForm = Form.create()(props => {
 });
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ vehicles, areas, loading }) => ({
+@connect(({ vehicles, areas, loading, geo }) => ({
   vehicles,
   areas: areas.data,
   selectedAreaId : areas.selectedAreaId,
-  loading: loading.models.vehicles
+  loading: loading.models.vehicles,
+  areaNames: areas.areaNames,
+  geo
 }))
 @Form.create()
 class Vehicle extends PureComponent {
@@ -299,8 +337,12 @@ class Vehicle extends PureComponent {
     detailModalVisible: false,
     expandForm: false,
     selectedRows: [],
+    vehicleLocations: [],
     filterCriteria: { currentPage: 1, pageSize: 10 },
-    selectedRecord: {}
+    selectedRecord: {},
+    selectedMarker: null,
+    selectedTab: "1",
+    shouldShowHeatMap: false
   };
 
   columns = [
@@ -324,7 +366,7 @@ class Vehicle extends PureComponent {
           <Divider type="vertical" />
           <span>{errorStatus[record.errorStatus]}</span>
           <Divider type="vertical" />
-          <span>{connectStatus[record.connectStatus]}</span>
+          <span>{this.isConnected(record)}</span>
         </Fragment>
       )
     },
@@ -354,12 +396,11 @@ class Vehicle extends PureComponent {
       }
     },
     {
-      title: "Imei",
-      dataIndex: "imei"
-    },
-    {
-      title: "Mac",
-      dataIndex: "mac"
+      title: "Vehicle Power",
+      dataIndex: "vehiclePower",
+      render(val) {
+        return <p>{`${val}%`}</p>;
+      }
     },
     {
       title: "operation",
@@ -381,7 +422,13 @@ class Vehicle extends PureComponent {
     this.handleSearch();
   }
 
-  handleGetVehicles = () => {
+  isConnected(vehicle) {
+    const now = moment.utc();
+    const heartime = moment.utc(vehicle.heartTime);
+    return now.diff(heartime,'minutes') < 10 ? 'online' : 'offline';
+  }
+
+  handleGetListVehicles = () => {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
 
@@ -433,7 +480,7 @@ class Vehicle extends PureComponent {
       {
         filterCriteria: params
       },
-      () => this.handleGetVehicles()
+      () => this.handleSearch()
     );
   };
 
@@ -456,7 +503,7 @@ class Vehicle extends PureComponent {
     typeof e === 'object' && e.preventDefault();
 
     const { dispatch, form, selectedAreaId } = this.props;
-    const { filterCriteria } = this.state;
+    const { filterCriteria, selectedTab } = this.state;
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -471,7 +518,48 @@ class Vehicle extends PureComponent {
         {
           filterCriteria: values
         },
-        () => this.handleGetVehicles()
+        () => {
+          switch (selectedTab) {
+            case "1":
+            this.handleGetListVehicles();
+            break;
+          case "2":
+            this.handleGetMapData();
+            break;
+          default:
+            return;
+          }
+        }
+        
+      );
+    });
+  };
+
+  handleUpdateAllLocations = e => {
+    typeof e === 'object' && e.preventDefault();
+
+    const { dispatch, form, selectedAreaId } = this.props;
+    const { filterCriteria, selectedTab } = this.state;
+
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+
+      const values = Object.assign({}, filterCriteria, fieldsValue, {
+        currentPage: 1,
+        pageSize: 10,
+        areaId: selectedAreaId
+      });
+
+      this.setState(
+        {
+          filterCriteria: values
+        },
+        () => 
+          dispatch({
+            type: "vehicles/updateAllLocations",
+            payload: filterCriteria,
+            areaId: selectedAreaId
+          })
       );
     });
   };
@@ -521,7 +609,7 @@ class Vehicle extends PureComponent {
       type: "vehicles/update",
       payload: fields,
       id: id,
-      onSuccess: this.handleGetVehicles
+      onSuccess: this.handleGetListVehicles
     });
 
     this.handleUpdateModalVisible();
@@ -543,28 +631,49 @@ class Vehicle extends PureComponent {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="Battery Status">
-              {getFieldDecorator("powerStatus")(
+              {getFieldDecorator("lockPower")(
                 <Select placeholder="select" style={{ width: "100%" }}>
                   <Option value="0">Low Battery</Option>
                   <Option value="1">Full Battery</Option>
+                  <Option value={null}>All</Option>
                 </Select>
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
-                Search
-              </Button>
-              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-                Reset
-              </Button>
-              <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
-                more <Icon type="down" />
-              </a>
-            </span>
-          </Col>
-        </Row>
+            <FormItem label="Error Status">
+              {getFieldDecorator("errorStatus", {initialValue: ["0", "1", "2", "4"]})(
+                <Select
+                  mode="multiple"
+                  placeholder="select"
+                  style={{ width: "100%" }}
+                >
+                  <Option value="0">Normal</Option>
+                  <Option value="1">Error</Option>
+                  <Option value="2">Auto Error</Option>
+                  <Option value="3">Deactivated</Option>
+                  <Option value="4">Waiting for Activation</Option>
+                </Select>
+              )}
+            </FormItem>
+            </Col>
+          </Row>
+
+
+
+        <div style={{ overflow: "hidden" }}>
+          <div style={{ float: "right", marginBottom: 24 }}>
+                <Button type="primary" htmlType="submit">
+                  Search
+                </Button>
+                <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+                  Reset
+                </Button>
+                <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+                  more <Icon type="down" />
+                </a>
+                </div>
+        </div>
       </Form>
     );
   }
@@ -575,6 +684,17 @@ class Vehicle extends PureComponent {
     } = this.props;
 
     const { areas }= this.props;
+
+
+    const checkIdleDays = (rule, value, callback) => {
+      console.log(value);
+      if (value === undefined || ( value > 0 && Number.isInteger(value))) {
+        callback();
+        return;
+      }
+  
+      callback("Number must be larger than zero.");
+    };
 
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -587,30 +707,20 @@ class Vehicle extends PureComponent {
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="Battery Status">
-              {getFieldDecorator("powerStatus")(
+            <FormItem label="Lock Battery Status">
+              {getFieldDecorator("lockPower")(
                 <Select placeholder="select" style={{ width: "100%" }}>
                   <Option value="0">Low Battery</Option>
                   <Option value="1">Full Battery</Option>
+                  <Option value={null}>All</Option>
                 </Select>
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="Lock Status">
-              {getFieldDecorator("lockStatus")(
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  <Option value="0">Unlock</Option>
-                  <Option value="1">Lock</Option>
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-        </Row>
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+
           <Col md={8} sm={24}>
             <FormItem label="Error Status">
-              {getFieldDecorator("errorStatus")(
+              {getFieldDecorator("errorStatus", {initialValue: ["0", "1", "2", "4"]})(
                 <Select
                   mode="multiple"
                   placeholder="select"
@@ -619,8 +729,23 @@ class Vehicle extends PureComponent {
                   <Option value="0">Normal</Option>
                   <Option value="1">Error</Option>
                   <Option value="2">Auto Error</Option>
-                  <Option value="3">Scrapped</Option>
+                  <Option value="3">Deactivated</Option>
                   <Option value="4">Waiting for Activation</Option>
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          
+        </Row>
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+
+          <Col md={8} sm={24}>
+            <FormItem label="Lock Status">
+              {getFieldDecorator("lockStatus")(
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  <Option value="0">Unlock</Option>
+                  <Option value="1">Lock</Option>
+                  <Option value={null}>All</Option>
                 </Select>
               )}
             </FormItem>
@@ -632,6 +757,7 @@ class Vehicle extends PureComponent {
                   <Option value="0">Bike</Option>
                   <Option value="1">Scooter</Option>
                   <Option value="2">e-bike</Option>
+                  <Option value={null}>All</Option>
                 </Select>
               )}
             </FormItem>
@@ -642,11 +768,64 @@ class Vehicle extends PureComponent {
                 <Select placeholder="select" style={{ width: "100%" }}>
                   <Option value="0">offline</Option>
                   <Option value="1">online</Option>
+                  <Option value={null}>All</Option>
                 </Select>
               )}
             </FormItem>
           </Col>
         </Row>
+
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+        <Col md={8} sm={24}>
+            <FormItem label="Is Using">
+              {getFieldDecorator("isUsing")(
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  <Option value={true}>Yes</Option>
+                  <Option value={false}>No</Option>
+                  <Option value={null}>All</Option>
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="Vehicle Power Status">
+              {getFieldDecorator("vehiclePower")(
+                <Select placeholder="select" style={{ width: "100%" }}>
+                <Option value="0">Low Battery</Option>
+                <Option value="1">Full Battery</Option>
+                <Option value={null}>All</Option>
+              </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+              <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Idle Days">
+                {getFieldDecorator("idelDays", {
+                  rules: [
+                    {
+                      validator: checkIdleDays
+                    }
+                  ]
+                })(<InputNumber placeholder="Please Input" />)}
+          </FormItem>
+          </Col>
+        </Row>
+
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+        <Col md={8} sm={24}>
+            <FormItem label="Is Reported">
+              {getFieldDecorator("isReported")(
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  <Option value={true}>Yes</Option>
+                  <Option value={false}>No</Option>
+                  <Option value={null}>All</Option>
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+
+        
 
         <div style={{ overflow: "hidden" }}>
           <div style={{ float: "right", marginBottom: 24 }}>
@@ -670,14 +849,98 @@ class Vehicle extends PureComponent {
     return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
   }
 
+
+
+
+
+  //map vehicle list data
+  getAreaGeoInfo = () => {
+
+    const { dispatch, selectedAreaId } = this.props;
+
+    dispatch({
+      type: "geo/getFences",
+      areaId: selectedAreaId
+    });
+
+    dispatch({
+      type: "geo/getCenter",
+      areaId: selectedAreaId
+    });
+  };
+
+  getVehicleLocations() {
+    const { dispatch, selectedAreaId } = this.props;
+
+    const { filterCriteria } = this.state;
+
+    dispatch({
+      type: "vehicles/getVehicleLocation",
+      payload: filterCriteria,
+      onSuccess: result => this.setState({vehicleLocations: result})
+    });
+  }
+
+  setClickedMarker = vehicleNumber => {
+    this.setState({selectedMarker: vehicleNumber})
+  }
+
+
+  hadnleTabChange = value => {
+    
+    this.setState({selectedTab: value}, this.handleSearch)
+  }
+
+  getAreaStartPoints= () => {
+    const { dispatch, selectedAreaId } = this.props;
+
+    dispatch({
+      type: "vehicles/getStartPoints",
+      areaId: selectedAreaId,
+      onSuccess: result => this.setState({areaStartPoints: result})
+    });
+  }
+
+  handleGetMapData = () => {
+    const { selectedAreaId } = this.props;
+
+    if (!(selectedAreaId >= 1)) {
+      return;
+    }
+
+
+    this.getVehicleLocations();
+    this.getAreaGeoInfo();
+    authority.includes("get.area.start.points")  && this.getAreaStartPoints();
+  }
+
+  formatCsvData = vehicles => {
+    return vehicles.map(vehicle => {
+      vehicle.heartTime = moment(vehicle.heartTime).format("YYYY-MM-DD HH:mm:ss");
+      return vehicle;
+    })
+
+  }
+
+
   render() {
-    const { vehicles, areas, loading } = this.props;
+    const { vehicles, areas, loading, selectedAreaId, geo, areaNames } = this.props;
+
+    const center = geo.area && geo.area.center;
+
+    const fences = geo.fences;
+    
     const {
       createModalVisible,
       updateModalVisible,
       detailModalVisible,
       selectedRecord,
-      filterCriteria
+      filterCriteria,
+      selectedMarker,
+      selectedTab,
+      vehicleLocations,
+      areaStartPoints,
+      shouldShowHeatMap
     } = this.state;
 
     const parentMethods = {
@@ -709,15 +972,70 @@ class Vehicle extends PureComponent {
               >
                 Add
               </Button>
+
+
+            {selectedAreaId >= 1 && authority.includes("update.all.vehicle.location") && 
+                <Button
+                type="primary"
+                onClick={() => this.handleUpdateAllLocations()}
+              >
+                Update All Locations
+              </Button>
+            }
+              
+
+              <span style={{marginLeft: "1em"}}>
+                {`count: ${selectedTab === "1" ? vehicles.total : vehicleLocations.length}`}
+              </span>
             </div>
-            <StandardTable
-              loading={loading}
-              data={{ list: vehicles.data, pagination: pagination }}
-              columns={this.columns}
-              onChange={this.handleStandardTableChange}
-              scroll={{ x: 1300 }}
-            />
+            <Tabs defaultActiveKey="1" onChange={this.hadnleTabChange}>
+            
+            <TabPane tab="List View" key="1">
+              <StandardTable
+                loading={loading}
+                data={{ list: vehicles.data, pagination: pagination }}
+                columns={this.columns}
+                onChange={this.handleStandardTableChange}
+                scroll={{ x: 1300 }}
+              />
+              </TabPane>
+
+              {selectedAreaId >= 1 && 
+                <TabPane tab="Map View" key="2">
+                    {center && fences &&
+                    <VehicleMap
+                      center={center}
+                      vehicles={vehicleLocations}
+                      fences={fences}
+                      heatMapData={areaStartPoints}
+                      shouldShowHeatMap={shouldShowHeatMap}
+                      vehicleTypeFilter={{
+                        unlock: true,
+                        lock: true,
+                        lowBattery: true,
+                        error: true,
+                        errorUnlock: true,
+                        ebike: true
+                      }}
+                      setClickedMarker={this.setClickedMarker}
+                      selectedMarker={selectedMarker}
+                    />}
+                    { vehicleLocations.length > 0 && <div>
+                        <Button style={{marginTop: "1em"}} onClick={() => exportCSVFile(vehicleCsvHeader, this.formatCsvData(vehicleLocations), areaNames[selectedAreaId])} >
+                            Export
+                        </Button>
+
+                       {authority.includes("get.area.start.points")  && <Checkbox style={{marginTop: "1em", marginLeft: "1em"}} defaultValue={shouldShowHeatMap} onChange={e => this.setState({shouldShowHeatMap: e.target.checked})} >
+                            Show HeatMap
+                        </Checkbox>}
+                      </div>
+                    }
+                </TabPane>
+              }
+            </Tabs>
+            
           </div>
+          
         </Card>
         <CreateForm
           {...parentMethods}
@@ -732,28 +1050,12 @@ class Vehicle extends PureComponent {
           areas={areas}
         />
 
-        {/*{selectedRecord &&*/}
-          {/*detailModalVisible && (*/}
-            {/*<Modal*/}
-              {/*destroyOnClose*/}
-              {/*title="Detail"*/}
-              {/*visible={detailModalVisible}*/}
-              {/*onCancel={() => this.handleDetailModalVisible()}*/}
-            {/*>*/}
-              {/*{Object.keys(selectedRecord).map(key => (*/}
-                {/*<p key={key}>{`${key} : ${selectedRecord[key]}`}</p>*/}
-              {/*))}*/}
-            {/*</Modal>*/}
-          {/*)}*/}
-
-
         {detailModalVisible && (
           <VehicleDetail
             isVisible={detailModalVisible}
             handleDetailVisible={this.handleDetailModalVisible}
             vehicleId={selectedRecord.id}
-            handleGetVehicles={this.handleGetVehicles}
-            record = {selectedRecord}
+            handleGetVehicles={this.handleGetListVehicles}
           />
         )}
 

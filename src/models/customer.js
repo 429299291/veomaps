@@ -37,6 +37,16 @@ export default {
         total: total
       });
     },
+    *getAll({ payload, onSuccess }, { call, put }) {
+
+      const data = yield call(getAdminCustomers, payload);
+
+      if (data) {
+        onSuccess && onSuccess(data);
+      } else {
+        message.error("Download Fail!");
+      }
+    },
     *customerPayments({ payload, onSuccess }, { call, put }) {
       const response = yield call(getCustomerPayments, payload);
 

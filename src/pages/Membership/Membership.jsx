@@ -498,6 +498,13 @@ class Membership extends PureComponent {
             </a>
           }
           <Divider type="vertical" />
+          { 
+            authority.includes("get.membership.detail") &&
+              <a onClick={() =>  this.handleDetailModalVisible(true, record)}>
+                Detail
+              </a>
+          }
+          <Divider type="vertical" />
           {authority.includes("delete.membership") &&
             <Popconfirm
               title="Are you Sure？"
@@ -514,6 +521,29 @@ class Membership extends PureComponent {
       )
     }
   ];
+
+  handleDetailModalVisible = (flag, record) => {
+    const { dispatch } = this.props;
+
+    if (!!flag) {
+
+      dispatch({
+        type: "memberships/getDetail",
+        membershipId: record.id,
+        onSuccess: detail =>
+          this.setState({
+            membershipDetail: detail,
+            detailModalVisible: true,
+          })
+      });
+
+    } else {
+      this.setState({
+        membershipDetail: null,
+        detailModalVisible: false
+      });
+    }
+  };
 
   componentDidMount() {
     this.handleGetMemberships();
@@ -665,12 +695,21 @@ class Membership extends PureComponent {
     );
   }
 
+  handleUpdateModalVisible = (flag, record) => {
+    this.setState({
+      updateModalVisible: !!flag,
+      selectedRecord: record || {}
+    });
+  };
+
   render() {
     const { memberships, loading, areas } = this.props;
     const {
       createModalVisible,
       updateModalVisible,
-      selectedRecord
+      selectedRecord,
+      detailModalVisible,
+      membershipDetail
     } = this.state;
 
     const parentMethods = {
@@ -716,6 +755,18 @@ class Membership extends PureComponent {
           memberships={memberships.data}
           areas={areas.data}
         />
+
+        {detailModalVisible && membershipDetail && (
+            <Modal
+              destroyOnClose
+              title="Detail"
+              visible={detailModalVisible}
+              onCancel={() => this.handleDetailModalVisible()}
+              onOk={() => this.handleDetailModalVisible()}
+            >
+              Number of Customer: {membershipDetail.count}
+            </Modal>
+          )}
 
         <UpdateForm
           {...updateMethods}

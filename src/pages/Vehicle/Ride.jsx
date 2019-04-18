@@ -15,10 +15,31 @@ import {
   Steps,
   Radio,
   InputNumber,
-  DatePicker
+  DatePicker,
+  message
 } from "antd";
 import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
+import VehicleDetail from "@/pages/Vehicle/VehicleDetail";
+import CustomerDetail from "@/pages/Customer/CustomerDetail";
+import {formatPhoneNumber} from "@/utils/utils"
+
+import { exportCSVFile } from "../../utils/utils";
+
+
+const rideCsvHeader = {
+  vehicleType: "vehicleType",
+  imei: "imei",
+  vehicleNumber: "vehicleNumber",
+  minutes: "minutes",
+  charge: "charge",
+  lockMethod: "lockMethod",
+  unlockMethod: "unlockMethod",
+  start: "start",
+  end: "end",
+  area: "area"
+}
+
 
 const { RangePicker } = DatePicker;
 
@@ -51,11 +72,18 @@ const operationStatus = ["NORMAL", "MANTAINANCE"];
 const connectStatus = ["Offline", "Online"];
 const lockStatus = ["Unlock", "lock"];
 const rideType = ["USING", "FINISHED"];
-const vehicleType = ["Bicycle", "Scooter", "E-Ride", "Car"];
-const lockOperationWay = ["GPRS", "BLUETOOTH"];
+const vehicleType = ["Bicycle", "Scooter", "E-Bike", "Car"];
+const lockOperationWay = ["GPRS", "BLUETOOTH", "ADMIN", "UNKNOWN"];
 const rideState = ["unconfirmed","success","error"];
+const rideStateColor = ["#e5bb02","#0be024","#ff0000"];
 
-const rideStatus = ["NORMAL", "FROZEN", "ERROR"];
+
+const violateType = ["Normal", "In restricted fence", "out of geo fence", "out of force parking zone", "unknown"];
+const violateTypeColor = ["black", "#ff0000", "#b72126","#1300ff", "#f1fc64"];
+
+import {fenceType, fenceTypeColor} from "@/constant";
+
+
 
 const queryStatus = ["FROZEN"];
 
@@ -109,14 +137,20 @@ const RouteMap = compose(
   withScriptjs,
   withGoogleMap
 )(props => {
-  const { path } = props;
+  const { path, fences } = props;
 
   const center = path[Math.round(path.length / 2)];
 
+  const dashLineDot = {
+    path: window.google.maps.SymbolPath.CIRCLE,
+    fillOpacity: 1,
+    scale: 2
+  };
+
   return (
     <GoogleMap defaultZoom={15} center={center}>
-      <Marker position={path[0]} />
-      <Marker position={path[path.length - 1]} />
+      <Marker position={path[0]} label={"start"} />
+      <Marker position={path[path.length - 1]} label={"end"}  />
       <Polyline
         path={path}
         geodesic={true}
@@ -126,15 +160,58 @@ const RouteMap = compose(
           strokeWeight: 2
         }}
       />
+
+    {authority.includes("get.fences") && fences && fences.map(fence => (
+        <Polygon
+          path={fence.fenceCoordinates}
+          geodesic={true}
+          key={fence.id}
+          options={{
+            strokeColor: fenceTypeColor[fence.fenceType],
+            strokeOpacity: fence.fenceType === 5 ? 0 : 0.75,
+            strokeWeight: fence.fenceType === 5 ? 0 : 2,
+            fillColor: fenceTypeColor[fence.fenceType],
+            fillOpacity:
+              fence.fenceType === 0 || fence.fenceType === 5 ? 0 : 0.35
+          }}
+        />
+      ))}
+
+      {authority.includes("get.fences") && fences &&  fences.filter(fence => fence.fenceType === 5).map(fence => (
+        <Polyline
+          path={fence.fenceCoordinates}
+          geodesic={true}
+          key={fence.id}
+          options={{
+            strokeColor: fenceTypeColor[fence.fenceType],
+            strokeOpacity: 0.75,
+            strokeWeight: 2,
+            icons: [
+              {
+                icon: dashLineDot,
+                offset: "0",
+                repeat: "10px"
+              }
+            ],
+            fillColor: fenceTypeColor[5],
+            fillOpacity: 0
+          }}
+        />
+      ))}
+
     </GoogleMap>
   );
 });
 
+
+
 /* eslint react/no-multi-comp:0 */
-@connect(({ rides, areas, loading }) => ({
+@connect(({ rides, areas, geo, loading }) => ({
   rides,
   areas: areas.data,
+  geo,
   selectedAreaId : areas.selectedAreaId,
+  areaNames: areas.areaNames,
   loading: loading.models.rides
 }))
 @Form.create()
@@ -148,16 +225,30 @@ class Ride extends PureComponent {
   columns = [
     {
       title: "Phone",
-      dataIndex: "phone"
+      render: (text,record) => <a onClick={() => this.setState({selectedCustomerId: record.customerId},() =>  this.handleCustomerDetailModalVisible(true))}>{formatPhoneNumber(record.phone+"")}</a>
     },
     {
       title: "Vehicle Number",
-      dataIndex: "vehicleNumber"
+      render: (text,record) => <a onClick={() => this.setState({selectedVehicleId: record.vehicleId},() =>  this.handleVehicleDetailModalVisible(true))}>{record.vehicleNumber}</a>
+    },
+    {
+      title: "Vehicle Type",
+      dataIndex: "vehicleType",
+      render: val => <span>{vehicleType[val]}</span>
     },
     {
       title: "Lock Way",
       dataIndex: "lockMethod",
       render: val => <span>{lockOperationWay[val]}</span>
+    },
+    {
+      title: "Charge",
+      dataIndex: "charge",
+    },
+    {
+      title: "Violate Type",
+      dataIndex: "violateType",
+      render: val => <span style={{color: val >= 0 ?  violateTypeColor[val] : "black"}}>{val >= 0 ? violateType[val] : "unknown"}</span>
     },
     {
       title: "Unlock Way",
@@ -171,16 +262,25 @@ class Ride extends PureComponent {
       render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
     },
     {
-      title: "state",
-      dataIndex: "state",
-      sorter: true,
-      render: val => <span>{rideState[val]}</span>
-    },
-    {
       title: "End",
       dataIndex: "end",
       sorter: true,
-      render: val => <span>{val ? moment(val).format("YYYY-MM-DD HH:mm:ss") : "not finished"}</span>
+      render: (val, record) => {
+
+        const endTime = val ?  moment(val).format("YYYY-MM-DD HH:mm:ss") : "not finished";
+
+        const endBy = record.metaData && JSON.parse(record.metaData).adminEmail;
+
+        return <span>{endTime + (endBy ? ("|" + endBy) : "")}</span>
+        
+      }
+    },
+    {
+      title: "Minutes",
+      render: (text, record) =>  { 
+        const minutsDiff = (record.end ? moment(record.end) : moment()).diff(moment(record.start), 'minutes'); 
+        return <span>{minutsDiff}</span>
+      }
     },
     {
       title: "operation",
@@ -193,7 +293,7 @@ class Ride extends PureComponent {
           )}
           {!record.end && <Divider type="vertical" />}
 
-          <a onClick={() => this.handleDetailModalVisible(true, record)}>
+          <a onClick={() =>  this.handleDetailModalVisible(true, record)}>
             Detail
           </a>
         </Fragment>
@@ -266,10 +366,11 @@ class Ride extends PureComponent {
       if (err) return;
 
       if (fieldsValue.timeRange) {
-        fieldsValue.rideStart = fieldsValue.timeRange[0].format(
+        
+        fieldsValue.rideStart = moment(fieldsValue.timeRange[0]).utcOffset(0).format(
           "MM-DD-YYYY HH:mm:ss"
         );
-        fieldsValue.rideEnd = fieldsValue.timeRange[1].format(
+        fieldsValue.rideEnd = moment(fieldsValue.timeRange[1]).utcOffset(0).format(
           "MM-DD-YYYY HH:mm:ss"
         );
         fieldsValue.timeRange = undefined;
@@ -297,6 +398,11 @@ class Ride extends PureComponent {
     });
   };
 
+  handleVehicleDetailModalVisible = flag => this.setState({vehicleDetailModalVisible: flag})
+
+
+  handleCustomerDetailModalVisible = flag => this.setState({customerDetailModalVisible: flag})
+
   handleDetailModalVisible = (flag, record) => {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
@@ -313,6 +419,10 @@ class Ride extends PureComponent {
               detailModalVisible: true,
               selectedRecord: record
             })
+        });
+        authority.includes("get.fences") && dispatch({
+          type: "geo/getFences",
+          areaId: record.areaId
         });
       } else {
         this.setState({
@@ -385,6 +495,7 @@ class Ride extends PureComponent {
                       {rideType[index]}
                     </Option>
                   ))}
+                  <Option value={null}>All</Option>
                 </Select>
               )}
             </FormItem>
@@ -398,6 +509,7 @@ class Ride extends PureComponent {
                       {lockOperationWay[index]}
                     </Option>
                   ))}
+                  <Option value={null}>All</Option>
                 </Select>
               )}
             </FormItem>
@@ -411,6 +523,7 @@ class Ride extends PureComponent {
                       {lockOperationWay[index]}
                     </Option>
                   ))}
+                  <Option value={null}>All</Option>
                 </Select>
               )}
             </FormItem>
@@ -418,17 +531,34 @@ class Ride extends PureComponent {
         </Row>
 
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={24} sm={24}>
-            <FormItem label="Time">
+          <Col lg={7} md={12} sm={24}>
+            <FormItem label="Time" labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} >
               {getFieldDecorator("timeRange")(
-                <RangePicker format="YYYY-MM-DD HH:mm:ss" showTime />
+                <RangePicker style={{width: "90%"}} format="YYYY-MM-DD HH:mm:ss" showTime />
+              )}
+            </FormItem>
+          </Col>
+          <Col lg={7} md={12} sm={24}>
+            <FormItem label="Vehicle Type" labelCol={{ span: 5 }} wrapperCol={{ span: 15 }}>
+              {getFieldDecorator("vehicleType")(
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  {vehicleType.map((status, index) => (
+                    <Option key={index} value={index}>
+                      {vehicleType[index]}
+                    </Option>
+                  ))}
+                  <Option value={null}>All</Option>
+                </Select>
               )}
             </FormItem>
           </Col>
         </Row>
 
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={{ span: 8, offset: 16 }} sm={24}>
+          <Col md={4} sm={24}>
+            {`count: ${this.props.rides.total}`}
+          </Col>
+          <Col md={{ span: 8, offset: 12 }} sm={24}>
             <span className={styles.submitButtons} style={{ float: "right" }}>
               <Button type="primary" htmlType="submit">
                 Search
@@ -450,14 +580,84 @@ class Ride extends PureComponent {
     });
   };
 
+  formatCsvData = rides => {
+    const {areaNames, selectedAreaId} = this.props;
+
+    return rides.map(ride => {
+      return {
+        vehicleType: vehicleType[ride.vehicleType],
+        imei: ride.imei,
+        vehicleNumber: ride.vehicleNumber,
+        minutes: ride.minutes,
+        charge: ride.charge,
+        lockMethod: lockOperationWay[ride.lockMethod],
+        unlockMethod: lockOperationWay[ride.unlockMethod],
+        start: moment(ride.start).format("MM-DD-YYYY HH:mm:ss"),
+        end: moment(ride.end).format("MM-DD-YYYY HH:mm:ss"),
+        area: areaNames[ride.areaId]
+      }
+    })
+  }
+
+
+  handleExportData = () => {
+
+    const { form, selectedAreaId } = this.props;
+    const { filterCriteria } = this.state;
+
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+
+      if (fieldsValue.timeRange) {
+        
+        fieldsValue.rideStart = moment(fieldsValue.timeRange[0]).utcOffset(0).format(
+          "MM-DD-YYYY HH:mm:ss"
+        );
+        fieldsValue.rideEnd = moment(fieldsValue.timeRange[1]).utcOffset(0).format(
+          "MM-DD-YYYY HH:mm:ss"
+        );
+        fieldsValue.timeRange = undefined;
+      }
+
+      const values = Object.assign({}, filterCriteria, {areaId: selectedAreaId}  ,fieldsValue, {
+        currentPage: null,
+        pageSize: null,
+        areaId: selectedAreaId
+      });
+
+      this.setState(
+        {
+          filterCriteria: values
+        },
+        this.finishExportData
+      );
+    });
+  }
+
+  finishExportData() {
+    const { filterCriteria } = this.state;
+    const { areaNames, selectedAreaId, dispatch } = this.props;
+    dispatch({
+      type: "rides/getAll",
+      payload: filterCriteria,
+      onSuccess: data => {
+        exportCSVFile(rideCsvHeader, this.formatCsvData(data), areaNames[selectedAreaId])
+      }
+    })
+  }
+
   render() {
-    const { rides, areas, loading } = this.props;
+    const { rides, areas, geo, loading, selectedAreaId } = this.props;
     const {
       isEndRideVisible,
       detailModalVisible,
       selectedRecord,
       filterCriteria,
-      selectedRidePath
+      selectedRidePath,
+      vehicleDetailModalVisible,
+      selectedVehicleId,
+      customerDetailModalVisible,
+      selectedCustomerId
     } = this.state;
 
     const endRideMethod = {
@@ -484,8 +684,15 @@ class Ride extends PureComponent {
               data={{ list: rides.data, pagination: pagination }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
-              scroll={{ x: 1300 }}
+              scroll={{ x: 1400 }}
             />
+
+            {selectedAreaId >= 1 && <div>
+                        <Button style={{marginTop: "1em"}} onClick={this.handleExportData} >
+                            Export
+                        </Button>
+                      </div>
+            }
           </div>
         </Card>
 
@@ -503,6 +710,7 @@ class Ride extends PureComponent {
               destroyOnClose
               title="Detail"
               visible={detailModalVisible}
+              width={"50%"}
               onCancel={() => this.handleDetailModalVisible()}
               onOk={() => this.handleDetailModalVisible()}
             >
@@ -511,10 +719,30 @@ class Ride extends PureComponent {
               ))}
               {selectedRidePath &&
                 selectedRidePath.length >= 2 && (
-                  <RouteMap path={selectedRidePath} />
+                  <RouteMap
+                    path={selectedRidePath}
+                    fences={geo.fences}
+                  />
                 )}
             </Modal>
           )}
+
+        {vehicleDetailModalVisible && selectedVehicleId && authority.includes("get.vehicle") && (
+          <VehicleDetail
+            isVisible={vehicleDetailModalVisible}
+            handleDetailVisible={this.handleVehicleDetailModalVisible}
+            vehicleId={selectedVehicleId}
+          />
+        )}
+
+        {customerDetailModalVisible && (
+          <CustomerDetail
+            isVisible={customerDetailModalVisible}
+            handleDetailVisible={this.handleCustomerDetailModalVisible}
+            customerId={selectedCustomerId}
+            handleGetRides={this.handleGetRides}
+          />
+        )}
       </PageHeaderWrapper>
     );
   }
