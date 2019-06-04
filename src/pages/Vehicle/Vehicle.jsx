@@ -21,8 +21,12 @@ import {
   Steps,
   Radio,
   Tabs,
-  Checkbox
+  Checkbox,
+  Pagination,
+  Spin
 } from "antd";
+
+const { RangePicker } = DatePicker;
 
 const TabPane = Tabs.TabPane;
 
@@ -30,11 +34,15 @@ import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
 import styles from "./Vehicle.less";
+import LocationMap from "./LocationMap";
 import { roundTo2Decimal } from "../../utils/mathUtil";
 import CustomerDetail from "../Customer/CustomerDetail";
 import VehicleDetail from "./VehicleDetail";
 
 import { getAuthority } from "@/utils/authority";
+
+
+
 
 const authority = getAuthority();
 
@@ -52,7 +60,7 @@ const statusMap = ["default", "processing", "success", "error"];
 const operationStatus = ["NORMAL", "MANTAINANCE"];
 const connectStatus = ["Offline", "Online"];
 const lockStatus = ["Unlock", "lock"];
-const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "Car"];
+const vehicleType = ["Bicycle", "Scooter", "E-Bike", "Car"];
 
 import { exportCSVFile } from "../../utils/utils";
 
@@ -70,13 +78,14 @@ const formatTime = val => {
 }
 
 import VehicleMap from "@/components/Map/VehicleMap";
+import ResponsiveList from "./ResponsiveList";
 
 const vehicleCsvHeader = {
   vehicleId: "vehicleId",
   vehicleNumber: "vehicleNumber",
   vehicleType: "vehicleType",
   lockStatus: "lockStatus",
-  isReported: "isReported",
+  reported: "reported",
   areaId: "areaId",
   imei: "imei",
   errorStatus: "errorStatus",
@@ -90,10 +99,14 @@ const vehicleCsvHeader = {
   iccid: "iccid",
   firmware: "firmware",
   lat: "lat",
-  lng: "lng",
-  key: "vehicleId"
+  lng: "lng"
 };
 
+
+
+const weekdays = ["Mon", "Tue", "Weds", "Thu", "Fri", "Sat", "Sun"];
+
+const hours = ["12AM", "1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM","11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM", "10PM", "11PM"];
 
 const getPowerPercent = power => {
   if (power >= 420) return 100;
@@ -110,6 +123,146 @@ const getPowerPercent = power => {
   else if (power < 354 && power > 340) return ((power - 340) * 10) / 14;
   return 0;
 };
+
+const HeatMapForm = Form.create()(props => { 
+  const { form, getAreaStartPoints, isMobile, styles, selectedAreaId, shouldShowHeatMap, clearHeatMap } = props;
+
+  const handleSubmit = () => {
+
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+
+      if (fieldsValue.endhour === null || fieldsValue.startHour === null) {
+        if (fieldsValue.endhour !== null) {
+          fieldsValue.startHour = 0;
+        }
+        if (fieldsValue.startHour !== null) {
+          fieldsValue.endHour = 23; 
+        }
+      }
+      
+
+      const offset = new Date().getTimezoneOffset() / 60;
+
+      if (fieldsValue.timeRange) {
+        
+        fieldsValue.start = moment(fieldsValue.timeRange[0]).utcOffset(0).format(
+          "MM-DD-YYYY HH:mm:ss"
+        );
+        fieldsValue.end = moment(fieldsValue.timeRange[1]).utcOffset(0).format(
+          "MM-DD-YYYY HH:mm:ss"
+        );
+        fieldsValue.timeRange = undefined;
+      }
+
+      fieldsValue.offset = offset;
+
+
+      if (fieldsValue.startHour !== undefined) {
+        fieldsValue.startHour = (fieldsValue.startHour + offset ) % 24;
+      }
+
+      if (fieldsValue.endHour !== undefined) {
+        fieldsValue.endHour = (fieldsValue.endHour + offset ) % 24;
+      }
+
+      
+
+
+      getAreaStartPoints(fieldsValue);
+
+    });
+
+  }
+
+  const filterOption = (input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+ 
+  const width = isMobile ? "80%" : "7%"
+
+  const rangeWidth = isMobile ? "80%" : "30%"
+
+  const fontSize = isMobile ? "3vw" : "1vw"
+
+  const style = isMobile ? styles.heatMapFilterMobile : styles.heatMapFilter;
+
+
+ 
+  return ( <div style={{fontSize: fontSize, marginTop: "1em"}}>
+
+      <span className={style}>
+          <span> Time: </span> 
+
+          {form.getFieldDecorator("timeRange")(
+            <RangePicker style={{width: "20%"}} format="YYYY-MM-DD HH:mm:ss" showTime  style={{ width: rangeWidth }} />
+          )}
+      </span> 
+
+        {isMobile && <br />} 
+      <span className={style}>
+            <span> Weekday : </span> 
+            {form.getFieldDecorator("weekday")(
+              <Select placeholder="select" style={{ width: width }} 
+                showSearch
+                filterOption={filterOption}
+
+              >
+                {
+                  weekdays.map((weekday, index) => 
+                    <Option value={index} key={index}>{weekday}</Option>
+                  )
+                }
+            </Select>
+            )}
+        </span> 
+
+      {isMobile && <br />} 
+
+      <span className={style}>
+        <span> Hours : </span> 
+          {form.getFieldDecorator("startHour")(
+              <Select 
+                placeholder="select" style={{ width: width }} 
+                showSearch
+                filterOption={filterOption}
+                >
+                {
+                  hours.map((hour, index) => 
+                    <Option value={index} key={index}>{hour}</Option>
+                  )
+                }
+            </Select>
+            )}
+
+            ~
+
+            {form.getFieldDecorator("endHour")(
+              <Select 
+                placeholder="select" style={{ width: width }} 
+                showSearch
+                filterOption={filterOption}
+              >
+                {
+                  hours.map((hour, index) => 
+                    <Option value={index} key={index}>{hour}</Option>
+                  )
+                }
+            </Select>
+            )}
+      </span> 
+
+      {isMobile && <br />} 
+
+      <span style={{float: "right"}}>
+
+
+            <Button style={{ marginRight: "1vw" }}  htmlType="submit" onClick={() => { form.resetFields(); clearHeatMap();}} > Reset </Button>
+
+            {shouldShowHeatMap ? <Button type="primary" htmlType="submit" onClick={handleSubmit} > Get HeatMap </Button> : <Spin size="middle" style={{ marginRight: "0.5vw" }} /> }
+            
+      </span> 
+  </div>  );
+});
+
 
 const CreateForm = Form.create()(props => {
   const { modalVisible, form, handleAdd, handleModalVisible, areas } = props;
@@ -321,12 +474,13 @@ const UpdateForm = Form.create()(props => {
 });
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ vehicles, areas, loading, geo }) => ({
+@connect(({ vehicles, areas, loading, geo, global }) => ({
   vehicles,
   areas: areas.data,
   selectedAreaId : areas.selectedAreaId,
   loading: loading.models.vehicles,
   areaNames: areas.areaNames,
+  isMobile: global.isMobile,
   geo
 }))
 @Form.create()
@@ -342,7 +496,9 @@ class Vehicle extends PureComponent {
     selectedRecord: {},
     selectedMarker: null,
     selectedTab: "1",
-    shouldShowHeatMap: false
+    shouldShowHeatMap: true,
+    heatMapMaxIntensity: 0,
+    heatMapRadius: 15
   };
 
   columns = [
@@ -418,14 +574,271 @@ class Vehicle extends PureComponent {
     }
   ];
 
+
+  handleResponsiveItemClick = vehicleId => {
+
+
+    this.setState({selectedVehicleId: vehicleId === this.state.selectedVehicleId ? null : vehicleId});
+  } 
+  
+
+  handleResponsivePageChange = (current, pageSize) => {
+    const { dispatch } = this.props;
+    const { filterCriteria } = this.state;
+
+    const params = {
+      ...filterCriteria
+    };
+
+    params.currentPage = current;
+    params.pageSize = pageSize;
+
+
+    this.setState({ filterCriteria: params });
+
+    dispatch({
+      type: "vehicles/get",
+      payload: params
+    });
+  }
+
+
+  handleSetSelectedVehicleRefresh = val => {
+    this.setState({selectedVehicleRefresh: val});
+  }
+
+  changeLockStatus = record => {
+    const { dispatch } = this.props;
+
+    const type = record.lockStatus === 1  ? "vehicles/unlock" : "vehicles/lock";
+
+    if ( (type === "vehicles/unlock"  && authority.includes("unlock.vehicle")) || (type === "vehicles/lock" && authority.includes("lock.vehicle"))){
+      dispatch({
+        type: type,
+        id: record.id,
+        onSuccess: () => {
+          setTimeout(() => {
+            this.handleSearch();
+            }, 3000)
+        }
+      });
+    }
+        
+  };
+
+  updateLocation = vehicleId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "vehicles/updateLocation",
+      id: vehicleId,
+      onSuccess: () => {
+        setTimeout(() => {
+          this.handleSetSelectedVehicleRefresh(true);
+        }, 4000)
+      }
+    });
+  }
+
+  alertVehicle = vehicleId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "vehicles/alertVehicle",
+      vehicleId: vehicleId
+    });
+  };
+
+
+  clearHeatMap = () => {
+
+    this.setState({areaStartPoints: undefined}); 
+  }
+
+
+  getResponsiveVehicleInfo = (vehicle, selectedVehicleId) => {
+
+    const {selectedVehicleRefresh} = this.state;
+
+    const lockPower = roundTo2Decimal(getPowerPercent(vehicle.power));
+    
+    const power = vehicle.vehicleType === 0 ? lockPower :  vehicle.vehiclePower;
+
+
+    const batteryColor = power => power > 60 ? "#04e508" : (power < 40 ? "#e81309" : "#EFAF13");
+
+    const isSelected = selectedVehicleId === vehicle.id;
+
+
+    return <div key={vehicle.id} style={{textAlign: "center", fontSize: "3.5vw"}}>
+          <Row >
+              <Col span={6}>
+                {vehicleType[vehicle.vehicleType] }
+              </Col>
+             {isSelected &&  <Col offset={16} span={2}>
+                {<Icon type="redo" onClick={() => { this.handleSearch(); this.handleSetSelectedVehicleRefresh(true); }} />}
+              </Col>
+             }
+          </Row>
+
+          {
+              isSelected &&
+              <Row style={{marginTop: "1em"}}>
+
+                  <LocationMap 
+                  record = {vehicle} 
+                  selectedVehicleRefresh= {selectedVehicleRefresh} 
+                  handleSetSelectedVehicleRefresh = {this.handleSetSelectedVehicleRefresh}
+                  
+                  />
+
+              </Row>
+
+          }
+
+          {
+              isSelected &&
+              <Row  style={{marginTop: "1em"}}>
+
+                    <Col span={12}> Lock Power : <span style={{color: batteryColor(lockPower)}}> {lockPower} % </span>  </Col>
+
+                    <Col span={12}> Vehicle Power : <span style={{color: batteryColor(vehicle.vehiclePower)}}>  {vehicle.vehiclePower} % </span>  </Col>
+
+              </Row>
+
+          }
+
+            {
+                isSelected &&
+
+                      <Row style={{marginTop: "1em"}} >
+                          
+                            <Col span={8}>
+                              Ride Count
+                          </Col>
+                            <Col span={8}> 
+                                Heart Time
+                            </Col>
+                            <Col span={8}> 
+                                Last Ride
+                            </Col>
+
+                      </Row>
+                      }
+                      {
+                          isSelected &&
+                      <Row >
+                          
+                          <Col span={8}>
+                           {vehicle.rideCount}
+                          </Col>
+                          <Col span={8}> 
+                            {moment(vehicle.heartTime).format("YYYY-MM-DD HH:mm:ss")}
+                          </Col>
+                          <Col span={8}> 
+                            {moment(vehicle.lastRideTime).format("YYYY-MM-DD HH:mm:ss")}
+                          </Col>
+
+                    </Row>
+            }
+
+
+    
+          <Row style={{marginTop: "1em"}} >
+              
+                <Col span={6}> {vehicle.vehicleNumber} </Col>
+                <Col span={11}> 
+                    <span> 
+                      <Icon type={vehicle.lockStatus === 1? "lock" : "unlock"} style={{color: (vehicle.lockStatus === 1 ?  "blue" : "orange")}} /> 
+                      {" | "}
+                    </span> 
+                    <span style={{color: (vehicle.errorStatus === 0 ?  "#04e508" : "red")}}>{errorStatus[vehicle.errorStatus]}</span>
+                    {" | "}
+                    <span style={{color: (vehicle.connectStatus === 1 ?  "#04e508" : "red")}}>{this.isConnected(vehicle)}</span>
+                </Col>
+                <Col span={7} >Battery: <span style={{color: batteryColor(power)}}> {power + "%"} </span> </Col>
+
+          </Row>
+
+          {
+              isSelected &&
+              <Row  style={{marginTop: "1em"}}>
+                    
+                    <Col span={5}> 
+
+                     {
+                       authority.includes("unlock.vehicle") ?
+
+                       <a onClick={() => this.changeLockStatus(vehicle)}>
+                        {((vehicle.lockStatus === 0 && vehicle.vehicleType === 1) ?  "Lock" : "Unlock")}
+                       </a> 
+
+                       :
+
+                       <span  style={{color: "grey"}}>
+                          {((vehicle.lockStatus === 0 && vehicle.vehicleType === 1) ?  "Lock" : "Unlock")}
+                       </span> 
+                    }
+
+                    
+                    </Col>
+
+                    <Col span={5} style={{fontSize: "2.5vw"}}> 
+
+                    {authority.includes("update.vehicle.location") ?
+                        <a onClick={() => this.updateLocation(vehicle.id)}>
+                          Update Location
+                      </a> 
+                      :
+                      <span  style={{color: "grey"}}>
+                            Update Location
+                        </span> 
+                    }
+                      
+                    </Col>
+
+                    <Col span={5}> 
+                      {authority.includes("alert.vehicle") ?
+                          <a onClick={() => this.alertVehicle(vehicle.id)}>
+                            Beep
+                        </a> 
+                        :
+                        <span  style={{color: "grey"}}>
+                              Beep
+                          </span> 
+                      }
+                    </Col>
+
+                    <Col span={5}> 
+                      <a onClick={() => this.handleUpdateModalVisible(true, vehicle)}>
+                       Update
+                      </a> 
+                    </Col>
+
+                    <Col span={4}> 
+                      <a onClick={() => this.handleDetailModalVisible(true, vehicle)}>
+                        Detail
+                      </a> 
+                    </Col>
+              </Row>
+
+          }
+
+          <Row style={{marginTop: "1em", marginBottom: "0px"}} onClick={() => this.handleResponsiveItemClick(vehicle.id)}>
+          {isSelected ?  <Icon type="up" /> :   <Icon type="down" />}
+          </Row>
+         
+       </div>
+  }
+
   componentDidMount() {
     this.handleSearch();
   }
 
   isConnected(vehicle) {
-    const now = moment.utc();
-    const heartime = moment.utc(vehicle.heartTime);
-    return now.diff(heartime,'minutes') < 10 ? 'online' : 'offline';
+    // const now = moment.utc();
+    // const heartime = moment.utc(vehicle.heartTime);
+    // return now.diff(heartime,'minutes') < 10 ? 'online' : 'offline';
+
+    return vehicle.connectStatus === 1 ? 'online' : 'offline';
   }
 
   handleGetListVehicles = () => {
@@ -513,6 +926,10 @@ class Vehicle extends PureComponent {
         pageSize: 10,
         areaId: selectedAreaId
       });
+      
+      if (fieldsValue.vehiclePowerCustom) {
+        values.vehiclePower =  fieldsValue.vehiclePowerCustom;
+      }
 
       this.setState(
         {
@@ -823,8 +1240,16 @@ class Vehicle extends PureComponent {
               )}
             </FormItem>
           </Col>
+          <Col md={12} sm={24}>
+            <FormItem label="Custom Vehicle Power Search:">
+              {getFieldDecorator("vehiclePowerCustom")(
+                <InputNumber placeholder="power" />
+              )} %
+            </FormItem>
+          </Col>
         </Row>
 
+       
         
 
         <div style={{ overflow: "hidden" }}>
@@ -891,13 +1316,16 @@ class Vehicle extends PureComponent {
     this.setState({selectedTab: value}, this.handleSearch)
   }
 
-  getAreaStartPoints= () => {
+  getAreaStartPoints= params => {
     const { dispatch, selectedAreaId } = this.props;
+
+    this.setState({ shouldShowHeatMap: false});
 
     dispatch({
       type: "vehicles/getStartPoints",
       areaId: selectedAreaId,
-      onSuccess: result => this.setState({areaStartPoints: result})
+      params, params,
+      onSuccess: result => this.setState({areaStartPoints: result, shouldShowHeatMap: true, heatMapMaxIntensity:  2 * (Math.floor(result.length / 1000) + 1)})
     });
   }
 
@@ -908,10 +1336,8 @@ class Vehicle extends PureComponent {
       return;
     }
 
-
     this.getVehicleLocations();
     this.getAreaGeoInfo();
-    authority.includes("get.area.start.points")  && this.getAreaStartPoints();
   }
 
   formatCsvData = vehicles => {
@@ -921,6 +1347,44 @@ class Vehicle extends PureComponent {
     })
 
   }
+
+  handleSetHeatMapMaxIntensity =  value => {
+    this.setState({heatMapMaxIntensity: value});
+  }
+
+  handleSetHeatMapRadius = value => {
+    this.setState({heatMapRadius: value});
+  }
+
+  handleGetMyLocation = val => {
+    if (val.target.checked) {
+
+
+    if (navigator.geolocation) {
+
+      navigator.geolocation.getCurrentPosition(position => this.setState({currPosition: position}));
+
+        const watchId = navigator.geolocation.watchPosition(
+            position => this.setState({currPosition: position}),
+            err => console.log(err),
+            {
+                enableHighAccuracy: true,
+                timeout: 10000
+            }
+        );
+
+        this.setState({watchId: watchId});
+    }
+
+    } else {
+      
+      if (navigator.geolocation) { 
+        navigator.geolocation.clearWatch(this.state.watchId);
+      }
+
+      this.setState({currPosition: null, watchId: null});
+    }
+}
 
 
   render() {
@@ -940,7 +1404,12 @@ class Vehicle extends PureComponent {
       selectedTab,
       vehicleLocations,
       areaStartPoints,
-      shouldShowHeatMap
+      shouldShowHeatMap,
+      selectedVehicleId,
+      selectedVehicleRefresh,
+      heatMapMaxIntensity,
+      heatMapRadius,
+      currPosition
     } = this.state;
 
     const parentMethods = {
@@ -991,13 +1460,27 @@ class Vehicle extends PureComponent {
             <Tabs defaultActiveKey="1" onChange={this.hadnleTabChange}>
             
             <TabPane tab="List View" key="1">
-              <StandardTable
-                loading={loading}
-                data={{ list: vehicles.data, pagination: pagination }}
-                columns={this.columns}
-                onChange={this.handleStandardTableChange}
-                scroll={{ x: 1300 }}
-              />
+
+              {this.props.isMobile ?
+                <ResponsiveList 
+                  vehicles={vehicles.data}
+                  selectedVehicleId={selectedVehicleId}
+                  getResponsiveVehicleInfo={this.getResponsiveVehicleInfo}
+                  selectedVehicleRefresh={selectedVehicleRefresh}
+                  totalCount = {vehicles.total} 
+                  onPageChange= {this.handleResponsivePageChange}
+                />
+                :
+                 <StandardTable
+                 loading={loading}
+                 data={{ list: vehicles.data, pagination: pagination }}
+                 columns={this.columns}
+                 onChange={this.handleStandardTableChange}
+                 scroll={{ x: 1300 }}
+               />
+              }
+
+             
               </TabPane>
 
               {selectedAreaId >= 1 && 
@@ -1009,6 +1492,14 @@ class Vehicle extends PureComponent {
                       fences={fences}
                       heatMapData={areaStartPoints}
                       shouldShowHeatMap={shouldShowHeatMap}
+                      handleGetMapData={this.handleGetMapData}
+                      styles={styles}
+                      heatMapMaxIntensity={heatMapMaxIntensity}
+                      heatMapRadius={heatMapRadius}
+                      handleSetHeatMapMaxIntensity={this.handleSetHeatMapMaxIntensity}
+                      handleSetHeatMapRadius={this.handleSetHeatMapRadius}
+                      currPosition={currPosition}
+                      handleGetMyLocation={this.handleGetMyLocation}
                       vehicleTypeFilter={{
                         unlock: true,
                         lock: true,
@@ -1020,15 +1511,21 @@ class Vehicle extends PureComponent {
                       setClickedMarker={this.setClickedMarker}
                       selectedMarker={selectedMarker}
                     />}
-                    { vehicleLocations.length > 0 && <div>
+                    {authority.includes("get.area.start.points")  && 
+                      <HeatMapForm 
+                        isMobile={this.props.isMobile} 
+                        styles={styles} 
+                        getAreaStartPoints={this.getAreaStartPoints}  
+                        shouldShowHeatMap={shouldShowHeatMap}
+                        clearHeatMap={this.clearHeatMap}
+                        selectedAreaId={selectedAreaId}/> 
+                    }
+                    { vehicleLocations.length > 0 && 
                         <Button style={{marginTop: "1em"}} onClick={() => exportCSVFile(vehicleCsvHeader, this.formatCsvData(vehicleLocations), areaNames[selectedAreaId])} >
                             Export
                         </Button>
+                        
 
-                       {authority.includes("get.area.start.points")  && <Checkbox style={{marginTop: "1em", marginLeft: "1em"}} defaultValue={shouldShowHeatMap} onChange={e => this.setState({shouldShowHeatMap: e.target.checked})} >
-                            Show HeatMap
-                        </Checkbox>}
-                      </div>
                     }
                 </TabPane>
               }

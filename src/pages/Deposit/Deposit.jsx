@@ -19,7 +19,7 @@ import {
 import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
-import styles from "./Coupon.less";
+import styles from "./Deposit.less";
 
 import { getAuthority } from "@/utils/authority";
 
@@ -27,7 +27,7 @@ const authority = getAuthority();
 
 const FormItem = Form.Item;
 const { Step } = Steps;
-const { TextCoupon } = Input;
+const { TextDeposit } = Input;
 const { Option } = Select;
 const RadioGroup = Radio.Group;
 const getValue = obj =>
@@ -43,7 +43,7 @@ const CreateForm = Form.create()(props => {
     form,
     handleAdd,
     handleModalVisible,
-    coupons,
+    deposits,
     areas
   } = props;
   const okHandle = () => {
@@ -62,8 +62,8 @@ const CreateForm = Form.create()(props => {
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="NAME">
-        {form.getFieldDecorator("name", {
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Description">
+        {form.getFieldDecorator("description", {
           rules: [
             {
               required: true,
@@ -76,9 +76,9 @@ const CreateForm = Form.create()(props => {
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
-        label="Valid Days"
+        label="Deposit"
       >
-        {form.getFieldDecorator("days", {
+        {form.getFieldDecorator("deposit", {
           rules: [
             {
               required: true
@@ -89,9 +89,9 @@ const CreateForm = Form.create()(props => {
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
-        label="Free Minutes"
+        label="Ride Credits"
       >
-        {form.getFieldDecorator("freeMinutes", {
+        {form.getFieldDecorator("rideCredit", {
           rules: [
             {
               required: true
@@ -118,24 +118,6 @@ const CreateForm = Form.create()(props => {
           )}
         </FormItem>
       )}
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Vehicle Type"
-      >
-        {form.getFieldDecorator("vehicleType", {})(
-          <Select placeholder="select" style={{ width: "100%" }}>
-            {vehicleType.map((type, index) => (
-              <Option key={index} value={index}>
-                {type}
-              </Option>
-            ))}
-            <Option key={-1} value={null}>
-              General
-            </Option>
-          </Select>
-        )}
-      </FormItem>
     </Modal>
   );
 });
@@ -163,13 +145,13 @@ const UpdateForm = Form.create()(props => {
   return (
     <Modal
       destroyOnClose
-      title="Add"
+      title="Update"
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="NAME">
-        {form.getFieldDecorator("name", {
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Description">
+        {form.getFieldDecorator("description", {
           rules: [
             {
               required: true,
@@ -177,56 +159,36 @@ const UpdateForm = Form.create()(props => {
               min: 1
             }
           ],
-          initialValue: record.name
+          initialValue: record.description
         })(<Input placeholder="Please Input" />)}
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
-        label="Valid Days"
+        label="Deposit"
       >
-        {form.getFieldDecorator("days", {
+        {form.getFieldDecorator("deposit", {
           rules: [
             {
               required: true
             }
           ],
-          initialValue: record.days
+          initialValue: record.deposit
         })(<InputNumber placeholder="Please Input" />)}
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
-        label="Free Minutes"
+        label="Ride Credits"
       >
-        {form.getFieldDecorator("freeMinutes", {
+        {form.getFieldDecorator("rideCredit", {
           rules: [
             {
               required: true
             }
           ],
-          initialValue: record.freeMinutes
+          initialValue: record.rideCredit
         })(<InputNumber placeholder="Please Input" />)}
-      </FormItem>
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Vehicle Type"
-      >
-        {form.getFieldDecorator("vehicleType", {
-          initialValue: record.vehicleType
-        })(
-          <Select placeholder="select" style={{ width: "100%" }}>
-            {vehicleType.map((type, index) => (
-              <Option key={index} value={index}>
-                {type}
-              </Option>
-            ))}
-            <Option key={-1} value={null}>
-              General
-            </Option>
-          </Select>
-        )}
       </FormItem>
       {areas && (
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area">
@@ -253,112 +215,19 @@ const UpdateForm = Form.create()(props => {
 });
 
 
-const GenerateCouponWithCodeForm = Form.create()(props => {
-  const {
-    form,
-    modalVisible,
-    handleGenerateCouponWithCode,
-    handleModalVisible,
-    record
-  } = props;
-  const okHandle = () => {
-    if (form.isFieldsTouched())
-      form.validateFields((err, fieldsValue) => {
-        if (err) return;
-        form.resetFields();
-
-        fieldsValue.vehicleType = record.vehicleType;
-
-        handleGenerateCouponWithCode(record.id, fieldsValue);
-      });
-    else handleModalVisible();
-  };
-
-  const checkAmount = (rule, value, callback) => {
-    if (value > 0) {
-      callback();
-      return;
-    }
-
-    callback("Amount must be larger than zero.");
-  };
-
-  return (
-    <Modal
-      destroyOnClose
-      title="Generate Coupon with Code"
-      visible={modalVisible}
-      onOk={okHandle}
-      onCancel={() => handleModalVisible()}
-    >
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Start Time"
-      >
-        {form.getFieldDecorator("start", {
-          rules: [
-            {
-              required: true,
-              message: "You have to pick a time to start!"
-            }
-          ]
-        })(
-          <DatePicker
-            showTime
-            format="YYYY-MM-DD HH:mm:ss"
-            placeholder="Select Start Time"
-          />
-        )}
-      </FormItem>
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Amount"
-      >
-        {form.getFieldDecorator("amount", {
-          rules: [
-            {
-              required: true
-            },
-            {
-              validator: checkAmount
-            }
-          ]
-        })(<InputNumber placeholder="Please Input" />)}
-      </FormItem>
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Code"
-      >
-        {form.getFieldDecorator("code", {
-          rules: [
-            {
-              required: true
-            }
-          ]
-        })(<Input placeholder="Please Input" />)}
-      </FormItem>
-    </Modal>
-  );
-});
-
-
-
 /* eslint react/no-multi-comp:0 */
-@connect(({ coupons, areas, loading }) => ({
-  coupons,
+@connect(({ deposits, areas, loading }) => ({
+  deposits,
   areas,
   selectedAreaId: areas.selectedAreaId,
-  loading: loading.models.coupons
+  loading: loading.models.deposits
 }))
 @Form.create()
-class Coupon extends PureComponent {
+class Deposit extends PureComponent {
   state = {
     createModalVisible: false,
     updateModalVisible: false,
-    generateCodeCouponVisible: false,
+    generateCodeDepositVisible: false,
     expandForm: false,
     selectedRows: [],
     filterCriteria: {},
@@ -367,16 +236,16 @@ class Coupon extends PureComponent {
 
   columns = [
     {
-      title: "Name",
-      dataIndex: "name"
+      title: "Description",
+      dataIndex: "description"
     },
     {
-      title: "Valid Days",
-      dataIndex: "days"
+      title: "Deposit",
+      dataIndex: "deposit"
     },
     {
-      title: "Free Minutes",
-      dataIndex: "freeMinutes"
+      title: "Ride Credit",
+      dataIndex: "rideCredit"
     },
     {
       title: "Area",
@@ -384,15 +253,10 @@ class Coupon extends PureComponent {
       render: areaId => <span>{this.props.areas.areaNames[areaId]}</span>
     },
     {
-      title: "Vehicle Type",
-      dataIndex: "vehicleType",
-      render: data => <span>{data ? vehicleType[data] : "general"}</span>
-    },
-    {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          {authority.includes("update.coupon.detail") &&
+          {authority.includes("update.deposit.detail") &&
             <a onClick={() => this.handleUpdateModalVisible(true, record)}>
               Update
             </a>
@@ -401,14 +265,7 @@ class Coupon extends PureComponent {
 
           <Divider type="vertical" />
 
-          {authority.includes("generate.code.coupon") &&
-          <a onClick={() => this.handleGenerateCodeCouponModalVisible(true, record)}>
-            Generate Coupon with Code
-          </a>
-          }
-          <Divider type="vertical" />
-
-          {authority.includes("delete.coupon.detail") &&
+          {authority.includes("delete.deposit") &&
             <Popconfirm
               title="Are you sure？"
               icon={<Icon type="question-circle-o" style={{ color: "red" }} />}
@@ -426,23 +283,23 @@ class Coupon extends PureComponent {
   ];
 
   componentDidMount() {
-    this.handleGetCoupons();
+    this.handleGetDeposits();
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
 
     if (prevProps.selectedAreaId !== this.props.selectedAreaId) {
-      this.handleGetCoupons();
+      this.handleGetDeposits();
     }
 
   }
 
-  handleGetCoupons = () => {
+  handleGetDeposits = () => {
     const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
 
     dispatch({
-      type: "coupons/get",
+      type: "deposits/get",
       payload: selectedAreaId ? Object.assign({}, filterCriteria, {areaId: selectedAreaId}) :  filterCriteria
     });
   };
@@ -458,7 +315,7 @@ class Coupon extends PureComponent {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
 
-    this.setState({ filterCriteria: params }, () => this.handleGetCoupons());
+    this.setState({ filterCriteria: params }, () => this.handleGetDeposits());
   };
 
   handleFormReset = () => {
@@ -469,7 +326,7 @@ class Coupon extends PureComponent {
       {
         filterCriteria: {}
       },
-      () => this.handleGetCoupons()
+      () => this.handleGetDeposits()
     );
   };
 
@@ -488,7 +345,7 @@ class Coupon extends PureComponent {
         {
           filterCriteria: values
         },
-        () => this.handleGetCoupons()
+        () => this.handleGetDeposits()
       );
     });
   };
@@ -506,31 +363,13 @@ class Coupon extends PureComponent {
     });
   };
 
-
-  handleGenerateCodeCouponModalVisible = (flag, record) => {
-    this.setState({
-      generateCodeCouponVisible: !!flag,
-      selectedRecord: record || {}
-    });
-  }
-
-
-  handleGenerateCouponWithCode = (id, payload) => {
+  handleDelete = id => {
     const { dispatch } = this.props;
 
     dispatch({
-      type: "coupons/generateCodeCoupon",
-      payload: payload,
-      id: id
-    });
-
-    this.handleGenerateCodeCouponModalVisible();
-  };
-
-  handleDeleteModalVisible = (flag, record) => {
-    this.setState({
-      updateModalVisible: !!flag,
-      selectedRecord: record || {}
+      type: "deposits/delete",
+      id: id,
+      onSuccess: this.handleGetDeposits
     });
   };
 
@@ -538,73 +377,34 @@ class Coupon extends PureComponent {
     const { dispatch } = this.props;
 
     dispatch({
-      type: "coupons/add",
+      type: "deposits/add",
       payload: fields,
-      onSuccess: this.handleGetCoupons
+      onSuccess: this.handleGetDeposits
     });
 
     this.handleCreateModalVisible();
-  };
-
-  handleDelete = couponId => {
-    const { dispatch } = this.props;
-
-    dispatch({
-      type: "coupons/remove",
-      id: couponId,
-      onSuccess: this.handleGetCoupons
-    });
   };
 
   handleUpdate = (id, fields) => {
     const { dispatch } = this.props;
 
     dispatch({
-      type: "coupons/update",
+      type: "deposits/update",
       payload: fields,
       id: id,
-      onSuccess: this.handleGetCoupons
+      onSuccess: this.handleGetDeposits
     });
 
     this.handleUpdateModalVisible();
   };
 
-  renderSimpleForm() {
-    const {
-      form: { getFieldDecorator }
-    } = this.props;
-
-    const areas = this.props.areas.data;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="Keywords">
-              {getFieldDecorator("name")(<Input placeholder="name" />)}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
-                Search
-              </Button>
-              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-                Reset
-              </Button>
-            </span>
-          </Col>
-        </Row>
-      </Form>
-    );
-  }
-
   render() {
-    const { coupons, loading, areas } = this.props;
+    const { deposits, loading, areas } = this.props;
     const {
       createModalVisible,
       updateModalVisible,
       selectedRecord,
-      generateCodeCouponVisible
+      generateCodeDepositVisible
     } = this.state;
 
     const parentMethods = {
@@ -616,20 +416,18 @@ class Coupon extends PureComponent {
       handleUpdate: this.handleUpdate
     };
 
-    const codeCouponMethods = {
-      handleModalVisible: this.handleGenerateCodeCouponModalVisible,
-      handleGenerateCouponWithCode: this.handleGenerateCouponWithCode
+    const codeDepositMethods = {
+      handleModalVisible: this.handleGenerateCodeDepositModalVisible,
+      handleGenerateDepositWithCode: this.handleGenerateDepositWithCode
     };
 
     return (
-      <PageHeaderWrapper title="Coupon List">
+      <PageHeaderWrapper title="Deposit List">
         <Card bordered={false}>
           <div className={styles.tableList}>
-            <div className={styles.tableListForm}>
-              {this.renderSimpleForm()}
-            </div>
+          
             <div className={styles.tableListOperator}>
-              {authority.includes("create.coupon") &&
+              {authority.includes("create.deposit") &&
                 <Button
                   icon="plus"
                   type="primary"
@@ -642,7 +440,7 @@ class Coupon extends PureComponent {
             </div>
             <StandardTable
               loading={loading}
-              data={{ list: coupons.data, pagination: {} }}
+              data={{ list: deposits.data, pagination: {} }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />
@@ -651,7 +449,7 @@ class Coupon extends PureComponent {
         <CreateForm
           {...parentMethods}
           modalVisible={createModalVisible}
-          coupons={coupons.data}
+          deposits={deposits.data}
           areas={areas.data}
         />
 
@@ -659,18 +457,14 @@ class Coupon extends PureComponent {
           {...updateMethods}
           modalVisible={updateModalVisible}
           record={selectedRecord}
-          coupons={coupons.data}
+          deposits={deposits.data}
           areas={areas.data}
         />
 
-        <GenerateCouponWithCodeForm
-          {...codeCouponMethods}
-          modalVisible={generateCodeCouponVisible}
-          record={selectedRecord}
-        />
+      
       </PageHeaderWrapper>
     );
   }
 }
 
-export default Coupon;
+export default Deposit;

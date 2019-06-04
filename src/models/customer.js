@@ -9,6 +9,7 @@ import {
   updateMembership,
   getMembership,
   getAvailableMemberships,
+  getCustomerTransactions,
   refund
 } from "@/services/customer";
 import { message } from "antd";
@@ -45,6 +46,16 @@ export default {
         onSuccess && onSuccess(data);
       } else {
         message.error("Download Fail!");
+      }
+    },
+    *getTransactions({ customerId, onSuccess }, { call, put }) {
+
+      const data = yield call(getCustomerTransactions, customerId);
+
+      if (data) {
+        onSuccess && onSuccess(data);
+      } else {
+        message.error("Get Transactions Fail!");
       }
     },
     *customerPayments({ payload, onSuccess }, { call, put }) {

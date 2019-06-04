@@ -32,6 +32,7 @@ import vehicleUnlock from "../../assets/bike_mark.png";
 import ebike from "../../assets/ebike_mark.png";
 import bike from "../../assets/bike_mark_lock.png";
 import { compose, withProps } from "recompose";
+import LocationMap from "./LocationMap";
 import { GoogleMap, Marker, withGoogleMap, withScriptjs, Polygon, Polyline } from "react-google-maps";
 
 const FormItem = Form.Item;
@@ -52,117 +53,7 @@ const lockOperationWay = ["GPRS", "BLUETOOTH"];
 
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-const vehicleOrders = ["","sign in", "heart", "unlock", "lock", "location", "info", "find", "version", "ip", "error", "alert", "heart period", "iccid", "shut down","ok","mac info"];
-
-
-const getVehicleIcon = (vehicleDetail) => {
-  if (vehicleDetail.errorStatus === 1) {
-    if (vehicleDetail.lockStatus === 1) {
-      return errorVehicle;
-    } else {
-      return errorVehicleUnlock;
-    }
-  }
-
-  if (vehicleDetail.power <=350) {
-    return lowBattery;
-  }
-
-  if (vehicleDetail.lockStatus === 0) {
-    return vehicleUnlock;
-  }
-
-  if (vehicleDetail.vehicleType === 2) {
-    return ebike;
-  }
-
-  return bike;
-}
-
-const LocationMap = compose(
-  withProps({
-    googleMapURL:
-      "https://maps.googleapis.com/maps/api/js?key=AIzaSyDPnV_7djRAy8m_RuM5T0QIHU5R-07s3Ic&v=3.exp&libraries=geometry,drawing,places",
-    loadingElement: <div style={{ height: `100%` }} />,
-    containerElement: <div style={{ height: `400px` }} />,
-    mapElement: <div style={{ height: `100%` }} />
-  }),
-  withScriptjs,
-  withGoogleMap
-)(props => {
-  const { record, fences,  vehicleDetail } = props;
-
-  const location = (({ x, y }) => ({ lat: y, lng:x }))(vehicleDetail.location);
-
-  const dashLineDot = {
-    path: window.google.maps.SymbolPath.CIRCLE,
-    fillOpacity: 1,
-    scale: 2
-  };
-
-  return (
-    <GoogleMap defaultZoom={15} center={location}>
-      {fences.map(fence => (
-        <Polygon
-          path={fence.fenceCoordinates}
-          geodesic={true}
-          key={fence.id}
-          options={{
-            strokeColor: fenceTypeColor[fence.fenceType],
-            strokeOpacity: fence.fenceType === 5 ? 0 : 0.75,
-            strokeWeight: fence.fenceType === 5 ? 0 : 2,
-            fillColor: fenceTypeColor[fence.fenceType],
-            fillOpacity:
-              fence.fenceType === 0 || fence.fenceType === 5 ? 0 : 0.35
-          }}
-        />
-      ))}
-
-    {authority.includes("get.fences") && fences && fences.map(fence => (
-        <Polygon
-          path={fence.fenceCoordinates}
-          geodesic={true}
-          key={fence.id}
-          options={{
-            strokeColor: fenceTypeColor[fence.fenceType],
-            strokeOpacity: fence.fenceType === 5 ? 0 : 0.75,
-            strokeWeight: fence.fenceType === 5 ? 0 : 2,
-            fillColor: fenceTypeColor[fence.fenceType],
-            fillOpacity:
-              fence.fenceType === 0 || fence.fenceType === 5 ? 0 : 0.35
-          }}
-        />
-      ))}
-
-      {authority.includes("get.fences") && fences && fences.filter(fence => fence.fenceType === 5).map(fence => (
-        <Polyline
-          path={fence.fenceCoordinates}
-          geodesic={true}
-          key={fence.id}
-          options={{
-            strokeColor: fenceTypeColor[fence.fenceType],
-            strokeOpacity: 0.75,
-            strokeWeight: 2,
-            icons: [
-              {
-                icon: dashLineDot,
-                offset: "0",
-                repeat: "10px"
-              }
-            ],
-            fillColor: fenceTypeColor[5],
-            fillOpacity: 0
-          }}
-        />
-      ))}
-
-      <Marker
-        position={location}
-        icon={getVehicleIcon(record)}
-      />
-    </GoogleMap>
-  );
-});
+const vehicleOrders = ["","sign in", "heart", "unlock", "lock", "location", "info", "find", "version", "ip", "error", "alert", "heart period", "iccid", "shut down","ok","mac info", "connect", "disconnect", "version update", "report"];
 
 
 const EndRideForm = Form.create()(props => {
@@ -205,7 +96,7 @@ const EndRideForm = Form.create()(props => {
 });
 
 const UpdateForm = Form.create()(props => {
-  const { form, handleUpdate, areas, record, unlockVehicle, updateLocation, alertVehicle } = props;
+  const { form, handleUpdate, areas, record, changeLockStatus, updateLocation, alertVehicle, getVehicleStatus, restartVehicle } = props;
   const okHandle = () => {
     if (form.isFieldsTouched())
       form.validateFields((err, fieldsValue) => {
@@ -269,10 +160,20 @@ const UpdateForm = Form.create()(props => {
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
-        label="Mac"
+        label="iccid"
       >
         <div>
-          {record.mac}
+          {record.iccid}
+        </div>
+      </FormItem>
+
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Is Connected"
+      >
+        <div>
+          {record.connectStatus === 1 ? "true" : "false"}
         </div>
       </FormItem>
 
@@ -312,11 +213,11 @@ const UpdateForm = Form.create()(props => {
           <Button
             icon="plus"
             type="primary"
-            onClick={unlockVehicle}
+            onClick={changeLockStatus}
             disabled={!authority.includes("unlock.vehicle")}
             style={{marginRight: "1em", marginTop: "0.5em"}}
           >
-            Unlock Remotely
+            {(record.lockStatus === 1 ? "Unlock" : "Lock") + " Vehicle"}
           </Button>
           <Button
             icon="plus"
@@ -338,6 +239,31 @@ const UpdateForm = Form.create()(props => {
           </Button>
         </Col>
       </Row>
+      <Row>
+        <Col>
+          <Button
+            icon="plus"
+            type="primary"
+            onClick={getVehicleStatus}
+            disabled={!form.isFieldsTouched() && !authority.includes("get.status")}
+            style={{marginRight: "1em", marginTop: "0.5em"}}
+          >
+            Get Status
+          </Button>
+
+          {/* <Button
+            icon="plus"
+            type="primary"
+            onClick={restartVehicle}
+            disabled={!form.isFieldsTouched() && !authority.includes("restart.vehicle")}
+            style={{marginRight: "1em", marginTop: "0.5em"}}
+          >
+            Restart
+          </Button> */}
+          
+        </Col>
+        
+      </Row>
     </div>
   );
 });
@@ -346,16 +272,15 @@ const UpdateForm = Form.create()(props => {
 
 @connect(({ coupons, areas, geo, loading }) => ({
   areas,
-  geo,
-  loading: loading.models.geo || loading.models.areas
+  loading: loading.models.areas
 }))
 class VehicleDetail extends PureComponent {
   state = {
-    vehicleDetail: null,
     vehicleRides: null,
     isEndRideVisible: false,
     selectedRide: null,
-    vehicleOrders: []
+    vehicleOrders: [],
+    orderTablePagination: null
   };
 
   vehicleRideColumns = [
@@ -479,7 +404,6 @@ class VehicleDetail extends PureComponent {
 
 
   componentDidMount = () => {
-    this.handleGetVehicleDetail(this.props.vehicleId);
     this.handleGetVehicle(this.props.vehicleId);
     this.handleGetVehicleOrders(this.props.vehicleId);
     this.handleGetVehicleRides(this.props.vehicleId);
@@ -505,6 +429,32 @@ class VehicleDetail extends PureComponent {
     });
   };
 
+  getVehicleStatus = () => {
+    const { dispatch, vehicleId } = this.props;
+    dispatch({
+      type: "vehicles/getStatus",
+      vehicleId: vehicleId,
+      onSuccess: () => {
+        setTimeout(() => {
+          this.handleGetVehicleOrders(vehicleId);
+        }, 4000)
+      }
+    });
+  }
+
+  restartVehicle = () => {
+    const { dispatch, vehicleId } = this.props;
+    dispatch({
+      type: "vehicles/restart",
+      vehicleId: vehicleId,
+      onSuccess: () => {
+        setTimeout(() => {
+          this.handleGetVehicleOrders(vehicleId);
+        }, 4000)
+      }
+    });
+  }
+
   handleEndRideVisible = (flag, record) => {
     this.setState({
       isEndRideVisible: !!flag,
@@ -523,18 +473,6 @@ class VehicleDetail extends PureComponent {
     this.handleEndRideVisible();
   };
 
-
-
-  handleGetVehicleDetail = vehicleId => {
-    const { dispatch } = this.props;
-    authority.includes("get.vehicles.detail") &&
-    dispatch({
-      type: "vehicles/getVehicleDetail",
-      vehicleId: vehicleId,
-      onSuccess: response => this.setState({ vehicleDetail: response })
-    });
-  };
-
   handleGetVehicleOrders = id => {
     const { dispatch } = this.props;
 
@@ -542,7 +480,7 @@ class VehicleDetail extends PureComponent {
     dispatch({
       type: "vehicles/getOrders",
       id: id,
-      onSuccess: response => this.setState({ vehicleOrders: response })
+      onSuccess: response => this.setState({ vehicleOrders: response, orderTablePagination:  {current: Math.round((response.length / 10) + 1)} })
     });
   };
 
@@ -570,19 +508,28 @@ class VehicleDetail extends PureComponent {
     });
   };
 
-  unlockVehicle = () => {
+  changeLockStatus = () => {
     const { dispatch, vehicleId, handleGetVehicles } = this.props;
-    dispatch({
-      type: "vehicles/unlock",
-      id: vehicleId,
-      onSuccess: () => {
-        handleGetVehicles && handleGetVehicles();
-        setTimeout(() => {
-          this.handleGetVehicleDetail(vehicleId);
-          this.handleGetVehicleOrders(vehicleId);
-          }, 1500)
-      }
-    });
+
+    const { record } = this.state;
+
+    const type = record.lockStatus === 1 ? "vehicles/unlock" : "vehicles/lock";
+
+    
+
+    if ( (type === "vehicles/unlock" && authority.includes("unlock.vehicle")) || (type === "vehicles/lock" && authority.includes("lock.vehicle"))){
+      dispatch({
+        type: type,
+        id: vehicleId,
+        onSuccess: () => {
+          handleGetVehicles && handleGetVehicles();
+          setTimeout(() => {
+            this.handleGetVehicleOrders(vehicleId);
+            }, 1500)
+        }
+      });
+    }
+        
   };
 
   alertVehicle = () => {
@@ -594,6 +541,8 @@ class VehicleDetail extends PureComponent {
   };
 
 
+
+  handleOrderTableChange = (pagination, filtersArg, sorter) => this.setState({orderTablePagination: pagination})
   
 
 
@@ -604,7 +553,6 @@ class VehicleDetail extends PureComponent {
       id: vehicleId,
       onSuccess: () => {
         setTimeout(() => {
-          this.handleGetVehicleDetail(vehicleId);
           this.handleGetVehicleOrders(vehicleId);
         }, 3000)
       }
@@ -618,7 +566,7 @@ class VehicleDetail extends PureComponent {
       vehicleOrders,
       selectedRide,
       record,
-      vehicleDetail
+      orderTablePagination
     } = this.state;
 
     const {
@@ -653,24 +601,20 @@ class VehicleDetail extends PureComponent {
                   areas={areas.data}
                   record={record}
                   handleUpdate={this.handleUpdate}
-                  unlockVehicle={this.unlockVehicle}
+                  changeLockStatus={this.changeLockStatus}
                   updateLocation={this.updateLocation}
+                  restartVehicle={this.restartVehicle}
+                  getVehicleStatus={this.getVehicleStatus}
                   alertVehicle={this.alertVehicle}
                 />}
               </Card>
 
-
-            {
-              authority.includes("get.vehicles.detail") && vehicleDetail && vehicleDetail.location && record &&
-              <Card title="Location">
+              {record &&  <Card title="Location">
                 <LocationMap
-                  vehicleDetail={vehicleDetail}
-                  fences={geo.fences}
                   record={record}
                 />
-              </Card>
-            }
-
+              </Card>}
+             
 
             {authority.includes("get.rides")  &&
             <Card title="Vehicle Rides" style={{ marginTop: "2em" }}>
@@ -696,6 +640,8 @@ class VehicleDetail extends PureComponent {
                 dataSource={vehicleOrders}
                 columns={this.vehicleOrdersColumn}
                 scroll={{ x: 1300 }}
+                onChange={this.handleOrderTableChange}
+                pagination={orderTablePagination}
               />
             </Card>
             }

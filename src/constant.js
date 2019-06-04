@@ -18,4 +18,16 @@
     "#7f7f7f"
   ];
 
-  export { fenceType,  fenceTypeColor};
+  const transactionType = [
+    "Admin",
+    "Membership Refund",
+    "Admin Refund",
+    "Buy Membership",
+    "Pickup Fee",
+    "Promo",
+    "Migration",
+    "Ride",
+    "Deposit",
+  ]
+
+  export { fenceType,  fenceTypeColor, transactionType};

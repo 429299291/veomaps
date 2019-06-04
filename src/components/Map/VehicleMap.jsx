@@ -27,9 +27,18 @@ import scooterLocked from "../../assets/scooter-pin-lockedbackend.png";
 import scooterUnLocked from "../../assets/scooter-pin-unlockedbackend.png";
 import scooterReported from "../../assets/scooter-pin-reportedbackend.png";
 
+import styles from "./VehicleMap.less";
+
 const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "Car"];
 
+import {
+  Slider,
+  Checkbox
+} from "antd";
+
 import {fenceType, fenceTypeColor} from "@/constant";
+
+
 
 const icons = {
     ebikeError,
@@ -127,16 +136,32 @@ const VehicleMap = compose(
       selectedMarker,
       setClickedMarker,
       heatMapData,
-      shouldShowHeatMap
+      shouldShowHeatMap,
+      heatMapMaxIntensity,
+      heatMapRadius,
+      handleSetHeatMapMaxIntensity,
+      handleSetHeatMapRadius,
+      currPosition,
+      handleGetMyLocation
     } = props;
   
   
+    console.log(heatMapMaxIntensity);
+
     const dashLineDot = {
       path: window.google.maps.SymbolPath.CIRCLE,
       fillOpacity: 1,
       scale: 2
     };
+
+
+    //const intensity = heatMapData && 2 * (Math.floor(heatMapData.length / 1000) + 1);
   
+
+    const intensity = heatMapMaxIntensity;
+
+    const radius = heatMapRadius;
+
     return (
       <div style={{position: "relative"}}>
       <GoogleMap
@@ -155,9 +180,9 @@ const VehicleMap = compose(
           })}
           options={
             {
-              radius: 15,
+              radius: heatMapRadius,
               dissipating: true,
-              maxIntensity: 2 * (Math.floor(heatMapData.length / 1000) + 1),
+              maxIntensity: intensity,
               opacity: 1
             }
           }
@@ -182,7 +207,7 @@ const VehicleMap = compose(
                   position={{lat: vehicle.lat, lng: vehicle.lng}}
                   icon={icon}
                   onClick={() => setClickedMarker(vehicle.vehicleNumber)}
-                  options={shouldShowHeatMap ? {opacity: 0.5} : {opacity: 1}}
+                  options={shouldShowHeatMap && heatMapData ? {opacity: 0.5} : {opacity: 1}}
                 >
                   {
                     selectedMarker === vehicle.vehicleNumber &&
@@ -239,7 +264,47 @@ const VehicleMap = compose(
           />
         ))}
 
+        {currPosition &&
+            <Marker
+              position={(({ latitude, longitude }) => ({ lat: latitude, lng:longitude }))(currPosition.coords)}
+
+              icon ={{ labelOrigin: new google.maps.Point(0, -10)}}
+              label= {{
+                  text: "You",
+                  color: 'black',
+                  fontSize: '12px',
+                  x: '100',
+                  y: '100'
+                }}  
+          />
+        }
+
       </GoogleMap>
+       
+      
+      <div style={{position: "absolute", left: "3em", bottom: '2em', color: "red"}}>
+        {shouldShowHeatMap && heatMapData &&
+            <div>
+              <div> Ride Count:  {heatMapData.length} </div>
+
+              <div > Max Intensity:  {intensity} </div>
+
+              <div className={styles.heatmapSlider}>  <Slider defaultValue={heatMapMaxIntensity} onChange={handleSetHeatMapMaxIntensity} /> </div>
+
+              <div > Radius:  {heatMapRadius} </div>
+
+              <div className={styles.heatmapSlider}>  <Slider defaultValue={heatMapRadius} onChange={handleSetHeatMapRadius} /> </div>
+          </div>
+        }
+
+        { 
+        
+          <div>
+              <Checkbox onChange={handleGetMyLocation}>Show My Position</Checkbox>
+          </div>  
+        }
+
+       </div>} 
       </div>
     );
   });

@@ -4,6 +4,8 @@ export default {
   "Customer Management": {
     "GET /api/admins/customers": "get.customers",
     "GET /api/admins/customers/{customerId}": "get.customer.detail",
+    "GET /api/admins/notifications": "get.customers.notifications",
+    "POST /api/admins/notifications/areas/{area_id}/type/{message_type}": "send.customer.notification",
     "PUT /api/admins/customers/{customerId}": "update.customer.detail",
     "POST /api/admins/customers": "create.customer",
     "GET /api/admins/coupons": "get.customer.coupons",
@@ -19,7 +21,8 @@ export default {
       "get.customer.available.membership",
     "POST /api/admins/memberships/customers/{customerId}/buy":
       "customer.buy.membership",
-    "POST /api/admins/customers/{customerId}/refund": "refund.customer.charge"
+    "POST /api/admins/customers/{customerId}/refund": "refund.customer.charge",
+    "GET /api/admins/customers/{customerId}/transactions": "get.customer.transactions"
   },
   "Vehicle List": {
     "GET /api/admins/vehicles": "get.vehicles",
@@ -29,10 +32,15 @@ export default {
     "PUT /api/admins/vehicles/{id}": "update.vehicle.detail",
     "POST /api/admins/vehicles": "create.vehicle",
     "PUT /api/admins/vehicles/{id}/unlock": "unlock.vehicle",
+    "PUT /api/admins/vehicles/{id}/lock": "lock.vehicle",
     "PUT /api/admins/vehicles/{id}/location": "update.vehicle.location",
-    "PUT /api/admins/vehicles/locations/{areaId}": "update.all.vehicle.location",
+    "PUT /api/admins/vehicles/locations/{areaId}":
+      "update.all.vehicle.location",
     "GET /api/admins/vehicles/{id}/orders": "get.vehicle.orders",
     "POST /api/admins/vehicles/{id}/find": "alert.vehicle",
+    "POST /api/admins/vehicles/{id}/restart": "restart.vehicle",
+    "POST /api/admins/vehicles/{id}/get_status": "get.status",
+    "GET /api/admins/vehicles/{id}/location/reference": "get.ref"
   },
   "Riding History": {
     "GET /api/admins/rides": "get.rides",
@@ -69,13 +77,26 @@ export default {
     "POST /api/admins/coupons": "create.coupon",
     "POST /api/admins/coupons/{couponId}/customers/{customerId}":
       "assign.coupon.to.customer",
-    "POST /api/admins/coupons/{couponId}" : "generate.code.coupon"
+    "POST /api/admins/coupons/{couponId}": "generate.code.coupon"
+  },
+  "Promo Management": {
+    "PUT /api/admins/promos/{promoId}": "update.promo.detail",
+    "GET /api/admins/promos": "get.promos",
+    "POST /api/admins/promos": "create.promo",
+    "POST /api/admins/promos/{promoId}/code": "generate.code.promo"
+  },
+  "Deposit Management": {
+    "PUT /api/admins/deposits/{deposit_id}": "update.deposit.detail",
+    "GET /api/admins/deposits": "get.deposits",
+    "POST /api/admins/deposits": "create.deposit",
+    "DELETE /api/admins/deposits/{deposit_id}": "delete.deposit"
   },
   "Membership Management": {
     "DELETE /api/admins/memberships/{membershipId}": "delete.membership",
     "PUT /api/admins/memberships/{membershipId}": "update.membership.detail",
     "GET /api/admins/memberships": "get.memberships",
-    "GET /api/admins/memberships/{membershipId}/detail": "get.membership.detail",
+    "GET /api/admins/memberships/{membershipId}/detail":
+      "get.membership.detail",
     "POST /api/admins/memberships": "create.membership"
   },
   "Price Management": {
@@ -89,7 +110,7 @@ export default {
     "PUT /api/admins/errors/{errorId}": "update.error.detail",
     "GET /api/admins/errors": "get.errors",
     "POST /api/admins/errors/batch_pass": "batch.pass.error",
-    "GET /api/admins/errors/{errorId}/image_paths": "get.image.paths",
+    "GET /api/admins/errors/{errorId}/image_paths": "get.image.paths"
   },
   "Role Management": {
     "DELETE /api/admins/roles/{roleId}": "delete.role",

@@ -32,12 +32,21 @@ import { roundTo2Decimal } from "../../utils/mathUtil";
 import { getAuthority } from "@/utils/authority";
 import {formatPhoneNumber} from "@/utils/utils"
 import { exportCSVFile } from "../../utils/utils";
+import ride from "@/models/ride";
 
 const customerCsvHeader = {
-  uid: "uid",
+  id: "uid",
   email: "email",
-  credit: "Balance",
-  phoneModel: "Phone Model"
+  deposit: "Deposit",
+  rideCredit: "Ride Credit",
+  phoneModel: "Phone Model",
+  created: "Register",
+  updated: "updated",
+  areaId: "areaId",
+  emailStatus: "emailStatus",
+  inviteCode: "inviteCode",
+  migrated: "migrated",
+  status: "status",
 };
 
 const FormItem = Form.Item;
@@ -394,25 +403,17 @@ class Customer extends PureComponent {
     },
     {
       title: "Balance",
-      dataIndex: "credit"
+      render: (text, record) => <p> {record.rideCredit + record.deposit }</p> 
     },
     {
       title: "operation",
       render: (text, record) => (
         <Fragment>
-          {/*<a onClick={() => this.handleUpdateModalVisible(true, record)}>*/}
-          {/*Update*/}
-          {/*</a>*/}
-          {/*<Divider type="vertical" />*/}
           {authority.includes("update.customer.detail") && (
             <a onClick={() => this.handleDetailModalVisible(true, record)}>
               Detail
             </a>
           )}
-          {/*<Divider type="vertical" />*/}
-          {/*<a onClick={() => this.handleCouponModalVisible(true, record)}>*/}
-          {/*Coupon*/}
-          {/*</a>*/}
         </Fragment>
       )
     }
@@ -635,16 +636,25 @@ class Customer extends PureComponent {
 
   formatCsvData = customers => {
     const {areaNames, selectedAreaId} = this.props;
+  
 
     return customers.map(customer => {
-      customer.created = moment(customers.created).format("YYYY-MM-DD HH:mm:ss");
+      customer.created = moment(customer.created).format("YYYY-MM-DD HH:mm:ss");
       customer.area = areaNames[customer.areaId];
-
+      
       return {
-        uid: customer.id,
-        email: customer.email,
-        credit: customer.credit,
-        phoneModel: customer.phoneModel
+        id: customer.id,
+        email: customer.email ? customer.email.replace(/(\r\n|\n|\r)/gm, "") : "unknown",
+        deposit: customer.deposit,
+        rideCredit: customer.rideCredit,
+        phoneModel: customer.phoneModel,
+        created: customer.created,
+        updated: customer.updated,
+        areaId: customer.areaId,
+        emailStatus: customer.emailStatus,
+        inviteCode: customer.inviteCode,
+        migrated: customer.migrated,
+        status: customer.status
       };
     })
   }

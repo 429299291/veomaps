@@ -67,7 +67,7 @@ export default [
           },
           {
             path: "/vehicle-management/error",
-            name: "Error Report",
+            name: "Report",
             component: "./Vehicle/Error",
             authority: "get.errors"
           }
@@ -80,9 +80,15 @@ export default [
         authority: "get.customers",
         routes: [
           {
-            path: "/customer-management",
+            path: "/customer-management/customer",
             name: "Customer List",
             component: "./Customer/Customer"
+          },
+          {
+            path: "/customer-management/notifications",
+            name: "Notifications",
+            component: "./CustomerNotification/Notifications",
+            authority: "get.customers.notifications"
           }
         ]
       },
@@ -113,11 +119,18 @@ export default [
         authority: "get.memberships"
       },
       {
-        path: "/coupon-management/",
-        name: "Coupon Management",
+        path: "/promo-management/",
+        name: "Promo Management",
         icon: "barcode",
-        component: "./Coupon/Coupon",
-        authority: "get.coupons"
+        component: "./Promo/Promo",
+        authority: "get.promos"
+      },
+      {
+        path: "/deposit-management/",
+        name: "Deposit Management",
+        icon: "dollar",
+        component: "./Deposit/Deposit",
+        authority: "get.deposits"
       },
       {
         path: "/price-management/",

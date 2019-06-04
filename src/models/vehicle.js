@@ -8,11 +8,15 @@ import {
   updateVehicle,
   getVehicleOrders,
   unlockVehicle,
+  lockVehicle,
   updateLocation,
   alertVehicle,
   getVehicleLocations,
   updateAllLocations,
-  getStartPoints
+  getStartPoints,
+  getStatus,
+  getRef,
+  restart
 } from "@/services/vehicle";
 import { message } from "antd";
 
@@ -40,8 +44,8 @@ export default {
         total: total
       });
     },
-    *getStartPoints({areaId, onSuccess}, {call, put}) {
-      const data = yield call(getStartPoints, areaId);
+    *getStartPoints({areaId, params, onSuccess}, {call, put}) {
+      const data = yield call(getStartPoints,  areaId, params);
       if (data) {
         onSuccess && onSuccess(data);
       } else {
@@ -89,6 +93,31 @@ export default {
         message.error("fail to fetch vehicle location" + data);
       }
     },
+    *getStatus({vehicleId, onSuccess}, {call, put}) {
+      const data = yield call(getStatus, vehicleId);
+      if (data) {
+        onSuccess(data);
+      } else {
+        message.error("fail to get vehicle status" + data);
+      }
+    },
+    *getRef({ id, onSuccess }, { call, put }) {
+      const response = yield call(getRef, id); // get
+
+      if (response) {
+        typeof onSuccess === "function" && onSuccess(response);
+      } else {
+        //message.error(`Get Ref Fail`);
+      }
+    },
+    *restart({vehicleId, onSuccess}, {call, put}) {
+      const data = yield call(restart, vehicleId);
+      if (data) {
+        onSuccess(data);
+      } else {
+        message.error("fail to restart vehicle" + data);
+      }
+    },
     *getOrders({ id, onSuccess }, { call, put }) {
       const data = yield call(getVehicleOrders, id);
 
@@ -116,6 +145,16 @@ export default {
 
       if (response) {
         message.success(`Unlock Success, ID : ${response}`);
+        typeof onSuccess === "function" && onSuccess();
+      } else {
+        message.error(`Unlock Fail.`);
+      }
+    },
+    *lock({ id, onSuccess }, { call, put }) {
+      const response = yield call(lockVehicle, id); // post
+
+      if (response) {
+        message.success(`Lock Success, ID : ${response}`);
         typeof onSuccess === "function" && onSuccess();
       } else {
         message.error(`Unlock Fail.`);

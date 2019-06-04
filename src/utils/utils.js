@@ -189,7 +189,7 @@ export function convertToCSV(objArray) {
 
   for (var i = 0; i < array.length; i++) {
     var line = '';
-    for (var index in array[i]) {
+    for (var index in array[0]) {
       if (line != '') line += ','
 
       line += array[i][index];

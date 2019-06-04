@@ -84,7 +84,7 @@ let routes = [
           },
           {
             "path": "/vehicle-management/error",
-            "name": "Error Report",
+            "name": "Report",
             "component": dynamic({ loader: () => import('../Vehicle/Error'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
             "authority": "get.errors",
             "exact": true
@@ -101,9 +101,16 @@ let routes = [
         "authority": "get.customers",
         "routes": [
           {
-            "path": "/customer-management",
+            "path": "/customer-management/customer",
             "name": "Customer List",
             "component": dynamic({ loader: () => import('../Customer/Customer'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
+            "exact": true
+          },
+          {
+            "path": "/customer-management/notifications",
+            "name": "Notifications",
+            "component": dynamic({ loader: () => import('../CustomerNotification/Notifications'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
+            "authority": "get.customers.notifications",
             "exact": true
           },
           {
@@ -144,11 +151,19 @@ let routes = [
         "exact": true
       },
       {
-        "path": "/coupon-management/",
-        "name": "Coupon Management",
+        "path": "/promo-management/",
+        "name": "Promo Management",
         "icon": "barcode",
-        "component": dynamic({ loader: () => import('../Coupon/Coupon'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
-        "authority": "get.coupons",
+        "component": dynamic({ loader: () => import('../Promo/Promo'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
+        "authority": "get.promos",
+        "exact": true
+      },
+      {
+        "path": "/deposit-management/",
+        "name": "Deposit Management",
+        "icon": "dollar",
+        "component": dynamic({ loader: () => import('../Deposit/Deposit'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
+        "authority": "get.deposits",
         "exact": true
       },
       {
@@ -235,6 +250,13 @@ let routes = [
             "component": () => React.createElement(require('/Users/zhuangenze/Desktop/manhattan-admin-web/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })
           }
         ]
+      },
+      {
+        "path": "/technician-management/",
+        "name": "Technician Management",
+        "icon": "user",
+        "component": dynamic({ loader: () => import('../Technician/Technician'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
+        "exact": true
       },
       {
         "component": dynamic({ loader: () => import('../404'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),

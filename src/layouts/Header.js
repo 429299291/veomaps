@@ -144,6 +144,7 @@ class HeaderView extends PureComponent {
             {...this.props}
           />
         )}
+        
       </Header>
     ) : null;
     return (

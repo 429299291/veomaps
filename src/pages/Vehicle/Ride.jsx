@@ -28,6 +28,7 @@ import { exportCSVFile } from "../../utils/utils";
 
 
 const rideCsvHeader = {
+  id: "id",
   vehicleType: "vehicleType",
   imei: "imei",
   vehicleNumber: "vehicleNumber",
@@ -37,7 +38,12 @@ const rideCsvHeader = {
   unlockMethod: "unlockMethod",
   start: "start",
   end: "end",
-  area: "area"
+  area: "area",
+  state: "state",
+  areaId: "areaId",
+  created: "created",
+  vehicleId: "vehicleId",
+  customerId: "customerId"
 }
 
 
@@ -57,6 +63,15 @@ import {
 import { getAuthority } from "@/utils/authority";
 
 const authority = getAuthority();
+
+const getViolateType = (val, record) => {
+  const violateColor = val >= 0 ?  violateTypeColor[val] : "black";
+  const limitColor = record.limitType >= 0 ?  violateTypeColor[record.limitType] : "black";
+  const violateContent = <span style={{color: violateColor}}>  {(val >= 0 ? violateType[val] : "unknown")  }</span>;
+  const limitContent = <span style={{color: limitColor}}> {(record.vehicleType === 1 ? " | " + limitType[record.limitType] : "")}</span>;
+
+  return <span>{violateContent}{limitContent}</span>
+};
 
 const FormItem = Form.Item;
 const { Step } = Steps;
@@ -79,6 +94,7 @@ const rideStateColor = ["#e5bb02","#0be024","#ff0000"];
 
 
 const violateType = ["Normal", "In restricted fence", "out of geo fence", "out of force parking zone", "unknown"];
+const limitType = ["Normal", "No Ride Zone", "limit speed zone", "unknown"];
 const violateTypeColor = ["black", "#ff0000", "#b72126","#1300ff", "#f1fc64"];
 
 import {fenceType, fenceTypeColor} from "@/constant";
@@ -248,7 +264,7 @@ class Ride extends PureComponent {
     {
       title: "Violate Type",
       dataIndex: "violateType",
-      render: val => <span style={{color: val >= 0 ?  violateTypeColor[val] : "black"}}>{val >= 0 ? violateType[val] : "unknown"}</span>
+      render: getViolateType
     },
     {
       title: "Unlock Way",
@@ -304,6 +320,9 @@ class Ride extends PureComponent {
   componentDidMount() {
     this.handleSearch();
   }
+   
+
+  
 
   handleGetRides = () => {
     const { dispatch } = this.props;
@@ -585,6 +604,7 @@ class Ride extends PureComponent {
 
     return rides.map(ride => {
       return {
+        id: ride.id,
         vehicleType: vehicleType[ride.vehicleType],
         imei: ride.imei,
         vehicleNumber: ride.vehicleNumber,
@@ -594,7 +614,12 @@ class Ride extends PureComponent {
         unlockMethod: lockOperationWay[ride.unlockMethod],
         start: moment(ride.start).format("MM-DD-YYYY HH:mm:ss"),
         end: moment(ride.end).format("MM-DD-YYYY HH:mm:ss"),
-        area: areaNames[ride.areaId]
+        area: areaNames[ride.areaId],
+        state: ride.state,
+        areaId: ride.areaId,
+        created: moment(ride.created).format("MM-DD-YYYY HH:mm:ss"),
+        vehicleId: ride.vehicleId,
+        customerId: ride.customerId
       }
     })
   }

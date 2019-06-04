@@ -28,9 +28,9 @@ export async function countVehicles(params) {
   );
 }
 
-export async function getStartPoints(areaId) {
+export async function getStartPoints(areaId, params) {
   return request(
-    `/admins/rides/${areaId}/start_points`,
+    `/admins/rides/${areaId}/start_points?${stringify(params, { indices: false })}`,
     {
       method: "GET"
     }
@@ -104,8 +104,33 @@ export async function unlockVehicle(id) {
   });
 }
 
+export async function getRef(id) {
+  return request(`/admins/vehicles/${id}/location/reference`, {
+    method: "GET"
+  });
+}
+
+export async function lockVehicle(id) {
+  return request(`/admins/vehicles/${id}/lock`, {
+    method: "PUT"
+  });
+}
+
 export async function updateLocation(id) {
   return request(`/admins/vehicles/${id}/location`, {
     method: "PUT"
   });
 }
+
+export async function restart(id) {
+  return request(`/admins/vehicles/${id}/restart`, {
+    method: "POST"
+  });
+}
+
+export async function getStatus(id) {
+  return request(`/admins/vehicles/${id}/get_status`, {
+    method: "POST"
+  });
+}
+

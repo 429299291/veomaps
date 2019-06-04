@@ -102,11 +102,21 @@ class BasicLayout extends React.PureComponent {
     rendering: true,
     isMobile: false,
     menuData: this.getMenuData(),
+    selectedAreaName: "all",
     isMobile: window.innerWidth <= 600
   };
 
   resize() {
-    this.setState({isMobile: window.innerWidth <= 600});
+    const {dispatch} = this.props;
+
+    const isMobile = window.innerWidth <= 600;
+
+    this.setState({isMobile: isMobile});
+
+    dispatch({
+      type: "global/isMobile",
+      value: isMobile
+    });
 }
 
   componentDidMount() {
@@ -259,15 +269,31 @@ class BasicLayout extends React.PureComponent {
     return <SettingDrawer />;
   }
 
+  handleStartSelectArea = () => {
+    this.setState({shouldShowAreaSelector: !this.state.shouldShowAreaSelector});
+  }
+
+  handleSelectArea = (areaId, areaName) => {
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: 'areas/selectArea',
+      areaId: areaId === "all" ? null : areaId,
+    });
+
+    this.setState({selectedAreaName: areaName});
+  }
+
   render() {
     const {
       navTheme,
       layout: PropsLayout,
+      areas,
       children,
       location: { pathname },
-      match
+      match,
+      selectedAreaId
     } = this.props;
-
 
     const pageTitle = this.getPageTitle(pathname);
 
@@ -281,7 +307,7 @@ class BasicLayout extends React.PureComponent {
     }
 
 
-    const { isMobile, menuData } = this.state;
+    const { isMobile, menuData, shouldShowAreaSelector, selectedAreaName } = this.state;
     const isTop = PropsLayout === "topmenu";
     const routerConfig = this.matchParamsPath(pathname);
     
@@ -315,6 +341,47 @@ class BasicLayout extends React.PureComponent {
               {...this.props}
               />
           }
+          { isMobile &&
+            <div style={{width: "100%", minHeight: "4em",  marginTop:"0.1em", backgroundColor:"white", position: "relative"}}>
+              <div 
+                style={{width: "50%", height: "2em", marginTop:"1em",  marginBottom:"1em", border: "2px #53bab6 solid", borderRadius: "8px", textAlign: "center", position: "absolute", margin: "1em 0 0 25%"}}
+                onClick={this.handleStartSelectArea}
+              >
+                {(shouldShowAreaSelector ? "- " : "+ ") + selectedAreaName}
+              </div>
+
+              {
+                shouldShowAreaSelector && 
+
+                <div style={{marginTop: "4em"}}>
+
+                  <div style= {{ margin: "0.5em 1em", textAlign: "center", border: "2px " + (selectedAreaId === null ? "#53bab6" : "black") + " solid"}} onClick={()=> this.handleSelectArea(null, "all")} > All </div>
+
+                  {areas.map(area =>
+                    {
+                      const border = "2px " + (selectedAreaId === area.id ? "#53bab6" : "black") + " solid";
+
+                      const style = {
+                        textAlign: "center",
+                        border: border,
+                        margin: "0.5em 1em",
+                      }
+
+                      return <div  key={area.id} onClick={()=> this.handleSelectArea(area.id, area.name)} style={style}>
+                        {area.name}
+                      </div>
+                    })
+                  }
+
+                </div>
+              }
+
+
+            </div>
+
+        
+          }
+
           <Content style={this.getContentStyle()}>
             
             {this.state.isMobile ? 
@@ -324,6 +391,7 @@ class BasicLayout extends React.PureComponent {
               <Authorized
                 authority={routerConfig && routerConfig.authority}
                 noMatch={<Exception403 />}
+                isMobile={this.state.isMobile}
               >
                 {children}
               </Authorized>
@@ -354,9 +422,11 @@ class BasicLayout extends React.PureComponent {
   }
 }
 
-export default connect(({ global, setting, user }) => ({
+export default connect(({ global, setting, user, areas }) => ({
   collapsed: global.collapsed,
   layout: setting.layout,
   isUserFetched: user.isUserFetched,
+  areas: areas.data,
+  selectedAreaId: areas.selectedAreaId,
   ...setting
 }))(BasicLayout);

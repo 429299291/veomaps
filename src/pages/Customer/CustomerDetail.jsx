@@ -27,6 +27,7 @@ import {
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 import { getAuthority } from "@/utils/authority";
 import styles from "./CustomerDetail.less";
+import {transactionType} from "@/constant";
 
 
 const FormItem = Form.Item;
@@ -117,32 +118,52 @@ const UpdateForm = Form.create()(props => {
 
   return (
     <div>
+
+      <FormItem labelCol={{ span: 10}} wrapperCol={{ span: 10 }} label="Balance (Deposit + Ride Credit)">
+        <span> {record.deposit + record.rideCredit} </span>
+      </FormItem>
+      
+
+    
       <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="CREDIT AMOUNT"
+        labelCol={{ span: 10 }}
+        wrapperCol={{ span: 10 }}
+        label="Ride Credit Amount"
       >
-        {form.getFieldDecorator("credit", {
+        {form.getFieldDecorator("rideCredit", {
           rules: [{ validator: checkMoneyFormat }],
-          initialValue: record.credit
+          initialValue: record.rideCredit
         })(<Input placeholder="Please Input" />)}
       </FormItem>
+
       <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
+        labelCol={{ span: 10 }}
+        wrapperCol={{ span: 10 }}
+        label="Deposit Amount"
+      >
+        {form.getFieldDecorator("deposit", {
+          rules: [{ validator: checkMoneyFormat }],
+          initialValue: record.deposit
+        })(<Input placeholder="Please Input" />)}
+      </FormItem>
+
+      
+      <FormItem
+        labelCol={{ span: 10}}
+        wrapperCol={{ span: 10 }}
         label="FULL NAME"
       >
         {form.getFieldDecorator("fullName", {
           initialValue: record.fullName
         })(<Input placeholder="Please Input" />)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Email">
+      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Email">
         {form.getFieldDecorator("email", {
           rules: [{ validator: checkEmailFormat }],
           initialValue: record.email
         })(<Input placeholder="Please Input" />)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Email Status">
+      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Email Status">
         {form.getFieldDecorator("emailStatus", {
           initialValue: record.emailStatus
         })(<Select placeholder="select" style={{ width: "100%" }}>
@@ -157,7 +178,7 @@ const UpdateForm = Form.create()(props => {
           </Option>
         </Select>)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Migrated">
+      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Migrated">
         {form.getFieldDecorator("migrated", {
           initialValue: record.migrated
         })(<Select placeholder="select" style={{ width: "100%" }}>
@@ -172,8 +193,8 @@ const UpdateForm = Form.create()(props => {
 
       {customerStatus && (
         <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
+          labelCol={{ span: 10 }}
+          wrapperCol={{ span: 10 }}
           label="Status"
         >
           {form.getFieldDecorator("status", {
@@ -197,7 +218,7 @@ const UpdateForm = Form.create()(props => {
       )}
 
       {areas && (
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area">
+        <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Area">
           {form.getFieldDecorator("areaId", {
             rules: [
               {
@@ -218,18 +239,18 @@ const UpdateForm = Form.create()(props => {
         </FormItem>
       )}
 
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Phone Model">
+      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10}} label="Phone Model">
         <span> {record.phoneModel} </span>
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="App Version">
+      <FormItem labelCol={{ span: 10}} wrapperCol={{ span: 10 }} label="App Version">
         <span> {record.appVersion} </span>
       </FormItem>
 
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Register Date">
+      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Register Date">
         <span> { moment(record.created).format("YYYY/MM/DD hh:mm:ss")} </span>
       </FormItem>
 
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Active Days">
+        <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Active Days">
           <span> {customerActiveDays} </span>
         </FormItem> 
       
@@ -665,7 +686,8 @@ class CustomerDetail extends PureComponent {
     selectedCharge: null,
     refundType: REFUND_TYPE.FULL,
     needPickupFee: null,
-    customerActiveDays: null
+    customerActiveDays: null,
+    customerTransactions: null
   };
 
   customerCouponColumns = [
@@ -740,6 +762,10 @@ class CustomerDetail extends PureComponent {
       dataIndex: "minutes"
     },
     {
+      title: "Charge",
+      dataIndex: "charge"
+    },
+    {
       title: "End",
       dataIndex: "end",
       render: val =>
@@ -767,6 +793,35 @@ class CustomerDetail extends PureComponent {
             )}
         </Fragment>
       }
+    }
+  ];
+
+
+  customerTransactionColumn = [
+    {
+      title: "Type",
+      dataIndex: "type",
+      render: value =>  <span>{ transactionType[value]} </span>
+    },
+    {
+      title: "Deposit Change",
+      dataIndex: "depositChange",
+      render: val =>  <span>{ Math.round(val * 100 ) / 100 } </span>
+    },
+    {
+      title: "Ride Credit Change",
+      dataIndex: "rideCreditChange",
+      render: val =>  <span>{  Math.round(val * 100 ) / 100 } </span>
+    },
+    {
+      title: "Payment Charge",
+      dataIndex: "paymentCharge",
+      render: val =>  <span>{  Math.round(val * 100 ) / 100  } </span>
+    },
+    {
+      title: "Created",
+      dataIndex: "created",
+      render: value =>  <span>{ moment(value).format("YYYY-MM-DD HH:mm:ss")} </span>
     }
   ];
 
@@ -838,6 +893,7 @@ class CustomerDetail extends PureComponent {
     this.handleGetCustomerPayments(customerId);
     this.handleGetCustomerMembership(customerId);
     this.handleGetAvailableCustomerMemberships(customerId);
+    this.handleGetCustomerTransactions(customerId);
   };
 
   handleEndRideVisible = (flag, record) => {
@@ -998,6 +1054,22 @@ class CustomerDetail extends PureComponent {
     });
   };
 
+  handleGetCustomerTransactions = () => {
+    const { dispatch, customerId } = this.props;
+
+    if (!authority.includes("get.customer.transactions")) {
+      return;
+    }
+
+    dispatch({
+      type: "customers/getTransactions",
+      customerId: customerId,
+      onSuccess: response => {
+        this.setState({customerTransactions: response})
+      }
+    });
+  };
+
   handleGetAvailableCustomerMemberships = () => {
     const { dispatch, customerId } = this.props;
     dispatch({
@@ -1035,7 +1107,8 @@ class CustomerDetail extends PureComponent {
       selectedCharge,
       refundType,
       needPickupFee,
-      customerActiveDays
+      customerActiveDays,
+      customerTransactions
     } = this.state;
 
     const {
@@ -1080,6 +1153,18 @@ class CustomerDetail extends PureComponent {
                 />
               </Card>
             )}
+
+          {authority.includes("get.customer.transactions") && customerTransactions &&
+            <Card title="Customer Transactions" style={{ marginTop: "2em" }}>
+
+              <Table
+                dataSource={customerTransactions}
+                columns={this.customerTransactionColumn}
+                scroll={{ x: 1300 }}
+              />
+
+            </Card> 
+          }
 
             {authority.includes("get.rides") &&
             <Card title="Customer Rides" style={{ marginTop: "2em" }}>
