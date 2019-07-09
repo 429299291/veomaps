@@ -16,7 +16,8 @@ import {
   getStartPoints,
   getStatus,
   getRef,
-  restart
+  restart,
+  applyAction
 } from "@/services/vehicle";
 import { message } from "antd";
 
@@ -144,7 +145,7 @@ export default {
       const response = yield call(unlockVehicle, id); // post
 
       if (response) {
-        message.success(`Unlock Success, ID : ${response}`);
+        message.success(`Unlock Success, ID : ${id}`);
         typeof onSuccess === "function" && onSuccess();
       } else {
         message.error(`Unlock Fail.`);
@@ -154,7 +155,7 @@ export default {
       const response = yield call(lockVehicle, id); // post
 
       if (response) {
-        message.success(`Lock Success, ID : ${response}`);
+        message.success(`Lock Success, ID : ${id}`);
         typeof onSuccess === "function" && onSuccess();
       } else {
         message.error(`Unlock Fail.`);
@@ -171,9 +172,8 @@ export default {
       }
     },
     *update({ id, payload, onSuccess }, { call, put }) {
-      const response = yield call(updateVehicle, id, payload); // put
 
-      response ? onSuccess(response) : onError();
+      const response = yield call(updateVehicle, id, payload); // put
 
       if (response) {
         message.success(`Update Success!`);
@@ -181,6 +181,29 @@ export default {
       } else {
         message.error(`Update Fail.`);
       }
+    },
+    *applyAction({ id, vehicleNumber, payload, onSuccess }, { call, put }) {
+
+      const response = yield call(applyAction, vehicleNumber, payload);
+
+      if (response) {
+        message.success(`Applying acition  Success!`);
+        onSuccess();
+      } else {
+        message.error(`Appuing action Fail.`);
+      }
+
+      //unlock vehicle after applying action
+      const type = payload.actionType === 0 ? "unlock" : "lock";
+
+      yield put({
+        type: type,
+        id: id,
+        onSuccess: () => { 
+          message.success("successfully " + type + " vehicle."); 
+          setTimeout(onSuccess, 3000);
+        }
+      });
     }
   },
 

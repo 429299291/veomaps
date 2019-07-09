@@ -5,7 +5,8 @@
     "lucky zone",
     "restricted parking",
     "sub-geofence",
-    "no-ride-zone"
+    "no-ride-zone",
+    "Low Speed Zone"
   ];
 
   const fenceTypeColor = [
@@ -15,7 +16,8 @@
     "#00b8aa",
     "#ff0000",
     "#b72126",
-    "#7f7f7f"
+    "#7f7f7f",
+    "#eff53d"
   ];
 
   const transactionType = [

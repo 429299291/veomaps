@@ -18,6 +18,14 @@ export function getTimeDistance(type) {
     return [moment(now), moment(now.getTime() + (oneDay - 1000))];
   }
 
+  if (type === 'day') {
+    now.setHours(0);
+    now.setMinutes(0);
+    now.setSeconds(0);
+    return [moment(now), moment(now.getTime() + (oneDay - 1000))];
+  }
+
+  
   if (type === 'week') {
     let day = now.getDay();
     now.setHours(0);

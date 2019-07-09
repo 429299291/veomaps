@@ -408,6 +408,17 @@ const MapComponent = compose(
         this.setState({shouldShowLastScan: !shouldShowLastScan});
       }
 
+      goMapAndNavigate =  (lat, lng) => {
+        if /* if we're on iOS, open in Apple Maps */
+          ((navigator.platform.indexOf("iPhone") != -1) || 
+           (navigator.platform.indexOf("iPod") != -1) || 
+           (navigator.platform.indexOf("iPad") != -1))
+          window.open(`maps://maps.google.com/maps?daddr=${lat},${lng}&amp;ll=`);
+      
+        else /* else use Google */
+          window.open(`https://maps.google.com/maps?daddr=${lat},${lng}&amp;ll=`);
+      }
+
 
       render() {
 
@@ -437,10 +448,14 @@ const MapComponent = compose(
                     />
 
                     <div style={{position: "absolute", left: "1vw", bottom: "2em", color: "#53bab6"}}>
+                        <Button onClick={() => this.goMapAndNavigate(vehicleDetail.location.y, vehicleDetail.location.x)} > Go! </Button>
+                    </div> 
+
+                    <div style={{position: "absolute", left: "1vw", bottom: "5em", color: "#53bab6"}}>
                         <Checkbox onChange={this.handleGetMyLocation}>Show My Position</Checkbox>
                     </div> 
 
-                    <div style={{position: "absolute", left: "1vw", bottom: "4em", color: "#53bab6"}}>
+                    <div style={{position: "absolute", left: "1vw", bottom: "7em", color: "#53bab6"}}>
                         <Checkbox onChange={this.handleShowLastScan}>Show Last Scan Position</Checkbox>
                     </div> 
 

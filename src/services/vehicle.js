@@ -37,6 +37,21 @@ export async function getStartPoints(areaId, params) {
   );
 }
 
+export async function applyAction(vehicleNumber, payload) {
+  return request(
+    `/admins/vehicles/${vehicleNumber}/action`,
+    {
+      method: "POST",
+      body: {
+        ...payload
+      }
+    }
+  );
+}
+
+
+
+
 export async function updateAllLocations(params, id) {
   return request(
     `/admins/vehicles/locations/${id}?${stringify(params, { indices: false })}`,

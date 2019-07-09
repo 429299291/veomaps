@@ -48,6 +48,8 @@ export default class GlobalHeader extends PureComponent {
     });
   }
 
+  filterOption = (input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+
   render() {
     const { collapsed, isMobile, logo, areas } = this.props;
 
@@ -72,6 +74,8 @@ export default class GlobalHeader extends PureComponent {
                 onChange={this.handleAreaSelect}
                 className="area-select"
                 style={{ width: 200, marginLeft: "1em" }}
+                showSearch
+                filterOption={this.filterOption}
                 defaultValue={"all"}
               >
                 <Option value="all">All</Option>

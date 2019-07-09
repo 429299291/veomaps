@@ -428,6 +428,20 @@ class Ride extends PureComponent {
 
     if (!!flag) {
 
+      authority.includes("get.ride.image") && dispatch({
+        type: "rides/image",
+        rideId: record.id,
+        onSuccess: imageUrl =>
+          this.setState({
+            rideImageUrl: imageUrl
+          }),
+          onError: () => {
+            this.setState({
+              rideImageUrl: undefined
+            })
+          }
+      });
+
       if (authority.includes("get.ride.route")) {
         dispatch({
           type: "rides/getRoute",
@@ -443,6 +457,7 @@ class Ride extends PureComponent {
           type: "geo/getFences",
           areaId: record.areaId
         });
+        
       } else {
         this.setState({
           detailModalVisible: true,
@@ -682,7 +697,8 @@ class Ride extends PureComponent {
       vehicleDetailModalVisible,
       selectedVehicleId,
       customerDetailModalVisible,
-      selectedCustomerId
+      selectedCustomerId,
+      rideImageUrl
     } = this.state;
 
     const endRideMethod = {
@@ -696,6 +712,8 @@ class Ride extends PureComponent {
       pageSize: filterCriteria.pageSize,
       total: rides.total
     };
+
+    console.log(rideImageUrl);
 
     return (
       <PageHeaderWrapper title="Ride List">
@@ -749,6 +767,12 @@ class Ride extends PureComponent {
                     fences={geo.fences}
                   />
                 )}
+
+                {
+                  rideImageUrl &&
+                    
+                  <img  src={rideImageUrl} style={{marginTop: "50px", marginBottom: "50px", width: "80%"}} className={styles.rotate90} />
+                }
             </Modal>
           )}
 

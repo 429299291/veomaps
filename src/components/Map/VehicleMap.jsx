@@ -33,7 +33,8 @@ const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "Car"];
 
 import {
   Slider,
-  Checkbox
+  Checkbox,
+  Button
 } from "antd";
 
 import {fenceType, fenceTypeColor} from "@/constant";
@@ -123,7 +124,7 @@ const VehicleMap = compose(
       googleMapURL:
         "https://maps.googleapis.com/maps/api/js?key=AIzaSyDPnV_7djRAy8m_RuM5T0QIHU5R-07s3Ic&v=3.exp&libraries=geometry,drawing,places,visualization",
       loadingElement: <div style={{ height: `100%` }} />,
-      containerElement: <div style={{ height: `600px`}} />,
+      containerElement: <div style={{ height: `800px`}} />,
       mapElement: <div style={{ height: `100%`, width: `100%`}} />
     }),
     withScriptjs,
@@ -142,11 +143,11 @@ const VehicleMap = compose(
       handleSetHeatMapMaxIntensity,
       handleSetHeatMapRadius,
       currPosition,
-      handleGetMyLocation
+      handleGetMyLocation,
+      handleShowingVehicles,
+      shoudlShowVehicles
     } = props;
   
-  
-    console.log(heatMapMaxIntensity);
 
     const dashLineDot = {
       path: window.google.maps.SymbolPath.CIRCLE,
@@ -161,6 +162,18 @@ const VehicleMap = compose(
     const intensity = heatMapMaxIntensity;
 
     const radius = heatMapRadius;
+
+
+    const goMapAndNavigate =  (lat, lng) => {
+      if /* if we're on iOS, open in Apple Maps */
+        ((navigator.platform.indexOf("iPhone") != -1) || 
+         (navigator.platform.indexOf("iPod") != -1) || 
+         (navigator.platform.indexOf("iPad") != -1))
+        window.open(`maps://maps.google.com/maps?daddr=${lat},${lng}&amp;ll=`);
+    
+      else /* else use Google */
+        window.open(`https://maps.google.com/maps?daddr=${lat},${lng}&amp;ll=`);
+    }
 
     return (
       <div style={{position: "relative"}}>
@@ -190,7 +203,7 @@ const VehicleMap = compose(
        /> }
         
   
-        { vehicles && vehicles.map(vehicle => {
+        { vehicles && shoudlShowVehicles && vehicles.map(vehicle => {
   
           const icon = getVehicleIcon(vehicle);
   
@@ -214,6 +227,7 @@ const VehicleMap = compose(
                     <InfoWindow onCloseClick={() => setClickedMarker(null)}>
                       <div>
                         {Object.keys(vehicle).map(key => <div>{`${key} : ${vehicle[key]}`}</div>)}
+                         {vehicle.lat &&  vehicle.lng && <Button onClick={() => goMapAndNavigate(vehicle.lat, vehicle.lng)} > Go! </Button>}
                       </div>
                     </InfoWindow>
                   }
@@ -294,17 +308,20 @@ const VehicleMap = compose(
               <div > Radius:  {heatMapRadius} </div>
 
               <div className={styles.heatmapSlider}>  <Slider defaultValue={heatMapRadius} onChange={handleSetHeatMapRadius} /> </div>
+
+              <div>
+                <Checkbox onChange={handleShowingVehicles} defaultChecked={shoudlShowVehicles} >Show Vehicles</Checkbox>
+              </div> 
           </div>
         }
 
-        { 
-        
+      
+          
           <div>
               <Checkbox onChange={handleGetMyLocation}>Show My Position</Checkbox>
           </div>  
-        }
 
-       </div>} 
+       </div>
       </div>
     );
   });

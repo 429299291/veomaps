@@ -46,7 +46,16 @@ import {fenceType, fenceTypeColor} from "@/constant";
 
 const authority = getAuthority();
 
-const errorStatus = ["NORMAL", "FROZEN", "ERROR"];
+const errorStatusIndexs = {
+  0: "Normal",
+  1: "Error",
+  3: "Deactivated",
+  5: "Rebalance",
+  6: "Maintain",
+  7: "Out of Service"
+};
+
+const errorStatus = Object.keys(errorStatusIndexs);
 
 const vehicleType = ["Bicycle", "Scooter", "E-Bike", "Car"];
 const lockOperationWay = ["GPRS", "BLUETOOTH"];
@@ -117,30 +126,44 @@ const UpdateForm = Form.create()(props => {
           wrapperCol={{ span: 15 }}
           label="Status"
         >
-          {form.getFieldDecorator("errorStatus", {
-            rules: [
-              {
-                required: true,
-                message: "You have pick a status"
-              }
-            ],
-            initialValue: record.errorStatus
-          })(
-            <Select placeholder="select" style={{ width: "100%" }}>
-              {errorStatus.map((status, index) => (
-                <Option key={index} value={index}>
-                  {errorStatus[index]}
-                </Option>
-              ))}
+          <div>
+
+            
+            {form.getFieldDecorator("errorStatus",{
+              rules: [
+                {
+                  required: true,
+                  message: "You have pick a area"
+                }
+              ],
+              initialValue: record.errorStatus
+            })(
+              <Select placeholder="select" style={{ width: "100%" }}> 
+              
+                <Option value={0} >Normal</Option>
+
+                <Option value={1} >Error</Option>
+
+                <Option disabled={true} value={3} >Deativated</Option>
+
+                <Option disabled={true}  value={5} >Rebalance</Option>
+
+                <Option disabled={true}  value={6} >Maintain</Option>
+
+                <Option disabled={true}  value={7} >Out of Service</Option>
+
+                
             </Select>
-          )}
+            )}
+            
+          </div>
         </FormItem>
       )}
 
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
-        label="Status"
+        label="Connect Status"
       >
         <div>
           {record.lockStatus === 0 ? "Unlock" : "Lock"}
@@ -166,6 +189,7 @@ const UpdateForm = Form.create()(props => {
           {record.iccid}
         </div>
       </FormItem>
+
 
       <FormItem
         labelCol={{ span: 5 }}

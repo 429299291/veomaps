@@ -38,6 +38,7 @@ const TextArea = Input.TextArea;
 
 const ErrorReviewStatus = ["waiting for review","under review","pass","reject"];
 const ErrorType = [undefined, "malfunction","inappropriate parking", "theft", "abandoned", "vandalism"];
+const ErrorPart = [undefined, "Seat","Brake", "Basket", "Light", "Wheel", "Tire", "Pedal", "Chain", "Lock", "Motor", "Kickstand", "Throttle"];
 
 const UpdateForm = Form.create()(props => {
   const {
@@ -149,6 +150,11 @@ class Error extends PureComponent {
       title: "Type",
       dataIndex: "errorType",
       render: val => <span>{(val && (val.split(",").reduce((result, val) => result + ErrorType[parseInt(val)] + " | " , "")).slice(0,-3))}</span>
+    },
+    {
+      title: "Part",
+      dataIndex: "errorPart",
+      render: val => <span>{(val && (val.split(",").reduce((result, val) => result + ErrorPart[parseInt(val)] + " | " , "")).slice(0,-3))}</span>
     },
     {
       title: "Date",
@@ -274,6 +280,23 @@ class Error extends PureComponent {
   handleUpdateModalVisible = (flag, record) => {
     if (flag) {
       this.handleGetErrorImages(record, errorImages => {
+
+        // errorImages.map(errorImage => {
+
+        //   const options ={
+        //     headers: {
+        //       'referer' : "https://manhattan.veoride.com/"
+        //     }
+        //   };
+
+        //   fetch(errorImage, options)
+        //   .then(res => res.blob())
+        //   .then(blob => {
+        //     this.setState({errorImages: this.state.errorImages.concat(URL.createObjectURL(blob))}); 
+        //     //imgElement.src = URL.createObjectURL(blob);
+        //   });
+        // });
+        
         this.setState({
           updateModalVisible: true,
           selectedRecord: record,

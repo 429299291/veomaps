@@ -6,6 +6,7 @@ import {
   removeRide,
   updateRide,
   getRideRoute,
+  getRideImage,
   endRide,
   getCustomerRides
 } from "@/services/ride";
@@ -45,6 +46,15 @@ export default {
         message.error("Fail to get all rides.");
       }
       
+    },
+    *image({ rideId, onSuccess, onError }, { call, put }) {
+      const url = yield call(getRideImage, rideId);
+
+      if (url && typeof url  === 'string') {
+        onSuccess(url);
+      } else {
+        onError(); 
+      }
     },
     *getCustomerRides({ customerId, onSuccess }, { call, put }) {
       const rides = yield call(getAdminRides, { customerId: customerId });

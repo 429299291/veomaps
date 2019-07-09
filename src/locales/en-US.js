@@ -313,5 +313,11 @@ export default {
     "copy success，please replace defaultSettings in src/models/setting.js",
   "app.setting.production.hint":
     "Setting panel shows in development environment only, please manually modify",
-  "menu.Area Management.Area Management": "Area Management"
+  "menu.Area Management.Area Management": "Area Management",
+  "app.dashboard.rides": "Rides",
+  "app.dashboard.rides-trend": "Riding Trend",
+  "app.dashboard.rides-ranking": "Rides/Vehicles Ranking",
+  "app.dashboard.customers": "Customers",
+  "app.dashboard.customers-trend": "Customers Trend",
+  "app.dashboard.customers-ranking": "Active Customer% Ranking",
 };

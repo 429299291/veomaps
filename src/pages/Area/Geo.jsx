@@ -41,9 +41,9 @@ import {
 
 import { getAuthority } from "@/utils/authority";
 
-import styles from "./Geo.less";
-
 const authority = getAuthority();
+
+import styles from "./Geo.less";
 
 const defaultCenter = { lat: 41.879658, lng: -87.629769 };
 
@@ -52,7 +52,7 @@ const MyMapComponent = compose(
     googleMapURL:
       "https://maps.googleapis.com/maps/api/js?key=AIzaSyDPnV_7djRAy8m_RuM5T0QIHU5R-07s3Ic&v=3.exp&libraries=geometry,drawing,places",
     loadingElement: <div style={{ height: `100%` }} />,
-    containerElement: <div style={{ height: `400px` }} />,
+    containerElement: <div style={{ height: `600px` }} />,
     mapElement: <div style={{ height: `100%` }} />
   }),
   withScriptjs,
@@ -666,7 +666,7 @@ class Geo extends PureComponent {
             ) : (
               <div>{this.renderHeader(areas.data, isEditing)}</div>
             )}
-            <div style={{ marginBottom: "1em" }} />
+            <div style={{ marginBottom: "1em"}} />
             <MyMapComponent
               onMapClick={this.handleMapClick}
               handleExistedFenceClick={this.handleExistedFenceClick}

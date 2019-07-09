@@ -492,7 +492,8 @@ class Admin extends PureComponent {
     selectedRecord: {},
     updatePasswordModalVisible: false,
     registerEmailModalVisible: false,
-    areas: []
+    areas: [],
+    filteredAdmins: []
   };
 
   columns = [
@@ -627,7 +628,8 @@ class Admin extends PureComponent {
 
     dispatch({
       type: "admins/get",
-      payload: filterCriteria
+      payload: filterCriteria,
+      onSuccess: this.handleSearch
     });
   };
 
@@ -654,8 +656,44 @@ class Admin extends PureComponent {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
 
-    this.setState({ filterCriteria: params }, () => this.handleGetAdmins());
+    // this.setState({ filterCriteria: params }, () => this.handleGetAdmins());
   };
+
+  renderSimpleForm() {
+    const {
+      form: { getFieldDecorator }
+    } = this.props;
+
+    const areas = this.props.areas;
+    return (
+      <Form onSubmit={this.handleSearch} layout="inline">
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={6} sm={24}>
+            <FormItem label="Name">
+              {getFieldDecorator("name")(
+                <Input placeholder="Name" />
+              )}
+            </FormItem>
+          </Col>
+          <Col md={6} sm={24}>
+            <FormItem >
+              {authority.includes("register.admin.email") && (
+                <Button
+                  icon="plus"
+                  type="primary"
+                  onClick={() => this.handleEmailRegisterModalVisible(true)}
+                  style={{ marginLeft: "0.5em" }}
+                >
+                  Register By Email
+                </Button>
+              )}
+              </FormItem>
+          </Col>
+        </Row>
+
+      </Form>
+    );
+  }
 
   handleFormReset = () => {
     const { form } = this.props;
@@ -670,22 +708,22 @@ class Admin extends PureComponent {
   };
 
   handleSearch = e => {
-    e.preventDefault();
+    e && e.preventDefault();
 
-    const { dispatch, form } = this.props;
+    const { dispatch, form, admins } = this.props;
     const { filterCriteria } = this.state;
+
+    let result = admins;
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
+      
+      if (fieldsValue.name) {
+        result = admins.filter(admin => (admin.firstName + " " + admin.lastName).includes(fieldsValue.name));
+      }
 
-      const values = Object.assign({}, filterCriteria, fieldsValue);
-
-      this.setState(
-        {
-          filterCriteria: values
-        },
-        () => this.handleGetAdmins()
-      );
+      this.setState({filteredAdmins: result});
+      
     });
   };
 
@@ -775,7 +813,7 @@ class Admin extends PureComponent {
 
   render() {
     const { admins, loading, roles } = this.props;
-    const { areas } = this.state;
+    const { areas, filteredAdmins } = this.state;
     const {
       modalVisible,
       updateModalVisible,
@@ -819,21 +857,15 @@ class Admin extends PureComponent {
                 {/*</Button>*/}
               {/*)}*/}
 
-              {authority.includes("register.admin.email") && (
-                <Button
-                  icon="plus"
-                  type="primary"
-                  onClick={() => this.handleEmailRegisterModalVisible(true)}
-                  style={{ marginLeft: "0.5em" }}
-                >
-                  Register By Email
-                </Button>
-              )}
+              {
+                this.renderSimpleForm()
+              }
+
             </div>
             <StandardTable
               scroll={{ x: 1300 }}
               loading={loading}
-              data={{ list: admins, pagination: {} }}
+              data={{ list: filteredAdmins, pagination: {} }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

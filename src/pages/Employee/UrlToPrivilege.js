@@ -40,14 +40,16 @@ export default {
     "POST /api/admins/vehicles/{id}/find": "alert.vehicle",
     "POST /api/admins/vehicles/{id}/restart": "restart.vehicle",
     "POST /api/admins/vehicles/{id}/get_status": "get.status",
-    "GET /api/admins/vehicles/{id}/location/reference": "get.ref"
+    "GET /api/admins/vehicles/{id}/location/reference": "get.ref",
+    "POST /api/admins/vehicles/{vehicleNumber}/action": "apply.action"
   },
   "Riding History": {
     "GET /api/admins/rides": "get.rides",
     "GET /api/admins/rides/count": "get.rides.total",
     "PUT /api/admins/rides/{rideId}/end": "end.ride",
     "GET /api/admins/rides/{rideId}/route": "get.ride.route",
-    "GET /api/admins/rides/{areaId}/start_points": "get.area.start.points"
+    "GET /api/admins/rides/{areaId}/start_points": "get.area.start.points",
+    "GET /api/admins/rides/{ride_id}/image": "get.ride.image"
   },
   "Geo Management": {
     "GET /api/admins/geo/fences": "get.fences",
@@ -138,7 +140,12 @@ export default {
     "GET /api/admins/technicians": "get.technicians",
     "POST /api/admins/technicians/register_by_email": "register.techncian.email"
   },
-  Dashboard: {
-    "GET /api/admins/vehicles/location_details/{areaId}": "get.vehicle.location"
+  "Dashboard": {
+    "GET /api/admins/dashboard/ride_count": "get.ride.count",
+    "GET /api/admins/dashboard/customer_count": "get.customer.count",
+    "GET /api/admins/dashboard/ride_per_vehicle_rank": "get.ride.vehicle.rank",
+    "GET /api/admins/dashboard/daily_ride_count": "get.daily.ride.count",
+    "GET /api/admins/dashboard/daily_battery_state": "get.daily.battery.state",
+    "GET /api/admins/dashboard/stripe_revenue": "get.stripe.revenue"
   }
 };

@@ -64,13 +64,28 @@ const vehicleType = ["Bicycle", "Scooter", "E-Bike", "Car"];
 
 import { exportCSVFile } from "../../utils/utils";
 
-const errorStatus = [
-  "Normal",
-  "Error",
-  "Auto Error",
-  "Deactivated",
-  "Waiting for Activation"
-];
+// const errorStatus = [
+//   "Normal",
+//   "Error",
+//   "Auto Error",
+//   "Deactivated",
+//   "Waiting for Activation",
+//   "Rebalance",
+//   "Maintain",
+//   "Out of Service",
+// ];
+
+const errorStatusIndexs = {
+  0: "Normal",
+  1: "Error",
+  3: "Deactivated",
+  5: "Rebalance",
+  6: "Maintain",
+  7: "Out of Service"
+};
+
+const errorStatus = Object.keys(errorStatusIndexs);
+
 
 const formatTime = val => {
   const local = moment(val).format('YYYY-MM-DD HH:mm:ss');
@@ -250,6 +265,20 @@ const HeatMapForm = Form.create()(props => {
             )}
       </span> 
 
+      <span className={style}>
+        <span> Type : </span> 
+          {form.getFieldDecorator("vehicleType")(
+              <Select 
+                placeholder="select" style={{ width: width }} 
+                filterOption={filterOption}
+                >
+                <Option value={0} >Bike</Option>
+                <Option value={1} >Scooter</Option>
+                <Option value={2} >E-Bike</Option>
+            </Select>
+            )}
+      </span> 
+
       {isMobile && <br />} 
 
       <span style={{float: "right"}}>
@@ -358,6 +387,7 @@ const CreateForm = Form.create()(props => {
   );
 });
 
+
 const UpdateForm = Form.create()(props => {
   const {
     form,
@@ -375,10 +405,17 @@ const UpdateForm = Form.create()(props => {
 
         fieldsValue.vehicleNumber = parseInt(fieldsValue.vehicleNumber, 10);
 
-        handleUpdate(record.id, fieldsValue);
+        //filter out unchanged value
+        Object.keys(fieldsValue).map(key => {
+          if (record[key] === fieldsValue[key] && key !== "areaId") {
+            fieldsValue[key] = null;
+          }
+        });
+
+        handleUpdate(record.id, fieldsValue, record);
       });
     else handleModalVisible();
-  };
+};
   return (
     <Modal
       destroyOnClose
@@ -419,12 +456,12 @@ const UpdateForm = Form.create()(props => {
         label="Error Status"
       >
         {form.getFieldDecorator("errorStatus", {
-          initialValue: record.errorStatus
+          initialValue: record.errorStatus + ""
         })(
           <Select placeholder="select" style={{ width: "100%" }}>
-            {errorStatus.map((status, index) => (
-              <Option key={index} value={index}>
-                {status}
+            {errorStatus.map((status) => (
+              <Option key={status} value={status} disabled={status >= 5}>
+                {errorStatusIndexs[status]}
               </Option>
             ))}
           </Select>
@@ -497,6 +534,7 @@ class Vehicle extends PureComponent {
     selectedMarker: null,
     selectedTab: "1",
     shouldShowHeatMap: true,
+    shoudlShowVehicles: true,
     heatMapMaxIntensity: 0,
     heatMapRadius: 15
   };
@@ -520,7 +558,7 @@ class Vehicle extends PureComponent {
         <Fragment>
           <span>{lockStatus[record.lockStatus]}</span>
           <Divider type="vertical" />
-          <span>{errorStatus[record.errorStatus]}</span>
+          <span>{errorStatusIndexs[record.errorStatus]}</span>
           <Divider type="vertical" />
           <span>{this.isConnected(record)}</span>
         </Fragment>
@@ -608,21 +646,37 @@ class Vehicle extends PureComponent {
   }
 
   changeLockStatus = record => {
-    const { dispatch } = this.props;
+    const { dispatch, isMobile } = this.props;
 
-    const type = record.lockStatus === 1  ? "vehicles/unlock" : "vehicles/lock";
+    if (isMobile) {
+      if (record.lockStatus === 1) {
+        //unlock
+        this.setState({unlockModalVisible: true, readyToUnlockVehicle: record});
+      } else {
+        //lock
+        this.handleApplyingPickUpAction(0, record);
+      }
+    } else {
+      const type = record.lockStatus === 1  ? "vehicles/unlock" : "vehicles/lock";
 
-    if ( (type === "vehicles/unlock"  && authority.includes("unlock.vehicle")) || (type === "vehicles/lock" && authority.includes("lock.vehicle"))){
-      dispatch({
-        type: type,
-        id: record.id,
-        onSuccess: () => {
-          setTimeout(() => {
-            this.handleSearch();
-            }, 3000)
-        }
-      });
+      if ( (type === "vehicles/unlock"  && authority.includes("unlock.vehicle")) || (type === "vehicles/lock" && authority.includes("lock.vehicle"))){
+        dispatch({
+          type: type,
+          id: record.id,
+          onSuccess: () => {
+            setTimeout(() => {
+              this.handleSearch();
+              }, 3000)
+          }
+        });
+      }
+
     }
+    
+
+    
+
+    
         
   };
 
@@ -650,7 +704,7 @@ class Vehicle extends PureComponent {
 
   clearHeatMap = () => {
 
-    this.setState({areaStartPoints: undefined}); 
+    this.setState({areaStartPoints: undefined, shoudlShowVehicles: true}); 
   }
 
 
@@ -750,7 +804,7 @@ class Vehicle extends PureComponent {
                       <Icon type={vehicle.lockStatus === 1? "lock" : "unlock"} style={{color: (vehicle.lockStatus === 1 ?  "blue" : "orange")}} /> 
                       {" | "}
                     </span> 
-                    <span style={{color: (vehicle.errorStatus === 0 ?  "#04e508" : "red")}}>{errorStatus[vehicle.errorStatus]}</span>
+                    <span style={{color: (vehicle.errorStatus === 0 ?  "#04e508" : "red")}}>{errorStatusIndexs[vehicle.errorStatus]}</span>
                     {" | "}
                     <span style={{color: (vehicle.connectStatus === 1 ?  "#04e508" : "red")}}>{this.isConnected(vehicle)}</span>
                 </Col>
@@ -831,6 +885,15 @@ class Vehicle extends PureComponent {
 
   componentDidMount() {
     this.handleSearch();
+
+    if (this.props.isMobile ) {
+      const input = document.getElementById("numberOrImei"); 
+
+      if (input) {
+        input.setAttribute("type", "number");
+        input.setAttribute("pattern", "[0-9]*");
+      }
+    }
   }
 
   isConnected(vehicle) {
@@ -1020,8 +1083,65 @@ class Vehicle extends PureComponent {
     this.handleModalVisible();
   };
 
+
+  handleApplyingPickUpAction = (vehicleStatus, record) => {
+    const { dispatch, isMobile } = this.props;
+
+    if (!authority.includes("apply.action")) {
+      message.error("You don't have permmision to apply action to this vehicle.");
+      return;
+    }
+
+    if (!isMobile) {
+      message.error("can't apply action to vehicle on pc.");
+      return;
+    }
+
+    const actionParam = {};
+
+    //pick up or drop off
+    actionParam.actionType = vehicleStatus >=5 ? 0 : 1;
+
+    switch(vehicleStatus) {
+      //rebalance
+      case 5:
+        actionParam.reasonType = 1;
+        break;
+      //maintain
+      case 6:
+        actionParam.reasonType = 2;
+        break;
+      //service off
+      case 7:
+        actionParam.reasonType = 0;
+        break;
+      default:
+        break;
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        actionParam.location = {lat: position.coords.latitude, lng: position.coords.longitude}
+
+        dispatch({
+          type: "vehicles/applyAction",
+          payload: actionParam,
+          id: record.id,
+          vehicleNumber: record.vehicleNumber,
+          onSuccess: this.handleGetListVehicles
+        });
+
+      });
+    } else {
+      error.message("You have to enable to gps location to apply action to vehicle."); 
+    }
+
+  }
+
+
   handleUpdate = (id, fields) => {
-    const { dispatch } = this.props;
+    const { dispatch, isMobile } = this.props;
+
     dispatch({
       type: "vehicles/update",
       payload: fields,
@@ -1058,22 +1178,17 @@ class Vehicle extends PureComponent {
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="Error Status">
-              {getFieldDecorator("errorStatus", {initialValue: ["0", "1", "2", "4"]})(
-                <Select
-                  mode="multiple"
-                  placeholder="select"
-                  style={{ width: "100%" }}
-                >
-                  <Option value="0">Normal</Option>
-                  <Option value="1">Error</Option>
-                  <Option value="2">Auto Error</Option>
-                  <Option value="3">Deactivated</Option>
-                  <Option value="4">Waiting for Activation</Option>
+            <FormItem label="Connection Status">
+              {getFieldDecorator("connectStatus")(
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  <Option value="0">offline</Option>
+                  <Option value="1">online</Option>
+                  <Option value={null}>All</Option>
                 </Select>
               )}
             </FormItem>
-            </Col>
+          </Col>
+          
           </Row>
 
 
@@ -1119,7 +1234,7 @@ class Vehicle extends PureComponent {
           <Col md={8} sm={24}>
             <FormItem label="Keywords">
               {getFieldDecorator("numberOrImei")(
-                <Input placeholder="number or imei" />
+                <Input className="number_or_imei_input"  placeholder="number or imei" />
               )}
             </FormItem>
           </Col>
@@ -1136,18 +1251,12 @@ class Vehicle extends PureComponent {
           </Col>
 
           <Col md={8} sm={24}>
-            <FormItem label="Error Status">
-              {getFieldDecorator("errorStatus", {initialValue: ["0", "1", "2", "4"]})(
-                <Select
-                  mode="multiple"
-                  placeholder="select"
-                  style={{ width: "100%" }}
-                >
-                  <Option value="0">Normal</Option>
-                  <Option value="1">Error</Option>
-                  <Option value="2">Auto Error</Option>
-                  <Option value="3">Deactivated</Option>
-                  <Option value="4">Waiting for Activation</Option>
+            <FormItem label="Connection Status">
+              {getFieldDecorator("connectStatus")(
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  <Option value="0">offline</Option>
+                  <Option value="1">online</Option>
+                  <Option value={null}>All</Option>
                 </Select>
               )}
             </FormItem>
@@ -1180,16 +1289,24 @@ class Vehicle extends PureComponent {
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="Connection Status">
-              {getFieldDecorator("connectStatus")(
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  <Option value="0">offline</Option>
-                  <Option value="1">online</Option>
-                  <Option value={null}>All</Option>
+            <FormItem label="Error Status">
+              {getFieldDecorator("errorStatus", {initialValue: ["0", "1",  "5", "6", "7"]})(
+                <Select
+                  mode="multiple"
+                  placeholder="select"
+                  style={{ width: "100%" }}
+                >
+
+                {
+                  errorStatus.map((status) => {
+                    console.log(status);
+                  return <Option value={status} key={status}>{errorStatusIndexs[status]}</Option>;
+                  })
+                }
                 </Select>
               )}
             </FormItem>
-          </Col>
+            </Col>
         </Row>
 
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -1387,6 +1504,13 @@ class Vehicle extends PureComponent {
 }
 
 
+handleShowingVehicles = val => {
+
+  this.setState({shoudlShowVehicles: val.target.checked});
+
+}
+
+
   render() {
     const { vehicles, areas, loading, selectedAreaId, geo, areaNames } = this.props;
 
@@ -1409,7 +1533,8 @@ class Vehicle extends PureComponent {
       selectedVehicleRefresh,
       heatMapMaxIntensity,
       heatMapRadius,
-      currPosition
+      currPosition,
+      shoudlShowVehicles
     } = this.state;
 
     const parentMethods = {
@@ -1500,6 +1625,8 @@ class Vehicle extends PureComponent {
                       handleSetHeatMapRadius={this.handleSetHeatMapRadius}
                       currPosition={currPosition}
                       handleGetMyLocation={this.handleGetMyLocation}
+                      handleShowingVehicles={this.handleShowingVehicles}
+                      shoudlShowVehicles={shoudlShowVehicles}
                       vehicleTypeFilter={{
                         unlock: true,
                         lock: true,
@@ -1511,7 +1638,7 @@ class Vehicle extends PureComponent {
                       setClickedMarker={this.setClickedMarker}
                       selectedMarker={selectedMarker}
                     />}
-                    {authority.includes("get.area.start.points")  && 
+                    {authority.includes("get.area.start.points")  && !this.props.isMobile &&
                       <HeatMapForm 
                         isMobile={this.props.isMobile} 
                         styles={styles} 
@@ -1555,6 +1682,30 @@ class Vehicle extends PureComponent {
             handleGetVehicles={this.handleGetListVehicles}
           />
         )}
+
+        <Modal 
+          footer={null}
+          visible={this.props.isMobile && this.state.unlockModalVisible} 
+          destroyOnClose
+          onCancel={() => this.setState({unlockModalVisible: false})}
+          title="Purpose for Unlock"
+        >
+
+          {
+
+            [5,6,7].map(vehicleStatus => <Row style={{textAlign: "center", marginTop: "2em"}}>
+            <Button 
+              style={{width: "80vw"}}
+              type="primary"
+              onClick={() => this.handleApplyingPickUpAction(vehicleStatus, this.state.readyToUnlockVehicle)} 
+             
+            > 
+              {errorStatusIndexs[vehicleStatus]}
+            </Button></Row>)
+
+          }
+        
+        </Modal>
 
 
       </PageHeaderWrapper>

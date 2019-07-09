@@ -25,14 +25,15 @@ export default {
         response.map(admin => (admin.key = admin.id));
       }
 
-      if (typeof onSuccess === "function") {
-        onSuccess(response);
-      }
-
+     
       yield put({
         type: "save",
         payload: Array.isArray(response) ? response : []
       });
+
+      if (typeof onSuccess === "function") {
+        onSuccess();
+      }
     },
     *update({ id, payload, onSuccess, onError }, { call, put }) {
       const response = yield call(updateAdmin, id, payload); // put
