@@ -30,7 +30,7 @@ import styles from "./Customer.less";
 import { roundTo2Decimal } from "../../utils/mathUtil";
 
 import { getAuthority } from "@/utils/authority";
-import {formatPhoneNumber} from "@/utils/utils"
+import { formatPhoneNumber } from "@/utils/utils";
 import { exportCSVFile } from "../../utils/utils";
 import ride from "@/models/ride";
 
@@ -47,6 +47,7 @@ const customerCsvHeader = {
   inviteCode: "inviteCode",
   migrated: "migrated",
   status: "status",
+  rideCount: "Ride Count"
 };
 
 const FormItem = Form.Item;
@@ -63,7 +64,6 @@ const operationStatus = ["NORMAL", "MANTAINANCE"];
 const connectStatus = ["Offline", "Online"];
 const lockStatus = ["Unlock", "lock"];
 const customerType = ["Bicycle", "Scooter", "E-Customer", "Car"];
-
 
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -364,7 +364,7 @@ const CouponForm = Form.create()(props => {
   customers,
   areas,
   coupons,
-  selectedAreaId : areas.selectedAreaId,
+  selectedAreaId: areas.selectedAreaId,
   areaNames: areas.areaNames,
   loading: loading.models.customers
 }))
@@ -386,7 +386,7 @@ class Customer extends PureComponent {
     {
       title: "phone",
       dataIndex: "phone",
-      render: val => formatPhoneNumber(val+"")
+      render: val => formatPhoneNumber(val + "")
     },
     {
       title: "Full Name",
@@ -395,7 +395,8 @@ class Customer extends PureComponent {
     },
     {
       title: "Area",
-      render: (text, record) => this.props.areaNames && this.props.areaNames[record.areaId]
+      render: (text, record) =>
+        this.props.areaNames && this.props.areaNames[record.areaId]
     },
     {
       title: "email",
@@ -403,7 +404,7 @@ class Customer extends PureComponent {
     },
     {
       title: "Balance",
-      render: (text, record) => <p> {record.rideCredit + record.deposit }</p> 
+      render: (text, record) => <p> {record.rideCredit + record.deposit}</p>
     },
     {
       title: "operation",
@@ -425,7 +426,6 @@ class Customer extends PureComponent {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-
     if (prevProps.selectedAreaId !== this.props.selectedAreaId) {
       this.handleGetCustomers();
       this.handleGetCoupons();
@@ -436,7 +436,7 @@ class Customer extends PureComponent {
     const { dispatch, selectedAreaId } = this.props;
     dispatch({
       type: "coupons/get",
-      payload: {areaId: selectedAreaId}
+      payload: { areaId: selectedAreaId }
     });
   };
 
@@ -446,7 +446,9 @@ class Customer extends PureComponent {
 
     dispatch({
       type: "customers/get",
-      payload: selectedAreaId ? Object.assign({},filterCriteria, {areaId: selectedAreaId} ) : filterCriteria,
+      payload: selectedAreaId
+        ? Object.assign({}, filterCriteria, { areaId: selectedAreaId })
+        : filterCriteria
     });
   };
 
@@ -474,8 +476,7 @@ class Customer extends PureComponent {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
 
-    this.setState({ filterCriteria: params }, () =>  this.handleGetCustomers());
-
+    this.setState({ filterCriteria: params }, () => this.handleGetCustomers());
   };
 
   handleFormReset = () => {
@@ -506,8 +507,12 @@ class Customer extends PureComponent {
       if (err) return;
 
       if (fieldsValue.created) {
-        fieldsValue.registerStart = moment(fieldsValue.created[0]).utcOffset(0).format("MM-DD-YYYY HH:mm:ss");
-        fieldsValue.registerEnd = moment(fieldsValue.created[1]).utcOffset(0).format("MM-DD-YYYY HH:mm:ss");
+        fieldsValue.registerStart = moment(fieldsValue.created[0])
+          .utcOffset(0)
+          .format("MM-DD-YYYY HH:mm:ss");
+        fieldsValue.registerEnd = moment(fieldsValue.created[1])
+          .utcOffset(0)
+          .format("MM-DD-YYYY HH:mm:ss");
         fieldsValue.created = undefined;
       }
 
@@ -635,16 +640,17 @@ class Customer extends PureComponent {
   };
 
   formatCsvData = customers => {
-    const {areaNames, selectedAreaId} = this.props;
-  
+    const { areaNames, selectedAreaId } = this.props;
 
     return customers.map(customer => {
       customer.created = moment(customer.created).format("YYYY-MM-DD HH:mm:ss");
       customer.area = areaNames[customer.areaId];
-      
+
       return {
         id: customer.id,
-        email: customer.email ? customer.email.replace(/(\r\n|\n|\r)/gm, "") : "unknown",
+        email: customer.email
+          ? customer.email.replace(/(\r\n|\n|\r)/gm, "")
+          : "unknown",
         deposit: customer.deposit,
         rideCredit: customer.rideCredit,
         phoneModel: customer.phoneModel,
@@ -654,29 +660,39 @@ class Customer extends PureComponent {
         emailStatus: customer.emailStatus,
         inviteCode: customer.inviteCode,
         migrated: customer.migrated,
-        status: customer.status
+        status: customer.status,
+        rideCount: customer.rideCount
       };
-    })
-  }
+    });
+  };
 
   handleExportData = () => {
     const { form, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
 
-
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
       if (fieldsValue.created) {
-        fieldsValue.registerStart =  moment(fieldsValue.created[0]).utcOffset(0).format("MM-DD-YYYY HH:mm:ss");
-        fieldsValue.registerEnd = moment(fieldsValue.created[1]).utcOffset(0).format("MM-DD-YYYY HH:mm:ss");
+        fieldsValue.registerStart = moment(fieldsValue.created[0])
+          .utcOffset(0)
+          .format("MM-DD-YYYY HH:mm:ss");
+        fieldsValue.registerEnd = moment(fieldsValue.created[1])
+          .utcOffset(0)
+          .format("MM-DD-YYYY HH:mm:ss");
         fieldsValue.created = undefined;
       }
 
-      const values = Object.assign({}, filterCriteria, fieldsValue, {areaId: selectedAreaId}   , {
-        currentPage: null,
-        pageSize: null
-      });
+      const values = Object.assign(
+        {},
+        filterCriteria,
+        fieldsValue,
+        { areaId: selectedAreaId },
+        {
+          currentPage: null,
+          pageSize: null
+        }
+      );
 
       this.setState(
         {
@@ -685,22 +701,37 @@ class Customer extends PureComponent {
         this.finishExportData
       );
     });
-  }
+  };
 
   finishExportData() {
     const { filterCriteria } = this.state;
     const { areaNames, selectedAreaId, dispatch } = this.props;
+    const dateTime = moment().format("LL hh-mm A");
+    const exportedFileName = `${
+      areaNames[selectedAreaId]
+    }-Customers ${dateTime}`;
     dispatch({
       type: "customers/getAll",
       payload: filterCriteria,
       onSuccess: data => {
-        exportCSVFile(customerCsvHeader, this.formatCsvData(data), areaNames[selectedAreaId])
+        exportCSVFile(
+          customerCsvHeader,
+          this.formatCsvData(data),
+          exportedFileName
+        );
       }
-    })
+    });
   }
 
   render() {
-    const { customers, areas, loading, coupons, dispatch, selectedAreaId } = this.props;
+    const {
+      customers,
+      areas,
+      loading,
+      coupons,
+      dispatch,
+      selectedAreaId
+    } = this.props;
     const {
       modalVisible,
       updateModalVisible,
@@ -727,9 +758,6 @@ class Customer extends PureComponent {
       total: customers.total
     };
 
-
-
-
     return (
       <PageHeaderWrapper title="Customer List">
         <Card bordered={false}>
@@ -746,13 +774,16 @@ class Customer extends PureComponent {
             />
           </div>
 
-          {selectedAreaId >= 1 && <div>
-                        <Button style={{marginTop: "1em"}} onClick={this.handleExportData} >
-                            Export
-                        </Button>
-                      </div>
-          }
-
+          {selectedAreaId >= 1 && (
+            <div>
+              <Button
+                style={{ marginTop: "1em" }}
+                onClick={this.handleExportData}
+              >
+                Export
+              </Button>
+            </div>
+          )}
         </Card>
 
         <UpdateForm
@@ -787,7 +818,6 @@ class Customer extends PureComponent {
             handleGetCustomers={this.handleGetCustomers}
           />
         )}
-
       </PageHeaderWrapper>
     );
   }
