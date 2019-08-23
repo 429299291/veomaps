@@ -13,7 +13,9 @@ import {
   Icon,
   Select,
   Divider,
-  Popconfirm
+  Popconfirm,
+  Row,
+  Col
 } from "antd";
 import StandardTable from "@/components/StandardTable";
 
@@ -291,12 +293,14 @@ class Technician extends PureComponent {
   };
 
   handleGetTechnicians = () => {
-    const { dispatch } = this.props;
+    const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
 
     dispatch({
       type: "technicians/get",
-      payload: filterCriteria,
+      payload: selectedAreaId
+        ? Object.assign({}, filterCriteria, { areaId: selectedAreaId })
+        : filterCriteria
       onSuccess: this.handleSearch
     });
   };
@@ -313,6 +317,61 @@ class Technician extends PureComponent {
     this.handleGetAreas();
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevProps.selectedAreaId !== this.props.selectedAreaId) {
+      this.handleGetTechnicians();
+    }
+  }
+
+  renderSimpleForm() {
+    const {
+      form: { getFieldDecorator }
+    } = this.props;
+    return (
+      <Form onSubmit={this.handleSearch} layout="inline">
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={8} sm={24}>
+            <FormItem label="Keywords">
+              {getFieldDecorator("nameOrPhoneOrEmail")(
+                <Input placeholder="PHONE NAME EMAIL" />
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="Status">
+              {getFieldDecorator("queryStatus")(
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  {queryStatus.map((status, index) => (
+                    <Option key={index} value={index}>
+                      {queryStatus[index]}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="Registered">
+              {getFieldDecorator("created")(<RangePicker />)}
+            </FormItem>
+          </Col>
+        </Row>
+
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={{ span: 8, offset: 16 }} sm={24}>
+            <span className={styles.submitButtons} style={{ float: "right" }}>
+              <Button type="primary" htmlType="submit">
+                Search
+              </Button>
+              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+                Reset
+              </Button>
+            </span>
+          </Col>
+        </Row>
+      </Form>
+    );
+  }
   handleUpdateModalVisible = (flag, record) => {
     this.setState({
       updateModalVisible: !!flag,
@@ -391,7 +450,6 @@ class Technician extends PureComponent {
                 </Col>
               </Row>
           </Form>
-         
           <PhoneRegisterForm
             {...phoneRegisterMethods}
             modalVisible={registerPhoneModalVisible}
