@@ -67,8 +67,11 @@ const { TabPane } = Tabs;
   areaNames: areas.areaNames,
   barChartloading: loading.models.areas || loading.effects["dashboard/fetchRideCount"] || loading.effects["dashboard/fetchCustomerCount"] ,
   activeRideCountLoading:  loading.models.areas || loading.effects["dashboard/fetchDailyRideCounts"],
-  dailyBatteryStateLoading:  loading.models.areas || loading.effects["dashboard/fetchDailyBatteryState"],
-  revenueLoading:  loading.models.areas || loading.effects["dashboard/fetchRevenue"]
+  weeklyBatteryStateLoading:  loading.models.areas || loading.effects["dashboard/fetchWeeklyBatteryState"],
+  revenueLoading:  loading.models.areas || loading.effects["dashboard/fetchStripeDailyRevenue"],
+  currentActiveRideLoading: loading.models.areas || loading.effects["dashboard/fetchDailyRideCounts"],
+  weeklyBatterySwapLoading: loading.models.areas || loading.effects["dashboard/fetchDailyRideCounts"],
+  dailyRideRevenueLoading: loading.models.areas || loading.effects["dashboard/fetchDailyRideRevenue"]
 }))
 class Dashboard extends Component {
 
@@ -95,9 +98,12 @@ class Dashboard extends Component {
 
       this.loadDailyRideCount();
 
-      this.loadDailyBatteryStatus();
+      this.loadWeeklyBatteryStatus();
 
-      this.loadDailyRevenue();
+      this.loadStripeRevenue();
+
+      this.loadDailyRideRevenue();
+      
 
       this.timeoutId = setTimeout(() => {
         this.setState({
@@ -107,7 +113,9 @@ class Dashboard extends Component {
 
       this.pollingId = setInterval(()=> {
         this.loadDailyRideCount();
-        this.loadDailyBatteryStatus();
+        this.loadWeeklyBatteryStatus();
+        this.loadDailyRideRevenue();
+        this.setState({areaIsChanged: false});
       },5000);
 
     });
@@ -126,7 +134,9 @@ class Dashboard extends Component {
   loadBarCharData() {
     this.fetchRideCount();
     this.fetchCustomerCount();
+    this.getStripeRevenueByPeriod();
     this.fetchRidePerVehicleRank();
+    this.getConnectivityByPeriod();
   }
 
   loadDailyRideCount() {
@@ -146,41 +156,85 @@ class Dashboard extends Component {
 
   }
 
-  loadDailyRevenue() {
+  loadRideDailyRevenue() {
+        const { dispatch, selectedAreaId } = this.props;
+
+        if (!authority.includes("get.daily.ride.revenue")) {
+          return;
+        }
+
+      dispatch({
+        type: "dashboard/fetchDailyRideRevenue",
+        params: {
+          areaId: selectedAreaId,
+          midnight: moment().startOf("day").unix()
+        }
+      });
+  }
+
+
+  loadStripeRevenue() {
+
     const { dispatch, selectedAreaId } = this.props;
 
     if (!authority.includes("get.stripe.revenue")) {
       return;
     }
 
+      dispatch({
+        type: "dashboard/fetchStripeDailyRevenue",
+        params: {
+          areaId: selectedAreaId,
+          midnight: moment().startOf("day").unix()
+        }
+      });
+
+  }
+
+  loadDailyRideRevenue() {
+
+    const { dispatch, selectedAreaId } = this.props;
+
+    if (!authority.includes("get.daily.ride.revenue")) {
+      return;
+    }
+
+      dispatch({
+        type: "dashboard/fetchDailyRideRevenue",
+        params: {
+          areaId: selectedAreaId,
+          midnight: moment().startOf("day").unix()
+        }
+      });
+
+  }
+
+  loadWeeklyBatteryStatus() {
+    const { dispatch, selectedAreaId } = this.props;
+
+    const { offset } = this.state;
+
+    if (!authority.includes("get.weekly.battery.state")) {
+      return;
+    }
+
   dispatch({
-    type: "dashboard/fetchRevenue",
+    type: "dashboard/fetchWeeklyBatteryState",
     params: {
       areaId: selectedAreaId,
-      midnight: moment().startOf("day").unix()
+      midnight: moment().subtract(7,'d').unix(),
+      offset: offset
     }
   });
 
 }
 
-  loadDailyBatteryStatus() {
-    const { dispatch, selectedAreaId } = this.props;
+getRangeEnd(end) {
 
-    const { offset } = this.state;
+  const curr = moment();
 
-    if (!authority.includes("get.daily.battery.state")) {
-      return;
-    }
-
-  dispatch({
-    type: "dashboard/fetchDailyBatteryState",
-    params: {
-      areaId: selectedAreaId,
-      midnight: moment().startOf("day").unix(),
-      offset: offset
-    }
-  });
-
+  return end.diff(curr, 'seconds') > 0 ? curr : end;
+  
 }
 
 
@@ -194,6 +248,8 @@ class Dashboard extends Component {
        return;
      }
 
+
+
     dispatch({
       type: "dashboard/fetchRideCount",
       params: Object.assign(
@@ -203,7 +259,7 @@ class Dashboard extends Component {
           offset: offset, 
           areaId: selectedAreaId,
           start: rangePickerValue[0].unix(),
-          end: rangePickerValue[1].unix(), 
+          end: rangePickerValue[1].unix()
         })
     });
   }
@@ -231,6 +287,59 @@ class Dashboard extends Component {
     });
   }
 
+  getStripeRevenueByPeriod() {
+
+    const { dispatch, selectedAreaId } = this.props;
+
+    const {countParams, offset, rangePickerValue} = this.state;
+
+    if (!authority.includes("get.stripe.revenue.by.period")) {
+      return;
+    }
+
+    dispatch({
+      type: "dashboard/fetchStripRevenueByPeriod",
+      params: Object.assign(
+        {}, 
+        countParams, 
+        { 
+          offset: offset, 
+          areaId: selectedAreaId  ? selectedAreaId : -1,
+          start: rangePickerValue[0].unix(),
+          end: rangePickerValue[1].unix(), 
+        })
+    });
+
+  }
+
+
+  getConnectivityByPeriod() {
+
+    const { dispatch, selectedAreaId } = this.props;
+
+    const {countParams, offset, rangePickerValue} = this.state;
+
+    if (!authority.includes("get.connectivity.by.period")) {
+      return;
+    }
+
+    dispatch({
+      type: "dashboard/fetchConnectivityByPeriod",
+      params: Object.assign(
+        {}, 
+        countParams, 
+        { 
+          offset: offset, 
+          areaId: selectedAreaId  ? selectedAreaId : -1,
+          start: rangePickerValue[0].unix(),
+          end: rangePickerValue[1].unix(), 
+        })
+    });
+
+
+
+  }
+
   fetchRidePerVehicleRank() {
     const { dispatch, selectedAreaId } = this.props;
 
@@ -250,16 +359,14 @@ class Dashboard extends Component {
         })
     });
   }
-
   
-
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if ((prevProps.selectedAreaId !== this.props.selectedAreaId)) {
       this.loadBarCharData();
       this.loadDailyRideCount();
-      this.loadDailyRevenue();
-      this.loadDailyBatteryStatus();
+      this.loadStripeRevenue();
+      this.setState({areaIsChanged: true});
     }
   }
 
@@ -311,12 +418,16 @@ class Dashboard extends Component {
       barChartloading,
       activeRideCountLoading,
       dashboard,
-      revenueLoading
+      revenueLoading,
+      currentActiveRideLoading,
+      weeklyBatterySwapLoading,
+      dailyRideRevenueLoading
     } = this.props;
 
 
     const {
       rangePickerValue,
+      areaIsChanged
     } = this.state;
 
     const salesExtra = (
@@ -367,24 +478,24 @@ class Dashboard extends Component {
       </div>
     );
     
-      let dayDiff = rangePickerValue[1].diff(rangePickerValue[0], 'days');
+      let dayDiff = this.getRangeEnd(rangePickerValue[1]).diff(rangePickerValue[0], 'days');
 
       if (dayDiff === 0) dayDiff = 1;
 
 
       const dailyRideCount = dashboard.dailyRideCount;
 
-      const dailyBatteryState = dashboard.dailyBatteryState;
+      const batteryState = dashboard.batteryState;
 
       const stripeRevenue = dashboard.stripeRevenue;
 
-      let totalBatterySwap = 0;
+      const dailyRideRevenue = dashboard.dailyRideRevenue;
 
-      const dailyBatterySwap = dailyBatteryState.dailyBatterySwap
-      &&  dailyBatteryState.dailyBatterySwap
+
+      const weeklyBatterySwap = batteryState.weeklyBatterySwap
+      &&  batteryState.weeklyBatterySwap
       .map( group => {
-        totalBatterySwap += group.total;
-        return {x: group.hour > 12 ? (group.hour % 12) + " PM" : group.hour + " AM", y: group.total}
+        return {x: moment().dayOfYear(group.dayOfYear).format("MM/DD"), y: group.total};
       });
 
     return (
@@ -402,12 +513,11 @@ class Dashboard extends Component {
                     <Icon type="info-circle-o" />
                   </Tooltip>
                 }
-                loading={false}
-                total={dailyRideCount.currentActiveRideCount}
+                total={areaIsChanged ? "loading" :  dailyRideCount.currentActiveRideCount}
                 footer={
                   <Field
                     label="Total Ride Today"
-                    value={`${dailyRideCount.todayRideCount}`}
+                    value={areaIsChanged ? "loading" : `${dailyRideCount.todayRideCount}`}
                   />
                 }
                 contentHeight={60}
@@ -429,7 +539,7 @@ class Dashboard extends Component {
               </ChartCard>
             </Col>
           }
-          {authority.includes("get.daily.battery.state") && 
+          {authority.includes("get.weekly.battery.state") && weeklyBatterySwap &&
               <Col {...topColResponsiveProps}>
                 <ChartCard
                   bordered={false}
@@ -449,16 +559,16 @@ class Dashboard extends Component {
                       <Icon type="info-circle-o" />
                     </Tooltip>
                   }
-                  total={numeral(totalBatterySwap).format("0,0")}
+                  total={areaIsChanged ? "loading" : (weeklyBatterySwap[weeklyBatterySwap.length - 1] && numeral(weeklyBatterySwap[weeklyBatterySwap.length - 1].y).format("0,0"))}
                   footer={
                     <Field
                       label="Low Battery Vehicles"
-                      value={numeral(dailyBatteryState.lowBatteryCount).format("0,0")}
+                      value={areaIsChanged ? "loading" : numeral(batteryState.lowBatteryCount).format("0,0")}
                     />
                   }
                   contentHeight={60}
                 >
-                  <MiniArea color="#975FE4" data={dailyBatterySwap} />
+                  <MiniBar color="#975FE4" data={weeklyBatterySwap} />
                 </ChartCard>
               </Col>
 
@@ -468,7 +578,7 @@ class Dashboard extends Component {
             <Col {...topColResponsiveProps}>
               <ChartCard
                 bordered={false}
-                title="Today's Revenue"
+                title="Today's Stripe Revenue"
                 action={
                   <Tooltip
                     title="introduce" 
@@ -481,7 +591,7 @@ class Dashboard extends Component {
                 footer={
                   <Field
                     label="Total Revenue"
-                    value={`${stripeRevenue.totalRevenue  / 100}`}
+                    value={revenueLoading ? "loading" : `${stripeRevenue.totalRevenue  / 100}`}
                   />
                 }
                 contentHeight={60}
@@ -491,14 +601,54 @@ class Dashboard extends Component {
                     id="app.analysis.week"
                     defaultMessage="Weekly Changes"
                   />
-                  <span className={styles.trendText}> {Math.round(((stripeRevenue.dailyRevenue - stripeRevenue.lastWeekRevenue) /stripeRevenue.lastWeekRevenue) * 100)}%</span>
+                  <span className={styles.trendText}> {revenueLoading ? "loading" : Math.round(((stripeRevenue.dailyRevenue - stripeRevenue.lastWeekRevenue) /stripeRevenue.lastWeekRevenue) * 100)}%</span>
                 </Trend>
                 <Trend flag={stripeRevenue.dailyRevenue - stripeRevenue.yesterdayRevenue > 0 ? "up" : "down"}>
                   <FormattedMessage
                     id="app.analysis.day"
                     defaultMessage="Daily Changes"
                   />
-                  <span className={styles.trendText}>{Math.round(((stripeRevenue.dailyRevenue - stripeRevenue.yesterdayRevenue) /stripeRevenue.yesterdayRevenue) * 100)}%</span>
+                  <span className={styles.trendText}>{revenueLoading ? "loading"  : Math.round(((stripeRevenue.dailyRevenue - stripeRevenue.yesterdayRevenue) /stripeRevenue.yesterdayRevenue) * 100)}%</span>
+                </Trend>
+              </ChartCard>
+            </Col>
+          }
+
+        {authority.includes("get.daily.ride.revenue") && dailyRideRevenue &&
+            <Col {...topColResponsiveProps}>
+              <ChartCard
+                bordered={false}
+                title="Today's Ride Revenue"
+                action={
+                  <Tooltip
+                    title="introduce" 
+                  >
+                    <Icon type="info-circle-o" />
+                  </Tooltip>
+                }
+                loading={false}
+                total={ areaIsChanged ? "loading" : (dailyRideRevenue.dailyRevenue)}
+                footer={
+                  <Field
+                    label="Total Revenue"
+                    value={`${dailyRideRevenue.totalRevenue }`}
+                  />
+                }
+                contentHeight={60}
+              >
+                <Trend flag={dailyRideRevenue.dailyRevenue - dailyRideRevenue.lastWeekRevenue > 0 ? "up" : "down"} style={{ marginRight: 16 }}>
+                  <FormattedMessage
+                    id="app.analysis.week"
+                    defaultMessage="Weekly Changes"
+                  />
+                  <span className={styles.trendText}> {Math.round(((dailyRideRevenue.dailyRevenue - dailyRideRevenue.lastWeekRevenue) /dailyRideRevenue.lastWeekRevenue) * 100)}%</span>
+                </Trend>
+                <Trend flag={dailyRideRevenue.dailyRevenue - dailyRideRevenue.yesterdayRevenue > 0 ? "up" : "down"}>
+                  <FormattedMessage
+                    id="app.analysis.day"
+                    defaultMessage="Daily Changes"
+                  />
+                  <span className={styles.trendText}>{Math.round(((dailyRideRevenue.dailyRevenue - dailyRideRevenue.yesterdayRevenue) /dailyRideRevenue.yesterdayRevenue) * 100)}%</span>
                 </Trend>
               </ChartCard>
             </Col>
@@ -689,6 +839,111 @@ class Dashboard extends Component {
                             />
                           }
                           data={dashboard.customerCountData}
+                        />
+                      </div>
+                    </Col>
+                    {authority.includes("get.ride.vehicle.rank") &&  
+                      <Col xl={8} lg={12} md={12} sm={24} xs={24}>
+                          <div className={styles.salesRank}>
+                            <h4 className={styles.rankingTitle}>
+                              <FormattedMessage
+                                id="app.dashboard.rides-ranking"
+                                defaultMessage="Rides Ranking"
+                              />
+                            </h4>
+                            <ul className={styles.rankingList} style={{height:200, marginBottom: "20px", overflow: "scroll"}}>
+                              {dashboard.ridePerVehicleRank.map((item, i) => (
+                                <li key={item.areaId}>
+                                  <span
+                                    className={`${styles.rankingItemNumber} ${
+                                      i < 3 ? styles.active : ""
+                                    }`}
+                                  >
+                                    {i + 1}
+                                  </span>
+                                  <span
+                                    className={styles.rankingItemTitle}
+                                    title={areaNames[item.areaId]}
+                                  >
+                                    {areaNames[item.areaId]}
+                                  </span>
+                                  <span className={styles.rankingItemValue}>
+                                    {numeral(item.avgRides / dayDiff).format("0,0.00")}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                    </Col>
+                    }
+                  </Row>
+                  </TabPane> 
+              }
+
+              { 
+                authority.includes("get.stripe.revenue.by.period") &&  <TabPane
+                  tab="Stripe Revenue"
+                  key="revenue"
+                >
+                  <Row>
+                    <Col xl={16} lg={12} md={12} sm={24} xs={24}>
+                      <div className={styles.salesBar}>
+                        <Bar
+                          height={292}
+                          title="Revenue Trend"
+                          data={dashboard.stripeRevenueData}
+                        />
+                      </div>
+                    </Col>
+                    {authority.includes("get.ride.vehicle.rank") &&  
+                      <Col xl={8} lg={12} md={12} sm={24} xs={24}>
+                          <div className={styles.salesRank}>
+                            <h4 className={styles.rankingTitle}>
+                              <FormattedMessage
+                                id="app.dashboard.rides-ranking"
+                                defaultMessage="Rides Ranking"
+                              />
+                            </h4>
+                            <ul className={styles.rankingList} style={{height:200, marginBottom: "20px", overflow: "scroll"}}>
+                              {dashboard.ridePerVehicleRank.map((item, i) => (
+                                <li key={item.areaId}>
+                                  <span
+                                    className={`${styles.rankingItemNumber} ${
+                                      i < 3 ? styles.active : ""
+                                    }`}
+                                  >
+                                    {i + 1}
+                                  </span>
+                                  <span
+                                    className={styles.rankingItemTitle}
+                                    title={areaNames[item.areaId]}
+                                  >
+                                    {areaNames[item.areaId]}
+                                  </span>
+                                  <span className={styles.rankingItemValue}>
+                                    {numeral(item.avgRides / dayDiff).format("0,0.00")}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                    </Col>
+                    }
+                  </Row>
+                  </TabPane> 
+              }
+              { 
+                authority.includes("get.connectivity.by.period") &&  <TabPane
+                  tab="Vehicle Connectivity"
+                  key="connectivity"
+                >
+                  <Row>
+                    <Col xl={16} lg={12} md={12} sm={24} xs={24}>
+                      <div className={styles.salesBar}>
+                        <Bar
+                          height={292}
+                          title="Connectivity Trend"
+                          data={dashboard.connectivity}
                         />
                       </div>
                     </Col>

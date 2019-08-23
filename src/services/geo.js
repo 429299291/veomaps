@@ -16,6 +16,12 @@ export async function createFence(fence) {
   });
 }
 
+export async function examineParking(areaId, imei, lat, lng) {
+  return request(`/admins/geo/examine_parking_test?lat=${lat}&lng=${lng}&areaId=${areaId}&imei=${imei}`, {
+    method: "GET"
+  });
+}
+
 export async function updateFence(fenceId, area) {
   return request(`/admins/geo/fences/${fenceId}`, {
     method: "PUT",

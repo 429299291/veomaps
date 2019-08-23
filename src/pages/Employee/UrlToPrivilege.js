@@ -22,7 +22,8 @@ export default {
     "POST /api/admins/memberships/customers/{customerId}/buy":
       "customer.buy.membership",
     "POST /api/admins/customers/{customerId}/refund": "refund.customer.charge",
-    "GET /api/admins/customers/{customerId}/transactions": "get.customer.transactions"
+    "GET /api/admins/customers/{customerId}/transactions": "get.customer.transactions",
+    "GET /api/admins/customers/{phone_number}/temp_code": "get.customer.verification.code"
   },
   "Vehicle List": {
     "GET /api/admins/vehicles": "get.vehicles",
@@ -59,7 +60,8 @@ export default {
     "PUT /api/admins/geo/fences/{fenceId}": "update.fence",
     "POST /api/admins/geo/area_center": "create.center",
     "PUT /api/admins/geo/area_center/{centerId}": "update.center",
-    "DELETE /api/admins/geo/area_center/{centerId}": "delete.center"
+    "DELETE /api/admins/geo/area_center/{centerId}": "delete.center",
+    "GET /api/admins/geo/examine_parking_test": "examine.parking"
   },
   "Area Management": {
     "GET /api/admins/areas/{area_id}": "get.area.detail",
@@ -138,14 +140,19 @@ export default {
   "Technician Management": {
     "DELETE /api/admins/technicians/{technicianId}": "delete.technician",
     "GET /api/admins/technicians": "get.technicians",
-    "POST /api/admins/technicians/register_by_email": "register.techncian.email"
+    "POST /api/admins/technicians/register_by_email": "register.techncian.email", 
+    "PUT /api/admins/technicians/{technicianId}": "update.technician"
   },
   "Dashboard": {
     "GET /api/admins/dashboard/ride_count": "get.ride.count",
     "GET /api/admins/dashboard/customer_count": "get.customer.count",
     "GET /api/admins/dashboard/ride_per_vehicle_rank": "get.ride.vehicle.rank",
     "GET /api/admins/dashboard/daily_ride_count": "get.daily.ride.count",
-    "GET /api/admins/dashboard/daily_battery_state": "get.daily.battery.state",
-    "GET /api/admins/dashboard/stripe_revenue": "get.stripe.revenue"
+    "GET /api/admins/dashboard/weekly_battery_state": "get.weekly.battery.state",
+    "GET /api/admins/dashboard/stripe_revenue": "get.stripe.revenue",
+    "GET /api/admins/dashboard/stripe_revenue_by_period":"get.stripe.revenue.by.period",
+    "GET /api/admins/dashboard/ride_revenue": "get.ride.revenue",
+    "GET /api/admins/dashboard/daily_ride_revenue": "get.daily.ride.revenue",
+    "GET /api/admins/dashboard/connectivity": "get.connectivity.by.period"
   }
 };

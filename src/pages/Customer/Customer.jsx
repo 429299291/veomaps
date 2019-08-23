@@ -74,6 +74,53 @@ const queryStatus = ["FROZEN"];
 
 const authority = getAuthority();
 
+const GenTempCodeForm = Form.create()(props => {
+  const {
+    form,
+    modalVisible,
+    handleGetTempCode,
+    handleModalVisible,
+    tempCode
+  } = props;
+  const okHandle = () => {
+    if (form.isFieldsTouched())
+      form.validateFields((err, fieldsValue) => {
+        if (err) return;
+
+        handleGetTempCode(fieldsValue.phoneNumber);
+      });
+    else handleModalVisible();
+  };
+
+  return (
+    <Modal
+      destroyOnClose
+      title="Update Customer"
+      visible={modalVisible}
+      onOk={okHandle}
+      onCancel={() => handleModalVisible()}
+    >
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Phone Number:"
+      >
+        {form.getFieldDecorator("phoneNumber")(
+        <Input style={{marginLeft: "2em"}} placeholder="Please Input" />
+        )}
+      </FormItem>
+      { tempCode && <FormItem
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 15 }}
+          label="Temp Code"
+        >
+          <span> {tempCode}</span>
+        </FormItem>
+      }
+    </Modal>
+  );
+});
+
 const UpdateForm = Form.create()(props => {
   const {
     form,
@@ -379,7 +426,9 @@ class Customer extends PureComponent {
     selectedRows: [],
     customerCoupons: null,
     filterCriteria: { currentPage: 1, pageSize: 10 },
-    selectedRecord: {}
+    selectedRecord: {},
+    genTempCodeModalVisible: false,
+    tempCode: null
   };
 
   columns = [
@@ -610,11 +659,17 @@ class Customer extends PureComponent {
           <Col md={4} sm={24}>
             {`count: ${this.props.customers.total}`}
           </Col>
-          <Col md={{ span: 8, offset: 12 }} sm={24}>
+          <Col md={{ span: 8, offset: 12}} sm={24}>
             <span className={styles.submitButtons} style={{ float: "right" }}>
-              <Button type="primary" htmlType="submit">
+
+            {authority.includes("get.customer.verification.code") && <Button type="primary" onClick={() => this.handleGenTempCodeModalVisible(true)}>
+                  Generate Verification Code
+              </Button> }
+
+              <Button  style={{ marginLeft: 8 }} type="primary" htmlType="submit">
                 Search
               </Button>
+
               <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
                 Reset
               </Button>
@@ -665,6 +720,24 @@ class Customer extends PureComponent {
       };
     });
   };
+
+  handleGetTempCode= phoneNumber => {
+
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: "customers/getTempCode",
+      phoneNumber: phoneNumber,
+      onSuccess: tempCode => this.setState({tempCode: tempCode, genTempCodeModalVisible: true})
+    });
+
+  }
+
+  handleGenTempCodeModalVisible = flag => {
+    this.setState({
+      genTempCodeModalVisible: !!flag,
+    });
+  }
 
   handleExportData = () => {
     const { form, selectedAreaId } = this.props;
@@ -739,7 +812,9 @@ class Customer extends PureComponent {
       couponModalVisible,
       selectedRecord,
       filterCriteria,
-      customerCoupons
+      customerCoupons,
+      genTempCodeModalVisible,
+      tempCode
     } = this.state;
 
     const parentMethods = {
@@ -793,6 +868,13 @@ class Customer extends PureComponent {
           areas={areas.data}
         />
 
+      <GenTempCodeForm
+          modalVisible={genTempCodeModalVisible}
+          handleModalVisible={this.handleGenTempCodeModalVisible}
+          handleGetTempCode={this.handleGetTempCode}
+          tempCode={tempCode}
+        />
+
         {
           <CouponForm
             couponModalVisible={couponModalVisible}
@@ -818,6 +900,7 @@ class Customer extends PureComponent {
             handleGetCustomers={this.handleGetCustomers}
           />
         )}
+        
       </PageHeaderWrapper>
     );
   }

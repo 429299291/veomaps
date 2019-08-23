@@ -23,7 +23,8 @@ import {
   Tabs,
   Checkbox,
   Pagination,
-  Spin
+  Spin,
+  Switch
 } from "antd";
 
 const { RangePicker } = DatePicker;
@@ -205,8 +206,12 @@ const HeatMapForm = Form.create()(props => {
   return ( <div style={{fontSize: fontSize, marginTop: "1em"}}>
 
       <span className={style}>
-          <span> Time: </span> 
 
+          {form.getFieldDecorator("isStart", {initialValue: true})(
+            <Switch checkedChildren="start" unCheckedChildren="end" defaultChecked />
+          )}
+
+          <span> Time: </span> 
           {form.getFieldDecorator("timeRange")(
             <RangePicker style={{width: "20%"}} format="YYYY-MM-DD HH:mm:ss" showTime  style={{ width: rangeWidth }} />
           )}
@@ -281,14 +286,14 @@ const HeatMapForm = Form.create()(props => {
 
       {isMobile && <br />} 
 
-      <span style={{float: "right"}}>
+      <div style={{float: "right", marginTop: "1em"}}>
 
 
             <Button style={{ marginRight: "1vw" }}  htmlType="submit" onClick={() => { form.resetFields(); clearHeatMap();}} > Reset </Button>
 
             {shouldShowHeatMap ? <Button type="primary" htmlType="submit" onClick={handleSubmit} > Get HeatMap </Button> : <Spin size="middle" style={{ marginRight: "0.5vw" }} /> }
             
-      </span> 
+      </div> 
   </div>  );
 });
 
@@ -594,6 +599,13 @@ class Vehicle extends PureComponent {
       dataIndex: "vehiclePower",
       render(val) {
         return <p>{`${val}%`}</p>;
+      }
+    },
+    {
+      title: "Chain Lock",
+      dataIndex: "chainLockStatus",
+      render(val) {
+        return <p>{`${(val !== null) ? lockStatus[val] : 'null'}`}</p>;
       }
     },
     {
@@ -1334,7 +1346,7 @@ class Vehicle extends PureComponent {
           </Col>
           <Col md={8} sm={24}>
               <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Idle Days">
-                {getFieldDecorator("idelDays", {
+                {getFieldDecorator("idleDays", {
                   rules: [
                     {
                       validator: checkIdleDays

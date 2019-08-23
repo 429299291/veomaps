@@ -24,3 +24,15 @@ export async function removeTechnician(technicianId) {
     method: "DELETE"
   });
 }
+
+export async function upadteTechnician(technicianId, technician) {
+  return request(`/admins/technicians/${technicianId}`, {
+    method: "PUT",
+    body: {
+      ...technician
+    }
+  });
+}
+
+
+

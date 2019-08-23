@@ -50,7 +50,7 @@ const defaultCenter = { lat: 41.879658, lng: -87.629769 };
 const MyMapComponent = compose(
   withProps({
     googleMapURL:
-      "https://maps.googleapis.com/maps/api/js?key=AIzaSyDPnV_7djRAy8m_RuM5T0QIHU5R-07s3Ic&v=3.exp&libraries=geometry,drawing,places",
+      "https://maps.googleapis.com/maps/api/js?key=AIzaSyDdCuc9RtkM-9wV9e3OrULPj67g2CHIdZI&v=3.exp&libraries=geometry,drawing,places",
     loadingElement: <div style={{ height: `100%` }} />,
     containerElement: <div style={{ height: `600px` }} />,
     mapElement: <div style={{ height: `100%` }} />
@@ -174,6 +174,16 @@ const CreateFenceForm = Form.create()(props => {
       if (err) return;
       form.resetFields();
 
+      
+
+      if (Array.isArray(fieldsValue.vehicleTypes) && fieldsValue.vehicleTypes.length === 0 ) {
+        fieldsValue.vehicleTypes = undefined;
+      }
+
+      if (Array.isArray(fieldsValue.forceVehicleTypes) && fieldsValue.forceVehicleTypes.length === 0) {
+        fieldsValue.forceVehicleTypes = undefined;
+      }
+
       console.log(fieldsValue);
 
       handleNext(fieldsValue);
@@ -184,12 +194,17 @@ const CreateFenceForm = Form.create()(props => {
 
   const currFenceType = form.getFieldValue("fenceType");
 
+  const isGeoFence = currFenceType === 0 || currFenceType === 5;
+
+  const nullToUndefined = value => value ? value : undefined;
+
   return (
     <Modal
       destroyOnClose
       title={`${fence ? "Edit" : "Add"} Fence`}
       visible={modalVisible}
       onOk={okHandle}
+      width={500}
       onCancel={() => handleModalVisible(false)}
     >
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Name">
@@ -236,8 +251,8 @@ const CreateFenceForm = Form.create()(props => {
       )}
       {(currFenceType === 0 || currFenceType === 5) && (
         <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
+          labelCol={{ span: 10 }}
+          wrapperCol={{ span: 10 }}
           label="Has Forced Parking"
         >
           {form.getFieldDecorator("hasForce", {
@@ -260,9 +275,28 @@ const CreateFenceForm = Form.create()(props => {
           )}
         </FormItem>
       )}
+      {
+        <FormItem
+          labelCol={{ span: 10 }}
+          wrapperCol={{ span: 10 }}
+          label={(isGeoFence? "Force " : "") + "Vehicle Type"}
+        >
+          {form.getFieldDecorator(isGeoFence ? "forceVehicleTypes" : "vehicleTypes", {
+            initialValue: fence ? (isGeoFence ? nullToUndefined(fence.forceVehicleTypes) : nullToUndefined(fence.vehicleTypes)) : undefined,
+          })(
+            <Select placeholder="select" style={{ width: "100%" }} mode="multiple">
+              <Option value={0}>Bike</Option>
+              <Option value={1}>Scooter</Option>
+              <Option value={2}>E-Bike</Option>
+            </Select>
+          )}
+        </FormItem>
+      }
     </Modal>
   );
 });
+
+
 
 @connect(({ geo, areas, loading }) => ({
   geo,
@@ -282,7 +316,8 @@ class Geo extends PureComponent {
     isEditingFenceClosed: false,
     isEditingFenceModalVisible: false,
     selectedExistedFence: null,
-    isDeleteFenceModalVisible: false
+    isDeleteFenceModalVisible: false,
+    isParkingCheckStart: false
   };
 
   componentDidMount() {
@@ -308,15 +343,43 @@ class Geo extends PureComponent {
     });
   };
 
+
+  checkParking = newPoint => {
+    const {
+      isParkingCheckStart
+    } = this.state;
+
+    const { dispatch } = this.props;
+
+    const areaId = this.props.selectedAreaId;
+
+    if (isParkingCheckStart) {
+      
+      dispatch({
+        type: "geo/examineParkingTest",
+        areaId: areaId,
+        imei: 14682004256896,
+        location: newPoint 
+      });
+
+    }
+    
+  }
+
   handleMapClick = e => {
     const {
       isEditingCenter,
       isEditingFence,
       editingFence,
-      selectedExistedFence
+      selectedExistedFence,
     } = this.state;
 
+    const areaId = this.props.selectedAreaId;
+
     const newPoint = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+
+    this.checkParking(newPoint);
+
     if (isEditingCenter) {
       this.setState({ editingCenter: newPoint });
     }
@@ -444,6 +507,9 @@ class Geo extends PureComponent {
 
     if (!isEditingCenter && !isEditingFence) {
       this.setState({ selectedExistedFence: fence });
+      //console.log(event);
+      const newPoint = { lat: event.latLng.lat(), lng: event.latLng.lng() };
+      this.checkParking(newPoint);
     } else if (fence.fenceType === 0 || fence.fenceType === 5) {
       this.handleMapClick(event);
     }

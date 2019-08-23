@@ -19,6 +19,13 @@ export async function getCustomerTransactions(customerId) {
   });
 }
 
+export async function getTempCode(phoneNumber) {
+  return request(`/admins/customers/${phoneNumber}/temp_code`, {
+    method: "GET"
+  });
+}
+
+
 export async function getAdminCustomersTotal(params) {
   return request(
     `/admins/customers/count?${stringify(params, { indices: false })}`,
