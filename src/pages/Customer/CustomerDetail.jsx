@@ -250,6 +250,12 @@ const UpdateForm = Form.create()(props => {
         </FormItem>
       )}
 
+      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Notes">
+        {form.getFieldDecorator("notes", {
+          initialValue: record.notes
+        })(<TextArea placeholder="Please Input" />)}
+      </FormItem>
+
       <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10}} label="Phone Model">
         <span> {record.phoneModel} </span>
       </FormItem>
