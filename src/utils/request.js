@@ -1,13 +1,14 @@
 import fetch from "dva/fetch";
-import { notification } from "antd";
+import { notification, Button } from "antd";
 import router from "umi/router";
 import hash from "hash.js";
 import { isAntdPro } from "./utils";
 
-const urlPrefix = "https://localhost:8444/api";
-// const urlPrefix = "https://develop.veoride.com:8444/api"
+//const urlPrefix = "https://localhost:8444/api";
+//const urlPrefix = "https://develop.veoride.com:8444/api";
 //const urlPrefix = "https://manhattan-dev.veoride.com:8444/api";
-//const urlPrefix = "https://manhattan-host.veoride.com:8444/api";
+const urlPrefix = "https://manhattan-host.veoride.com:8444/api";
+//const urlPrefix = "https://admin.veoride.com:8444/api";
 
 export const ACCESS_TOKEN = "accessToken";
 
@@ -97,7 +98,7 @@ export default function request(url, options) {
     .then(response =>
       response.json().then(json => {
         if (!response.ok || (json.code && json.code != 0)) {
-          return Promise.reject(json);
+
         }
         return json && json.data;
       })

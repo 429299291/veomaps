@@ -56,3 +56,9 @@ export async function updateRide(id, params) {
     }
   });
 }
+
+export async function getRideImage(rideId) {
+  return request(`/admins/rides/${rideId}/image`, {
+    method: "GET"
+  });
+}

@@ -30,6 +30,25 @@ import styles from "./Customer.less";
 import { roundTo2Decimal } from "../../utils/mathUtil";
 
 import { getAuthority } from "@/utils/authority";
+import { formatPhoneNumber } from "@/utils/utils";
+import { exportCSVFile } from "../../utils/utils";
+import ride from "@/models/ride";
+
+const customerCsvHeader = {
+  id: "uid",
+  email: "email",
+  deposit: "Deposit",
+  rideCredit: "Ride Credit",
+  phoneModel: "Phone Model",
+  created: "Register",
+  updated: "updated",
+  areaId: "areaId",
+  emailStatus: "emailStatus",
+  inviteCode: "inviteCode",
+  migrated: "migrated",
+  status: "status",
+  rideCount: "Ride Count"
+};
 
 const FormItem = Form.Item;
 const { Step } = Steps;
@@ -46,7 +65,6 @@ const connectStatus = ["Offline", "Online"];
 const lockStatus = ["Unlock", "lock"];
 const customerType = ["Bicycle", "Scooter", "E-Customer", "Car"];
 
-
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -55,6 +73,53 @@ const customerStatus = ["NORMAL", "FROZEN", "ERROR"];
 const queryStatus = ["FROZEN"];
 
 const authority = getAuthority();
+
+const GenTempCodeForm = Form.create()(props => {
+  const {
+    form,
+    modalVisible,
+    handleGetTempCode,
+    handleModalVisible,
+    tempCode
+  } = props;
+  const okHandle = () => {
+    if (form.isFieldsTouched())
+      form.validateFields((err, fieldsValue) => {
+        if (err) return;
+
+        handleGetTempCode(fieldsValue.phoneNumber);
+      });
+    else handleModalVisible();
+  };
+
+  return (
+    <Modal
+      destroyOnClose
+      title="Update Customer"
+      visible={modalVisible}
+      onOk={okHandle}
+      onCancel={() => handleModalVisible()}
+    >
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Phone Number:"
+      >
+        {form.getFieldDecorator("phoneNumber")(
+        <Input style={{marginLeft: "2em"}} placeholder="Please Input" />
+        )}
+      </FormItem>
+      { tempCode && <FormItem
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 15 }}
+          label="Temp Code"
+        >
+          <span> {tempCode}</span>
+        </FormItem>
+      }
+    </Modal>
+  );
+});
 
 const UpdateForm = Form.create()(props => {
   const {
@@ -346,7 +411,7 @@ const CouponForm = Form.create()(props => {
   customers,
   areas,
   coupons,
-  selectedAreaId : areas.selectedAreaId,
+  selectedAreaId: areas.selectedAreaId,
   areaNames: areas.areaNames,
   loading: loading.models.customers
 }))
@@ -361,13 +426,16 @@ class Customer extends PureComponent {
     selectedRows: [],
     customerCoupons: null,
     filterCriteria: { currentPage: 1, pageSize: 10 },
-    selectedRecord: {}
+    selectedRecord: {},
+    genTempCodeModalVisible: false,
+    tempCode: null
   };
 
   columns = [
     {
       title: "phone",
-      dataIndex: "phone"
+      dataIndex: "phone",
+      render: val => formatPhoneNumber(val + "")
     },
     {
       title: "Full Name",
@@ -376,37 +444,26 @@ class Customer extends PureComponent {
     },
     {
       title: "Area",
-      render: (text, record) => this.props.areaNames && this.props.areaNames[record.areaId]
+      render: (text, record) =>
+        this.props.areaNames && this.props.areaNames[record.areaId]
     },
     {
       title: "email",
       dataIndex: "email"
     },
     {
-      title: "Charge",
-      dataIndex: "charge"
-    },
-    {
       title: "Balance",
-      dataIndex: "credit"
+      render: (text, record) => <p> {record.rideCredit + record.deposit}</p>
     },
     {
       title: "operation",
       render: (text, record) => (
         <Fragment>
-          {/*<a onClick={() => this.handleUpdateModalVisible(true, record)}>*/}
-          {/*Update*/}
-          {/*</a>*/}
-          {/*<Divider type="vertical" />*/}
           {authority.includes("update.customer.detail") && (
             <a onClick={() => this.handleDetailModalVisible(true, record)}>
               Detail
             </a>
           )}
-          {/*<Divider type="vertical" />*/}
-          {/*<a onClick={() => this.handleCouponModalVisible(true, record)}>*/}
-          {/*Coupon*/}
-          {/*</a>*/}
         </Fragment>
       )
     }
@@ -418,7 +475,6 @@ class Customer extends PureComponent {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-
     if (prevProps.selectedAreaId !== this.props.selectedAreaId) {
       this.handleGetCustomers();
       this.handleGetCoupons();
@@ -429,7 +485,7 @@ class Customer extends PureComponent {
     const { dispatch, selectedAreaId } = this.props;
     dispatch({
       type: "coupons/get",
-      payload: {areaId: selectedAreaId}
+      payload: { areaId: selectedAreaId }
     });
   };
 
@@ -439,7 +495,9 @@ class Customer extends PureComponent {
 
     dispatch({
       type: "customers/get",
-      payload: selectedAreaId ? Object.assign({},filterCriteria, {areaId: selectedAreaId} ) : filterCriteria,
+      payload: selectedAreaId
+        ? Object.assign({}, filterCriteria, { areaId: selectedAreaId })
+        : filterCriteria
     });
   };
 
@@ -467,8 +525,7 @@ class Customer extends PureComponent {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
 
-    this.setState({ filterCriteria: params }, () =>  this.handleGetCustomers());
-
+    this.setState({ filterCriteria: params }, () => this.handleGetCustomers());
   };
 
   handleFormReset = () => {
@@ -499,8 +556,12 @@ class Customer extends PureComponent {
       if (err) return;
 
       if (fieldsValue.created) {
-        fieldsValue.registerStart = fieldsValue.created[0].format("MM-DD-YYYY");
-        fieldsValue.registerEnd = fieldsValue.created[1].format("MM-DD-YYYY");
+        fieldsValue.registerStart = moment(fieldsValue.created[0])
+          .utcOffset(0)
+          .format("MM-DD-YYYY HH:mm:ss");
+        fieldsValue.registerEnd = moment(fieldsValue.created[1])
+          .utcOffset(0)
+          .format("MM-DD-YYYY HH:mm:ss");
         fieldsValue.created = undefined;
       }
 
@@ -595,11 +656,20 @@ class Customer extends PureComponent {
         </Row>
 
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={{ span: 8, offset: 16 }} sm={24}>
+          <Col md={4} sm={24}>
+            {`count: ${this.props.customers.total}`}
+          </Col>
+          <Col md={{ span: 8, offset: 12}} sm={24}>
             <span className={styles.submitButtons} style={{ float: "right" }}>
-              <Button type="primary" htmlType="submit">
+
+            {authority.includes("get.customer.verification.code") && <Button type="primary" onClick={() => this.handleGenTempCodeModalVisible(true)}>
+                  Generate Verification Code
+              </Button> }
+
+              <Button  style={{ marginLeft: 8 }} type="primary" htmlType="submit">
                 Search
               </Button>
+
               <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
                 Reset
               </Button>
@@ -624,8 +694,117 @@ class Customer extends PureComponent {
     });
   };
 
+  formatCsvData = customers => {
+    const { areaNames, selectedAreaId } = this.props;
+
+    return customers.map(customer => {
+      customer.created = moment(customer.created).format("YYYY-MM-DD HH:mm:ss");
+      customer.area = areaNames[customer.areaId];
+
+      return {
+        id: customer.id,
+        email: customer.email
+          ? customer.email.replace(/(\r\n|\n|\r)/gm, "")
+          : "unknown",
+        deposit: customer.deposit,
+        rideCredit: customer.rideCredit,
+        phoneModel: customer.phoneModel,
+        created: customer.created,
+        updated: customer.updated,
+        areaId: customer.areaId,
+        emailStatus: customer.emailStatus,
+        inviteCode: customer.inviteCode,
+        migrated: customer.migrated,
+        status: customer.status,
+        rideCount: customer.rideCount
+      };
+    });
+  };
+
+  handleGetTempCode= phoneNumber => {
+
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: "customers/getTempCode",
+      phoneNumber: phoneNumber,
+      onSuccess: tempCode => this.setState({tempCode: tempCode, genTempCodeModalVisible: true})
+    });
+
+  }
+
+  handleGenTempCodeModalVisible = flag => {
+    this.setState({
+      genTempCodeModalVisible: !!flag,
+    });
+  }
+
+  handleExportData = () => {
+    const { form, selectedAreaId } = this.props;
+    const { filterCriteria } = this.state;
+
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+
+      if (fieldsValue.created) {
+        fieldsValue.registerStart = moment(fieldsValue.created[0])
+          .utcOffset(0)
+          .format("MM-DD-YYYY HH:mm:ss");
+        fieldsValue.registerEnd = moment(fieldsValue.created[1])
+          .utcOffset(0)
+          .format("MM-DD-YYYY HH:mm:ss");
+        fieldsValue.created = undefined;
+      }
+
+      const values = Object.assign(
+        {},
+        filterCriteria,
+        fieldsValue,
+        { areaId: selectedAreaId },
+        {
+          currentPage: null,
+          pageSize: null
+        }
+      );
+
+      this.setState(
+        {
+          filterCriteria: values
+        },
+        this.finishExportData
+      );
+    });
+  };
+
+  finishExportData() {
+    const { filterCriteria } = this.state;
+    const { areaNames, selectedAreaId, dispatch } = this.props;
+    const dateTime = moment().format("LL hh-mm A");
+    const exportedFileName = `${
+      areaNames[selectedAreaId]
+    }-Customers ${dateTime}`;
+    dispatch({
+      type: "customers/getAll",
+      payload: filterCriteria,
+      onSuccess: data => {
+        exportCSVFile(
+          customerCsvHeader,
+          this.formatCsvData(data),
+          exportedFileName
+        );
+      }
+    });
+  }
+
   render() {
-    const { customers, areas, loading, coupons, dispatch } = this.props;
+    const {
+      customers,
+      areas,
+      loading,
+      coupons,
+      dispatch,
+      selectedAreaId
+    } = this.props;
     const {
       modalVisible,
       updateModalVisible,
@@ -633,7 +812,9 @@ class Customer extends PureComponent {
       couponModalVisible,
       selectedRecord,
       filterCriteria,
-      customerCoupons
+      customerCoupons,
+      genTempCodeModalVisible,
+      tempCode
     } = this.state;
 
     const parentMethods = {
@@ -659,15 +840,6 @@ class Customer extends PureComponent {
             <div className={styles.tableListForm}>
               {this.renderSimpleForm()}
             </div>
-            {/*<div className={styles.tableListOperator}>*/}
-            {/*<Button*/}
-            {/*icon="plus"*/}
-            {/*type="primary"*/}
-            {/*onClick={() => this.handleModalVisible(true)}*/}
-            {/*>*/}
-            {/*Haha*/}
-            {/*</Button>*/}
-            {/*</div>*/}
             <StandardTable
               loading={loading}
               data={{ list: customers.data, pagination: pagination }}
@@ -676,6 +848,17 @@ class Customer extends PureComponent {
               scroll={{ x: 1300 }}
             />
           </div>
+
+          {selectedAreaId >= 1 && (
+            <div>
+              <Button
+                style={{ marginTop: "1em" }}
+                onClick={this.handleExportData}
+              >
+                Export
+              </Button>
+            </div>
+          )}
         </Card>
 
         <UpdateForm
@@ -683,6 +866,13 @@ class Customer extends PureComponent {
           modalVisible={updateModalVisible}
           record={selectedRecord}
           areas={areas.data}
+        />
+
+      <GenTempCodeForm
+          modalVisible={genTempCodeModalVisible}
+          handleModalVisible={this.handleGenTempCodeModalVisible}
+          handleGetTempCode={this.handleGetTempCode}
+          tempCode={tempCode}
         />
 
         {
@@ -710,22 +900,7 @@ class Customer extends PureComponent {
             handleGetCustomers={this.handleGetCustomers}
           />
         )}
-
-        {/*{selectedRecord &&*/}
-        {/*detailModalVisible && (*/}
-        {/*<Modal*/}
-        {/*destroyOnClose*/}
-        {/*title="Detail"*/}
-        {/*visible={detailModalVisible}*/}
-        {/*onCancel={() => this.handleDetailModalVisible()}*/}
-        {/*onOk={() => this.handleDetailModalVisible()}*/}
-        {/*width={"80%"}*/}
-        {/*>*/}
-        {/*{Object.keys(selectedRecord).map(key => (*/}
-        {/*<p key={key}>{`${key} : ${selectedRecord[key]}`}</p>*/}
-        {/*))}*/}
-        {/*</Modal>*/}
-        {/*)}*/}
+        
       </PageHeaderWrapper>
     );
   }

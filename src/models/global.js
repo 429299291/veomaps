@@ -6,7 +6,8 @@ export default {
 
   state: {
     collapsed: false,
-    notices: []
+    notices: [],
+    isMobile: window.innerWidth <= 600
   },
 
   effects: {
@@ -23,6 +24,15 @@ export default {
         type: "user/changeNotifyCount",
         payload: data.length
       });
+    },
+    *isMobile({ value }, { call, put }) {
+      //const data = yield call(queryNotices);
+
+      yield put({
+        type: "setIsMobile",
+        value: value
+      });
+      
     },
     *clearNotices({ payload }, { put, select }) {
       yield put({
@@ -48,6 +58,12 @@ export default {
       return {
         ...state,
         notices: payload
+      };
+    },
+    setIsMobile(state, { value }) {
+      return {
+        ...state,
+        isMobile: value
       };
     },
     saveClearedNotices(state, { payload }) {

@@ -25,7 +25,6 @@ import {
 } from "antd";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 import { getAuthority } from "@/utils/authority";
-import Vehicle from "./Vehicle";
 import errorVehicle from "../../assets/bike_report_lock.png";
 import errorVehicleUnlock from "../../assets/bike_report.png";
 import lowBattery from "../../assets/bike_mark_low_lock.png";
@@ -33,7 +32,8 @@ import vehicleUnlock from "../../assets/bike_mark.png";
 import ebike from "../../assets/ebike_mark.png";
 import bike from "../../assets/bike_mark_lock.png";
 import { compose, withProps } from "recompose";
-import { GoogleMap, Marker, withGoogleMap, withScriptjs } from "react-google-maps";
+import LocationMap from "./LocationMap";
+import { GoogleMap, Marker, withGoogleMap, withScriptjs, Polygon, Polyline } from "react-google-maps";
 
 const FormItem = Form.Item;
 
@@ -42,66 +42,27 @@ const { TextArea } = Input;
 const { Option } = Select;
 const RadioGroup = Radio.Group;
 
+import {fenceType, fenceTypeColor} from "@/constant";
+
 const authority = getAuthority();
 
-const errorStatus = ["NORMAL", "FROZEN", "ERROR"];
+const errorStatusIndexs = {
+  0: "Normal",
+  1: "Error",
+  3: "Deactivated",
+  5: "Rebalance",
+  6: "Maintain",
+  7: "Out of Service"
+};
 
-const vehicleType = ["Bicycle", "Scooter", "E-Ride", "Car"];
+const errorStatus = Object.keys(errorStatusIndexs);
+
+const vehicleType = ["Bicycle", "Scooter", "E-Bike", "Car"];
 const lockOperationWay = ["GPRS", "BLUETOOTH"];
 
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-const vehicleOrders = ["sign in", "heart", "unlock", "lock", "location", "info", "find", "version", "ip", "error", "alert", "heart period", "iccid", "shut down","ok","mac info"];
-
-
-const getVehicleIcon = (vehicleDetail) => {
-  if (vehicleDetail.errorStatus === 1) {
-    if (vehicleDetail.lockStatus === 1) {
-      return errorVehicle;
-    } else {
-      return errorVehicleUnlock;
-    }
-  }
-
-  if (vehicleDetail.power <=350) {
-    return lowBattery;
-  }
-
-  if (vehicleDetail.lockStatus === 0) {
-    return vehicleUnlock;
-  }
-
-  if (vehicleDetail.vehicleType === 2) {
-    return ebike;
-  }
-
-  return bike;
-}
-
-const LocationMap = compose(
-  withProps({
-    googleMapURL:
-      "https://maps.googleapis.com/maps/api/js?key=AIzaSyDPnV_7djRAy8m_RuM5T0QIHU5R-07s3Ic&v=3.exp&libraries=geometry,drawing,places",
-    loadingElement: <div style={{ height: `100%` }} />,
-    containerElement: <div style={{ height: `400px` }} />,
-    mapElement: <div style={{ height: `100%` }} />
-  }),
-  withScriptjs,
-  withGoogleMap
-)(props => {
-  const { record, vehicleDetail } = props;
-
-  const location = (({ x, y }) => ({ lat: y, lng:x }))(vehicleDetail.location);
-
-  return (
-    <GoogleMap defaultZoom={15} center={location}>
-      <Marker
-        position={location}
-        icon={getVehicleIcon(record)}
-      />
-    </GoogleMap>
-  );
-});
+const vehicleOrders = ["","sign in", "heart", "unlock", "lock", "location", "info", "find", "version", "ip", "error", "alert", "heart period", "iccid", "shut down","ok","mac info", "connect", "disconnect", "version update", "Report", "External Device"];
 
 
 const EndRideForm = Form.create()(props => {
@@ -144,7 +105,7 @@ const EndRideForm = Form.create()(props => {
 });
 
 const UpdateForm = Form.create()(props => {
-  const { form, handleUpdate, areas, record, unlockVehicle } = props;
+  const { form, handleUpdate, areas, record, changeLockStatus, updateLocation, alertVehicle, getVehicleStatus, restartVehicle } = props;
   const okHandle = () => {
     if (form.isFieldsTouched())
       form.validateFields((err, fieldsValue) => {
@@ -165,33 +126,78 @@ const UpdateForm = Form.create()(props => {
           wrapperCol={{ span: 15 }}
           label="Status"
         >
-          {form.getFieldDecorator("status", {
-            rules: [
-              {
-                required: true,
-                message: "You have pick a status"
-              }
-            ],
-            initialValue: record.errorStatus
-          })(
-            <Select placeholder="select" style={{ width: "100%" }}>
-              {errorStatus.map((status, index) => (
-                <Option key={index} value={index}>
-                  {errorStatus[index]}
-                </Option>
-              ))}
+          <div>
+
+            
+            {form.getFieldDecorator("errorStatus",{
+              rules: [
+                {
+                  required: true,
+                  message: "You have pick a area"
+                }
+              ],
+              initialValue: record.errorStatus
+            })(
+              <Select placeholder="select" style={{ width: "100%" }}> 
+              
+                <Option value={0} >Normal</Option>
+
+                <Option value={1} >Error</Option>
+
+                <Option disabled={true} value={3} >Deativated</Option>
+
+                <Option disabled={true}  value={5} >Rebalance</Option>
+
+                <Option disabled={true}  value={6} >Maintain</Option>
+
+                <Option disabled={true}  value={7} >Out of Service</Option>
+
+                
             </Select>
-          )}
+            )}
+            
+          </div>
         </FormItem>
       )}
 
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
-        label="Status"
+        label="Connect Status"
       >
         <div>
           {record.lockStatus === 0 ? "Unlock" : "Lock"}
+        </div>
+      </FormItem>
+
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Imei"
+      >
+        <div>
+          {record.imei}
+        </div>
+      </FormItem>
+
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="iccid"
+      >
+        <div>
+          {record.iccid}
+        </div>
+      </FormItem>
+
+
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Is Connected"
+      >
+        <div>
+          {record.connectStatus === 1 ? "true" : "false"}
         </div>
       </FormItem>
 
@@ -224,19 +230,63 @@ const UpdateForm = Form.create()(props => {
             type="primary"
             onClick={okHandle}
             disabled={!form.isFieldsTouched() && !authority.includes("update.vehicle.detail")}
-            style={{marginRight: "1em"}}
+            style={{marginRight: "1em", marginTop: "0.5em"}}
           >
             Update Vehicle
           </Button>
           <Button
             icon="plus"
             type="primary"
-            onClick={unlockVehicle}
+            onClick={changeLockStatus}
             disabled={!authority.includes("unlock.vehicle")}
+            style={{marginRight: "1em", marginTop: "0.5em"}}
           >
-            Unlock Remotely
+            {(record.lockStatus === 1 ? "Unlock" : "Lock") + " Vehicle"}
+          </Button>
+          <Button
+            icon="plus"
+            type="primary"
+            onClick={alertVehicle}
+            disabled={!authority.includes("alert.vehicle")}
+            style={{marginRight: "1em", marginTop: "0.5em"}}
+          >
+            Beep Remotely
+          </Button>
+          <Button
+            icon="plus"
+            type="primary"
+            onClick={updateLocation}
+            disabled={!authority.includes("update.vehicle.location")}
+            style={{marginTop: "0.5em"}}
+          >
+            Update Location
           </Button>
         </Col>
+      </Row>
+      <Row>
+        <Col>
+          <Button
+            icon="plus"
+            type="primary"
+            onClick={getVehicleStatus}
+            disabled={!form.isFieldsTouched() && !authority.includes("get.status")}
+            style={{marginRight: "1em", marginTop: "0.5em"}}
+          >
+            Get Status
+          </Button>
+
+          {/* <Button
+            icon="plus"
+            type="primary"
+            onClick={restartVehicle}
+            disabled={!form.isFieldsTouched() && !authority.includes("restart.vehicle")}
+            style={{marginRight: "1em", marginTop: "0.5em"}}
+          >
+            Restart
+          </Button> */}
+          
+        </Col>
+        
       </Row>
     </div>
   );
@@ -244,17 +294,17 @@ const UpdateForm = Form.create()(props => {
 
 
 
-@connect(({ coupons, areas, loading }) => ({
+@connect(({ coupons, areas, geo, loading }) => ({
   areas,
-  loading: loading.models.geo
+  loading: loading.models.areas
 }))
 class VehicleDetail extends PureComponent {
   state = {
-    vehicleDetail: null,
     vehicleRides: null,
     isEndRideVisible: false,
     selectedRide: null,
-    vehicleOrders: []
+    vehicleOrders: [],
+    orderTablePagination: null
   };
 
   vehicleRideColumns = [
@@ -378,10 +428,56 @@ class VehicleDetail extends PureComponent {
 
 
   componentDidMount = () => {
-    this.handleGetVehicleDetail(this.props.vehicleId);
+    this.handleGetVehicle(this.props.vehicleId);
     this.handleGetVehicleOrders(this.props.vehicleId);
     this.handleGetVehicleRides(this.props.vehicleId);
   };
+
+
+  getAreaGeoInfo = vehicleAreaId => {
+    const { dispatch } = this.props;
+
+    authority.includes("get.fences") && dispatch({
+      type: "geo/getFences",
+      areaId: vehicleAreaId
+    });
+  };
+
+
+  handleGetVehicle = vehicleId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "vehicles/getVehicle",
+      vehicleId: vehicleId,
+      onSuccess: response => this.setState({ record: response }, () => this.getAreaGeoInfo(response.areaId))
+    });
+  };
+
+  getVehicleStatus = () => {
+    const { dispatch, vehicleId } = this.props;
+    dispatch({
+      type: "vehicles/getStatus",
+      vehicleId: vehicleId,
+      onSuccess: () => {
+        setTimeout(() => {
+          this.handleGetVehicleOrders(vehicleId);
+        }, 4000)
+      }
+    });
+  }
+
+  restartVehicle = () => {
+    const { dispatch, vehicleId } = this.props;
+    dispatch({
+      type: "vehicles/restart",
+      vehicleId: vehicleId,
+      onSuccess: () => {
+        setTimeout(() => {
+          this.handleGetVehicleOrders(vehicleId);
+        }, 4000)
+      }
+    });
+  }
 
   handleEndRideVisible = (flag, record) => {
     this.setState({
@@ -401,17 +497,6 @@ class VehicleDetail extends PureComponent {
     this.handleEndRideVisible();
   };
 
-
-
-  handleGetVehicleDetail = vehicleId => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: "vehicles/getVehicleDetail",
-      vehicleId: vehicleId,
-      onSuccess: response => this.setState({ vehicleDetail: response })
-    });
-  };
-
   handleGetVehicleOrders = id => {
     const { dispatch } = this.props;
 
@@ -419,7 +504,7 @@ class VehicleDetail extends PureComponent {
     dispatch({
       type: "vehicles/getOrders",
       id: id,
-      onSuccess: response => this.setState({ vehicleOrders: response })
+      onSuccess: response => this.setState({ vehicleOrders: response, orderTablePagination:  {current: Math.round((response.length / 10) + 1)} })
     });
   };
 
@@ -435,29 +520,68 @@ class VehicleDetail extends PureComponent {
   };
 
   handleUpdate = (id, fields) => {
-    const { dispatch, vehicleId } = this.props;
+    const { dispatch, vehicleId, handleGetVehicles } = this.props;
     dispatch({
       type: "vehicles/update",
       payload: fields,
       id: id,
       onSuccess: () => {
-        this.props.handleGetVehicles();
-        this.handleGetVehicleDetail(vehicleId);
+        handleGetVehicles && handleGetVehicles();
+        this.handleGetVehicle(vehicleId);
       }
     });
   };
 
-  unlockVehicle = () => {
+  changeLockStatus = () => {
+    const { dispatch, vehicleId, handleGetVehicles } = this.props;
+
+    const { record } = this.state;
+
+    const type = record.lockStatus === 1 ? "vehicles/unlock" : "vehicles/lock";
+
+    
+
+    if ( (type === "vehicles/unlock" && authority.includes("unlock.vehicle")) || (type === "vehicles/lock" && authority.includes("lock.vehicle"))){
+      dispatch({
+        type: type,
+        id: vehicleId,
+        onSuccess: () => {
+          handleGetVehicles && handleGetVehicles();
+          setTimeout(() => {
+            this.handleGetVehicleOrders(vehicleId);
+            }, 1500)
+        }
+      });
+    }
+        
+  };
+
+  alertVehicle = () => {
     const { dispatch, vehicleId } = this.props;
     dispatch({
-      type: "vehicles/unlock",
-      id: vehicleId,
-      onSuccess: () => {
-        this.props.handleGetVehicles();
-        this.handleGetVehicleDetail(vehicleId);
-      }
+      type: "vehicles/alertVehicle",
+      vehicleId: vehicleId
     });
   };
+
+
+
+  handleOrderTableChange = (pagination, filtersArg, sorter) => this.setState({orderTablePagination: pagination})
+  
+
+
+  updateLocation = () => {
+    const { dispatch, vehicleId } = this.props;
+    dispatch({
+      type: "vehicles/updateLocation",
+      id: vehicleId,
+      onSuccess: () => {
+        setTimeout(() => {
+          this.handleGetVehicleOrders(vehicleId);
+        }, 3000)
+      }
+    });
+  }
 
   render() {
     const {
@@ -465,7 +589,8 @@ class VehicleDetail extends PureComponent {
       isEndRideVisible,
       vehicleOrders,
       selectedRide,
-      vehicleDetail
+      record,
+      orderTablePagination
     } = this.state;
 
     const {
@@ -474,7 +599,7 @@ class VehicleDetail extends PureComponent {
       isVisible,
       handleDetailVisible,
       vehicle,
-      record
+      geo
     } = this.props;
 
     const endRideMethod = {
@@ -496,25 +621,24 @@ class VehicleDetail extends PureComponent {
 
 
               <Card title="Update Vehicle">
-                <UpdateForm
+                {record && <UpdateForm
                   areas={areas.data}
                   record={record}
                   handleUpdate={this.handleUpdate}
-                  unlockVehicle={this.unlockVehicle}
-                />
+                  changeLockStatus={this.changeLockStatus}
+                  updateLocation={this.updateLocation}
+                  restartVehicle={this.restartVehicle}
+                  getVehicleStatus={this.getVehicleStatus}
+                  alertVehicle={this.alertVehicle}
+                />}
               </Card>
 
-
-            {
-              vehicleDetail && vehicleDetail.location &&
-              <Card title="Location">
+              {record &&  <Card title="Location">
                 <LocationMap
-                  vehicleDetail={vehicleDetail}
                   record={record}
                 />
-              </Card>
-            }
-
+              </Card>}
+             
 
             {authority.includes("get.rides")  &&
             <Card title="Vehicle Rides" style={{ marginTop: "2em" }}>
@@ -540,6 +664,8 @@ class VehicleDetail extends PureComponent {
                 dataSource={vehicleOrders}
                 columns={this.vehicleOrdersColumn}
                 scroll={{ x: 1300 }}
+                onChange={this.handleOrderTableChange}
+                pagination={orderTablePagination}
               />
             </Card>
             }

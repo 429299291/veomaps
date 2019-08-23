@@ -13,7 +13,17 @@ export async function getCustomerPayments(customerId) {
   });
 }
 
+export async function getCustomerTransactions(customerId) {
+  return request(`/admins/customers/${customerId}/transactions`, {
+    method: "GET"
+  });
+}
 
+export async function getTempCode(phoneNumber) {
+  return request(`/admins/customers/${phoneNumber}/temp_code`, {
+    method: "GET"
+  });
+}
 
 
 export async function getAdminCustomersTotal(params) {

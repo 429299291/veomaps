@@ -27,6 +27,7 @@ import {
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 import { getAuthority } from "@/utils/authority";
 import styles from "./CustomerDetail.less";
+import {transactionType} from "@/constant";
 
 
 const FormItem = Form.Item;
@@ -40,9 +41,20 @@ const authority = getAuthority();
 
 const customerStatus = ["NORMAL", "FROZEN", "ERROR"];
 
-const vehicleType = ["Bicycle", "Scooter", "E-Ride", "Car"];
+const vehicleType = ["Bicycle", "Scooter", "E-Bike", "Car"];
 const lockOperationWay = ["GPRS", "BLUETOOTH"];
 const REFUND_TYPE = {"FULL": 0, "CUSTOMER_FAULT": 1, "OTHER": 2};
+
+const REFUND_REASON = ["first timer forgot to lock", "first timer locked outside geofence", "too large/accidental deposit", "locking didn't end trip", 
+"cx no longer lives in market",
+"cx unhappy with geofence/NRZ",
+"cx unhappy w/ family riding",
+"fraud",
+"misc. app glitch",
+"cx phone died",
+"cx couldn't find working ride",
+"accident",
+];
 
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -87,16 +99,12 @@ const EndRideForm = Form.create()(props => {
 });
 
 const UpdateForm = Form.create()(props => {
-  const { form, handleUpdate, areas, record } = props;
+  const { form, handleUpdate, areas, record, customerActiveDays } = props;
   const okHandle = () => {
     if (form.isFieldsTouched())
       form.validateFields((err, fieldsValue) => {
         if (err) return;
         form.resetFields();
-
-        if (fieldsValue.email === "") fieldsValue.email = null;
-
-        if (fieldsValue.fullName === "") fieldsValue.fullName = null;
 
         handleUpdate(record.id, fieldsValue);
       });
@@ -121,32 +129,52 @@ const UpdateForm = Form.create()(props => {
 
   return (
     <div>
+
+      <FormItem labelCol={{ span: 10}} wrapperCol={{ span: 10 }} label="Balance (Deposit + Ride Credit)">
+        <span> {record.deposit + record.rideCredit} </span>
+      </FormItem>
+      
+
+    
       <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="CREDIT AMOUNT"
+        labelCol={{ span: 10 }}
+        wrapperCol={{ span: 10 }}
+        label="Ride Credit Amount"
       >
-        {form.getFieldDecorator("credit", {
+        {form.getFieldDecorator("rideCredit", {
           rules: [{ validator: checkMoneyFormat }],
-          initialValue: record.credit
+          initialValue: record.rideCredit
         })(<Input placeholder="Please Input" />)}
       </FormItem>
+
       <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
+        labelCol={{ span: 10 }}
+        wrapperCol={{ span: 10 }}
+        label="Deposit Amount"
+      >
+        {form.getFieldDecorator("deposit", {
+          rules: [{ validator: checkMoneyFormat }],
+          initialValue: record.deposit
+        })(<Input placeholder="Please Input" />)}
+      </FormItem>
+
+      
+      <FormItem
+        labelCol={{ span: 10}}
+        wrapperCol={{ span: 10 }}
         label="FULL NAME"
       >
         {form.getFieldDecorator("fullName", {
           initialValue: record.fullName
         })(<Input placeholder="Please Input" />)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Email">
+      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Email">
         {form.getFieldDecorator("email", {
           rules: [{ validator: checkEmailFormat }],
           initialValue: record.email
         })(<Input placeholder="Please Input" />)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Email Status">
+      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Email Status">
         {form.getFieldDecorator("emailStatus", {
           initialValue: record.emailStatus
         })(<Select placeholder="select" style={{ width: "100%" }}>
@@ -161,7 +189,7 @@ const UpdateForm = Form.create()(props => {
           </Option>
         </Select>)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Migrated">
+      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Migrated">
         {form.getFieldDecorator("migrated", {
           initialValue: record.migrated
         })(<Select placeholder="select" style={{ width: "100%" }}>
@@ -176,8 +204,8 @@ const UpdateForm = Form.create()(props => {
 
       {customerStatus && (
         <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
+          labelCol={{ span: 10 }}
+          wrapperCol={{ span: 10 }}
           label="Status"
         >
           {form.getFieldDecorator("status", {
@@ -201,7 +229,7 @@ const UpdateForm = Form.create()(props => {
       )}
 
       {areas && (
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area">
+        <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Area">
           {form.getFieldDecorator("areaId", {
             rules: [
               {
@@ -221,6 +249,28 @@ const UpdateForm = Form.create()(props => {
           )}
         </FormItem>
       )}
+
+      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Notes">
+        {form.getFieldDecorator("notes", {
+          initialValue: record.notes
+        })(<TextArea placeholder="Please Input" />)}
+      </FormItem>
+
+      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10}} label="Phone Model">
+        <span> {record.phoneModel} </span>
+      </FormItem>
+      <FormItem labelCol={{ span: 10}} wrapperCol={{ span: 10 }} label="App Version">
+        <span> {record.appVersion} </span>
+      </FormItem>
+
+      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Register Date">
+        <span> { moment(record.created).format("YYYY/MM/DD hh:mm:ss")} </span>
+      </FormItem>
+
+        <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Active Days">
+          <span> {customerActiveDays} </span>
+        </FormItem> 
+      
 
       <Row>
         <Col>
@@ -244,6 +294,12 @@ const MembershipForm = Form.create()(props => {
     if (form.isFieldsTouched())
       form.validateFields((err, fieldsValue) => {
         if (err) return;
+
+        if (fieldsValue.free) {
+          fieldsValue.autoRenew = false;
+          fieldsValue.paidWithBalance = true;
+        }
+
         form.resetFields();
 
 
@@ -264,7 +320,7 @@ const MembershipForm = Form.create()(props => {
             rules: [
               {
                 required: true,
-                message: "You have pick a membership"
+                message: "You have to pick a membership"
               }
             ]
           })(
@@ -278,6 +334,12 @@ const MembershipForm = Form.create()(props => {
           )}
         </FormItem>
       )}
+
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Free">
+        {form.getFieldDecorator("free")(
+          <Checkbox />
+        )}
+      </FormItem>
 
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is AutoRenew">
         {form.getFieldDecorator("autoRenew")(
@@ -386,7 +448,9 @@ const RefundForm = Form.create()(props => {
     handleNeedPickupFee,
     selectedCharge,
     handleRefundTypeChange,
-    refundType
+    handleRefundReasonChange,
+    refundType,
+    refundReason
   } = props;
 
   const okHandle = () => {
@@ -398,7 +462,7 @@ const RefundForm = Form.create()(props => {
 
       params.stripeChargeId = selectedCharge.stripeChargeId;
       params.pickupFee = fieldsValue.pickupFee;
-      params.refundNote = fieldsValue.refundNote;
+      params.refundNote = (refundReason ?  refundReason : "") + "|"  + fieldsValue.refundNote;
       switch (refundType) {
         case REFUND_TYPE.FULL:
           params.refundAmount = selectedCharge.amount - (selectedCharge.refundAmount ? selectedCharge.refundAmount : 0);
@@ -419,9 +483,26 @@ const RefundForm = Form.create()(props => {
     });
   };
 
+  const handleNote = val => {
+    const len = val.length;
+
+    const splitNote = val.split("|");
+
+    if (val) {
+      if (splitNote.length == 2) {
+        return "Note: " + splitNote[1] + ". " + "Reason: " + REFUND_REASON[parseInt(splitNote[0], 10)];
+      } else {
+        return val;
+      }
+    } else {
+      return "";
+    }
+  }
+
   const refundNoteColumns = [{
     title: 'Note',
     dataIndex: 'note',
+    render: val => <span>{handleNote(val)}</span>
   }, {
     title: 'Amount',
     dataIndex: 'amount',
@@ -537,6 +618,26 @@ const RefundForm = Form.create()(props => {
 
       </FormItem>
 
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Refund Reason"
+      >
+        <Select
+          placeholder="select"
+          onSelect={value => handleRefundReasonChange(value)}
+          value={refundReason}
+          style={{ width: "100%" }}>
+          {
+            REFUND_REASON.map((item,key) => 
+            <Option key={key} value={key}>
+            {item}
+          </Option>)
+          }
+        </Select>
+
+      </FormItem>
+
       {refundType == REFUND_TYPE.OTHER &&
         <FormItem
           labelCol={{ span: 5 }}
@@ -641,6 +742,8 @@ class CustomerDetail extends PureComponent {
     selectedCharge: null,
     refundType: REFUND_TYPE.FULL,
     needPickupFee: null,
+    customerActiveDays: null,
+    customerTransactions: null
   };
 
   customerCouponColumns = [
@@ -715,6 +818,10 @@ class CustomerDetail extends PureComponent {
       dataIndex: "minutes"
     },
     {
+      title: "Charge",
+      dataIndex: "charge"
+    },
+    {
       title: "End",
       dataIndex: "end",
       render: val =>
@@ -726,10 +833,10 @@ class CustomerDetail extends PureComponent {
     },
     {
       title: "operation",
-      render: (text, record) => (
-        <Fragment>
+      render: (text, record) => {
+        return <Fragment>
           {!record.end &&
-            authority.includes("end.customer.ride") && (
+            authority.includes("end.ride") && (
               <Popconfirm
                 title="Are you Sure？"
                 icon={
@@ -741,7 +848,36 @@ class CustomerDetail extends PureComponent {
               </Popconfirm>
             )}
         </Fragment>
-      )
+      }
+    }
+  ];
+
+
+  customerTransactionColumn = [
+    {
+      title: "Type",
+      dataIndex: "type",
+      render: value =>  <span>{ transactionType[value]} </span>
+    },
+    {
+      title: "Deposit Change",
+      dataIndex: "depositChange",
+      render: val =>  <span>{ Math.round(val * 100 ) / 100 } </span>
+    },
+    {
+      title: "Ride Credit Change",
+      dataIndex: "rideCreditChange",
+      render: val =>  <span>{  Math.round(val * 100 ) / 100 } </span>
+    },
+    {
+      title: "Payment Charge",
+      dataIndex: "paymentCharge",
+      render: val =>  <span>{  Math.round(val * 100 ) / 100  } </span>
+    },
+    {
+      title: "Created",
+      dataIndex: "created",
+      render: value =>  <span>{ moment(value).format("YYYY-MM-DD HH:mm:ss")} </span>
     }
   ];
 
@@ -797,7 +933,6 @@ class CustomerDetail extends PureComponent {
 
 
   handleNeedPickupFee = value => {
-    console.log(value);
     this.setState({needPickupFee: value})
   }
 
@@ -814,6 +949,7 @@ class CustomerDetail extends PureComponent {
     this.handleGetCustomerPayments(customerId);
     this.handleGetCustomerMembership(customerId);
     this.handleGetAvailableCustomerMemberships(customerId);
+    this.handleGetCustomerTransactions(customerId);
   };
 
   handleEndRideVisible = (flag, record) => {
@@ -828,6 +964,10 @@ class CustomerDetail extends PureComponent {
     this.setState({refundType: type})
   }
 
+  handleRefundReasonChange = reason => {
+    this.setState({refundReason: reason})
+  }
+
   handleGetCoupons = () => {
     const {dispatch} = this.props;
     dispatch({
@@ -837,12 +977,15 @@ class CustomerDetail extends PureComponent {
   }
 
   handleEndRide = (rideId, minutes) => {
-    const { dispatch, customerId } = this.props;
+    const { dispatch, customerId, handleGetRides } = this.props;
     dispatch({
       type: "rides/endRide",
       rideId: rideId,
       minutes: minutes,
-      onSuccess: () => this.handleGetCustomerRides(customerId)
+      onSuccess: () => {
+        this.handleGetCustomerRides(customerId); 
+        handleGetRides();
+      }
     });
     this.handleEndRideVisible();
   };
@@ -869,6 +1012,7 @@ class CustomerDetail extends PureComponent {
 
   handleGetCustomerCoupons = customerId => {
     const { dispatch } = this.props;
+
     dispatch({
       type: "coupons/getCustomerCoupons",
       payload: customerId,
@@ -878,6 +1022,7 @@ class CustomerDetail extends PureComponent {
 
   handleGetCustomerPayments = customerId => {
     const { dispatch } = this.props;
+
     dispatch({
       type: "customers/customerPayments",
       payload: customerId,
@@ -887,6 +1032,8 @@ class CustomerDetail extends PureComponent {
 
   handleGetCustomerDetail = customerId => {
     const { dispatch } = this.props;
+
+
     dispatch({
       type: "customers/getCustomerDetail",
       customerId: customerId,
@@ -896,10 +1043,22 @@ class CustomerDetail extends PureComponent {
 
   handleGetCustomerRides = customerId => {
     const { dispatch } = this.props;
+
     dispatch({
       type: "rides/getCustomerRides",
       customerId: customerId,
-      onSuccess: response => this.setState({ customerRides: response })
+      onSuccess: response => {
+        //group ride to calculate active date
+
+        const activeDate = {}
+
+        response.map(ride => {
+
+          const day = moment(ride.start).format("YYYY-MM-DD") ;
+          activeDate[day] = true; 
+        })
+        this.setState({ customerRides: response, customerActiveDays: Object.keys(activeDate).length });
+      }
     });
   };
 
@@ -917,13 +1076,14 @@ class CustomerDetail extends PureComponent {
   };
 
   handleUpdate = (id, fields) => {
-    const { dispatch, customerId } = this.props;
+    const { dispatch, customerId, handleGetCustomers } = this.props;
     dispatch({
       type: "customers/update",
       payload: fields,
       id: id,
       onSuccess: () => {
-        this.props.handleGetCustomers();
+        handleGetCustomers && handleGetCustomers();
+        message.success("customer update success!");
         this.handleGetCustomerDetail(customerId);
       }
     });
@@ -944,11 +1104,28 @@ class CustomerDetail extends PureComponent {
 
   handleGetCustomerMembership = () => {
     const { dispatch, customerId } = this.props;
+
     dispatch({
       type: "customers/getMembership",
       customerId: customerId,
       onSuccess: response => {
         this.setState({customerMembership: response})
+      }
+    });
+  };
+
+  handleGetCustomerTransactions = () => {
+    const { dispatch, customerId } = this.props;
+
+    if (!authority.includes("get.customer.transactions")) {
+      return;
+    }
+
+    dispatch({
+      type: "customers/getTransactions",
+      customerId: customerId,
+      onSuccess: response => {
+        this.setState({customerTransactions: response})
       }
     });
   };
@@ -989,7 +1166,10 @@ class CustomerDetail extends PureComponent {
       isRefundFormVisible,
       selectedCharge,
       refundType,
-      needPickupFee
+      needPickupFee,
+      customerActiveDays,
+      customerTransactions,
+      refundReason
     } = this.state;
 
     const {
@@ -1009,6 +1189,7 @@ class CustomerDetail extends PureComponent {
       handleRefundFormVisible: this.handleRefundFormVisible,
       handleRefund: this.handleRefund,
       handleRefundTypeChange: this.handleRefundTypeChange,
+      handleRefundReasonChange: this.handleRefundReasonChange,
       handleNeedPickupFee: this.handleNeedPickupFee
     };
 
@@ -1030,12 +1211,27 @@ class CustomerDetail extends PureComponent {
                   areas={areas.data}
                   record={customerDetail}
                   handleUpdate={this.handleUpdate}
+                  customerActiveDays={customerActiveDays}
                 />
               </Card>
             )}
 
+          {authority.includes("get.customer.transactions") && customerTransactions &&
+            <Card title="Customer Transactions" style={{ marginTop: "2em" }}>
+
+              <Table
+                dataSource={customerTransactions}
+                columns={this.customerTransactionColumn}
+                scroll={{ x: 1300 }}
+              />
+
+            </Card> 
+          }
+
             {authority.includes("get.rides") &&
             <Card title="Customer Rides" style={{ marginTop: "2em" }}>
+              {customerRides && <div style={{marginBottom: "1em"}}> count : {customerRides.length}</div>  }
+            
               <Table
                 dataSource={customerRides}
                 columns={this.customerRideColumns}
@@ -1067,6 +1263,7 @@ class CustomerDetail extends PureComponent {
                   {...refundMethod}
                   refundType={refundType}
                   needPickupFee={needPickupFee}
+                  refundReason={refundReason}
                 />
               )}
             </Card>}
@@ -1099,7 +1296,7 @@ class CustomerDetail extends PureComponent {
             <Card title="Membership" style={{ marginTop: "2em" }}>
               {customerMembership && Object.keys(customerMembership).map(
                 (key, index) => <div key={index}>
-                  {`${key} :  ${customerMembership[key]}`}
+                  {`${key} :  ${(key === 'startTime' || key === 'endTime') ? moment(customerMembership[key]).format("YYYY-MM-DD HH:mm:ss") : customerMembership[key]}`}
                 </div>
               )}
               {authority.includes("customer.buy.membership") &&

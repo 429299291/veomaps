@@ -2,7 +2,7 @@ import { query as queryUsers, getMe, updateMe, updatePassword } from "@/services
 import UrlToPrivilege from "../pages/Employee/UrlToPrivilege";
 import { setAuthority } from "@/utils/authority";
 import { reloadAuthorized } from "@/utils/Authorized";
-import * as routerRedux from "react-router-redux";
+import { routerRedux } from 'dva/router';
 import { message } from "antd";
 
 export default {
@@ -10,7 +10,8 @@ export default {
 
   state: {
     list: [],
-    currentUser: {}
+    currentUser: {},
+    isUserFetched: false
   },
 
 
@@ -24,6 +25,11 @@ export default {
         payload: response
       });
     },
+    
+    *updateRoute(url, { call, put }) {
+      window.location.reload();
+    },
+
     *updateMe({ id, payload, onSuccess, onError }, { call, put }) {
       const response = yield call(updateMe,  payload); // put
 
@@ -47,6 +53,12 @@ export default {
       }
     },
     *fetchCurrent({ onSuccess }, { call, put }) {
+
+      yield put({
+        type: "clearCurrentUser"
+      });
+
+
       const response = yield call(getMe);
 
       const flatUrlToPrivileges = Object.keys(UrlToPrivilege)
@@ -92,7 +104,15 @@ export default {
     saveCurrentUser(state, action) {
       return {
         ...state,
-        currentUser: action.payload || {}
+        currentUser: action.payload || {},
+        isUserFetched: true
+      };
+    },
+    clearCurrentUser(state) {
+      return {
+        ...state,
+        currentUser: {},
+        isUserFetched: false
       };
     },
     changeNotifyCount(state, action) {

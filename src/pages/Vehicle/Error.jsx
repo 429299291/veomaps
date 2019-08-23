@@ -19,6 +19,11 @@ import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
 import { getAuthority } from "@/utils/authority";
 
+import VehicleDetail from "@/pages/Vehicle/VehicleDetail";
+import CustomerDetail from "@/pages/Customer/CustomerDetail";
+
+import {formatPhoneNumber} from "@/utils/utils"
+
 const authority = getAuthority();
 
 const { RangePicker } = DatePicker;
@@ -32,7 +37,8 @@ const FormItem = Form.Item;
 const TextArea = Input.TextArea;
 
 const ErrorReviewStatus = ["waiting for review","under review","pass","reject"];
-const ErrorType = ["Can't Lock","Damage", "Lost", "Old"];
+const ErrorType = [undefined, "malfunction","inappropriate parking", "theft", "abandoned", "vandalism"];
+const ErrorPart = [undefined, "Seat","Brake", "Basket", "Light", "Wheel", "Tire", "Pedal", "Chain", "Lock", "Motor", "Kickstand", "Throttle"];
 
 const UpdateForm = Form.create()(props => {
   const {
@@ -130,16 +136,25 @@ class Error extends PureComponent {
   columns = [
     {
       title: "Vehicle Number",
-      dataIndex: "vehicleNumber"
+      render: (text,record) => <a onClick={() => this.setState({selectedVehicleId: record.vehicleId},() =>  this.handleVehicleDetailModalVisible(true))}>{record.vehicleNumber}</a>
     },
     {
       title: "Phone",
-      dataIndex: "phone"
+      render: (text,record) => <a onClick={() => this.setState({selectedCustomerId: record.customerId},() =>  this.handleCustomerDetailModalVisible(true))}>{formatPhoneNumber(record.phone+"")}</a>
+    },
+    {
+      title: "Content",
+      dataIndex: "content",
     },
     {
       title: "Type",
       dataIndex: "errorType",
-      render: val => <span>{val.split(",").reduce((result, val) => result + ErrorType[parseInt(val)] + " | " , "")}</span>
+      render: val => <span>{(val && (val.split(",").reduce((result, val) => result + ErrorType[parseInt(val)] + " | " , "")).slice(0,-3))}</span>
+    },
+    {
+      title: "Part",
+      dataIndex: "errorPart",
+      render: val => <span>{(val && (val.split(",").reduce((result, val) => result + ErrorPart[parseInt(val)] + " | " , "")).slice(0,-3))}</span>
     },
     {
       title: "Date",
@@ -156,7 +171,7 @@ class Error extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          {authority.includes("update.error.detail") &&
+          {authority.includes("update.error.detail") && authority.includes("get.image.paths") &&
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>
             Process
           </a>}
@@ -244,8 +259,8 @@ class Error extends PureComponent {
       if (err) return;
 
       if (fieldsValue.time) {
-        fieldsValue.start = fieldsValue.time[0].format("MM-DD-YYYY");
-        fieldsValue.end = fieldsValue.time[1].format("MM-DD-YYYY");
+        fieldsValue.start = moment(fieldsValue.time[0]).utcOffset(0).format("MM-DD-YYYY HH:mm:ss");
+        fieldsValue.end = moment(fieldsValue.time[1]).utcOffset(0).format("MM-DD-YYYY HH:mm:ss");
         fieldsValue.time = undefined;
       }
 
@@ -265,6 +280,23 @@ class Error extends PureComponent {
   handleUpdateModalVisible = (flag, record) => {
     if (flag) {
       this.handleGetErrorImages(record, errorImages => {
+
+        // errorImages.map(errorImage => {
+
+        //   const options ={
+        //     headers: {
+        //       'referer' : "https://manhattan.veoride.com/"
+        //     }
+        //   };
+
+        //   fetch(errorImage, options)
+        //   .then(res => res.blob())
+        //   .then(blob => {
+        //     this.setState({errorImages: this.state.errorImages.concat(URL.createObjectURL(blob))}); 
+        //     //imgElement.src = URL.createObjectURL(blob);
+        //   });
+        // });
+        
         this.setState({
           updateModalVisible: true,
           selectedRecord: record,
@@ -350,25 +382,6 @@ class Error extends PureComponent {
               )}
             </FormItem>
           </Col>
-          {areas && (
-            <Col md={6} sm={24}>
-              <FormItem
-                labelCol={{ span: 5 }}
-                wrapperCol={{ span: 15 }}
-                label="Area"
-              >
-                {getFieldDecorator("areaId")(
-                  <Select placeholder="select" style={{ width: "100%" }}>
-                    {areas.map(area => (
-                      <Option key={area.id} value={area.id}>
-                        {area.name}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-          )}
           <Col md={6} sm={24}>
             <FormItem
               labelCol={{ span: 5 }}
@@ -382,6 +395,7 @@ class Error extends PureComponent {
                       {type}
                     </Option>
                   ))}
+                  <Option value={null}>All</Option>
                 </Select>
               )}
             </FormItem>
@@ -390,7 +404,7 @@ class Error extends PureComponent {
             <FormItem
               labelCol={{ span: 5 }}
               wrapperCol={{ span: 15 }}
-              label="Status"
+              label="Review Status"
             >
               {getFieldDecorator("reviewStatus")(
                 <Select placeholder="select" style={{ width: "100%" }}>
@@ -399,13 +413,27 @@ class Error extends PureComponent {
                       {errorStatus}
                     </Option>
                   ))}
+                  <Option value={null}>All</Option>
                 </Select>
               )}
             </FormItem>
           </Col>
         </Row>
         <Row gutter={{ md: 24, lg: 24, xl: 48 }}>
-          <Col md={24} sm={24}>
+           <Col lg={6} md={8} sm={24}>
+           <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Solved">
+              {getFieldDecorator("status")(<Select placeholder="select" style={{ width: "100%" }}>
+                <Option key={1} value={1}>
+                  Yes
+                </Option>
+                <Option key={0} value={0}>
+                  No
+                </Option>
+                <Option value={null}>All</Option>
+              </Select>)}
+          </FormItem>
+            </Col>
+          <Col lg={18} md={16} sm={24}>
             <FormItem label="time">
               {getFieldDecorator("time")(
                 <RangePicker format="YYYY-MM-DD HH:mm:ss" />
@@ -431,6 +459,11 @@ class Error extends PureComponent {
     );
   }
 
+  handleVehicleDetailModalVisible = flag => this.setState({vehicleDetailModalVisible: flag})
+
+
+  handleCustomerDetailModalVisible = flag => this.setState({customerDetailModalVisible: flag})
+
 
 
   render() {
@@ -440,7 +473,11 @@ class Error extends PureComponent {
       detailModalVisible,
       selectedRows,
       selectedRecord,
-      errorImages
+      errorImages,
+      vehicleDetailModalVisible,
+      selectedVehicleId,
+      customerDetailModalVisible,
+      selectedCustomerId
     } = this.state;
 
     const parentMethods = {
@@ -491,6 +528,22 @@ class Error extends PureComponent {
           errors={errors.data}
           errorImages={errorImages}
         />
+
+      {vehicleDetailModalVisible && selectedVehicleId && authority.includes("get.vehicle") && (
+          <VehicleDetail
+            isVisible={vehicleDetailModalVisible}
+            handleDetailVisible={this.handleVehicleDetailModalVisible}
+            vehicleId={selectedVehicleId}
+          />
+        )}
+
+        {customerDetailModalVisible && (
+          <CustomerDetail
+            isVisible={customerDetailModalVisible}
+            handleDetailVisible={this.handleCustomerDetailModalVisible}
+            customerId={selectedCustomerId}
+          />
+        )}
 
 
       </PageHeaderWrapper>

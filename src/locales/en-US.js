@@ -68,6 +68,7 @@ export default {
   "component.globalHeader.message.empty": "You have viewed all messsages.",
   "component.globalHeader.event": "Event",
   "menu.Employee Management.Role Management": "Role Management",
+  "menu.dashboard.dashboard": "Dashboard",
   "menu.Employee Management": "Employee Management",
   "component.globalHeader.event.empty": "You have viewed all events.",
   "component.noticeIcon.clear": "Clear",
@@ -315,5 +316,12 @@ export default {
     "copy success，please replace defaultSettings in src/models/setting.js",
   "app.setting.production.hint":
     "Setting panel shows in development environment only, please manually modify",
-  "menu.Area Management.Area Management": "Area Management"
+  "menu.Area Management.Area Management": "Area Management",
+  "app.dashboard.rides": "Rides",
+  "app.dashboard.rides-trend": "Riding Trend",
+  "app.dashboard.rides-ranking": "Rides/Vehicles Ranking",
+  "app.dashboard.customers": "Customers",
+  "app.dashboard.StripeRevenue": "Stripe Revenue",
+  "app.dashboard.customers-trend": "Customers Trend",
+  "app.dashboard.customers-ranking": "Active Customer% Ranking",
 };

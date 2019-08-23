@@ -87,7 +87,7 @@ export default class SiderMenu extends PureComponent {
   };
 
   render() {
-    const { logo, collapsed, onCollapse, fixSiderbar, theme } = this.props;
+    const { logo, collapsed, onCollapse, fixSiderbar, theme, isUserFetched } = this.props;
     const { openKeys } = this.state;
     const defaultProps = collapsed ? {} : { openKeys };
 
@@ -113,14 +113,15 @@ export default class SiderMenu extends PureComponent {
             <h1> VeoRide </h1>
           </Link>
         </div>
-        <BaseMenu
-          {...this.props}
-          mode="inline"
-          handleOpenChange={this.handleOpenChange}
-          onOpenChange={this.handleOpenChange}
-          style={{ padding: '16px 0', width: '100%', overflowX: 'hidden' }}
-          {...defaultProps}
-        />
+          <BaseMenu
+            {...this.props}
+            mode="inline"
+            handleOpenChange={this.handleOpenChange}
+            onOpenChange={this.handleOpenChange}
+            style={{ padding: '16px 0', width: '100%', overflowX: 'hidden' }}
+            {...defaultProps}
+          />
+
       </Sider>
     );
   }

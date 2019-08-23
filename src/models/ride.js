@@ -6,6 +6,7 @@ import {
   removeRide,
   updateRide,
   getRideRoute,
+  getRideImage,
   endRide,
   getCustomerRides
 } from "@/services/ride";
@@ -34,6 +35,26 @@ export default {
         data: Array.isArray(data) ? data : [],
         total: total
       });
+    },
+    *getAll({ payload, onSuccess }, { call, put }) {
+
+      const data = yield call(getAdminRides, payload);
+      
+      if (data) {
+        onSuccess && onSuccess(data);
+      } else {
+        message.error("Fail to get all rides.");
+      }
+      
+    },
+    *image({ rideId, onSuccess, onError }, { call, put }) {
+      const url = yield call(getRideImage, rideId);
+
+      if (url && typeof url  === 'string') {
+        onSuccess(url);
+      } else {
+        onError(); 
+      }
     },
     *getCustomerRides({ customerId, onSuccess }, { call, put }) {
       const rides = yield call(getAdminRides, { customerId: customerId });

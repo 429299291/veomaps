@@ -1,5 +1,14 @@
 import {
-  getVehicleLocationDetail,
+  getRideCount,
+  getCustomerCount,
+  getRidePerVehicleRank,
+  getDailyRideCount,
+  getDailyBatteryState,
+  getStripeDailyRevenue,
+  getDailyRideRevenue,
+  getWeeklyBatteryState,
+  getStripRevenueByPeriod,
+  getConnectivityByPeriod
 } from "@/services/dashboard";
 import { message } from "antd";
 
@@ -7,29 +16,158 @@ export default {
   namespace: "dashboard",
 
   state: {
-    vehicleLocations: []
+    rideCountData: [],
+    customerCountData: [],
+    ridePerVehicleRank: [],
+    dailyRideCount: {},
+    batteryState: {},
+    stripeRevenue: {},
+    dailyRideRevenue: {},
+
   },
 
   effects: {
-    *getVehicleDetail({ areaId }, { call, put }) {
-      const vehicles = yield call(getVehicleLocationDetail, areaId);
+    *fetchRideCount({params}, { call, put }) {
+      const response = yield call(getRideCount, params);
 
-      if (Array.isArray(vehicles)) {
-        vehicles.map(vehicle => (vehicle.key = vehicle.id));
+      if (response) {
+        yield put({
+          type: "save",
+          payload: {
+            rideCountData: response
+          }
+        });
       }
-
-      yield put({
-        type: "save",
-        vehicleLocations: Array.isArray(vehicles) ? vehicles : [],
-      });
+     
     },
+
+    *fetchDailyRideRevenue({params}, { call, put }) {
+      const response = yield call(getDailyRideRevenue, params);
+
+      if (response) {
+        yield put({
+          type: "save",
+          payload: {
+            dailyRideRevenue: response
+          }
+        });
+      }
+     
+    },
+
+    *fetchCustomerCount({params}, { call, put }) {
+      const response = yield call(getCustomerCount, params);
+
+      if (response) {
+        yield put({
+          type: "save",
+          payload: {
+            customerCountData: response
+          }
+        });
+      }
+    },
+
+    *fetchStripRevenueByPeriod({params}, { call, put }) {
+      const response = yield call(getStripRevenueByPeriod, params);
+
+      if (response) {
+
+        yield put({
+          type: "save",
+          payload: {
+            stripeRevenueData: response.map(item =>{return {x: item.x, y: item.y / 100} })
+          }
+        });
+      }
+    },
+
+    *fetchConnectivityByPeriod({params}, { call, put }) {
+      const response = yield call(getConnectivityByPeriod, params);
+
+      if (response) {
+
+        yield put({
+          type: "save",
+          payload: {
+            connectivity: response
+          }
+        });
+      }
+    },
+
+    *getRidePerVehicleRank({params}, { call, put }) {
+      const response = yield call(getRidePerVehicleRank, params);
+
+      if (response) {
+        yield put({
+          type: "save",
+          payload: {
+            ridePerVehicleRank: response
+          }
+        });
+      }
+    },
+
+    *fetchDailyRideCounts({params}, { call, put }) {
+      const response = yield call(getDailyRideCount, params);
+
+      if (response) {
+        yield put({
+          type: "save",
+          payload: {
+            dailyRideCount: response
+          }
+        });
+      }
+    },
+
+    *fetchWeeklyBatteryState({params}, { call, put }) {
+      const response = yield call(getWeeklyBatteryState, params);
+
+      if (response) {
+        yield put({
+          type: "save",
+          payload: {
+            batteryState: response
+          }
+        });
+      }
+    },
+
+    *fetchStripeDailyRevenue({params}, { call, put }) {
+      const response = yield call(getStripeDailyRevenue, params);
+
+
+      if (response) {
+        yield put({
+          type: "save",
+          payload: {
+            stripeRevenue: response
+          }
+        });
+      }
+    }
+    
+
   },
 
   reducers: {
-    save(state, action) {
+    save(state, { payload }) {
       return {
         ...state,
-        vehicleLocations: action.vehicleLocations,
+        ...payload
+      };
+    },
+    clear() {
+      return {
+        rideCountData: [],
+        customerCountData: [],
+        ridePerVehicleRank: [],
+        dailyRideCount: {},
+        batteryState: {},
+        stripeRevenue: {},
+        rideRevenue: {}
       };
     }
   }

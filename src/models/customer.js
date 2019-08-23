@@ -9,7 +9,9 @@ import {
   updateMembership,
   getMembership,
   getAvailableMemberships,
-  refund
+  getCustomerTransactions,
+  refund,
+  getTempCode
 } from "@/services/customer";
 import { message } from "antd";
 
@@ -36,6 +38,35 @@ export default {
         data: Array.isArray(data) ? data : [],
         total: total
       });
+    },
+    *getTempCode({phoneNumber, onSuccess}, { call, put }) {
+      const data = yield call(getTempCode, phoneNumber);
+
+      if (data) {
+        onSuccess && onSuccess(data);
+      } else {
+        message.error("Fail to Get Verification Code");
+      }
+    },
+    *getAll({ payload, onSuccess }, { call, put }) {
+
+      const data = yield call(getAdminCustomers, payload);
+
+      if (data) {
+        onSuccess && onSuccess(data);
+      } else {
+        message.error("Download Fail!");
+      }
+    },
+    *getTransactions({ customerId, onSuccess }, { call, put }) {
+
+      const data = yield call(getCustomerTransactions, customerId);
+
+      if (data) {
+        onSuccess && onSuccess(data);
+      } else {
+        message.error("Get Transactions Fail!");
+      }
     },
     *customerPayments({ payload, onSuccess }, { call, put }) {
       const response = yield call(getCustomerPayments, payload);

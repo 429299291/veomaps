@@ -17,6 +17,9 @@ import Footer from "./Footer";
 import Header from "./Header";
 import Context from "./MenuContext";
 import Exception403 from "../pages/Exception/403";
+import TabController from './TabController';
+
+
 
 const { Content } = Layout;
 
@@ -98,8 +101,23 @@ class BasicLayout extends React.PureComponent {
   state = {
     rendering: true,
     isMobile: false,
-    menuData: this.getMenuData()
+    menuData: this.getMenuData(),
+    selectedAreaName: "all",
+    isMobile: window.innerWidth <= 600
   };
+
+  resize() {
+    const {dispatch} = this.props;
+
+    const isMobile = window.innerWidth <= 600;
+
+    this.setState({isMobile: isMobile});
+
+    dispatch({
+      type: "global/isMobile",
+      value: isMobile
+    });
+}
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -118,7 +136,7 @@ class BasicLayout extends React.PureComponent {
       type: "login/updateToken"
     });
 
-
+    window.addEventListener("resize", this.resize.bind(this));
 
     this.renderRef = requestAnimationFrame(() => {
       this.setState({
@@ -192,13 +210,13 @@ class BasicLayout extends React.PureComponent {
     const currRouterData = this.matchParamsPath(pathname);
 
     if (!currRouterData) {
-      return "Ant Design Pro";
+      return "Manhattan";
     }
     const message = formatMessage({
       id: currRouterData.locale || currRouterData.name,
       defaultMessage: currRouterData.name
     });
-    return `${message} - Ant Design Pro`;
+    return `${message}`;
   };
 
   getLayoutStyle = () => {
@@ -228,6 +246,16 @@ class BasicLayout extends React.PureComponent {
     });
   };
 
+  getAuthorizedChildComponent = (children, routerConfig) => {
+
+    return  <Authorized
+            authority={routerConfig && routerConfig.authority}
+            noMatch={<Exception403 />}
+            >
+              {children}
+            </Authorized>
+  }
+
   renderSettingDrawer() {
     // Do not render SettingDrawer in production
     // unless it is deployed in preview.pro.ant.design as demo
@@ -241,25 +269,58 @@ class BasicLayout extends React.PureComponent {
     return <SettingDrawer />;
   }
 
+  handleStartSelectArea = () => {
+    this.setState({shouldShowAreaSelector: !this.state.shouldShowAreaSelector});
+  }
+
+  handleSelectArea = (areaId, areaName) => {
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: 'areas/selectArea',
+      areaId: areaId === "all" ? null : areaId,
+    });
+
+    this.setState({selectedAreaName: areaName});
+  }
+
   render() {
     const {
       navTheme,
       layout: PropsLayout,
+      areas,
       children,
-      location: { pathname }
+      location: { pathname },
+      match,
+      selectedAreaId
     } = this.props;
 
-    const { isMobile, menuData } = this.state;
+    const pageTitle = this.getPageTitle(pathname);
+
+    const tasParams = {
+      keys: location.pathname,
+      location,
+      dispatch:this.props.dispatch,
+      match,
+      name: pageTitle,
+      component: this.getAuthorizedChildComponent(children, routerConfig)
+    }
+
+
+    const { isMobile, menuData, shouldShowAreaSelector, selectedAreaName } = this.state;
     const isTop = PropsLayout === "topmenu";
     const routerConfig = this.matchParamsPath(pathname);
+    
+    
     const layout = (
       <Layout>
-        {isTop && !isMobile ? null : (
+        {isTop && !isMobile  ? null : (
           <SiderMenu
             logo={logo}
             Authorized={Authorized}
             theme={navTheme}
             onCollapse={this.handleMenuCollapse}
+            isUserFetched={this.props.isUserFetched}
             menuData={menuData}
             isMobile={isMobile}
             {...this.props}
@@ -271,20 +332,74 @@ class BasicLayout extends React.PureComponent {
             minHeight: "100vh"
           }}
         >
-          <Header
-            menuData={menuData}
-            handleMenuCollapse={this.handleMenuCollapse}
-            logo={logo}
-            isMobile={isMobile}
-            {...this.props}
-          />
+          { this.props.isUserFetched &&
+              <Header
+              menuData={menuData}
+              handleMenuCollapse={this.handleMenuCollapse}
+              logo={logo}
+              isMobile={isMobile}
+              {...this.props}
+              />
+          }
+          { isMobile &&
+            <div style={{width: "100%", minHeight: "4em",  marginTop:"0.1em", backgroundColor:"white", position: "relative"}}>
+              <div 
+                style={{width: "50%", height: "2em", marginTop:"1em",  marginBottom:"1em", border: "2px #53bab6 solid", borderRadius: "8px", textAlign: "center", position: "absolute", margin: "1em 0 0 25%"}}
+                onClick={this.handleStartSelectArea}
+              >
+                {(shouldShowAreaSelector ? "- " : "+ ") + selectedAreaName}
+              </div>
+
+              {
+                shouldShowAreaSelector && 
+
+                <div style={{marginTop: "4em"}}>
+
+                  <div style= {{ margin: "0.5em 1em", textAlign: "center", border: "2px " + (selectedAreaId === null ? "#53bab6" : "black") + " solid"}} onClick={()=> this.handleSelectArea(null, "all")} > All </div>
+
+                  {areas.map(area =>
+                    {
+                      const border = "2px " + (selectedAreaId === area.id ? "#53bab6" : "black") + " solid";
+
+                      const style = {
+                        textAlign: "center",
+                        border: border,
+                        margin: "0.5em 1em",
+                      }
+
+                      return <div  key={area.id} onClick={()=> this.handleSelectArea(area.id, area.name)} style={style}>
+                        {area.name}
+                      </div>
+                    })
+                  }
+
+                </div>
+              }
+
+
+            </div>
+
+        
+          }
+
           <Content style={this.getContentStyle()}>
-            <Authorized
-              authority={routerConfig && routerConfig.authority}
-              noMatch={<Exception403 />}
-            >
-              {children}
-            </Authorized>
+            
+            {this.state.isMobile ? 
+            
+            
+             this.props.isUserFetched &&
+              <Authorized
+                authority={routerConfig && routerConfig.authority}
+                noMatch={<Exception403 />}
+                isMobile={this.state.isMobile}
+              >
+                {children}
+              </Authorized>
+            : 
+            
+            <TabController {...tasParams } className={"tabController"} />
+            
+            }
           </Content>
           <Footer />
         </Layout>
@@ -292,7 +407,7 @@ class BasicLayout extends React.PureComponent {
     );
     return (
       <React.Fragment>
-        <DocumentTitle title={this.getPageTitle(pathname)}>
+        <DocumentTitle title={pageTitle}>
           <ContainerQuery query={query}>
             {params => (
               <Context.Provider value={this.getContext()}>
@@ -307,8 +422,11 @@ class BasicLayout extends React.PureComponent {
   }
 }
 
-export default connect(({ global, setting }) => ({
+export default connect(({ global, setting, user, areas }) => ({
   collapsed: global.collapsed,
   layout: setting.layout,
+  isUserFetched: user.isUserFetched,
+  areas: areas.data,
+  selectedAreaId: areas.selectedAreaId,
   ...setting
 }))(BasicLayout);

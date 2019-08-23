@@ -55,3 +55,15 @@ export async function updateCoupon(id, params) {
     }
   });
 }
+
+export async function generateCodeCoupon(id, params) {
+  return request(`/admins/coupons/${id}`, {
+    method: "POST",
+    body: {
+      ...params
+    }
+  });
+}
+
+
+
