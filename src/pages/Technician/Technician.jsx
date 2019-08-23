@@ -3,6 +3,8 @@ import { connect } from "dva";
 import moment from "moment";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 import {
+  Row,
+  Col,
   Button,
   Form,
   Modal,
@@ -117,18 +119,84 @@ const PhoneRegisterForm = Form.create()(props => {
   );
 });
 
+const UpdateForm = Form.create()(props => {
+  const {
+    form,
+    modalVisible,
+    handleUpdate,
+    handleModalVisible,
+    areas,
+    record
+  } = props;
+  const okHandle = () => {
+    if (form.isFieldsTouched())
+      form.validateFields((err, fieldsValue) => {
+        if (err) return;
+          form.resetFields();
+
+        handleUpdate(record.id, fieldsValue);
+      });
+    else handleModalVisible();
+  };
+
+  return (
+    <Modal
+      destroyOnClose
+      title="Update"
+      visible={modalVisible}
+      onOk={okHandle}
+      onCancel={() => handleModalVisible()}
+    >
+      <FormItem
+        labelCol={{ span: 7 }}
+        wrapperCol={{ span: 15 }}
+        label="Password"
+      >
+        {form.getFieldDecorator("password")(<Input placeholder="Please Input" />)}
+      </FormItem>
+      
+      {areas && (
+        <FormItem
+          labelCol={{ span: 7 }}
+          wrapperCol={{ span: 15 }}
+          label="Areas"
+        >
+          {form.getFieldDecorator("areaId", {
+            initialValue: record.areaId
+          })( 
+            <Select
+              placeholder="select"
+              style={{ width: "100%" }}
+            >
+              {areas.data.map(area => (
+                <Option key={area.id} value={area.id}>
+                  {area.name}
+                </Option>
+              ))}
+            </Select>
+          )}
+        </FormItem>
+      )}
+      
+    </Modal>
+  );
+});
+
 @connect(({ areas, technicians, loading }) => ({
   areas,
   technicians: technicians.data,
   loading: loading.models.technicians,
-  selectedAreaId: areas.selectedAreaId
+  selectedAreaId: areas.selectedAreaId,
 }))
 @Form.create()
 class Technician extends PureComponent {
   state = {
     registerPhoneModalVisible: false,
     filterCriteria: {},
-    areas: []
+    areas: [],
+    selectedRecord: {},
+    updateModalVisible: false,
+    filterTechnician: []
   };
 
   columns = [
@@ -159,15 +227,26 @@ class Technician extends PureComponent {
     {
       title: "Operation",
       render: (text, record) => (
-        <Popconfirm
-          title="Are You Sure?"
-          icon={<Icon type="question-circle-o" style={{ color: "red " }} />}
-          onConfirm={() => this.handleDelete(record.id)}
-        >
-          <a href="#" style={{ color: "red" }}>
-            Delete
-          </a>
-        </Popconfirm>
+        <div>
+          <Popconfirm
+            title="Are You Sure?"
+            icon={<Icon type="question-circle-o" style={{ color: "red " }} />}
+            onConfirm={() => this.handleDelete(record.id)}
+          >
+            <a href="#" style={{ color: "red" }}>
+              Delete
+            </a>
+          </Popconfirm>
+          
+          <Divider type="vertical" />
+
+          {authority.includes("update.technician") && (
+              <a onClick={() => this.handleUpdateModalVisible(true, record)}>
+                Update
+              </a>
+          )}
+        
+        </div>
       )
     }
   ];
@@ -217,7 +296,8 @@ class Technician extends PureComponent {
 
     dispatch({
       type: "technicians/get",
-      payload: filterCriteria
+      payload: filterCriteria,
+      onSuccess: this.handleSearch
     });
   };
 
@@ -233,26 +313,85 @@ class Technician extends PureComponent {
     this.handleGetAreas();
   }
 
+  handleUpdateModalVisible = (flag, record) => {
+    this.setState({
+      updateModalVisible: !!flag,
+      selectedRecord: record || {}
+    });
+  };
+
+  handleUpdate = (id, fields) => {
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: "technicians/update",
+      payload: fields,
+      id: id,
+      onSuccess: this.handleGetTechnicians
+    });
+
+    this.handleUpdateModalVisible();
+  };
+
+  handleSearch = e => {
+    e && e.preventDefault();
+
+    const { dispatch, form, technicians } = this.props;
+    const { filterCriteria } = this.state;
+
+    let result = technicians;
+
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      
+      if (fieldsValue.name) {
+        result = technicians.filter(technician => (technician.firstName + " " + technician.lastName).includes(fieldsValue.name));
+      }
+
+      this.setState({filterTechnician: result});
+      
+    });
+  };
+
   render() {
-    const { registerPhoneModalVisible } = this.state;
-    const { areas, technicians, loading } = this.props;
+    const { registerPhoneModalVisible , updateModalVisible, selectedRecord, filterTechnician} = this.state;
+    const { areas, technicians, loading , form: { getFieldDecorator }} = this.props;
 
     const phoneRegisterMethods = {
       handleModalVisible: this.handlePhoneRegisterModalVisible,
       handleSubmit: this.handlePhoneRegister
     };
 
+    const updateMethods = {
+      handleModalVisible: this.handleUpdateModalVisible,
+      handleUpdate: this.handleUpdate
+    }
+
     return (
       <PageHeaderWrapper title="Technician List">
         <Card bordered={false}>
-          <Button
-            icon="plus"
-            type="primary"
-            onClick={() => this.handlePhoneRegisterModalVisible(true)}
-            style={{ marginLeft: "0.5em" }}
-          >
-            Add Technician
-          </Button>
+            <Form onSubmit={this.handleSearch} layout="inline">
+              <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+                <Col md={6} sm={24}>
+                  <FormItem label="Name">
+                    {getFieldDecorator("name")(
+                      <Input placeholder="Name" />
+                    )}
+                  </FormItem>
+                </Col>
+                <Col md={6} sm={24}>
+                  <Button
+                    icon="plus"
+                    type="primary"
+                    onClick={() => this.handlePhoneRegisterModalVisible(true)}
+                    style={{ marginLeft: "0.5em" }}
+                  >
+                    Add Technician
+                  </Button>
+                </Col>
+              </Row>
+          </Form>
+         
           <PhoneRegisterForm
             {...phoneRegisterMethods}
             modalVisible={registerPhoneModalVisible}
@@ -261,10 +400,16 @@ class Technician extends PureComponent {
           <StandardTable
             scroll={{ x: 1300 }}
             loading={loading}
-            data={{ list: technicians, pagination: {} }}
+            data={{ list: filterTechnician, pagination: {} }}
             columns={this.columns}
           />
         </Card>
+        <UpdateForm
+          {...updateMethods}
+          modalVisible={updateModalVisible}
+          record={selectedRecord}
+          areas={areas}
+        />
       </PageHeaderWrapper>
     );
   }

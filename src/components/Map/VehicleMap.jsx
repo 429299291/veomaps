@@ -121,8 +121,8 @@ const mapLifeCycle = lifecycle({
 const VehicleMap = compose(
   mapLifeCycle,
     withProps({
-      googleMapURL:
-        "https://maps.googleapis.com/maps/api/js?key=AIzaSyDPnV_7djRAy8m_RuM5T0QIHU5R-07s3Ic&v=3.exp&libraries=geometry,drawing,places,visualization",
+      googleMapURL: 
+        "https://maps.googleapis.com/maps/api/js?key=AIzaSyDdCuc9RtkM-9wV9e3OrULPj67g2CHIdZI&v=3.exp&libraries=geometry,drawing,places,visualization",
       loadingElement: <div style={{ height: `100%` }} />,
       containerElement: <div style={{ height: `800px`}} />,
       mapElement: <div style={{ height: `100%`, width: `100%`}} />

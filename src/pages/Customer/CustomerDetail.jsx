@@ -45,6 +45,17 @@ const vehicleType = ["Bicycle", "Scooter", "E-Bike", "Car"];
 const lockOperationWay = ["GPRS", "BLUETOOTH"];
 const REFUND_TYPE = {"FULL": 0, "CUSTOMER_FAULT": 1, "OTHER": 2};
 
+const REFUND_REASON = ["first timer forgot to lock", "first timer locked outside geofence", "too large/accidental deposit", "locking didn't end trip", 
+"cx no longer lives in market",
+"cx unhappy with geofence/NRZ",
+"cx unhappy w/ family riding",
+"fraud",
+"misc. app glitch",
+"cx phone died",
+"cx couldn't find working ride",
+"accident",
+];
+
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -431,7 +442,9 @@ const RefundForm = Form.create()(props => {
     handleNeedPickupFee,
     selectedCharge,
     handleRefundTypeChange,
-    refundType
+    handleRefundReasonChange,
+    refundType,
+    refundReason
   } = props;
 
   const okHandle = () => {
@@ -443,7 +456,7 @@ const RefundForm = Form.create()(props => {
 
       params.stripeChargeId = selectedCharge.stripeChargeId;
       params.pickupFee = fieldsValue.pickupFee;
-      params.refundNote = fieldsValue.refundNote;
+      params.refundNote = (refundReason ?  refundReason : "") + "|"  + fieldsValue.refundNote;
       switch (refundType) {
         case REFUND_TYPE.FULL:
           params.refundAmount = selectedCharge.amount - (selectedCharge.refundAmount ? selectedCharge.refundAmount : 0);
@@ -464,9 +477,26 @@ const RefundForm = Form.create()(props => {
     });
   };
 
+  const handleNote = val => {
+    const len = val.length;
+
+    const splitNote = val.split("|");
+
+    if (val) {
+      if (splitNote.length == 2) {
+        return "Note: " + splitNote[1] + ". " + "Reason: " + REFUND_REASON[parseInt(splitNote[0], 10)];
+      } else {
+        return val;
+      }
+    } else {
+      return "";
+    }
+  }
+
   const refundNoteColumns = [{
     title: 'Note',
     dataIndex: 'note',
+    render: val => <span>{handleNote(val)}</span>
   }, {
     title: 'Amount',
     dataIndex: 'amount',
@@ -578,6 +608,26 @@ const RefundForm = Form.create()(props => {
           <Option key={0} value={REFUND_TYPE.OTHER}>
             Other
           </Option>
+        </Select>
+
+      </FormItem>
+
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Refund Reason"
+      >
+        <Select
+          placeholder="select"
+          onSelect={value => handleRefundReasonChange(value)}
+          value={refundReason}
+          style={{ width: "100%" }}>
+          {
+            REFUND_REASON.map((item,key) => 
+            <Option key={key} value={key}>
+            {item}
+          </Option>)
+          }
         </Select>
 
       </FormItem>
@@ -908,6 +958,10 @@ class CustomerDetail extends PureComponent {
     this.setState({refundType: type})
   }
 
+  handleRefundReasonChange = reason => {
+    this.setState({refundReason: reason})
+  }
+
   handleGetCoupons = () => {
     const {dispatch} = this.props;
     dispatch({
@@ -1108,7 +1162,8 @@ class CustomerDetail extends PureComponent {
       refundType,
       needPickupFee,
       customerActiveDays,
-      customerTransactions
+      customerTransactions,
+      refundReason
     } = this.state;
 
     const {
@@ -1128,6 +1183,7 @@ class CustomerDetail extends PureComponent {
       handleRefundFormVisible: this.handleRefundFormVisible,
       handleRefund: this.handleRefund,
       handleRefundTypeChange: this.handleRefundTypeChange,
+      handleRefundReasonChange: this.handleRefundReasonChange,
       handleNeedPickupFee: this.handleNeedPickupFee
     };
 
@@ -1201,6 +1257,7 @@ class CustomerDetail extends PureComponent {
                   {...refundMethod}
                   refundType={refundType}
                   needPickupFee={needPickupFee}
+                  refundReason={refundReason}
                 />
               )}
             </Card>}

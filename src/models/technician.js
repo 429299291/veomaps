@@ -1,7 +1,8 @@
 import {
   createTechnician,
   getTechnicians,
-  removeTechnician
+  removeTechnician,
+  upadteTechnician
 } from "@/services/technician";
 import { message } from "antd";
 
@@ -20,14 +21,14 @@ export default {
         response.map(technician => (technician.key = technician.id));
       }
 
-      if (typeof onSuccess === "function") {
-        onSuccess(response);
-      }
-
       yield put({
         type: "save",
         payload: Array.isArray(response) ? response : []
       });
+
+      if (typeof onSuccess === "function") {
+        onSuccess();
+      }
     },
 
     *add({ payload, onSuccess, onError }, { call, put }) {
@@ -51,6 +52,17 @@ export default {
         onSuccess && onSuccess();
       } else {
         message.error(`Failure Removing Technician`);
+        onError && onError();
+      }
+    },
+    *update({ id, payload, onSuccess, onError }, { call, put }) {
+      const response = yield call(upadteTechnician, id, payload);
+
+      if (response) {
+        message.success(`Success Update Technician: ${response}`);
+        onSuccess && onSuccess();
+      } else {
+        message.error(`Failure Update Technician`);
         onError && onError();
       }
     }

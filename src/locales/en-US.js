@@ -318,6 +318,7 @@ export default {
   "app.dashboard.rides-trend": "Riding Trend",
   "app.dashboard.rides-ranking": "Rides/Vehicles Ranking",
   "app.dashboard.customers": "Customers",
+  "app.dashboard.StripeRevenue": "Stripe Revenue",
   "app.dashboard.customers-trend": "Customers Trend",
   "app.dashboard.customers-ranking": "Active Customer% Ranking",
 };

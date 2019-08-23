@@ -4,7 +4,11 @@ import {
   getRidePerVehicleRank,
   getDailyRideCount,
   getDailyBatteryState,
-  getDailyRevenue
+  getStripeDailyRevenue,
+  getDailyRideRevenue,
+  getWeeklyBatteryState,
+  getStripRevenueByPeriod,
+  getConnectivityByPeriod
 } from "@/services/dashboard";
 import { message } from "antd";
 
@@ -16,8 +20,10 @@ export default {
     customerCountData: [],
     ridePerVehicleRank: [],
     dailyRideCount: {},
-    dailyBatteryState: {},
-    stripeRevenue: {}
+    batteryState: {},
+    stripeRevenue: {},
+    dailyRideRevenue: {},
+
   },
 
   effects: {
@@ -35,6 +41,20 @@ export default {
      
     },
 
+    *fetchDailyRideRevenue({params}, { call, put }) {
+      const response = yield call(getDailyRideRevenue, params);
+
+      if (response) {
+        yield put({
+          type: "save",
+          payload: {
+            dailyRideRevenue: response
+          }
+        });
+      }
+     
+    },
+
     *fetchCustomerCount({params}, { call, put }) {
       const response = yield call(getCustomerCount, params);
 
@@ -43,6 +63,34 @@ export default {
           type: "save",
           payload: {
             customerCountData: response
+          }
+        });
+      }
+    },
+
+    *fetchStripRevenueByPeriod({params}, { call, put }) {
+      const response = yield call(getStripRevenueByPeriod, params);
+
+      if (response) {
+
+        yield put({
+          type: "save",
+          payload: {
+            stripeRevenueData: response.map(item =>{return {x: item.x, y: item.y / 100} })
+          }
+        });
+      }
+    },
+
+    *fetchConnectivityByPeriod({params}, { call, put }) {
+      const response = yield call(getConnectivityByPeriod, params);
+
+      if (response) {
+
+        yield put({
+          type: "save",
+          payload: {
+            connectivity: response
           }
         });
       }
@@ -74,21 +122,22 @@ export default {
       }
     },
 
-    *fetchDailyBatteryState({params}, { call, put }) {
-      const response = yield call(getDailyBatteryState, params);
+    *fetchWeeklyBatteryState({params}, { call, put }) {
+      const response = yield call(getWeeklyBatteryState, params);
 
       if (response) {
         yield put({
           type: "save",
           payload: {
-            dailyBatteryState: response
+            batteryState: response
           }
         });
       }
     },
 
-    *fetchRevenue({params}, { call, put }) {
-      const response = yield call(getDailyRevenue, params);
+    *fetchStripeDailyRevenue({params}, { call, put }) {
+      const response = yield call(getStripeDailyRevenue, params);
+
 
       if (response) {
         yield put({
@@ -116,8 +165,9 @@ export default {
         customerCountData: [],
         ridePerVehicleRank: [],
         dailyRideCount: {},
-        dailyBatteryState: {},
-        stripeRevenue: {}
+        batteryState: {},
+        stripeRevenue: {},
+        rideRevenue: {}
       };
     }
   }

@@ -32,4 +32,12 @@
     "Deposit",
   ]
 
-  export { fenceType,  fenceTypeColor, transactionType};
+  const parkingViolationType = [
+    "Normal",
+    "Inside restricted area",
+    "out side geo fence",
+    "outside force parking area",
+    "park no ride zone"
+  ] 
+
+  export { fenceType,  fenceTypeColor, transactionType, parkingViolationType};

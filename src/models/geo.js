@@ -6,8 +6,12 @@ import {
   getAreaCenterByAreaId,
   createAreaCenter,
   updateAreaCenter,
-  deleteAreaCenter
+  deleteAreaCenter,
+  examineParking
 } from "@/services/geo";
+
+import {parkingViolationType} from "@/constant";
+
 import { message } from "antd";
 
 export default {
@@ -19,6 +23,13 @@ export default {
   },
 
   effects: {
+    *examineParkingTest({areaId, imei, location}, {call, put}) {
+      
+      const response = yield call(examineParking, areaId, imei, location.lat, location.lng);  
+
+      message.success(`Parking Violation: ${parkingViolationType[response]}`);
+
+    },
     *getFences({ areaId }, { call, put }) {
       const response = yield call(getFencesByAreaId, areaId);
 
