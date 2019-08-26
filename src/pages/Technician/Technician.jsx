@@ -14,8 +14,6 @@ import {
   Select,
   Divider,
   Popconfirm,
-  Row,
-  Col
 } from "antd";
 import StandardTable from "@/components/StandardTable";
 
@@ -300,7 +298,7 @@ class Technician extends PureComponent {
       type: "technicians/get",
       payload: selectedAreaId
         ? Object.assign({}, filterCriteria, { areaId: selectedAreaId })
-        : filterCriteria
+        : filterCriteria,
       onSuccess: this.handleSearch
     });
   };
