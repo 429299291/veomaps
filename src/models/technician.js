@@ -43,18 +43,6 @@ export default {
         onError && onError();
       }
     },
-
-    *remove({ id, payload, onSuccess, onError }, { call, put }) {
-      const response = yield call(removeTechnician, id);
-
-      if (response) {
-        message.success(`Success Removing Technician: ${response}`);
-        onSuccess && onSuccess();
-      } else {
-        message.error(`Failure Removing Technician`);
-        onError && onError();
-      }
-    },
     *update({ id, payload, onSuccess, onError }, { call, put }) {
       const response = yield call(upadteTechnician, id, payload);
 
