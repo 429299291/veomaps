@@ -19,12 +19,6 @@ export async function createTechnician(technician) {
   });
 }
 
-export async function removeTechnician(technicianId) {
-  return request(`/admins/technicians/${technicianId}`, {
-    method: "DELETE"
-  });
-}
-
 export async function upadteTechnician(technicianId, technician) {
   return request(`/admins/technicians/${technicianId}`, {
     method: "PUT",
@@ -33,6 +27,3 @@ export async function upadteTechnician(technicianId, technician) {
     }
   });
 }
-
-
-
