@@ -51,7 +51,7 @@ const CreateForm = Form.create()(props => {
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="NAME">
+      <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} label="NAME">
         {form.getFieldDecorator("name", {
           rules: [
             {
@@ -63,7 +63,7 @@ const CreateForm = Form.create()(props => {
         })(<Input placeholder="Please Input" />)}
       </FormItem>
       <FormItem
-        labelCol={{ span: 5 }}
+        labelCol={{ span: 7 }}
         wrapperCol={{ span: 15 }}
         label="DESCRIPTION"
       >
@@ -76,6 +76,15 @@ const CreateForm = Form.create()(props => {
             }
           ]
         })(<Input placeholder="Please Input" />)}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 7 }}
+        wrapperCol={{ span: 15 }}
+        label="When I Work ID"
+      >
+        {form.getFieldDecorator("wiwLocationId", {})(
+          <Input placeholder="Please Input" />
+        )}
       </FormItem>
     </Modal>
   );
@@ -108,7 +117,7 @@ const UpdateForm = Form.create()(props => {
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="NAME">
+      <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} label="NAME">
         {form.getFieldDecorator("name", {
           rules: [
             {
@@ -121,7 +130,7 @@ const UpdateForm = Form.create()(props => {
         })(<Input placeholder="Please Input" />)}
       </FormItem>
       <FormItem
-        labelCol={{ span: 5 }}
+        labelCol={{ span: 7 }}
         wrapperCol={{ span: 15 }}
         label="DESCRIPTION"
       >
@@ -134,6 +143,15 @@ const UpdateForm = Form.create()(props => {
             }
           ],
           initialValue: record.description
+        })(<Input placeholder="Please Input" />)}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 7 }}
+        wrapperCol={{ span: 15 }}
+        label="When I Work ID"
+      >
+        {form.getFieldDecorator("wiwLocationId", {
+          initialValue: record.wiwLocationId
         })(<Input placeholder="Please Input" />)}
       </FormItem>
     </Modal>
@@ -170,11 +188,11 @@ class Area extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          {authority.includes("update.area.detail") &&
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>
-            Update
-          </a>}
-
+          {authority.includes("update.area.detail") && (
+            <a onClick={() => this.handleUpdateModalVisible(true, record)}>
+              Update
+            </a>
+          )}
         </Fragment>
       )
     }
@@ -348,7 +366,7 @@ class Area extends PureComponent {
               {this.renderSimpleForm()}
             </div>
             <div className={styles.tableListOperator}>
-              {authority.includes("create.area") &&
+              {authority.includes("create.area") && (
                 <Button
                   icon="plus"
                   type="primary"
@@ -356,8 +374,7 @@ class Area extends PureComponent {
                 >
                   Add
                 </Button>
-              }
-
+              )}
             </div>
             <StandardTable
               loading={loading}
