@@ -27,9 +27,14 @@ export default [
         //authority: "get.dashboard",
         routes: [
           {
-            path: "/dashboard",
+            path: "/dashboard/main",
             name: "dashboard",
             component: "./Dashboard/Dashboard"
+          },
+          {
+            path: "/dashboard/performance",
+            name: "Performance",
+            component: "./Dashboard/Performance"
           }
           // {
           //   path: "/dashboard/analysis",

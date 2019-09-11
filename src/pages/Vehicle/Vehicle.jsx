@@ -1231,7 +1231,6 @@ class Vehicle extends PureComponent {
 
 
     const checkIdleDays = (rule, value, callback) => {
-      console.log(value);
       if (value === undefined || ( value > 0 && Number.isInteger(value))) {
         callback();
         return;

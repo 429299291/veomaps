@@ -85,7 +85,13 @@ export default {
     *fetchConnectivityByPeriod({params}, { call, put }) {
       const response = yield call(getConnectivityByPeriod, params);
 
+
+
+
       if (response) {
+
+
+        response.sort((a, b) => (a.x > b.x) - (a.x < b.x));
 
         yield put({
           type: "save",

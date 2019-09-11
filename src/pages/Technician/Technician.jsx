@@ -14,12 +14,13 @@ import {
   Select,
   Divider,
   Popconfirm,
-  Row,
-  Col
+  DatePicker
 } from "antd";
 import StandardTable from "@/components/StandardTable";
 
 import { getAuthority } from "@/utils/authority";
+
+const { RangePicker } = DatePicker;
 
 const authority = getAuthority();
 
@@ -300,7 +301,7 @@ class Technician extends PureComponent {
       type: "technicians/get",
       payload: selectedAreaId
         ? Object.assign({}, filterCriteria, { areaId: selectedAreaId })
-        : filterCriteria
+        : filterCriteria,
       onSuccess: this.handleSearch
     });
   };
@@ -337,7 +338,7 @@ class Technician extends PureComponent {
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          {/* <Col md={8} sm={24}>
             <FormItem label="Status">
               {getFieldDecorator("queryStatus")(
                 <Select placeholder="select" style={{ width: "100%" }}>
@@ -349,7 +350,7 @@ class Technician extends PureComponent {
                 </Select>
               )}
             </FormItem>
-          </Col>
+          </Col> */}
           <Col md={8} sm={24}>
             <FormItem label="Registered">
               {getFieldDecorator("created")(<RangePicker />)}

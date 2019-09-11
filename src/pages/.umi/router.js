@@ -53,9 +53,15 @@ let routes = [
         "icon": "dashboard",
         "routes": [
           {
-            "path": "/dashboard",
+            "path": "/dashboard/main",
             "name": "dashboard",
             "component": dynamic({ loader: () => import('../Dashboard/Dashboard'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
+            "exact": true
+          },
+          {
+            "path": "/dashboard/performance",
+            "name": "Performance",
+            "component": dynamic({ loader: () => import('../Dashboard/Performance'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
             "exact": true
           },
           {

@@ -61,7 +61,10 @@ export default {
     "POST /api/admins/geo/area_center": "create.center",
     "PUT /api/admins/geo/area_center/{centerId}": "update.center",
     "DELETE /api/admins/geo/area_center/{centerId}": "delete.center",
-    "GET /api/admins/geo/examine_parking_test": "examine.parking"
+    "GET /api/admins/geo/examine_parking_test": "examine.parking",
+    "POST /api/admins/prime-locations": "create.primeLocation",
+    "DELETE /api/admins/prime-locations/{id}": "delete.primeLocation",
+    "GET /api/admins/prime-locations/area/{areaId}": "get.primeLocation.by.areaId",
   },
   "Area Management": {
     "GET /api/admins/areas/{area_id}": "get.area.detail",
@@ -154,5 +157,11 @@ export default {
     "GET /api/admins/dashboard/ride_revenue": "get.ride.revenue",
     "GET /api/admins/dashboard/daily_ride_revenue": "get.daily.ride.revenue",
     "GET /api/admins/dashboard/connectivity": "get.connectivity.by.period"
-  }
+  },
+
+  "Performance": {
+    "GET /api/admins/analytics/analytic-report": "get.area.performance.history",
+    "GET /api/admins/analytics/areas": "get.area.performance.rank",
+  },
+
 };

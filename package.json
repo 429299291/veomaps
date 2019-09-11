@@ -50,11 +50,14 @@
     "react": "^16.5.1",
     "react-container-query": "^0.11.0",
     "react-copy-to-clipboard": "^5.0.1",
+    "react-d3-library": "^1.1.8",
     "react-document-title": "^2.0.3",
     "react-dom": "^16.5.1",
     "react-fittext": "^1.0.0",
     "react-google-maps": "^9.4.5",
     "react-router-dom": "^4.3.1",
+    "react-vis": "^1.11.7",
+    "recharts": "^1.7.1",
     "recompose": "^0.30.0"
   },
   "devDependencies": {

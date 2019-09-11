@@ -7,7 +7,10 @@ import {
   createAreaCenter,
   updateAreaCenter,
   deleteAreaCenter,
-  examineParking
+  examineParking,
+  createPrimeLocation,
+  getPrimeLocationByAreaId,
+  deletePrimeLocation
 } from "@/services/geo";
 
 import {parkingViolationType} from "@/constant";
@@ -19,6 +22,7 @@ export default {
 
   state: {
     fences: [],
+    primeLocations: [],
     area: null
   },
 
@@ -30,6 +34,39 @@ export default {
       message.success(`Parking Violation: ${parkingViolationType[response]}`);
 
     },
+    *addPrimeLocation({ payload, onSuccess, onError }, { call, put }) {
+      const response = yield call(createPrimeLocation, payload); // post
+
+      if (response) {
+        message.success(`Create Success, ID : ${response}`);
+        onSuccess && onSuccess();
+      } else {
+        message.error(`Create Fail.`);
+        onError && onError();
+      }
+    },
+    *getPrimeLocations({ areaId }, { call, put }) {
+      const response = yield call(getPrimeLocationByAreaId, areaId); // get
+
+      const isArray = Array.isArray(response);
+
+      yield put({
+        type: "savePrimeLocations",
+        payload: isArray ? response : []
+      });
+    },
+
+    *removePrimeLocation({ id, onSuccess, onError }, { call, put }) {
+      const response = yield call(deletePrimeLocation, id); // delete
+      if (response) {
+        message.success(`Delete Success, ID : ${response}`);
+        onSuccess && onSuccess();
+      } else {
+        message.error(`Delete Fail!`);
+        onError && onError();
+      }
+    },
+
     *getFences({ areaId }, { call, put }) {
       const response = yield call(getFencesByAreaId, areaId);
 
@@ -65,6 +102,7 @@ export default {
         onError && onError();
       }
     },
+    
     *removeFence({ id, onSuccess, onError }, { call, put }) {
       const response = yield call(deleteFence, id); // delete
       if (response) {
@@ -129,6 +167,12 @@ export default {
       return {
         ...state,
         fences: action.payload
+      };
+    },
+    savePrimeLocations(state, action) {
+      return {
+        ...state,
+        primeLocations: action.payload
       };
     },
     saveCenter(state, action) {

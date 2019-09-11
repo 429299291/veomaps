@@ -343,7 +343,7 @@ getRangeEnd(end) {
   fetchRidePerVehicleRank() {
     const { dispatch, selectedAreaId } = this.props;
 
-    const {rangePickerValue} = this.state;
+    const {rangePickerValue, offset} = this.state;
 
     if (!authority.includes("get.ride.vehicle.rank")) {
       return;
@@ -356,6 +356,7 @@ getRangeEnd(end) {
         { 
           start: rangePickerValue[0].unix(),
           end: rangePickerValue[1].unix(), 
+          offset: offset
         })
     });
   }
@@ -408,6 +409,47 @@ getRangeEnd(end) {
 
   
   };
+
+
+  getRankingBoard = () => {
+
+    const { dashboard, areaNames } = this.props;
+
+  return authority.includes("get.ride.vehicle.rank") &&
+              <Col xl={8} lg={12} md={12} sm={24} xs={24}>
+                  <div className={styles.salesRank}>
+                    <h4 className={styles.rankingTitle}>
+                      <FormattedMessage
+                        id="app.dashboard.rides-ranking"
+                        defaultMessage="Rides Ranking"
+                      />
+                    </h4>
+                    <ul className={styles.rankingList} style={{height:200, marginBottom: "20px", overflow: "scroll"}}>
+                      {dashboard.ridePerVehicleRank.map((item, i) => (
+                        <li key={item.areaId}>
+                          <span
+                            className={`${styles.rankingItemNumber} ${
+                              i < 3 ? styles.active : ""
+                            }`}
+                          >
+                            {i + 1}
+                          </span>
+                          <span
+                            className={styles.rankingItemTitle}
+                            title={areaNames[item.areaId]}
+                          >
+                            {areaNames[item.areaId]}
+                          </span>
+                          <span className={styles.rankingItemValue}>
+                            {numeral(item.avgRides).format("0,0.00")}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </Col>
+  }
+
 
 
   render() {
@@ -477,6 +519,11 @@ getRangeEnd(end) {
         />
       </div>
     );
+
+
+    
+                              
+                 
     
       let dayDiff = this.getRangeEnd(rangePickerValue[1]).diff(rangePickerValue[0], 'days');
 
@@ -653,97 +700,6 @@ getRangeEnd(end) {
               </ChartCard>
             </Col>
           }
-
-          {/* <Col {...topColResponsiveProps}>
-            <ChartCard
-              bordered={false}
-              loading={loading}
-              title={
-                <FormattedMessage
-                  id="app.analysis.payments"
-                  defaultMessage="Payments"
-                />
-              }
-              action={
-                <Tooltip
-                  title={
-                    <FormattedMessage
-                      id="app.analysis.introduce"
-                      defaultMessage="Introduce"
-                    />
-                  }
-                >
-                  <Icon type="info-circle-o" />
-                </Tooltip>
-              }
-              total={numeral(6560).format("0,0")}
-              footer={
-                <Field
-                  label={
-                    <FormattedMessage
-                      id="app.analysis.conversion-rate"
-                      defaultMessage="Conversion Rate"
-                    />
-                  }
-                  value="60%"
-                />
-              }
-              contentHeight={46}
-            >
-              <MiniBar data={visitData} />
-            </ChartCard>
-          </Col>
-          <Col {...topColResponsiveProps}>
-            <ChartCard
-              loading={loading}
-              bordered={false}
-              title={
-                <FormattedMessage
-                  id="app.analysis.operational-effect"
-                  defaultMessage="Operational Effect"
-                />
-              }
-              action={
-                <Tooltip
-                  title={
-                    <FormattedMessage
-                      id="app.analysis.introduce"
-                      defaultMessage="introduce"
-                    />
-                  }
-                >
-                  <Icon type="info-circle-o" />
-                </Tooltip>
-              }
-              total="78%"
-              footer={
-                <div style={{ whiteSpace: "nowrap", overflow: "hidden" }}>
-                  <Trend flag="up" style={{ marginRight: 16 }}>
-                    <FormattedMessage
-                      id="app.analysis.week"
-                      defaultMessage="Weekly changes"
-                    />
-                    <span className={styles.trendText}>12%</span>
-                  </Trend>
-                  <Trend flag="down">
-                    <FormattedMessage
-                      id="app.analysis.day"
-                      defaultMessage="Weekly changes"
-                    />
-                    <span className={styles.trendText}>11%</span>
-                  </Trend>
-                </div>
-              }
-              contentHeight={46}
-            >
-              <MiniProgress
-                percent={78}
-                strokeWidth={8}
-                target={80}
-                color="#13C2C2"
-              />
-            </ChartCard>
-          </Col> */}
         </Row>
 
 
@@ -781,40 +737,7 @@ getRangeEnd(end) {
                       />
                     </div>
                   </Col>
-                 {authority.includes("get.ride.vehicle.rank") &&  
-                  <Col xl={8} lg={12} md={12} sm={24} xs={24}>
-                      <div className={styles.salesRank}>
-                        <h4 className={styles.rankingTitle}>
-                          <FormattedMessage
-                            id="app.dashboard.rides-ranking"
-                            defaultMessage="Rides Ranking"
-                          />
-                        </h4>
-                        <ul className={styles.rankingList} style={{height:200, marginBottom: "20px", overflow: "scroll"}}>
-                          {dashboard.ridePerVehicleRank.map((item, i) => (
-                            <li key={item.areaId}>
-                              <span
-                                className={`${styles.rankingItemNumber} ${
-                                  i < 3 ? styles.active : ""
-                                }`}
-                              >
-                                {i + 1}
-                              </span>
-                              <span
-                                className={styles.rankingItemTitle}
-                                title={areaNames[item.areaId]}
-                              >
-                                {areaNames[item.areaId]}
-                              </span>
-                              <span className={styles.rankingItemValue}>
-                                {numeral(item.avgRides / dayDiff).format("0,0.00")}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </Col>
-                 }
+                 {this.getRankingBoard()}
                 </Row>
               </TabPane> }
               { 
@@ -842,40 +765,7 @@ getRangeEnd(end) {
                         />
                       </div>
                     </Col>
-                    {authority.includes("get.ride.vehicle.rank") &&  
-                      <Col xl={8} lg={12} md={12} sm={24} xs={24}>
-                          <div className={styles.salesRank}>
-                            <h4 className={styles.rankingTitle}>
-                              <FormattedMessage
-                                id="app.dashboard.rides-ranking"
-                                defaultMessage="Rides Ranking"
-                              />
-                            </h4>
-                            <ul className={styles.rankingList} style={{height:200, marginBottom: "20px", overflow: "scroll"}}>
-                              {dashboard.ridePerVehicleRank.map((item, i) => (
-                                <li key={item.areaId}>
-                                  <span
-                                    className={`${styles.rankingItemNumber} ${
-                                      i < 3 ? styles.active : ""
-                                    }`}
-                                  >
-                                    {i + 1}
-                                  </span>
-                                  <span
-                                    className={styles.rankingItemTitle}
-                                    title={areaNames[item.areaId]}
-                                  >
-                                    {areaNames[item.areaId]}
-                                  </span>
-                                  <span className={styles.rankingItemValue}>
-                                    {numeral(item.avgRides / dayDiff).format("0,0.00")}
-                                  </span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                    </Col>
-                    }
+                    {this.getRankingBoard()}
                   </Row>
                   </TabPane> 
               }
@@ -895,40 +785,7 @@ getRangeEnd(end) {
                         />
                       </div>
                     </Col>
-                    {authority.includes("get.ride.vehicle.rank") &&  
-                      <Col xl={8} lg={12} md={12} sm={24} xs={24}>
-                          <div className={styles.salesRank}>
-                            <h4 className={styles.rankingTitle}>
-                              <FormattedMessage
-                                id="app.dashboard.rides-ranking"
-                                defaultMessage="Rides Ranking"
-                              />
-                            </h4>
-                            <ul className={styles.rankingList} style={{height:200, marginBottom: "20px", overflow: "scroll"}}>
-                              {dashboard.ridePerVehicleRank.map((item, i) => (
-                                <li key={item.areaId}>
-                                  <span
-                                    className={`${styles.rankingItemNumber} ${
-                                      i < 3 ? styles.active : ""
-                                    }`}
-                                  >
-                                    {i + 1}
-                                  </span>
-                                  <span
-                                    className={styles.rankingItemTitle}
-                                    title={areaNames[item.areaId]}
-                                  >
-                                    {areaNames[item.areaId]}
-                                  </span>
-                                  <span className={styles.rankingItemValue}>
-                                    {numeral(item.avgRides / dayDiff).format("0,0.00")}
-                                  </span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                    </Col>
-                    }
+                   {this.getRankingBoard()}
                   </Row>
                   </TabPane> 
               }
@@ -947,40 +804,7 @@ getRangeEnd(end) {
                         />
                       </div>
                     </Col>
-                    {authority.includes("get.ride.vehicle.rank") &&  
-                      <Col xl={8} lg={12} md={12} sm={24} xs={24}>
-                          <div className={styles.salesRank}>
-                            <h4 className={styles.rankingTitle}>
-                              <FormattedMessage
-                                id="app.dashboard.rides-ranking"
-                                defaultMessage="Rides Ranking"
-                              />
-                            </h4>
-                            <ul className={styles.rankingList} style={{height:200, marginBottom: "20px", overflow: "scroll"}}>
-                              {dashboard.ridePerVehicleRank.map((item, i) => (
-                                <li key={item.areaId}>
-                                  <span
-                                    className={`${styles.rankingItemNumber} ${
-                                      i < 3 ? styles.active : ""
-                                    }`}
-                                  >
-                                    {i + 1}
-                                  </span>
-                                  <span
-                                    className={styles.rankingItemTitle}
-                                    title={areaNames[item.areaId]}
-                                  >
-                                    {areaNames[item.areaId]}
-                                  </span>
-                                  <span className={styles.rankingItemValue}>
-                                    {numeral(item.avgRides / dayDiff).format("0,0.00")}
-                                  </span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                    </Col>
-                    }
+                    {this.getRankingBoard()}
                   </Row>
                   </TabPane> 
               }

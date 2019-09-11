@@ -312,7 +312,7 @@ const UpdateForm = Form.create()(props => {
         form.resetFields();
 
         if (fieldsValue.areaIds.includes("all")) {
-          fieldsValue.areaIds = areas.map(area => area.id);
+          fieldsValue.areaIds = c.map(area => area.id);
         }
 
         handleUpdate(record.id, fieldsValue);
@@ -557,16 +557,16 @@ class Admin extends PureComponent {
 
             <Divider type="vertical" />
 
-            {authority.includes("delete.admin") && (
+            {authority.includes("update.admin.detail") && (
               <Popconfirm
                 title="Are you Sure？"
                 icon={
-                  <Icon type="question-circle-o" style={{ color: "red" }} />
+                  <Icon type="question-circle-o" style={{ color: record.activated ?  "red" : "green" }} />
                 }
-                onConfirm={() => this.handleDelete(record.id)}
+                onConfirm={() => this.handleUpdate(record.id, Object.assign({}, record, {activated: !record.activated }) )}
               >
-                <a href="#" style={{ color: "red" }}>
-                  Delete
+                <a href="#" style={{ color:  record.activated ? "red" : "green" }}>
+                   {record.activated ?  "Deactivate" : "Activate"}
                 </a>
               </Popconfirm>
             )}

@@ -19,9 +19,9 @@ export function getTimeDistance(type) {
   }
 
   if (type === 'day') {
-    now.setHours(0);
-    now.setMinutes(0);
-    now.setSeconds(0);
+    now.setHours(23);
+    now.setMinutes(59);
+    now.setSeconds(59);
     return [moment(now), moment(now.getTime() + (oneDay - 1000))];
   }
 
@@ -40,7 +40,12 @@ export function getTimeDistance(type) {
 
     const beginTime = now.getTime() - day * oneDay;
 
-    return [moment(beginTime), moment(beginTime + (7 * oneDay - 1000))];
+    //return [moment(beginTime), moment(beginTime + (7 * oneDay - 1000))];
+
+
+    const start = moment(now.getTime() - (6 * oneDay - 1000));
+
+    return [start, moment(now)];
   }
 
   if (type === 'month') {

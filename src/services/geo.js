@@ -1,11 +1,35 @@
 import { stringify } from "qs";
 import request from "@/utils/request";
 
+export async function createPrimeLocation(primeLocation) {
+  return request(`/admins/prime-locations`, {
+    method: "POST",
+    body: {
+      ...primeLocation
+    }
+  });
+}
+
+export async function getPrimeLocationByAreaId(areaId) {
+  return request(`/admins/prime-locations/area/${areaId}`, {
+    method: "GET",
+  });
+}
+
+export async function deletePrimeLocation(id) {
+  return request(`/admins/prime-locations/${id}`, {
+    method: "DELETE",
+  });
+}
+
 export async function getFencesByAreaId(areaId) {
   return request(`/admins/geo/fences?areaId=${areaId}`, {
     method: "GET"
   });
 }
+
+
+
 
 export async function createFence(fence) {
   return request(`/admins/geo/fences`, {
@@ -15,6 +39,8 @@ export async function createFence(fence) {
     }
   });
 }
+
+
 
 export async function examineParking(areaId, imei, lat, lng) {
   return request(`/admins/geo/examine_parking_test?lat=${lat}&lng=${lng}&areaId=${areaId}&imei=${imei}`, {

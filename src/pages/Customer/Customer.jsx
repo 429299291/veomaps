@@ -782,7 +782,7 @@ class Customer extends PureComponent {
     const dateTime = moment().format("LL hh-mm A");
     const exportedFileName = `${
       areaNames[selectedAreaId]
-    }-Customers ${dateTime}`;
+    }-Customers`;
     dispatch({
       type: "customers/getAll",
       payload: filterCriteria,
