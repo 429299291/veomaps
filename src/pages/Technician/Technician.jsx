@@ -13,8 +13,12 @@ import {
   Icon,
   Select,
   Divider,
+<<<<<<< HEAD
   Popconfirm,
   DatePicker
+=======
+  Popconfirm
+>>>>>>> 3e1b7dad113e98e220851087b1d319f49e560501
 } from "antd";
 import StandardTable from "@/components/StandardTable";
 
@@ -135,7 +139,7 @@ const UpdateForm = Form.create()(props => {
     if (form.isFieldsTouched())
       form.validateFields((err, fieldsValue) => {
         if (err) return;
-          form.resetFields();
+        form.resetFields();
 
         handleUpdate(record.id, fieldsValue);
       });
@@ -155,9 +159,11 @@ const UpdateForm = Form.create()(props => {
         wrapperCol={{ span: 15 }}
         label="Password"
       >
-        {form.getFieldDecorator("password")(<Input placeholder="Please Input" />)}
+        {form.getFieldDecorator("password")(
+          <Input placeholder="Please Input" />
+        )}
       </FormItem>
-      
+
       {areas && (
         <FormItem
           labelCol={{ span: 7 }}
@@ -166,11 +172,8 @@ const UpdateForm = Form.create()(props => {
         >
           {form.getFieldDecorator("areaId", {
             initialValue: record.areaId
-          })( 
-            <Select
-              placeholder="select"
-              style={{ width: "100%" }}
-            >
+          })(
+            <Select placeholder="select" style={{ width: "100%" }}>
               {areas.data.map(area => (
                 <Option key={area.id} value={area.id}>
                   {area.name}
@@ -180,7 +183,6 @@ const UpdateForm = Form.create()(props => {
           )}
         </FormItem>
       )}
-      
     </Modal>
   );
 });
@@ -189,7 +191,7 @@ const UpdateForm = Form.create()(props => {
   areas,
   technicians: technicians.data,
   loading: loading.models.technicians,
-  selectedAreaId: areas.selectedAreaId,
+  selectedAreaId: areas.selectedAreaId
 }))
 @Form.create()
 class Technician extends PureComponent {
@@ -233,22 +235,34 @@ class Technician extends PureComponent {
         <div>
           <Popconfirm
             title="Are You Sure?"
-            icon={<Icon type="question-circle-o" style={{ color: "red " }} />}
-            onConfirm={() => this.handleDelete(record.id)}
+            icon={
+              <Icon
+                type="question-circle-o"
+                style={{ color: record.status === 1 ? "red" : "green" }}
+              />
+            }
+            onConfirm={() =>
+              this.handleUpdate(record.id, { status: !record.status * 1 })
+            }
           >
-            <a href="#" style={{ color: "red" }}>
-              Delete
-            </a>
+            {record.status === 1 ? (
+              <a href="#" style={{ color: "red" }}>
+                Deactivate
+              </a>
+            ) : (
+              <a href="#" style={{ color: "green" }}>
+                Activate
+              </a>
+            )}
           </Popconfirm>
-          
+
           <Divider type="vertical" />
 
           {authority.includes("update.technician") && (
-              <a onClick={() => this.handleUpdateModalVisible(true, record)}>
-                Update
-              </a>
+            <a onClick={() => this.handleUpdateModalVisible(true, record)}>
+              Update
+            </a>
           )}
-        
         </div>
       )
     }
@@ -270,16 +284,6 @@ class Technician extends PureComponent {
     });
 
     this.handlePhoneRegisterModalVisible();
-  };
-
-  handleDelete = technicianId => {
-    const { dispatch } = this.props;
-
-    dispatch({
-      type: "technicians/remove",
-      id: technicianId,
-      onSuccess: this.handleGetTechnicians
-    });
   };
 
   handleGetAreas = () => {
@@ -403,19 +407,32 @@ class Technician extends PureComponent {
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      
+
       if (fieldsValue.name) {
-        result = technicians.filter(technician => (technician.firstName + " " + technician.lastName).includes(fieldsValue.name));
+        result = technicians.filter(technician =>
+          (technician.firstName + " " + technician.lastName).includes(
+            fieldsValue.name
+          )
+        );
       }
 
-      this.setState({filterTechnician: result});
-      
+      this.setState({ filterTechnician: result });
     });
   };
 
   render() {
-    const { registerPhoneModalVisible , updateModalVisible, selectedRecord, filterTechnician} = this.state;
-    const { areas, technicians, loading , form: { getFieldDecorator }} = this.props;
+    const {
+      registerPhoneModalVisible,
+      updateModalVisible,
+      selectedRecord,
+      filterTechnician
+    } = this.state;
+    const {
+      areas,
+      technicians,
+      loading,
+      form: { getFieldDecorator }
+    } = this.props;
 
     const phoneRegisterMethods = {
       handleModalVisible: this.handlePhoneRegisterModalVisible,
@@ -425,31 +442,29 @@ class Technician extends PureComponent {
     const updateMethods = {
       handleModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate
-    }
+    };
 
     return (
       <PageHeaderWrapper title="Technician List">
         <Card bordered={false}>
-            <Form onSubmit={this.handleSearch} layout="inline">
-              <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-                <Col md={6} sm={24}>
-                  <FormItem label="Name">
-                    {getFieldDecorator("name")(
-                      <Input placeholder="Name" />
-                    )}
-                  </FormItem>
-                </Col>
-                <Col md={6} sm={24}>
-                  <Button
-                    icon="plus"
-                    type="primary"
-                    onClick={() => this.handlePhoneRegisterModalVisible(true)}
-                    style={{ marginLeft: "0.5em" }}
-                  >
-                    Add Technician
-                  </Button>
-                </Col>
-              </Row>
+          <Form onSubmit={this.handleSearch} layout="inline">
+            <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+              <Col md={6} sm={24}>
+                <FormItem label="Name">
+                  {getFieldDecorator("name")(<Input placeholder="Name" />)}
+                </FormItem>
+              </Col>
+              <Col md={6} sm={24}>
+                <Button
+                  icon="plus"
+                  type="primary"
+                  onClick={() => this.handlePhoneRegisterModalVisible(true)}
+                  style={{ marginLeft: "0.5em" }}
+                >
+                  Add Technician
+                </Button>
+              </Col>
+            </Row>
           </Form>
           <PhoneRegisterForm
             {...phoneRegisterMethods}
