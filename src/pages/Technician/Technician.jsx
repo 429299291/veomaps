@@ -13,12 +13,9 @@ import {
   Icon,
   Select,
   Divider,
-<<<<<<< HEAD
   Popconfirm,
   DatePicker
-=======
-  Popconfirm
->>>>>>> 3e1b7dad113e98e220851087b1d319f49e560501
+
 } from "antd";
 import StandardTable from "@/components/StandardTable";
 

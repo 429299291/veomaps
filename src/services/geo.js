@@ -92,3 +92,5 @@ export async function deleteAreaCenter(id) {
     method: "DELETE"
   });
 }
+
+

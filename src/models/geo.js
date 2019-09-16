@@ -34,6 +34,7 @@ export default {
       message.success(`Parking Violation: ${parkingViolationType[response]}`);
 
     },
+
     *addPrimeLocation({ payload, onSuccess, onError }, { call, put }) {
       const response = yield call(createPrimeLocation, payload); // post
 

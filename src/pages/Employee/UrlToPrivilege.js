@@ -72,7 +72,10 @@ export default {
     "PUT /api/admins/areas/{area_id}": "update.area.detail",
     "GET /api/admins/areas": "get.areas",
     "GET /api/admins/areas/all": "get.all.areas",
-    "POST /api/admins/areas": "create.area"
+    "POST /api/admins/areas": "create.area",
+    "GET /api/admins/areas/features": "get.area.features",
+    "PUT /api/admins/areas/features/{id}": "update.area.feature",
+    "POST /api/admins/areas/features": "create.area.feature",
   },
   "Coupon Management": {
     "DELETE /api/admins/coupons/{couponId}": "delete.coupon",

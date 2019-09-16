@@ -4,7 +4,10 @@ import {
   createArea,
   removeArea,
   updateArea,
-  getAllAreas
+  getAllAreas,
+  getAreaFeatures,
+  updateAreaFeature,
+  createAreaFeature
 } from "@/services/area";
 import { message } from "antd";
 
@@ -14,11 +17,12 @@ export default {
   state: {
     total: 0,
     data: [],
-    selectedAreaId: null
+    selectedAreaId: null,
+    areaFeatures: []
   },
 
   effects: {
-    *get({ payload }, { call, put }) {
+    *get({ payload, onSuccess }, { call, put }) {
       const response = yield call(getAdminAreas, payload);
 
       if (Array.isArray(response)) {
@@ -29,6 +33,11 @@ export default {
         type: "save",
         payload: Array.isArray(response) ? response : []
       });
+
+      if (typeof onSuccess == "function") {
+        onSuccess(response);
+      }
+
     },
     *getAll({ payload, onSuccess }, { call, put }) {
       const response = yield call(getAllAreas, payload);
@@ -77,8 +86,44 @@ export default {
         message.error(`Add Fail.`);
         onError && onError();
       }
+    },
+    *addAreaFeature({ payload, onSuccess, onError }, { call, put }) {
+      const response = yield call(createAreaFeature, payload); // post
+  
+      if (response) {
+        message.success(`Create Success, ID : ${response}`);
+        onSuccess && onSuccess();
+      } else {
+        message.error(`Create Fail.`);
+        onError && onError();
+      }
+    },
+    *getAreaFeaturesEffect({ payload}, { call, put, take}) {
+      const response = yield call(getAreaFeatures); // get
+  
+      const isArray = Array.isArray(response);
+  
+      yield put({
+        type: "saveAreaFeatures",
+        payload: isArray ? response : []
+      });
+    },
+  
+    *updateAreaFeature({ id, payload, onSuccess, onError }, { call, put }) {
+      const response = yield call(updateAreaFeature, id, payload); // put
+  
+      if (response) {
+        message.success(`Update Success, ID : ${response}`);
+        onSuccess && onSuccess();
+      } else {
+        message.error(`Update Fail.`);
+        onError && onError();
+      }
     }
   },
+
+  
+  
 
   reducers: {
     save(state, action) {
@@ -98,6 +143,35 @@ export default {
       return {
         ...state,
         selectedAreaId: action.payload,
+      };
+    },
+    saveAreaFeatures(state, action) {
+
+
+      const areas = state.data;
+
+      const areaFeatures = {};
+
+      action.payload.map(areaFeature => areaFeatures[areaFeature.areaId] = areaFeature)
+      
+
+
+
+     const result = areas.map(area => {
+        if (areaFeatures[area.id]) {
+          area.areaFeature = areaFeatures[area.id];
+        }
+
+
+        return area;
+        
+      })
+
+
+
+      return {
+        ...state,
+        data: result,
       };
     }
   }

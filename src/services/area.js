@@ -40,3 +40,27 @@ export async function updateArea(id, params) {
     }
   });
 }
+
+export async function createAreaFeature(feature) {
+  return request(`/admins/areas/features`, {
+    method: "POST",
+    body: {
+      ...feature
+    }
+  });
+}
+
+export async function updateAreaFeature(featureId, feature) {
+  return request(`/admins/areas/features/${featureId}`, {
+    method: "PUT",
+    body: {
+      ...feature
+    }
+  });
+}
+
+export async function getAreaFeatures() {
+  return request(`/admins/areas/features`, {
+    method: "GET"
+  });
+}
