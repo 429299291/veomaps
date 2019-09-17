@@ -242,7 +242,7 @@ class Technician extends PureComponent {
               this.handleUpdate(record.id, { status: !record.status * 1 })
             }
           >
-            {record.status === 1 ? (
+            {record.status === 0 ? (
               <a href="#" style={{ color: "red" }}>
                 Deactivate
               </a>
