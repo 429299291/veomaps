@@ -120,6 +120,16 @@ const UpdateForm = Form.create()(props => {
 
   return (
     <div>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Vehicle Id"
+      >
+        <div>
+          {record.id}
+        </div>
+      </FormItem>
+
       {errorStatus && (
         <FormItem
           labelCol={{ span: 5 }}
