@@ -101,6 +101,20 @@ export default {
          return ax.getTime() - bx.getTime();
         });
 
+        const vehicleTypes = ['bike', 'scooter', 'ebike']
+
+        vehicleTypes[null] = 'all';
+
+        const formatResponse = response.map(item => {
+            Object.keys(item.y).map(key => {
+              
+              item.y[vehicleTypes[key]] = item.y[key];
+
+              delete item.y[key];
+
+            })
+        }); 
+
         yield put({
           type: "save",
           payload: {

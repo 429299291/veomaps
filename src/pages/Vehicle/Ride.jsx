@@ -100,8 +100,97 @@ const violateTypeColor = ["black", "#ff0000", "#b72126","#1300ff", "#f1fc64"];
 import {fenceType, fenceTypeColor} from "@/constant";
 
 
+const refundReason = ["Other", "Lock Issue", "Accidental Deposit", "No Longer in Market", "Fraud", "Scooter Issue", "App Issue", "Phone Issue"];
 
 const queryStatus = ["FROZEN"];
+
+const RefundForm = Form.create()(props => {
+  const {
+    isModalVisible,
+    handleModalVisible,
+    form,
+    handleRefundRide,
+    ride
+  } = props;
+  const okHandle = () => {
+    form.validateFields((err, fieldsValue) => {
+      if (err) {
+        
+        return; 
+
+      } else {
+        form.resetFields();
+      
+        handleRefundRide(ride.id, fieldsValue);
+      }
+    
+     
+    });
+  };
+
+  return (
+    <Modal
+      destroyOnClose
+      title="Refund Ride"
+      visible={isModalVisible}
+      onOk={() => okHandle()}
+      onCancel={() => handleModalVisible(false)}
+
+    >
+
+    <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Refund Type"
+      >
+        {form.getFieldDecorator("refundType", {
+          initialValue: 1
+        })(<Select >
+            <Option  value={1}>
+                Deposit
+            </Option>
+            <Option  value={2}>
+                Credi Card
+            </Option>
+        </Select>)}
+      </FormItem>
+
+      <FormItem
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 18 }}
+        label="Refund Reason"
+      >
+        {form.getFieldDecorator("refundReason", {
+          initialValue: 1
+        })(<Select  style={{ width: 200 }}>
+             {refundReason.map((reason, index) => (
+                    <Option key={index} value={index}>
+                      {reason}
+                    </Option>
+            ))}
+        
+        </Select>)}
+      </FormItem>
+      {form.getFieldValue("refundReason") === 0 && <FormItem
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 15 }}
+          label="Notes"
+        >
+          {form.getFieldDecorator("note", {
+            rules: [
+              {
+                required: true,
+                message: "note can't be empty",
+                max: 50,
+                min: 1
+              }
+            ]
+          })(<TextArea autosize={{ minRows: 3, maxRows: 10 }} />)}
+      </FormItem> }
+    </Modal>
+  );
+});
+
 
 const EndRideForm = Form.create()(props => {
   const {
@@ -235,7 +324,7 @@ class Ride extends PureComponent {
   state = {
     isEndRideVisible: false,
     filterCriteria: { currentPage: 1, pageSize: 10 },
-    selectedRecord: null
+    selectedRecord: null,
   };
 
   columns = [
@@ -285,7 +374,9 @@ class Ride extends PureComponent {
 
         const endTime = val ?  moment(val).format("YYYY-MM-DD HH:mm:ss") : "not finished";
 
-        const endBy = record.metaData && JSON.parse(record.metaData).adminEmail;
+        const metaData = JSON.parse(record.metaData);
+
+        const endBy = metaData && metaData.adminEmail;
 
         return <span>{endTime + (endBy ? ("|" + endBy) : "")}</span>
         
@@ -307,11 +398,22 @@ class Ride extends PureComponent {
               End Ride
             </a>
           )}
-          {!record.end && <Divider type="vertical" />}
+         
+         <Divider type="vertical" />
+          
+          {this.isRideRefundable(record) && (
+              
+              <a onClick={() => this.handleRefundModalVisible(true, record)}>
+                Refund
+              </a>
+          )}
 
-          <a onClick={() =>  this.handleDetailModalVisible(true, record)}>
-            Detail
-          </a>
+          <Divider type="vertical" />
+
+            <a onClick={() =>  this.handleDetailModalVisible(true, record)}>
+              Detail
+            </a>
+
         </Fragment>
       )
     }
@@ -321,6 +423,14 @@ class Ride extends PureComponent {
     this.handleSearch();
   }
    
+
+  isRideRefundable = (ride) => {
+
+    const meta = JSON.parse(ride.metaData);
+
+    return (authority.includes("refund.ride")) && ride.end && (!meta || !meta.refunded);
+
+  }
 
   
 
@@ -422,6 +532,15 @@ class Ride extends PureComponent {
 
   handleCustomerDetailModalVisible = flag => this.setState({customerDetailModalVisible: flag})
 
+  handleRefundModalVisible = (flag, record) => {
+
+    this.setState({
+      isRefundModalVisible: !!flag,
+      selectedRecord: record
+    });
+
+  }
+
   handleDetailModalVisible = (flag, record) => {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
@@ -481,7 +600,7 @@ class Ride extends PureComponent {
       type: "rides/endRide",
       rideId: rideId,
       minutes: minutes,
-      onSuccess: () => this.handleGetRides()
+      onSuccess: this.handleGetRides
     });
     this.handleEndRideVisible();
   };
@@ -500,11 +619,28 @@ class Ride extends PureComponent {
       type: "rides/update",
       payload: fields,
       id: id,
-      onSuccess: this.handleGetRides
+      onSuccess: () => this.handleGetRides()
     });
 
     this.handleUpdateModalVisible();
   };
+
+
+  handleRefundRide = (rideId, fieldValues) => {
+    const { dispatch } = this.props;
+
+    if (!authority.includes("refund.ride"))
+      return;
+
+    dispatch({
+      type: "rides/refund",
+      payload: fieldValues,
+      id: rideId,
+      onSuccess: this.handleGetRides
+    });
+
+    this.handleRefundModalVisible();
+  }
 
   renderSimpleForm() {
     const {
@@ -698,7 +834,8 @@ class Ride extends PureComponent {
       selectedVehicleId,
       customerDetailModalVisible,
       selectedCustomerId,
-      rideImageUrl
+      rideImageUrl,
+      isRefundModalVisible
     } = this.state;
 
     const endRideMethod = {
@@ -712,8 +849,6 @@ class Ride extends PureComponent {
       pageSize: filterCriteria.pageSize,
       total: rides.total
     };
-
-    console.log(rideImageUrl);
 
     return (
       <PageHeaderWrapper title="Ride List">
@@ -792,6 +927,16 @@ class Ride extends PureComponent {
             handleGetRides={this.handleGetRides}
           />
         )}
+
+      {isRefundModalVisible && 
+        <RefundForm 
+          isModalVisible={isRefundModalVisible}
+          handleModalVisible={this.handleRefundModalVisible}
+          handleRefundRide={this.handleRefundRide}
+          ride={selectedRecord}
+        />
+      }
+
       </PageHeaderWrapper>
     );
   }

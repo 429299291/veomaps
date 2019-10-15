@@ -111,6 +111,8 @@ const AreaFeatureForm = Form.create()(props => {
 
   const areaFeatureId = record.areaFeature && record.areaFeature.id;
 
+  const isEditable = authority.includes("update.area.feature" ) && authority.includes("create.area.feature");
+
   const okHandle = () => {
     if (form.isFieldsTouched())
       form.validateFields((err, fieldsValue) => {
@@ -206,54 +208,54 @@ const AreaFeatureForm = Form.create()(props => {
     <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Lincense Check Activated">
         {form.getFieldDecorator("driverLicenseActivated", {
           valuePropName: 'checked',
-          initialValue: lincenseActivated ? true : false
-        })(<Switch   />)}
+          initialValue: lincenseActivated ? true : false,
+        })(<Switch  disabled={!isEditable} />)}
       </FormItem>
       <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Edu Ride Activated">
         {form.getFieldDecorator("eduRideActivated", {
           valuePropName: 'checked',
           initialValue: eduRideActivated ? true : false
-        })(<Switch   />)}
+        })(<Switch  disabled={!isEditable} />)}
       </FormItem>
       <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="End Ride Photo Activated">
         {form.getFieldDecorator("endRidePhotoActivated", {
           valuePropName: 'checked',
           initialValue: endRidePhotoActivated ? true : false
-        })(<Switch   />)}
+        })(<Switch  disabled={!isEditable} />)}
       </FormItem>
 
       <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Membership Activated">
         {form.getFieldDecorator("membershipActivated", {
           valuePropName: 'checked',
           initialValue: (membershipActivated === undefined || membershipActivated) ? true : false
-        })(<Switch   />)}
+        })(<Switch  disabled={!isEditable}   />)}
       </FormItem>
       
       <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Free Time Activated">
         {form.getFieldDecorator("freeTimeActivated", {
           valuePropName: 'checked',
           initialValue: freeTimeActivated ? true : false
-        })(<Switch   />)}
+        })(<Switch  disabled={!isEditable}  />)}
        
       </FormItem>
       {form.getFieldValue("freeTimeActivated") &&
           <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Free Ride Config">
           {form.getFieldDecorator("freeRideConfig", {
             initialValue: freeRideConfig
-          })( <InputNumber placeholder="Number of Free Rides" /> )}
+          })( <InputNumber placeholder="Number of Free Rides" disabled={!isEditable}  /> )}
         </FormItem>
         }
       <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Hold Ride Activated">
         {form.getFieldDecorator("holdRideActivated", {
           initialValue: holdRideActivated ? true : false,
           valuePropName: 'checked',
-        })(<Switch   />)}
+        })(<Switch  disabled={!isEditable}  />)}
       </FormItem>
       <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Time Limit Activated">
         {form.getFieldDecorator("timeLimitActivated", {
           initialValue: timeLimitActivated ? true : false,
           valuePropName: 'checked'
-        })(<Switch   />)}
+        })(<Switch  disabled={!isEditable}  />)}
       </FormItem>
         {form.getFieldValue("timeLimitActivated") && 
       
@@ -267,7 +269,7 @@ const AreaFeatureForm = Form.create()(props => {
                     message: "start time is required",
                   }
                 ]
-              })(<Input placeholder="1230"   />)}
+              })(<Input placeholder="1230" disabled={!isEditable}   />)}
             </FormItem>
             <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} label="SERVICE END">
               {form.getFieldDecorator("serviceTimeConfigEnd", {
@@ -278,7 +280,7 @@ const AreaFeatureForm = Form.create()(props => {
                     message: "end time is required",
                   }
                 ]
-              })(<Input placeholder="1230"  />)}
+              })(<Input placeholder="1230" disabled={!isEditable}  />)}
             </FormItem>
             <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} label="TIME ZONE">
               {form.getFieldDecorator("serviceTimeOffset", {
@@ -286,7 +288,7 @@ const AreaFeatureForm = Form.create()(props => {
                 rules: [{
                   validator: checkTimeOffset
                 }]
-              })(<Select placeholder="-500 for chicago time" > 
+              })(<Select placeholder="-500 for chicago time" disabled={!isEditable}  > 
                   <Option value={-400}> Eastern Time Zone</Option>
                   <Option value={-500}> Central Time Zone </Option>
                   <Option value={-600}> Mountain Time Zone</Option>
@@ -298,7 +300,7 @@ const AreaFeatureForm = Form.create()(props => {
               {form.getFieldDecorator("serviceTimeForceEndRide", {
                 initialValue: serviceTimeForceEndRide ? true : false,
                 valuePropName: 'checked',
-              })(<Switch   />)}
+              })(<Switch  disabled={!isEditable}  />)}
             </FormItem>
           </div>
       }
@@ -309,14 +311,14 @@ const AreaFeatureForm = Form.create()(props => {
         {form.getFieldDecorator("promptActivated", {
           initialValue: !!promptActivated,
           valuePropName: 'checked',
-        })(<Switch   />)}
+        })(<Switch  disabled={!isEditable}  />)}
       </FormItem>
 
       {(form.getFieldValue("promptActivated")) && 
         <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} label="Prompt Config">
           {form.getFieldDecorator("promptConfig", {
             initialValue: promptConfig && promptConfig.join("\n")
-          })( <TextArea autosize={{ minRows: 3, maxRows: 10 }} />  )}
+          })( <TextArea autosize={{ minRows: 3, maxRows: 10 }} disabled={!isEditable} />  )}
         </FormItem> 
       }
       
@@ -429,7 +431,7 @@ class Area extends PureComponent {
             </a>
           )}
           <Divider type="vertical" />
-          {authority.includes("get.area.features" && "update.area.feature" && "create.area.feature") && <a onClick={() => this.handleDetailModalVisible(true, record)}>
+          {authority.includes("get.area.features") && <a onClick={() => this.handleDetailModalVisible(true, record)}>
               Detail
           </a>}
         </Fragment>

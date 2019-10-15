@@ -4,6 +4,7 @@ import Debounce from 'lodash-decorators/debounce';
 import Bind from 'lodash-decorators/bind';
 import autoHeight from '../autoHeight';
 import styles from '../index.less';
+import DataSet from "@antv/data-set";
 
 @autoHeight()
 class Bar extends Component {
@@ -26,6 +27,59 @@ class Bar extends Component {
   handleRef = n => {
     this.node = n;
   };
+
+
+  isStackChartData = data => (data.length > 0) && (typeof data[0].y === 'object');
+
+  handleData = data => {
+
+    let result = data;
+
+    if (this.isStackChartData(data)) {
+
+      result = {}
+
+      const fields = []
+
+      const finalResult = [];
+
+      data.map(item => {
+        if (item.y && Object.keys(item.y).length > 1) {
+          delete item.y['all'];
+        }
+        fields.push(item.x);
+
+      });
+
+      data.map(item => {
+        Object.keys(item.y).map(key => {
+
+          if (!result[key]) {
+            result[key] = {};
+            result[key].name = key;
+          } 
+
+          result[key][item.x] = Math.round(item.y[key] * 100) / 100 ;
+
+        }) 
+       
+      });
+
+      const ds = new DataSet();
+      const dv = ds.createView().source(Object.values(result));
+      dv.transform({
+        type: "fold",
+        fields: fields,
+        key: "x",
+        value: "y" 
+      });
+      
+      return dv;
+
+    } 
+
+    return result;
+  }
 
   @Bind()
   @Debounce(400)
@@ -75,6 +129,8 @@ class Bar extends Component {
       },
     };
 
+    const isStackData = this.isStackChartData(data);
+
     const tooltip = [
       'x*y',
       (x, y) => ({
@@ -91,7 +147,7 @@ class Bar extends Component {
             scale={scale}
             height={title ? height - 41 : height}
             forceFit={forceFit}
-            data={data}
+            data={this.handleData(data)}
             padding={padding || 'auto'}
           >
             <Axis
@@ -100,9 +156,9 @@ class Bar extends Component {
               label={autoHideXLabels ? false : {}}
               tickLine={autoHideXLabels ? false : {}}
             />
-            <Axis name="y" min={0} />
-            <Tooltip showTitle={false} crosshairs={false} />
-            <Geom type="interval" position="x*y" color={color} tooltip={tooltip} />
+            <Axis name="y" min={0} /> 
+            <Tooltip showTitle={isStackData} crosshairs={false} />
+            <Geom type={isStackData ? "intervalStack" : "interval"} position="x*y" color={isStackData ? 'name' : color} tooltip={isStackData ? undefined : tooltip} />
           </Chart>
         </div>
       </div>

@@ -50,7 +50,8 @@ export default {
     "PUT /api/admins/rides/{rideId}/end": "end.ride",
     "GET /api/admins/rides/{rideId}/route": "get.ride.route",
     "GET /api/admins/rides/{areaId}/start_points": "get.area.start.points",
-    "GET /api/admins/rides/{ride_id}/image": "get.ride.image"
+    "GET /api/admins/rides/{ride_id}/image": "get.ride.image",
+    "POST /api/admins/rides/{rideId}/refund": "refund.ride"
   },
   "Geo Management": {
     "GET /api/admins/geo/fences": "get.fences",

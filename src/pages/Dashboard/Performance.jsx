@@ -6,6 +6,9 @@ import numeral from "numeral";
 import Button from 'antd/lib/button';
 import DataSet from "@antv/data-set";
 import styles from "./Performance.less";
+
+
+
 // import '../node_modules/react-vis/dist/style.css';
 // import {XYPlot, LineSeries} from 'react-vis';
 import {
@@ -23,7 +26,12 @@ import {
       ResponsiveContainer
 } from 'recharts';
 
+import {
+  Bar as CustomBar
+} from "@/components/Charts";
+
 const authority = getAuthority();
+
 
 const BAR_GAP = 4;
 const BAR_SIZE = 20;
@@ -75,7 +83,8 @@ const scoreMetaByKey = {
     state = {
       rangePickerValue: getTimeDistance("month"),
       offset: 0,
-      countParams:  {filter: 'day'}
+      countParams:  {filter: 'day'},
+      chartType: "summary"
     };
 
     componentDidMount() {
@@ -209,6 +218,16 @@ const scoreMetaByKey = {
       );
     }
 
+    convertHistoryDataForBar = history => {
+      const { chartType } = this.state;
+
+     const result = history.map(origin => {
+         return {y: origin[chartType], x: origin.period}    
+      })
+
+      
+      return result;
+    }
 
     selectDate = type => {
       const { dispatch } = this.props;
@@ -229,7 +248,8 @@ const scoreMetaByKey = {
 
       const {
         rangePickerValue,
-        areaIsChanged
+        areaIsChanged,
+        chartType
       } = this.state;
 
       return <GridContent >
@@ -248,22 +268,26 @@ const scoreMetaByKey = {
                     <div className={styles.scoreBar}>
 
                     <Row>
-                      <Col span={12}>
+                      <Col xl={12} lg={12} md={12} sm={24} xs={24}>
                         <p style={{ marginBottom: 20, marginLeft: "2em", font: "1.2em bold", color: "black" }}>{`${selectedAreaId > 0 ? areaNames[selectedAreaId] : "All Area"} Performance By Date`}  </p>
                       </Col>
-                      {/* <Col span={12}>
-                        <Select defaultValue="Final Score" >
+                       <Col xl={12} lg={12} md={12} sm={24} xs={24} >
+                        <Select defaultValue="summary" style={{position:"absolute", right: "40px", width: "60%", fontSize: "0.8em"}} onChange={val=>this.setState({chartType: val})}>
                             {Object.keys(scoreMetaByKey).map(key =>
-                              <Option key={key} value={key}>
+                              <Option key={key} value={key} style={{fontSize: "0.8em"}}> 
                                   {scoreMetaByKey[key].name}
                               </Option>) 
                             }
+                            <Option key="Summary" value={"summary"} style={{fontSize: "0.8em"}}> 
+                              Summary
+                            </Option>
                         </Select>
-                      </Col> */}
+                      </Col> 
 
                     </Row>
 
-                    <ResponsiveContainer  width="95%" height={400} >
+
+                   <ResponsiveContainer  width="95%" height={400} >
 
                           <ComposedChart
                             data={performance.historyData}
@@ -279,7 +303,7 @@ const scoreMetaByKey = {
                               <Tooltip formatter={(value, key, props) =>  [ `${Math.round(value * 100) / 100}%` , scoreMetaByKey[key].name] } />
                               <ReferenceLine y={-100} stroke="#000" />
 
-                              {
+                              {chartType === "summary" &&
                                 Object.keys(scoreMetaByKey).map(key =>{ 
                                   if (key !== "finalScore") {
                                     const scoreMeta = scoreMetaByKey[key];
@@ -287,10 +311,14 @@ const scoreMetaByKey = {
                                   }
                                 })
                               }
+                              {chartType !== "summary" &&
+                                <Bar dataKey={chartType} key={chartType}  fill={scoreMetaByKey[chartType].color}/> 
+                              }
 
                               <Line type="monotone" dataKey="finalScore" stroke={scoreMetaByKey.finalScore.color}/>
                           </ComposedChart>
                       </ResponsiveContainer>
+
                     </div>
                   </Col>}
                  {authority.includes("get.area.performance.rank") && 
@@ -315,7 +343,7 @@ const scoreMetaByKey = {
                                   
                                   <XAxis type="number" hide/>
                                   <YAxis type="category"  dataKey="areaName" tick={{fontWeight: "bold", fontSize: "0.8em"}} />
-                                  <Tooltip formatter={(value, key, props) =>  [Math.round(value * 100) / 100 , scoreMetaByKey[key].name] } />
+                                  <Tooltip formatter={(value, key, props) =>  [`${Math.round(value * 100) / 100}%`, scoreMetaByKey[key].name] } />
                                   <ReferenceLine y={-100} stroke="#000" />
                                   {
                                     Object.keys(scoreMetaByKey).map(key =>{ 
@@ -339,17 +367,16 @@ const scoreMetaByKey = {
                       data={performance.rankingData.map((item, index )=> Object.assign(item, {areaName: `${index + 1}. ${areaNames[item.areaId]}`}))}
                     
                     >
-                    <XAxis type="number" hide/>
-                                  <YAxis type="category"  dataKey="areaName" tick={{fontWeight: "bold"}} hide />
+                        <XAxis type="number" hide/>
+                        <YAxis type="category"  dataKey="areaName" tick={{fontWeight: "bold"}} hide />
+                        <Tooltip formatter={(value, key, props) =>  [ `${Math.round(value * 100) / 100}%` , scoreMetaByKey[key].name] } />
                         <Legend formatter={(value, entry, index) =>  <span> {scoreMetaByKey[value].name} </span> } />
                         {
                                     Object.keys(scoreMetaByKey).map(key =>{ 
-                                      if (key !== "finalScore") {
                                         const scoreMeta = scoreMetaByKey[key];
                                         return <Bar dataKey={key} key={key} stackId="a" fill={scoreMeta.color}/> 
-                                      }
                                     })
-                                  }
+                            }
 
                     </BarChart>
                   </ResponsiveContainer>

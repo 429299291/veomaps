@@ -16,6 +16,16 @@ export async function getAdminRidesTotal(params) {
   );
 }
 
+export async function refundRide(id,fieldValues ) {
+  return request(
+    `/admins/rides/${id}/refund`,
+    {
+      method: "POST",
+      body: fieldValues
+    }
+  );
+}
+
 export async function getRideRoute(rideId) {
   return request(`/admins/rides/${rideId}/route`, {
     method: "GET"

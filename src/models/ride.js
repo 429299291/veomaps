@@ -8,7 +8,8 @@ import {
   getRideRoute,
   getRideImage,
   endRide,
-  getCustomerRides
+  getCustomerRides,
+  refundRide
 } from "@/services/ride";
 import { message } from "antd";
 
@@ -36,6 +37,18 @@ export default {
         total: total
       });
     },
+
+    *refund({ id , payload, onSuccess }, { call, put }) {
+      const isSuccess = yield call(refundRide, id,  payload);
+
+      if (isSuccess) {
+        onSuccess();
+        message.success("Successfuly Refund this Ride.");
+      } else {
+        message.error("Fail to Refund this Ride");
+      }
+    },
+
     *getAll({ payload, onSuccess }, { call, put }) {
 
       const data = yield call(getAdminRides, payload);

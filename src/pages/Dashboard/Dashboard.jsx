@@ -116,7 +116,7 @@ class Dashboard extends Component {
         this.loadWeeklyBatteryStatus();
         this.loadDailyRideRevenue();
         this.setState({areaIsChanged: false});
-      },5000);
+      },10000);
 
     });
   }

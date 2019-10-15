@@ -312,7 +312,7 @@ const UpdateForm = Form.create()(props => {
         form.resetFields();
 
         if (fieldsValue.areaIds.includes("all")) {
-          fieldsValue.areaIds = c.map(area => area.id);
+          fieldsValue.areaIds = areas.map(area => area.id);
         }
 
         handleUpdate(record.id, fieldsValue);
