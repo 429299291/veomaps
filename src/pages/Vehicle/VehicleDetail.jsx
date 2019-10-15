@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from "react";
+import React, { PureComponent, Fragment, useState } from "react";
 import { connect } from "dva";
 import moment from "moment";
 import {
@@ -21,7 +21,8 @@ import {
   Steps,
   Radio,
   Popconfirm,
-  Table
+  Slider,
+  Table,
 } from "antd";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 import { getAuthority } from "@/utils/authority";
@@ -42,7 +43,7 @@ const { TextArea } = Input;
 const { Option } = Select;
 const RadioGroup = Radio.Group;
 
-import {fenceType, fenceTypeColor} from "@/constant";
+import { fenceType, fenceTypeColor } from "@/constant";
 
 const authority = getAuthority();
 
@@ -62,7 +63,7 @@ const lockOperationWay = ["GPRS", "BLUETOOTH"];
 
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-const vehicleOrders = ["","sign in", "heart", "unlock", "lock", "location", "info", "find", "version", "ip", "error", "alert", "heart period", "iccid", "shut down","ok","mac info", "connect", "disconnect", "version update", "Report", "External Device"];
+const vehicleOrders = ["", "sign in", "heart", "unlock", "lock", "location", "info", "find", "version", "ip", "error", "alert", "heart period", "iccid", "shut down", "ok", "mac info", "connect", "disconnect", "version update", "Report", "External Device"];
 
 
 const EndRideForm = Form.create()(props => {
@@ -104,6 +105,250 @@ const EndRideForm = Form.create()(props => {
   );
 });
 
+const VehicleControlForm = Form.create()(props => {
+  const okHandle = () => {
+    if (form.isFieldsTouched())
+      form.validateFields((err, fieldsValue) => {
+        if (err) return;
+        form.resetFields();
+
+        handleControl(record.id, fieldsValue);
+      });
+  };
+
+  const {
+    form,
+    record,
+    handleControl,
+  } = props;
+
+  const marks = {
+    0: 'Not Set',
+    6: '6',
+    7: '7',
+    8: '8',
+    9: '9',
+    10: '10',
+    11: '11',
+    12: '12',
+    13: '13',
+    14: '14',
+    15: '15',
+    16: '16',
+    17: '17',
+    18: '18',
+    19: '19',
+    20: '20',
+    21: '21',
+    22: '22',
+    23: '23',
+    24: '24',
+    25: '25',
+  }
+
+  return (
+    <div>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Light"
+      >
+        {form.getFieldDecorator("changeLight", {
+        })(
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Not Set</Option>
+            <Option value={1}>Off</Option>
+            <Option value={2}>On</Option>
+          </Select>
+        )}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Mode"
+      >
+        {form.getFieldDecorator("changeMode", {
+        })(
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Not Set</Option>
+            <Option value={1}>Off</Option>
+            <Option value={2}>On</Option>
+          </Select>
+        )}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Cruise Control"
+      >
+        {form.getFieldDecorator("cruiseControl")(
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Not Set</Option>
+            <Option value={1}>Off</Option>
+            <Option value={2}>On</Option>
+          </Select>
+        )}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Inch Status"
+      >
+        {form.getFieldDecorator("inchStatus")(
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Not Set</Option>
+            <Option value={1}>Off</Option>
+            <Option value={2}>On</Option>
+          </Select>
+        )}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Start Type"
+      >
+        {form.getFieldDecorator("startType", {
+        })(
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Not Set</Option>
+            <Option value={1}>Non-Zero Start</Option>
+            <Option value={2}>Zero Start</Option>
+          </Select>
+        )}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="High Speed Limit"
+      >
+        {form.getFieldDecorator("highSpeedLimit", {
+        })(
+          <Slider defaultValue={0} max={25} step={null} marks={marks} />
+        )}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Med Speed Limit"
+      >
+        {form.getFieldDecorator("midSpeedLimit", {
+        })(
+          <Slider defaultValue={0} max={25} step={null} marks={marks} />
+        )}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Low Speed Limit"
+      >
+        {form.getFieldDecorator("lowSpeedLimit", {
+        })(
+          <Slider defaultValue={0} max={25} step={null} marks={marks} />
+        )}
+      </FormItem>
+      <Button
+        icon="plus"
+        type="primary"
+        onClick={okHandle}
+        disabled={!form.isFieldsTouched() && !authority.includes("vehicle.control.extension")}
+        style={{ marginRight: "1em", marginTop: "0.5em" }}
+      >
+        Update Control
+      </Button>
+    </div>
+  );
+});
+
+const VehicleControlExtensionForm = Form.create()(props => {
+  const okHandle = () => {
+    if (form.isFieldsTouched())
+      form.validateFields((err, fieldsValue) => {
+        if (err) return;
+        form.resetFields();
+
+        handleControlExtension(record.id, fieldsValue);
+      });
+  };
+
+  const {
+    form,
+    record,
+    handleControlExtension,
+  } = props;
+
+  return (
+    <div>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Headlight"
+      >
+        {form.getFieldDecorator("headLight", {
+        })(
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Not Set</Option>
+            <Option value={1}>Off</Option>
+            <Option value={2}>On</Option>
+          </Select>
+        )}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Taillight"
+      >
+        {form.getFieldDecorator("tailLight", {
+        })(
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Not Set</Option>
+            <Option value={1}>Off</Option>
+            <Option value={2}>On</Option>
+          </Select>
+        )}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Speed Mode"
+      >
+        {form.getFieldDecorator("speedMode", {
+        })(
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Not Set</Option>
+            <Option value={1}>Low Speed</Option>
+            <Option value={2}>Medium Speed</Option>
+            <Option value={3}>High Speed</Option>
+          </Select>
+        )}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Throttle"
+      >
+        {form.getFieldDecorator("throttleStatus", {
+        })(
+          <Select defaultValue='Not Set' placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Not Set</Option>
+            <Option value={1}>Off</Option>
+            <Option value={2}>On</Option>
+          </Select>
+        )}
+      </FormItem>
+      <Button
+        icon="plus"
+        type="primary"
+        onClick={okHandle}
+        disabled={!form.isFieldsTouched() && !authority.includes("vehicle.control.extension")}
+        style={{ marginRight: "1em", marginTop: "0.5em" }}
+      >
+        Update Control Extension
+      </Button>
+    </div>
+  )
+});
+
+
 const UpdateForm = Form.create()(props => {
   const { form, handleUpdate, areas, record, changeLockStatus, updateLocation, alertVehicle, getVehicleStatus, restartVehicle } = props;
   const okHandle = () => {
@@ -115,8 +360,6 @@ const UpdateForm = Form.create()(props => {
         handleUpdate(record.id, fieldsValue);
       });
   };
-
-
 
   return (
     <div>
@@ -138,8 +381,8 @@ const UpdateForm = Form.create()(props => {
         >
           <div>
 
-            
-            {form.getFieldDecorator("errorStatus",{
+
+            {form.getFieldDecorator("errorStatus", {
               rules: [
                 {
                   required: true,
@@ -148,24 +391,24 @@ const UpdateForm = Form.create()(props => {
               ],
               initialValue: record.errorStatus
             })(
-              <Select placeholder="select" style={{ width: "100%" }}> 
-              
+              <Select placeholder="select" style={{ width: "100%" }}>
+
                 <Option value={0} >Normal</Option>
 
                 <Option value={1} >Error</Option>
 
                 <Option disabled={true} value={3} >Deativated</Option>
 
-                <Option disabled={true}  value={5} >Rebalance</Option>
+                <Option disabled={true} value={5} >Rebalance</Option>
 
-                <Option disabled={true}  value={6} >Maintain</Option>
+                <Option disabled={true} value={6} >Maintain</Option>
 
-                <Option disabled={true}  value={7} >Out of Service</Option>
+                <Option disabled={true} value={7} >Out of Service</Option>
 
-                
-            </Select>
+
+              </Select>
             )}
-            
+
           </div>
         </FormItem>
       )}
@@ -240,7 +483,7 @@ const UpdateForm = Form.create()(props => {
             type="primary"
             onClick={okHandle}
             disabled={!form.isFieldsTouched() && !authority.includes("update.vehicle.detail")}
-            style={{marginRight: "1em", marginTop: "0.5em"}}
+            style={{ marginRight: "1em", marginTop: "0.5em" }}
           >
             Update Vehicle
           </Button>
@@ -249,7 +492,7 @@ const UpdateForm = Form.create()(props => {
             type="primary"
             onClick={changeLockStatus}
             disabled={!authority.includes("unlock.vehicle")}
-            style={{marginRight: "1em", marginTop: "0.5em"}}
+            style={{ marginRight: "1em", marginTop: "0.5em" }}
           >
             {(record.lockStatus === 1 ? "Unlock" : "Lock") + " Vehicle"}
           </Button>
@@ -258,7 +501,7 @@ const UpdateForm = Form.create()(props => {
             type="primary"
             onClick={alertVehicle}
             disabled={!authority.includes("alert.vehicle")}
-            style={{marginRight: "1em", marginTop: "0.5em"}}
+            style={{ marginRight: "1em", marginTop: "0.5em" }}
           >
             Beep Remotely
           </Button>
@@ -267,7 +510,7 @@ const UpdateForm = Form.create()(props => {
             type="primary"
             onClick={updateLocation}
             disabled={!authority.includes("update.vehicle.location")}
-            style={{marginTop: "0.5em"}}
+            style={{ marginRight: "1em", marginTop: "0.5em" }}
           >
             Update Location
           </Button>
@@ -280,7 +523,7 @@ const UpdateForm = Form.create()(props => {
             type="primary"
             onClick={getVehicleStatus}
             disabled={!form.isFieldsTouched() && !authority.includes("get.status")}
-            style={{marginRight: "1em", marginTop: "0.5em"}}
+            style={{ marginRight: "1em", marginTop: "0.5em" }}
           >
             Get Status
           </Button>
@@ -294,9 +537,9 @@ const UpdateForm = Form.create()(props => {
           >
             Restart
           </Button> */}
-          
+
         </Col>
-        
+
       </Row>
     </div>
   );
@@ -352,31 +595,31 @@ class VehicleDetail extends PureComponent {
         val ? (
           <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
         ) : (
-          "not finished"
-        )
+            "not finished"
+          )
     },
     {
       title: "operation",
       render: (text, record) => (
         <Fragment>
           {!record.end &&
-          authority.includes("end.vehicle.ride") && (
-            <Popconfirm
-              title="Are you Sure？"
-              icon={
-                <Icon type="question-circle-o" style={{ color: "red" }} />
-              }
-              onConfirm={() => this.handleEndRideVisible(true, record)}
-            >
-              <a>End Ride</a>
-            </Popconfirm>
-          )}
+            authority.includes("end.vehicle.ride") && (
+              <Popconfirm
+                title="Are you Sure？"
+                icon={
+                  <Icon type="question-circle-o" style={{ color: "red" }} />
+                }
+                onConfirm={() => this.handleEndRideVisible(true, record)}
+              >
+                <a>End Ride</a>
+              </Popconfirm>
+            )}
         </Fragment>
       )
     }
   ];
 
-  vehicleOrdersColumn  = [
+  vehicleOrdersColumn = [
     {
       title: "Type",
       dataIndex: "orderId",
@@ -430,8 +673,8 @@ class VehicleDetail extends PureComponent {
         val ? (
           <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
         ) : (
-          "not finished"
-        )
+            "not finished"
+          )
     }
   ];
 
@@ -443,7 +686,6 @@ class VehicleDetail extends PureComponent {
     this.handleGetVehicleRides(this.props.vehicleId);
   };
 
-
   getAreaGeoInfo = vehicleAreaId => {
     const { dispatch } = this.props;
 
@@ -452,7 +694,6 @@ class VehicleDetail extends PureComponent {
       areaId: vehicleAreaId
     });
   };
-
 
   handleGetVehicle = vehicleId => {
     const { dispatch } = this.props;
@@ -511,22 +752,22 @@ class VehicleDetail extends PureComponent {
     const { dispatch } = this.props;
 
     authority.includes("get.vehicle.orders") &&
-    dispatch({
-      type: "vehicles/getOrders",
-      id: id,
-      onSuccess: response => this.setState({ vehicleOrders: response, orderTablePagination:  {current: Math.round((response.length / 10) + 1)} })
-    });
+      dispatch({
+        type: "vehicles/getOrders",
+        id: id,
+        onSuccess: response => this.setState({ vehicleOrders: response, orderTablePagination: { current: Math.round((response.length / 10) + 1) } })
+      });
   };
 
   handleGetVehicleRides = vehicleId => {
     const { dispatch } = this.props;
 
     authority.includes("get.rides") &&
-    dispatch({
-      type: "rides/getVehicleRides",
-      vehicleId: vehicleId,
-      onSuccess: response => this.setState({ vehicleRides: response })
-    });
+      dispatch({
+        type: "rides/getVehicleRides",
+        vehicleId: vehicleId,
+        onSuccess: response => this.setState({ vehicleRides: response })
+      });
   };
 
   handleUpdate = (id, fields) => {
@@ -542,6 +783,37 @@ class VehicleDetail extends PureComponent {
     });
   };
 
+  redefineProperties = (object) => {
+    for (var property in object) {
+      if (object.hasOwnProperty(property)) {
+        if (object[property] === undefined) {
+          object[property] = 0;
+        }
+      }
+    }
+    return object;
+  }
+
+  handleControl = (id, fields) => {
+    const { dispatch, vehicleId } = this.props;
+    const redefinedFields = this.redefineProperties(fields);
+    dispatch({
+      type: "vehicles/control",
+      payload: redefinedFields,
+      id: id,
+    })
+  }
+
+  handleControlExtension = (id, fields) => {
+    const { dispatch, vehicleId } = this.props;
+    const redefinedFields = this.redefineProperties(fields);
+    dispatch({
+      type: "vehicles/controlExtension",
+      payload: redefinedFields,
+      id: id,
+    })
+  }
+
   changeLockStatus = () => {
     const { dispatch, vehicleId, handleGetVehicles } = this.props;
 
@@ -549,9 +821,9 @@ class VehicleDetail extends PureComponent {
 
     const type = record.lockStatus === 1 ? "vehicles/unlock" : "vehicles/lock";
 
-    
 
-    if ( (type === "vehicles/unlock" && authority.includes("unlock.vehicle")) || (type === "vehicles/lock" && authority.includes("lock.vehicle"))){
+
+    if ((type === "vehicles/unlock" && authority.includes("unlock.vehicle")) || (type === "vehicles/lock" && authority.includes("lock.vehicle"))) {
       dispatch({
         type: type,
         id: vehicleId,
@@ -559,11 +831,11 @@ class VehicleDetail extends PureComponent {
           handleGetVehicles && handleGetVehicles();
           setTimeout(() => {
             this.handleGetVehicleOrders(vehicleId);
-            }, 1500)
+          }, 1500)
         }
       });
     }
-        
+
   };
 
   alertVehicle = () => {
@@ -576,8 +848,8 @@ class VehicleDetail extends PureComponent {
 
 
 
-  handleOrderTableChange = (pagination, filtersArg, sorter) => this.setState({orderTablePagination: pagination})
-  
+  handleOrderTableChange = (pagination, filtersArg, sorter) => this.setState({ orderTablePagination: pagination })
+
 
 
   updateLocation = () => {
@@ -627,30 +899,30 @@ class VehicleDetail extends PureComponent {
         width={"95%"}
         style={{ background: "#ECECEC" }}
       >
-          <div>
+        <div>
 
 
-              <Card title="Update Vehicle">
-                {record && <UpdateForm
-                  areas={areas.data}
-                  record={record}
-                  handleUpdate={this.handleUpdate}
-                  changeLockStatus={this.changeLockStatus}
-                  updateLocation={this.updateLocation}
-                  restartVehicle={this.restartVehicle}
-                  getVehicleStatus={this.getVehicleStatus}
-                  alertVehicle={this.alertVehicle}
-                />}
-              </Card>
+          <Card title="Update Vehicle">
+            {record && <UpdateForm
+              areas={areas.data}
+              record={record}
+              handleUpdate={this.handleUpdate}
+              changeLockStatus={this.changeLockStatus}
+              updateLocation={this.updateLocation}
+              restartVehicle={this.restartVehicle}
+              getVehicleStatus={this.getVehicleStatus}
+              alertVehicle={this.alertVehicle}
+            />}
+          </Card>
 
-              {record &&  <Card title="Location">
-                <LocationMap
-                  record={record}
-                />
-              </Card>}
-             
+          {record && <Card title="Location">
+            <LocationMap
+              record={record}
+            />
+          </Card>}
 
-            {authority.includes("get.rides")  &&
+
+          {authority.includes("get.rides") &&
             <Card title="Vehicle Rides" style={{ marginTop: "2em" }}>
               <Table
                 dataSource={vehicleRides}
@@ -666,9 +938,9 @@ class VehicleDetail extends PureComponent {
                 />
               )}
             </Card>
-            }
+          }
 
-            {authority.includes("get.vehicle.orders") &&
+          {authority.includes("get.vehicle.orders") &&
             <Card title="Vehicle Orders" style={{ marginTop: "2em" }}>
               <Table
                 dataSource={vehicleOrders}
@@ -678,9 +950,25 @@ class VehicleDetail extends PureComponent {
                 pagination={orderTablePagination}
               />
             </Card>
+          }
+          {authority.includes("vehicle.control") &&
+          <Card title="Control Vehicle">
+            {record &&
+              <div>
+                <VehicleControlForm
+                  record={record}
+                  handleControl={this.handleControl}
+                />
+                <Divider />
+                <VehicleControlExtensionForm
+                  record={record}
+                  handleControlExtension={this.handleControlExtension}
+                />
+              </div>
             }
-
-          </div>
+          </Card>
+          }
+        </div>
       </Modal>
     );
   }
