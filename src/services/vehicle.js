@@ -149,3 +149,20 @@ export async function getStatus(id) {
   });
 }
 
+export async function controlVehicle(id, params) {
+  return request(`/admins/vehicles/${id}/control`, {
+    method: "PUT",
+    body: {
+      ...params
+    }
+  });
+}
+
+export async function controlVehicleExtension(id, params) {
+  return request(`/admins/vehicles/${id}/control_extension`, {
+    method: "PUT",
+    body: {
+      ...params
+    }
+  });
+}
