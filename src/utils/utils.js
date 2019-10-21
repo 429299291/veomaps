@@ -22,7 +22,8 @@ export function getTimeDistance(type) {
     now.setHours(23);
     now.setMinutes(59);
     now.setSeconds(59);
-    return [moment(now), moment(now.getTime() + (oneDay - 1000))];
+    // from midtime to current
+    return [moment(now.getTime() - (oneDay - 1000)), moment(now)];
   }
 
   

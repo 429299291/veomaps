@@ -145,7 +145,8 @@ const VehicleMap = compose(
       currPosition,
       handleGetMyLocation,
       handleShowingVehicles,
-      shoudlShowVehicles
+      shoudlShowVehicles,
+      heatmapType
     } = props;
   
 
@@ -299,7 +300,7 @@ const VehicleMap = compose(
       <div style={{position: "absolute", left: "3em", bottom: '2em', color: "red"}}>
         {shouldShowHeatMap && heatMapData &&
             <div>
-              <div> Ride Count:  {heatMapData.length} </div>
+              {typeof heatmapType === 'boolean' &&  <div> Ride Count:  {heatMapData.length} </div>}
 
               <div > Max Intensity:  {intensity} </div>
 

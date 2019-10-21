@@ -141,12 +141,17 @@ const getPowerPercent = power => {
 };
 
 const HeatMapForm = Form.create()(props => { 
-  const { form, getAreaStartPoints, isMobile, styles, selectedAreaId, shouldShowHeatMap, clearHeatMap } = props;
+  const { form, getheatmapData, isMobile, styles, selectedAreaId, shouldShowHeatMap, clearHeatMap, getAreaCustomerSessionLocation } = props;
 
   const handleSubmit = () => {
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
+
+      if (fieldsValue.isStart === 'customer') {
+        getAreaCustomerSessionLocation(fieldsValue.isStart);
+        return;
+      }
 
       if (fieldsValue.endhour === null || fieldsValue.startHour === null) {
         if (fieldsValue.endhour !== null) {
@@ -185,7 +190,7 @@ const HeatMapForm = Form.create()(props => {
       
 
 
-      getAreaStartPoints(fieldsValue);
+      getheatmapData(fieldsValue);
 
     });
 
@@ -201,27 +206,33 @@ const HeatMapForm = Form.create()(props => {
 
   const style = isMobile ? styles.heatMapFilterMobile : styles.heatMapFilter;
 
-
+  const isRideHeatMap = form.getFieldValue("isStart") !== 'customer';
  
   return ( <div style={{fontSize: fontSize, marginTop: "1em"}}>
 
       <span className={style}>
 
           {form.getFieldDecorator("isStart", {initialValue: true})(
-            <Switch checkedChildren="start" unCheckedChildren="end" defaultChecked />
+            //<Switch checkedChildren="start" unCheckedChildren="end" defaultChecked />
+            <Select defaultValue={true}>
+              <Option value={true}>Start of Ride</Option>
+              <Option value={false}>End of Ride</Option>
+              <Option value={null}> Path of Ride </Option>
+              <Option value="customer"> Customer </Option>
+            </Select>
           )}
 
-          <span> Time: </span> 
+          <span style={{opacity: isRideHeatMap ? 1 : 0}}> Time: </span> 
           {form.getFieldDecorator("timeRange")(
-            <RangePicker style={{width: "20%"}} format="YYYY-MM-DD HH:mm:ss" showTime  style={{ width: rangeWidth }} />
+            <RangePicker style={{width: "20%"}} format="YYYY-MM-DD HH:mm:ss" showTime  style={{ width: rangeWidth, opacity: isRideHeatMap ? 1 : 0 }} />
           )}
       </span> 
 
         {isMobile && <br />} 
-      <span className={style}>
-            <span> Weekday : </span> 
+      <span className={style} style={{opacity: isRideHeatMap ? 1 : 0}}>
+            <span > Weekday : </span> 
             {form.getFieldDecorator("weekday")(
-              <Select placeholder="select" style={{ width: width }} 
+              <Select placeholder="select" style={{ width: width, opacity: isRideHeatMap ? 1 : 0 }} 
                 showSearch
                 filterOption={filterOption}
 
@@ -237,11 +248,11 @@ const HeatMapForm = Form.create()(props => {
 
       {isMobile && <br />} 
 
-      <span className={style}>
+      <span className={style} style={{opacity: isRideHeatMap ? 1 : 0}}>
         <span> Hours : </span> 
           {form.getFieldDecorator("startHour")(
               <Select 
-                placeholder="select" style={{ width: width }} 
+                placeholder="select" style={{ width: width, opacity: isRideHeatMap ? 1 : 0 }} 
                 showSearch
                 filterOption={filterOption}
                 >
@@ -257,7 +268,7 @@ const HeatMapForm = Form.create()(props => {
 
             {form.getFieldDecorator("endHour")(
               <Select 
-                placeholder="select" style={{ width: width }} 
+                placeholder="select" style={{ width: width, opacity: isRideHeatMap ? 1 : 0 }} 
                 showSearch
                 filterOption={filterOption}
               >
@@ -270,7 +281,7 @@ const HeatMapForm = Form.create()(props => {
             )}
       </span> 
 
-      <span className={style}>
+      <span className={style} style={{opacity: isRideHeatMap ? 1 : 0}}>
         <span> Type : </span> 
           {form.getFieldDecorator("vehicleType")(
               <Select 
@@ -716,7 +727,7 @@ class Vehicle extends PureComponent {
 
   clearHeatMap = () => {
 
-    this.setState({areaStartPoints: undefined, shoudlShowVehicles: true}); 
+    this.setState({heatmapData: undefined, shoudlShowVehicles: true}); 
   }
 
 
@@ -1055,6 +1066,18 @@ class Vehicle extends PureComponent {
       );
     });
   };
+
+  getAreaCustomerSessionLocation = () => {
+
+    const { dispatch, selectedAreaId } = this.props;
+
+    dispatch({
+      type: "vehicles/getAreaSessionLocation",
+      areaId: selectedAreaId,
+      onSuccess: result => this.setState({heatmapData: result, heatmapType: 'customer', shouldShowHeatMap: true, heatMapMaxIntensity:  2 * (Math.floor(result.length / 1000) + 1)})
+    })
+
+  }
 
   handleModalVisible = flag => {
     this.setState({
@@ -1444,7 +1467,7 @@ class Vehicle extends PureComponent {
     this.setState({selectedTab: value}, this.handleSearch)
   }
 
-  getAreaStartPoints= params => {
+  getheatmapData= params => {
     const { dispatch, selectedAreaId } = this.props;
 
     this.setState({ shouldShowHeatMap: false});
@@ -1453,7 +1476,7 @@ class Vehicle extends PureComponent {
       type: "vehicles/getStartPoints",
       areaId: selectedAreaId,
       params, params,
-      onSuccess: result => this.setState({areaStartPoints: result, shouldShowHeatMap: true, heatMapMaxIntensity:  2 * (Math.floor(result.length / 1000) + 1)})
+      onSuccess: result => this.setState({heatmapData: result, heatmapType: params.isStart, shouldShowHeatMap: true, heatMapMaxIntensity:  2 * (Math.floor(result.length / 1000) + 1)})
     });
   }
 
@@ -1538,7 +1561,8 @@ handleShowingVehicles = val => {
       selectedMarker,
       selectedTab,
       vehicleLocations,
-      areaStartPoints,
+      heatmapData,
+      heatmapType,
       shouldShowHeatMap,
       selectedVehicleId,
       selectedVehicleRefresh,
@@ -1626,7 +1650,8 @@ handleShowingVehicles = val => {
                       center={center}
                       vehicles={vehicleLocations}
                       fences={fences}
-                      heatMapData={areaStartPoints}
+                      heatMapData={heatmapData}
+                      heatmapType={heatmapType}
                       shouldShowHeatMap={shouldShowHeatMap}
                       handleGetMapData={this.handleGetMapData}
                       styles={styles}
@@ -1653,10 +1678,11 @@ handleShowingVehicles = val => {
                       <HeatMapForm 
                         isMobile={this.props.isMobile} 
                         styles={styles} 
-                        getAreaStartPoints={this.getAreaStartPoints}  
+                        getheatmapData={this.getheatmapData}  
                         shouldShowHeatMap={shouldShowHeatMap}
                         clearHeatMap={this.clearHeatMap}
-                        selectedAreaId={selectedAreaId}/> 
+                        selectedAreaId={selectedAreaId}
+                        getAreaCustomerSessionLocation={this.getAreaCustomerSessionLocation}/> 
                     }
                     { vehicleLocations.length > 0 && 
                         <Button style={{marginTop: "1em"}} onClick={() => exportCSVFile(vehicleCsvHeader, this.formatCsvData(vehicleLocations), areaNames[selectedAreaId])} >

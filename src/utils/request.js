@@ -21,7 +21,7 @@ const codeMessage = {
   202: "A request has entered the background queue (asynchronous task).",
   204: "Delete data successfully.",
   400: "The request was made with an error, and the server did not perform operations to create or modify data.",
-  401: "User don't have permission (token, username, password).",
+  401: "User don't have permission (token, username, password).", 
   403: "User is authorized, but access is forbidden.",
   404: "The request was made to a record that does not exist, and the server did not operate.",
   406: "The format of the request is not available.",

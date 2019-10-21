@@ -14,6 +14,7 @@ import {
   getVehicleLocations,
   updateAllLocations,
   getStartPoints,
+  getAreaSessionLocation,
   getStatus,
   getRef,
   restart,
@@ -37,7 +38,7 @@ export default {
 
       if (Array.isArray(data)) {
         data.map(bike => (bike.key = bike.id));
-      }
+    }
 
       yield put({
         type: "save",
@@ -51,6 +52,14 @@ export default {
         onSuccess && onSuccess(data);
       } else {
         message.error("fail to fetch vehicle location" + data);
+      }
+    },
+    *getAreaSessionLocation({areaId, onSuccess}, {call, put}) {
+      const data = yield call(getAreaSessionLocation,  areaId);
+      if (data) {
+        onSuccess && onSuccess(data);
+      } else {
+        message.error("fail to fetch customer session" + data);
       }
     },
     *getVehicleDetail({vehicleId, onSuccess}, {call, put}) {
