@@ -18,7 +18,9 @@ import {
   getStatus,
   getRef,
   restart,
-  applyAction
+  applyAction,
+  controlVehicle,
+  controlVehicleExtension
 } from "@/services/vehicle";
 import { message } from "antd";
 
@@ -213,7 +215,29 @@ export default {
           setTimeout(onSuccess, 3000);
         }
       });
-    }
+    },
+
+    *control({id, payload}, { call, put}) {
+      const response = yield call(controlVehicle, id, payload);
+  
+      if (response) {
+        message.success(`Successfully Sent Control Command`);
+        // onSuccess();
+      } else {
+        message.error(`Failure Sending Control Command.`);
+      }
+    },
+  
+    *controlExtension({id, payload}, {call, put}) {
+      const response = yield call(controlVehicleExtension, id, payload);
+  
+      if (response) {
+        message.success(`Successfully Sent Control Command`);
+        // onSuccess();
+      } else {
+        message.error(`Failure Sending Control Command.`);
+      }
+    },
   },
 
   reducers: {

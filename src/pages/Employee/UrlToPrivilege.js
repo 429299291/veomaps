@@ -42,7 +42,9 @@ export default {
     "POST /api/admins/vehicles/{id}/restart": "restart.vehicle",
     "POST /api/admins/vehicles/{id}/get_status": "get.status",
     "GET /api/admins/vehicles/{id}/location/reference": "get.ref",
-    "POST /api/admins/vehicles/{vehicleNumber}/action": "apply.action"
+    "POST /api/admins/vehicles/{vehicleNumber}/action": "apply.action",
+    "PUT /api/admins/vehicles/{id}/control": "vehicle.control",
+    "PUT /api/admins/vehicles/{id}/control_extension": "vehicle.control.extension" 
   },
   "Riding History": {
     "GET /api/admins/rides": "get.rides",
