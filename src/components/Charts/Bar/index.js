@@ -33,6 +33,10 @@ class Bar extends Component {
 
   handleData = data => {
 
+    if (!data) {
+      return null;
+    }
+
     let result = data;
 
     if (this.isStackChartData(data)) {

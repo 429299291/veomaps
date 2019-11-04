@@ -3,6 +3,7 @@ export default {
 
   "Customer Management": {
     "GET /api/admins/customers": "get.customers",
+    "GET /api/admins/customers/session-heat-map": "get.customers.session.heatmap",
     "GET /api/admins/customers/{customerId}": "get.customer.detail",
     "GET /api/admins/notifications": "get.customers.notifications",
     "POST /api/admins/notifications/areas/{area_id}/type/{message_type}": "send.customer.notification",
