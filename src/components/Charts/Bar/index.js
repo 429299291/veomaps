@@ -77,7 +77,7 @@ class Bar extends Component {
         key: "x",
         value: "y" 
       });
-      
+
       return dv;
 
     } 

@@ -24,6 +24,8 @@ import {
 } from "@/services/vehicle";
 import { message } from "antd";
 
+import moment from "moment";
+
 export default {
   namespace: "vehicles",
 
@@ -56,8 +58,25 @@ export default {
         message.error("fail to fetch vehicle location" + data);
       }
     },
-    *getAreaSessionLocation({areaId, onSuccess}, {call, put}) {
-      const data = yield call(getAreaSessionLocation,  areaId);
+    *getAreaSessionLocation({areaId, onSuccess, fieldsValue}, {call, put}) {
+
+      if (fieldsValue.timeRange) {
+
+        fieldsValue.start = moment(fieldsValue.timeRange[0]).toISOString();
+
+        fieldsValue.end = moment(fieldsValue.timeRange[1]).toISOString();
+        
+      } else {
+
+        fieldsValue.start = null;
+
+        fieldsValue.end = null;
+
+      }
+
+
+    
+      const data = yield call(getAreaSessionLocation, {start: fieldsValue.start , end: fieldsValue.end },  areaId);
       if (data) {
         onSuccess && onSuccess(data);
       } else {
