@@ -35,22 +35,13 @@ export default [
             path: "/dashboard/performance",
             name: "Performance",
             component: "./Dashboard/Performance"
-          }
-          // {
-          //   path: "/dashboard/analysis",
-          //   name: "analysis",
-          //   component: "./Dashboard/Analysis"
-          // },
-          // {
-          //   path: "/dashboard/monitor",
-          //   name: "monitor",
-          //   component: "./Dashboard/Monitor"
-          // },
-          // {
-          //   path: "/dashboard/workplace",
-          //   name: "workplace",
-          //   component: "./Dashboard/Workplace"
-          // }
+          },
+          {
+            path: "/dashboard/techmetrics",
+            name: "Tech Metrics",
+            component: "./Dashboard/TechMetrics",
+            authority: "get.technician.metrics"
+          },
         ]
       },
       {

@@ -169,6 +169,7 @@ export default {
   "Performance": {
     "GET /api/admins/analytics/analytic-report": "get.area.performance.history",
     "GET /api/admins/analytics/areas": "get.area.performance.rank",
+    "GET /api/admins/analytics/technicians": "get.technician.metrics",
   },
 
 };
