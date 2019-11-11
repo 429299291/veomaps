@@ -202,6 +202,12 @@ export default [
         component: "./Technician/Technician"
       },
       {
+        path: "/violation-management",
+        name: "Violation Management",
+        icon: "warning",
+        component: "./Violation/Violation"
+      },
+      {
         component: "404"
       }
     ]

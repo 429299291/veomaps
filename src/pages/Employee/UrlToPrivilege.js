@@ -1,3 +1,5 @@
+import { get } from "https";
+
 export default {
   // user
 
@@ -171,5 +173,10 @@ export default {
     "GET /api/admins/analytics/areas": "get.area.performance.rank",
     "GET /api/admins/analytics/technicians": "get.technician.metrics",
   },
-
+  "Violation Management": {
+    "GET /api/admins/custom-technician-messages": "get.violation.messages",
+    "GET /api/admins/custom-technician-messages/{messageId}": "get.violation.message",
+    "POST /api/admins/custom-technician-messages": "create.violation.message",
+    "PUT /api/admins/custom-technician-messages/{messageId}": "update.violation.message",
+  }
 };
