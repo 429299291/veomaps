@@ -33,8 +33,6 @@ export default {
 
     *add({ payload, onSuccess, onError }, { call, put }) {
       const response = yield call(createTechnician, payload);
-      console.log({ payload });
-      console.log(response);
       if (response) {
         message.success(`Add Success ID: ${response}`);
         onSuccess && onSuccess();

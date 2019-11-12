@@ -59,8 +59,4 @@ const technicianActionTypes = [
   "End Swap Battery",
 ]
 
-const violationTypes = [
-  "Parking Violation"
-]
-
-export { fenceType, fenceTypeColor, transactionType, parkingViolationType, technicianActionTypes, violationTypes};
+export { fenceType, fenceTypeColor, transactionType, parkingViolationType, technicianActionTypes };

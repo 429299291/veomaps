@@ -1,59 +1,6 @@
-// import React, { PureComponent, Fragment } from "react";
-// import { connect } from "dva";
-
-// import StandardTable from "@/components/StandardTable";
-// import PageHeaderWrapper from "@/components/PageHeaderWrapper";
-
-// /* eslint react/no-multi-comp:0 */
-// @connect(({ violation, areas, }) => ({
-//     areas,
-//     messages: violation.messages,
-// }))
-// class Violation extends Component {
-
-//     columns = [
-//         {
-//             title: "Message",
-//             dataIndex: 'message'
-//         }
-//     ]
-    
-//     getMessages = () => {
-//         const { dispatch, selectedAreaId } = this.props;
-        
-//         dispatch({
-//             type: "violation/getMessages",
-//         })
-//     }
-
-//     componentDidMount() {
-//         this.getMessages();
-//     }
-
-//     componentDidUpdate() {
-//         this.getMessages();
-//     }
-
-//     render() {
-//         return (
-//             <PageHeaderWrapper title="Violation Messages">
-//                 <Card>
-//                     <StandardTable
-//                         data={this.props.violation.messages}
-//                         columns={this.columns}
-//                     />
-//                 </Card>
-
-//             </PageHeaderWrapper>
-//         );
-//     }
-// }
-
-// export default Violation;
-
-import React, { PureComponent, Fragment } from "react";
-import { connect } from "dva";
-import moment from "moment";
+import React, { PureComponent, Fragment } from 'react';
+import { connect } from 'dva';
+import moment from 'moment';
 import {
   Row,
   Col,
@@ -68,42 +15,28 @@ import {
   Radio,
   Divider,
   Popconfirm,
-  InputNumber
-} from "antd";
-import StandardTable from "@/components/StandardTable";
-import PageHeaderWrapper from "@/components/PageHeaderWrapper";
+} from 'antd';
+import StandardTable from '@/components/StandardTable';
+import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 
-import { violationTypes } from '@/constant';
-
-
-import styles from "./Violation.less";
+import styles from './Violation.less';
 
 const FormItem = Form.Item;
-const { Step } = Steps;
 const { TextArea } = Input;
 const { Option } = Select;
-const RadioGroup = Radio.Group;
-const getValue = obj =>
-  Object.keys(obj)
-    .map(key => obj[key])
-    .join(",");
 
-const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "Car"];
-
-const CreateForm = Form.create()(props => {
+const CreateForm = Form.create()((props) => {
   const {
     modalVisible,
     form,
     handleAdd,
     handleModalVisible,
     areas,
-    areaPrice
   } = props;
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       form.resetFields();
-      console.log({fieldsValue});
       handleAdd(fieldsValue);
     });
   };
@@ -117,58 +50,53 @@ const CreateForm = Form.create()(props => {
     >
       {areas && (
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area">
-          {form.getFieldDecorator("areaId", {
+          {form.getFieldDecorator('areaId', {
             rules: [
               {
-                required: true
-              }
-            ]
+                required: true,
+              },
+            ],
           })(
-            <Select placeholder="select" style={{ width: "100%" }}>
+            <Select placeholder="select" style={{ width: '100%' }}>
               {areas.map(area => (
                 <Option key={area.id} value={area.id}>
                   {area.name}
                 </Option>
               ))}
-            </Select>
+            </Select>,
           )}
         </FormItem>
       )}
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Violation Type">
-            {form.getFieldDecorator("messageType", {
-            })(<Select placeholder="Violation Type" style={{ width: "100%" }}> 
-                <Option value={0}>Parking Violation</Option>
-                <Option value={1}>Low Speed Violation</Option>
-            </Select>)}
-        </FormItem>      
-    
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Violation Type">
+        {form.getFieldDecorator('messageType', {
+        })(<Input placeholder="Please Input" />)}
+      </FormItem>
+
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Message">
-        {form.getFieldDecorator("message", {
-          initialValue: ""
+        {form.getFieldDecorator('message', {
+          initialValue: '',
         })(<TextArea placeholder="Please Input" />)}
       </FormItem>
     </Modal>
   );
 });
 
-const UpdateForm = Form.create()(props => {
+const UpdateForm = Form.create()((props) => {
   const {
-    areas,
-    areaPrice,
     form,
     modalVisible,
     handleUpdate,
     handleModalVisible,
-    record
+    record,
   } = props;
   const okHandle = () => {
-    if (form.isFieldsTouched())
+    if (form.isFieldsTouched()) {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
         form.resetFields();
         handleUpdate(record.id, fieldsValue);
       });
-    else handleModalVisible();
+    } else handleModalVisible();
   };
 
   return (
@@ -179,15 +107,26 @@ const UpdateForm = Form.create()(props => {
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Price">
-        {form.getFieldDecorator("message", {
+      <FormItem labelCol={{ span: 6 }} wrapperCol={{ span: 14 }} label="Message Type">
+        {form.getFieldDecorator('messageType', {
           rules: [
             {
               required: true,
-              message: "price is required"
-            }
+              message: 'message type is required',
+            },
           ],
-          initialValue: record.message
+          initialValue: record.messageType,
+        })(<Input placeholder="Please Input" />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 6 }} wrapperCol={{ span: 14 }} label="Message">
+        {form.getFieldDecorator('message', {
+          rules: [
+            {
+              required: true,
+              message: 'message is required',
+            },
+          ],
+          initialValue: record.message,
         })(<TextArea placeholder="Please Input" />)}
       </FormItem>
     </Modal>
@@ -195,7 +134,9 @@ const UpdateForm = Form.create()(props => {
 });
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ areas, price, loading, violation }) => ({
+@connect(({
+  areas, price, loading, violation,
+}) => ({
   areas,
   price,
   selectedAreaId: areas.selectedAreaId,
@@ -209,83 +150,104 @@ class Violation extends PureComponent {
     createModalVisible: false,
     updateModalVisible: false,
     detailModalVisible: false,
-    expandForm: false,
-    selectedRows: [],
     filterCriteria: {},
-    selectedRecord: {}
+    selectedRecord: {},
   };
 
   columns = [
     {
-        title: "Area",
-        dataIndex: "areaId",
-        render: areaId => <span>{this.props.areas.areaNames[areaId]}</span>
+      title: 'Area',
+      dataIndex: 'areaId',
+      render: areaId => <span>{this.props.areas.areaNames[areaId]}</span>,
     },
     {
-        title: "Message Type",
-        dataIndex: "messageType",
-        render: messageType => <span>{violationTypes[messageType]}</span>
+      title: 'Message Type',
+      dataIndex: 'messageType',
     },
     {
-        title: "Message",
-        dataIndex: "message"
+      title: 'Message',
+      dataIndex: 'message',
     },
     {
-        title: "Operation",
-        render: (text, record) => (
-            <a onClick={() => this.handleUpdateModalVisible(true, record)}>
+      title: 'Operation',
+      render: (text, record) => (
+        <div>
+          <Popconfirm
+            title="Are You Sure?"
+            icon={(
+              <Icon
+                type="question-circle-o"
+                style={{ color: record.active ? 'red' : 'green' }}
+              />
+)}
+            onConfirm={() => this.handleUpdate(record.id, { active: !record.active })
+              }
+          >
+            {record.active ? (
+              <a href="#" style={{ color: 'red' }}>
+                  Deactivate
+              </a>
+            ) : (
+              <a href="#" style={{ color: 'green' }}>
+                  Activate
+              </a>
+            )}
+          </Popconfirm>
+          <Divider type="vertical" />
+          <a onClick={() => this.handleUpdateModalVisible(true, record)}>
                 Update
-            </a>
-        )
-    }
+          </a>
+        </div>
+      ),
+    },
   ];
 
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-
-        if (prevProps.selectedAreaId !== this.props.selectedAreaId) {
-            this.getMessages();
-        }
-
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevProps.selectedAreaId !== this.props.selectedAreaId) {
+      this.getMessages();
     }
+  }
 
     getMessages = () => {
-        const { dispatch, selectedAreaId } = this.props;
-        dispatch({
-            type: "violation/get",
-        })
+      const { dispatch, selectedAreaId } = this.props;
+      const { filterCriteria } = this.state;
+      dispatch({
+        type: 'violation/get',
+        payload: Object.assign({}, filterCriteria, { areaId: selectedAreaId }),
+      });
     }
 
     componentDidMount() {
-        this.getMessages();
+      this.getMessages();
     }
 
-  handleCreateModalVisible = flag => {
+  handleCreateModalVisible = (flag) => {
     this.setState({
-      createModalVisible: !!flag
+      createModalVisible: !!flag,
     });
   };
 
   handleUpdateModalVisible = (flag, record) => {
     this.setState({
       updateModalVisible: !!flag,
-      selectedRecord: record || {}
+      selectedRecord: record || {},
     });
   };
 
   handleDetailModalVisible = (flag, record) => {
     this.setState({
       detailModalVisible: !!flag,
-      selectedRecord: record || {}
+      selectedRecord: record || {},
     });
   };
 
-  handleAdd = fields => {
+  handleAdd = (fields) => {
     const { dispatch } = this.props;
     dispatch({
-      type: "violation/add",
+      type: 'violation/add',
       payload: fields,
-      onSuccess: this.getMessages
+      onSuccess: this.getMessages,
     });
 
     this.handleCreateModalVisible();
@@ -294,10 +256,10 @@ class Violation extends PureComponent {
   handleUpdate = (id, fields) => {
     const { dispatch } = this.props;
     dispatch({
-      type: "violation/update",
+      type: 'violation/update',
       payload: fields,
-      id: id,
-      onSuccess: this.getMessages
+      id,
+      onSuccess: this.getMessages,
     });
 
     this.handleUpdateModalVisible();
@@ -305,7 +267,7 @@ class Violation extends PureComponent {
 
   renderSimpleForm() {
     const {
-      form: { getFieldDecorator }
+      form: { getFieldDecorator },
     } = this.props;
 
     const areas = this.props.areas.data;
@@ -319,14 +281,14 @@ class Violation extends PureComponent {
                 wrapperCol={{ span: 15 }}
                 label="Area"
               >
-                {getFieldDecorator("areaId")(
-                  <Select placeholder="select" style={{ width: "100%" }}>
+                {getFieldDecorator('areaId')(
+                  <Select placeholder="select" style={{ width: '100%' }}>
                     {areas.map(area => (
                       <Option key={area.id} value={area.id}>
                         {area.name}
                       </Option>
                     ))}
-                  </Select>
+                  </Select>,
                 )}
               </FormItem>
             </Col>
@@ -347,48 +309,43 @@ class Violation extends PureComponent {
   }
 
   filterAreaPrice(prices, areas) {
-
-
-
     if (Array.isArray(prices) && Array.isArray(areas)) {
-      const areaIds = {}
+      const areaIds = {};
       areas.map(area => areaIds[area.id] = true);
 
-      return prices.filter(price => areaIds[price.areaId])
+      return prices.filter(price => areaIds[price.areaId]);
     }
 
-    return prices
+    return prices;
   }
 
   render() {
-    const { areas, areaPrice, loading, price } = this.props;
+    const {
+      areas, areaPrice, loading, price,
+    } = this.props;
     const {
       modalVisible,
       createModalVisible,
       updateModalVisible,
       detailModalVisible,
-      selectedRecord
+      selectedRecord,
     } = this.state;
 
     const parentMethods = {
       handleAdd: this.handleAdd,
-      handleModalVisible: this.handleCreateModalVisible
+      handleModalVisible: this.handleCreateModalVisible,
     };
     const updateMethods = {
       handleModalVisible: this.handleUpdateModalVisible,
-      handleUpdate: this.handleUpdate
+      handleUpdate: this.handleUpdate,
     };
 
     const { messages } = this.props;
-    console.log({messages});
 
     return (
       <PageHeaderWrapper title="Price List">
         <Card bordered={false}>
           <div className={styles.tableList}>
-            {/*<div className={styles.tableListForm}>*/}
-              {/*{this.renderSimpleForm()}*/}
-            {/*</div>*/}
             <div className={styles.tableListOperator}>
               <Button
                 icon="plus"
@@ -400,7 +357,7 @@ class Violation extends PureComponent {
             </div>
             <StandardTable
               loading={loading}
-              data={{list: messages}}
+              data={{ list: messages }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

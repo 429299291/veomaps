@@ -30,8 +30,6 @@ export default {
             }
         },
         *update({ payload, id, onSuccess }, {call, put }) {
-
-            console.log({payload});
             const response = yield call(updateMessage, id, payload);
             if (response) {
                 message.success("Successfully updated message");
@@ -42,9 +40,9 @@ export default {
             const response = yield call(createMessage, payload);
             if (response) {
                 message.success("Successfully added message");
+                onSuccess && onSuccess();
             } else {
                 message.error("Failure adding message");
-                onSuccess && onSuccess();
             }
         }
 

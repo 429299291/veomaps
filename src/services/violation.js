@@ -9,8 +9,8 @@ export async function getMessage(id) {
     })
 }
 
-export async function getMessages() {
-    return request(`/admins/custom-technician-messages`, {
+export async function getMessages(params) {
+    return request(`/admins/custom-technician-messages?${stringify(params, { indices: false })}`, {
         method: "GET"
     })
 }
@@ -25,7 +25,6 @@ export async function createMessage(message) {
 }
 
 export async function updateMessage(id, message) {
-    console.log({id});
     return request(`/admins/custom-technician-messages/${id}`, {
         method: "PUT",
         body: {
