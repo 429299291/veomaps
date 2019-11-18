@@ -149,6 +149,7 @@ const AreaFeatureForm = Form.create()(props => {
           finalResult.promptActivated = fieldsValue.promptActivated;
           finalResult.timeLimitActivated = fieldsValue.timeLimitActivated;
           finalResult.endRidePhotoActivated = fieldsValue.endRidePhotoActivated;
+          finalResult.maxSpeed = fieldsValue.maxSpeed;
           finalResult.areaId = record.id;
           finalResult.metaData = Object.keys(metaData).length > 0 ? JSON.stringify(metaData) : null;
 
@@ -176,13 +177,9 @@ const AreaFeatureForm = Form.create()(props => {
 
   const timeLimitActivated = record.areaFeature && record.areaFeature.timeLimitActivated;
 
-
-
-
+  const maxSpeed = record.areaFeature && record.areaFeature.maxSpeed;
 
   const areaFeature =  record.areaFeature && record.areaFeature.metaData ? JSON.parse(record.areaFeature.metaData) : undefined;
-
-
 
   const serviceStartTime = areaFeature && areaFeature.serviceTimeConfig && areaFeature.serviceTimeConfig.serviceTime.start;
 
@@ -195,7 +192,6 @@ const AreaFeatureForm = Form.create()(props => {
   const freeRideConfig = areaFeature && areaFeature.freeRideConfig;
 
   const promptConfig = areaFeature && areaFeature.promptConfig;
-
 
   return (
     <Modal
@@ -256,6 +252,12 @@ const AreaFeatureForm = Form.create()(props => {
           initialValue: timeLimitActivated ? true : false,
           valuePropName: 'checked'
         })(<Switch  disabled={!isEditable}  />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} label="Max Speed">
+        {form.getFieldDecorator("maxSpeed", {
+          initialValue: maxSpeed,
+          valuePropName: 'checked'
+        })(<InputNumber min={1} max={25} defaultValue={maxSpeed} />)}
       </FormItem>
         {form.getFieldValue("timeLimitActivated") && 
       
