@@ -422,10 +422,18 @@ const MapComponent = compose(
 
       render() {
 
-        const { geo, record, fenceLoading, selectedVehicleRefresh, handleSetSelectedVehicleRefresh } = this.props;
+        const { geo, record, fenceLoading, selectedVehicleRefresh, handleSetSelectedVehicleRefresh, orderLocation } = this.props;
 
         const { vehicleDetail, isLoading, currPosition, vehicleRef, shouldShowLastScan} = this.state;
 
+        if (orderLocation && vehicleDetail) {
+
+          vehicleDetail.location = {x: orderLocation.lng, y: orderLocation.lat };
+
+        
+        }
+
+       
 
         return ( isLoading || fenceLoading ) ?
             <div style={{height: "100%"}}>

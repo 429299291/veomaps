@@ -44,6 +44,7 @@ const { Option } = Select;
 const RadioGroup = Radio.Group;
 
 import { fenceType, fenceTypeColor } from "@/constant";
+import VehicleMap from "@/components/Map/VehicleMap";
 
 const authority = getAuthority();
 
@@ -619,6 +620,83 @@ class VehicleDetail extends PureComponent {
     }
   ];
 
+  handleRenderingOrderLocation = (shouldShowMap, record) => {
+
+
+
+    this.setState({
+        orderIdToShowMap: shouldShowMap ? record.id : undefined 
+    });
+
+  }
+
+  getLocationOrderContent = (orderIdToShowMap, record) => {
+
+    
+
+    if (orderIdToShowMap ===  record.id) {
+
+      const locationSplit =  record.content.split("=");
+
+      if (locationSplit.length !== 3) {
+
+
+          try {
+
+
+
+           const coords = record.content.match(/[+-]?\d+(\.\d+)?/g).map(parseFloat);
+
+           console.log(coords);
+
+
+          
+
+            return <div>   <LocationMap record = {this.state.record} orderLocation={{lat:coords[0], lng: coords[1]}}/> 
+
+                  <Button onClick={e => {
+                    this.handleRenderingOrderLocation(false);
+                    e.stopPropagation();
+                  }} > Close </Button>
+
+            </div>
+          
+
+
+          } catch (error) {
+            message.error(error);
+            return record.content;
+          }
+
+    
+
+        
+          
+          return record.content;
+
+      }
+
+  
+
+      return <div> 
+        <LocationMap record = {this.state.record} orderLocation={{lat: Number(locationSplit[1].split(",")[0]), lng: Number(locationSplit[2])}}/> 
+        
+        <Button onClick={e => {
+          this.handleRenderingOrderLocation(false);
+          e.stopPropagation();
+        }} > Close </Button>
+        </div>
+
+
+
+    } else {
+
+      return record.content;
+
+    }
+
+  }
+
   vehicleOrdersColumn = [
     {
       title: "Type",
@@ -627,7 +705,8 @@ class VehicleDetail extends PureComponent {
     },
     {
       title: "Content",
-      dataIndex: "content"
+      dataIndex: "content",
+      render: (val, record) => vehicleOrders[record.orderId] === "location" ?  <a onClick={() => this.handleRenderingOrderLocation(true, record) }> {this.getLocationOrderContent(this.state.orderIdToShowMap, record)} </a> : <span >{val}</span> 
     },
     {
       title: "Time",
