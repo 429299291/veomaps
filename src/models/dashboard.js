@@ -30,7 +30,37 @@ export default {
     *fetchRideCount({params}, { call, put }) {
       const response = yield call(getRideCount, params);
 
+
       if (response) {
+
+
+        response.sort((a, b) => {
+
+          const aDateString = a.x.split(' ').join('');
+
+          const bDateString = b.x.split(' ').join('');
+
+          const ax = new Date(aDateString );
+          
+          const bx = new Date(bDateString );
+        
+         return ax.getTime() - bx.getTime();
+        });
+
+        const vehicleTypes = ['bike', 'scooter', 'ebike']
+
+        vehicleTypes[null] = 'all';
+
+        const formatResponse = response.map(item => {
+            Object.keys(item.y).map(key => {
+              
+              item.y[vehicleTypes[key]] = item.y[key];
+
+              delete item.y[key];
+
+            })
+        }); 
+
         yield put({
           type: "save",
           payload: {
@@ -38,6 +68,16 @@ export default {
           }
         });
       }
+
+
+      // if (response) {
+      //   yield put({
+      //     type: "save",
+      //     payload: {
+      //       rideCountData: response
+      //     }
+      //   });
+      // }
      
     },
 

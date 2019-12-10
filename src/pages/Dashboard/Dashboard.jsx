@@ -82,7 +82,7 @@ class Dashboard extends Component {
 
   state = {
     rangePickerValue: getTimeDistance("month"),
-    offset: (new Date().getTimezoneOffset()) / -60,
+    offset: ((new Date().getTimezoneOffset()) / -60) + 1,
     countParams:  {period: 'month'}
   };
 

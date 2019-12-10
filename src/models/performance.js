@@ -1,6 +1,7 @@
 import {
     getHistoryData,
-    getRankingData
+    getRankingData,
+    getTechnicianMetricsData,
   } from "@/services/performance";
   import { message } from "antd";
   
@@ -43,6 +44,19 @@ import {
             });
           }
 
+      },
+
+      *getTechnicianMetricsData({params}, {call, put}) {
+
+        const response = yield call(getTechnicianMetricsData, params);
+        if (response) {
+          yield put({
+            type: "save",
+            payload: {
+              technicianMetricsData: response
+            }
+          })
+        }  
       }
     },
   
@@ -57,6 +71,7 @@ import {
             return {
                 historyData: [],
                 rankingData: [],
+                technicianMetricsData: []
             };
           }
     }

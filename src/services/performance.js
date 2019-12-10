@@ -13,4 +13,8 @@ export async function getRankingData(params) {
   });
 }
 
-
+export async function getTechnicianMetricsData(params) {
+  return request(`/admins/analytics/technicians?${stringify(params, { indices: false })}`, {
+    method: "GET"
+  })
+}
