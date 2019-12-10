@@ -49,9 +49,9 @@ export async function applyAction(vehicleNumber, payload) {
   );
 }
 
-export async function getAreaSessionLocation(areaId) {
+export async function getAreaSessionLocation(fieldValues, areaId) {
   return request(
-    `/admins/customers/session-heat-map?areaId=${areaId}`,
+    `/admins/customers/session-heat-map?areaId=${areaId}&${stringify(fieldValues, { indices: false })}`,
     {
       method: "GET",
     }

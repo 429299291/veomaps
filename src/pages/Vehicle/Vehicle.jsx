@@ -148,9 +148,25 @@ const HeatMapForm = Form.create()(props => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
+     
+
       if (fieldsValue.isStart === 'customer') {
-        getAreaCustomerSessionLocation(fieldsValue.isStart);
+        getAreaCustomerSessionLocation(fieldsValue);
         return;
+      }
+
+      if (fieldsValue.timeRange) {
+        
+        fieldsValue.start = moment(fieldsValue.timeRange[0]).utcOffset(0).format(
+          "MM-DD-YYYY HH:mm:ss"
+        );
+        fieldsValue.end = moment(fieldsValue.timeRange[1]).utcOffset(0).format(
+          "MM-DD-YYYY HH:mm:ss"
+        );
+        
+        fieldsValue.timeRange = undefined;
+
+
       }
 
       if (fieldsValue.endhour === null || fieldsValue.startHour === null) {
@@ -163,18 +179,9 @@ const HeatMapForm = Form.create()(props => {
       }
       
 
-      const offset = new Date().getTimezoneOffset() / 60;
+      const offset = (new Date().getTimezoneOffset() / 60);
 
-      if (fieldsValue.timeRange) {
-        
-        fieldsValue.start = moment(fieldsValue.timeRange[0]).utcOffset(0).format(
-          "MM-DD-YYYY HH:mm:ss"
-        );
-        fieldsValue.end = moment(fieldsValue.timeRange[1]).utcOffset(0).format(
-          "MM-DD-YYYY HH:mm:ss"
-        );
-        fieldsValue.timeRange = undefined;
-      }
+      
 
       fieldsValue.offset = offset;
 
@@ -222,14 +229,14 @@ const HeatMapForm = Form.create()(props => {
             </Select>
           )}
 
-          <span style={{opacity: isRideHeatMap ? 1 : 0}}> Time: </span> 
+          <span> Time: </span> 
           {form.getFieldDecorator("timeRange")(
-            <RangePicker style={{width: "20%"}} format="YYYY-MM-DD HH:mm:ss" showTime  style={{ width: rangeWidth, opacity: isRideHeatMap ? 1 : 0 }} />
+            <RangePicker style={{width: "20%"}} format="YYYY-MM-DD HH:mm:ss" showTime/>
           )}
       </span> 
 
         {isMobile && <br />} 
-      <span className={style} style={{opacity: isRideHeatMap ? 1 : 0}}>
+      {isRideHeatMap && <span className={style} >
             <span > Weekday : </span> 
             {form.getFieldDecorator("weekday")(
               <Select placeholder="select" style={{ width: width, opacity: isRideHeatMap ? 1 : 0 }} 
@@ -244,11 +251,11 @@ const HeatMapForm = Form.create()(props => {
                 }
             </Select>
             )}
-        </span> 
+      </span> }
 
       {isMobile && <br />} 
 
-      <span className={style} style={{opacity: isRideHeatMap ? 1 : 0}}>
+      {isRideHeatMap && <span className={style} style={{opacity: isRideHeatMap ? 1 : 0}}>
         <span> Hours : </span> 
           {form.getFieldDecorator("startHour")(
               <Select 
@@ -279,9 +286,9 @@ const HeatMapForm = Form.create()(props => {
                 }
             </Select>
             )}
-      </span> 
+      </span> }
 
-      <span className={style} style={{opacity: isRideHeatMap ? 1 : 0}}>
+      {isRideHeatMap &&   <span className={style} style={{opacity: isRideHeatMap ? 1 : 0}}>
         <span> Type : </span> 
           {form.getFieldDecorator("vehicleType")(
               <Select 
@@ -293,7 +300,7 @@ const HeatMapForm = Form.create()(props => {
                 <Option value={2} >E-Bike</Option>
             </Select>
             )}
-      </span> 
+      </span>  }
 
       {isMobile && <br />} 
 
@@ -1067,14 +1074,15 @@ class Vehicle extends PureComponent {
     });
   };
 
-  getAreaCustomerSessionLocation = () => {
+  getAreaCustomerSessionLocation = (fieldsValue) => {
 
     const { dispatch, selectedAreaId } = this.props;
 
     dispatch({
       type: "vehicles/getAreaSessionLocation",
       areaId: selectedAreaId,
-      onSuccess: result => this.setState({heatmapData: result, heatmapType: 'customer', shouldShowHeatMap: true, heatMapMaxIntensity:  2 * (Math.floor(result.length / 1000) + 1)})
+      onSuccess: result => this.setState({heatmapData: result, heatmapType: 'customer', shouldShowHeatMap: true, heatMapMaxIntensity:  2 * (Math.floor(result.length / 1000) + 1)}),
+      fieldsValue: fieldsValue,
     })
 
   }

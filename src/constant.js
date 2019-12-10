@@ -42,4 +42,21 @@ const parkingViolationType = [
   "park no ride zone"
 ];
 
-export { fenceType, fenceTypeColor, transactionType, parkingViolationType };
+const technicianActionTypes = [
+  "Service Start",
+  "User Drop Off",
+  "Rebalance Drop Off",
+  "Maintenance Drop Off",
+  "Agency Dropoff",
+  "User Pick Up",
+  "Maintenance",
+  "Low Battery",
+  "Service End",
+  "Rebalance Pick Up",
+  "Maintenance Pick Up",
+  "Agency Pick Up",
+  "Start Swap Battery",
+  "End Swap Battery",
+]
+
+export { fenceType, fenceTypeColor, transactionType, parkingViolationType, technicianActionTypes };
