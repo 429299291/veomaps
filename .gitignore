@@ -1,4 +1,5 @@
 .DS_STORE
+
 node_modules
 dist
 scripts/flow/*/.flowconfig
@@ -26,4 +27,5 @@ chrome-user-data
 package-lock.json
 .temp/
 src/pages/.umi
-dist/
+dist
+src/pages/.umi

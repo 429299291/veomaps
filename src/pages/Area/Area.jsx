@@ -130,6 +130,12 @@ const AreaFeatureForm = Form.create()(props => {
             metaData.serviceTimeConfig.forceEndRide = fieldsValue.serviceTimeForceEndRide;
           }
 
+          if (fieldsValue.driverLicenseActivated) {
+            metaData.licenseConfig = {};
+            metaData.licenseConfig.licenseTypes=fieldsValue.licenseConfigTypes;
+            metaData.licenseConfig.age=fieldsValue.licenseConfigAge;
+          }
+
           if (fieldsValue.promptActivated) {
             const splitPromts = fieldsValue.promptConfig.split('\n')
             metaData.promptConfig = splitPromts;
@@ -163,6 +169,8 @@ const AreaFeatureForm = Form.create()(props => {
 
   const lincenseActivated = record.areaFeature && record.areaFeature.driverLicenseActivated;
 
+ 
+
   const eduRideActivated = record.areaFeature && record.areaFeature.eduRideActivated;
 
   const endRidePhotoActivated = record.areaFeature && record.areaFeature.endRidePhotoActivated;
@@ -180,6 +188,10 @@ const AreaFeatureForm = Form.create()(props => {
   const maxSpeed = record.areaFeature && record.areaFeature.maxSpeed;
 
   const areaFeature =  record.areaFeature && record.areaFeature.metaData ? JSON.parse(record.areaFeature.metaData) : undefined;
+
+  const licenseConfigTypes = areaFeature && areaFeature.licenseConfig && areaFeature.licenseConfig.licenseTypes;
+
+  const licenseConfigAge= areaFeature && areaFeature.licenseConfig && areaFeature.licenseConfig.age;
 
   const serviceStartTime = areaFeature && areaFeature.serviceTimeConfig && areaFeature.serviceTimeConfig.serviceTime.start;
 
@@ -207,6 +219,47 @@ const AreaFeatureForm = Form.create()(props => {
           initialValue: lincenseActivated ? true : false,
         })(<Switch  disabled={!isEditable} />)}
       </FormItem>
+      {form.getFieldValue("driverLicenseActivated") && 
+          <div>
+            <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Drive Lincese Types">
+              {form.getFieldDecorator("licenseConfigTypes", {
+                initialValue: licenseConfigTypes ? licenseConfigTypes : undefined,
+                rules: [
+                  {
+                    required: true,
+                    message: "license type is required",
+                  }
+                ]
+              })(
+                <Select
+                  mode="multiple"
+                  style={{width: "70%"}}
+                >
+                <Option value={0}>
+                  Driver Lincese
+                </Option>
+                <Option value={1}>
+                  Id Card
+                </Option>
+              </Select>
+
+              )}              
+            </FormItem>
+            <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Age">
+                {form.getFieldDecorator("licenseConfigAge", {
+                    initialValue: licenseConfigAge,
+                    rules: [
+                      {
+                        required: true,
+                        message: "age is required",
+                      }
+                    ]
+                })(
+                <InputNumber min={1} max={120} defaultValue={licenseConfigAge} />
+                )}
+            </FormItem>
+          </div>
+      }
       <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Edu Ride Activated">
         {form.getFieldDecorator("eduRideActivated", {
           valuePropName: 'checked',
