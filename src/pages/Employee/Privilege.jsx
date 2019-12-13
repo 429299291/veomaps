@@ -176,7 +176,6 @@ class Privilege extends PureComponent {
       isUpdated
     } = this.state;
 
-    console.log(isUpdated);
 
     return (
       <PageHeaderWrapper title="Privilege List">

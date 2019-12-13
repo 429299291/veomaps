@@ -61,8 +61,6 @@ export default {
     *emailRegister({ id, payload, onSuccess, onError }, { call, put }) {
       const response = yield call(registerByEmail, payload); // delete
 
-      console.log();
-
       if (response) {
         message.success(`Register Success, ID : ${response}`);
         onSuccess && onSuccess();

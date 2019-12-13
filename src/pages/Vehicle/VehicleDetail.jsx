@@ -647,10 +647,6 @@ class VehicleDetail extends PureComponent {
 
            const coords = record.content.match(/[+-]?\d+(\.\d+)?/g).map(parseFloat);
 
-           console.log(coords);
-
-
-          
 
             return <div>   <LocationMap record = {this.state.record} orderLocation={{lat:coords[0], lng: coords[1]}}/> 
 

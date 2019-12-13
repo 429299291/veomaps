@@ -556,11 +556,6 @@ class Geo extends PureComponent {
 
       const circle = this.cricelRef.state.__SECRET_CIRCLE_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
 
-
-      console.log(this.cricelRef.getRadius());
-
-      console.log(this.cricelRef.getCenter());
-
       dispatch({
         type: "geo/addPrimeLocation",
         payload: Object.assign({}, {center: {lat: circle.center.lat(), lng: circle.center.lng()}, radius:  Math.round(circle.radius), areaId : selectedAreaId}) ,
