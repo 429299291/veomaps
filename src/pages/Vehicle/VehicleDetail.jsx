@@ -786,7 +786,7 @@ class VehicleDetail extends PureComponent {
       vehicleId: vehicleId,
       onSuccess: () => {
         setTimeout(() => {
-          this.handleGetVehicleOrders(vehicleId);
+          this.handleGetVehicle(vehicleId);
         }, 4000)
       }
     });
@@ -799,7 +799,7 @@ class VehicleDetail extends PureComponent {
       vehicleId: vehicleId,
       onSuccess: () => {
         setTimeout(() => {
-          this.handleGetVehicleOrders(vehicleId);
+          this.handleGetVehicle(vehicleId);
         }, 4000)
       }
     });
@@ -905,7 +905,7 @@ class VehicleDetail extends PureComponent {
         onSuccess: () => {
           handleGetVehicles && handleGetVehicles();
           setTimeout(() => {
-            this.handleGetVehicleOrders(vehicleId);
+            this.handleGetVehicle(vehicleId);
           }, 1500)
         }
       });

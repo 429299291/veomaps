@@ -22,7 +22,8 @@ import {
   Radio,
   Popconfirm,
   Table,
-  Checkbox
+  Checkbox,
+  Switch
 } from "antd";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 import { getAuthority } from "@/utils/authority";
@@ -158,6 +159,8 @@ const UpdateForm = Form.create()(props => {
         })(<Input placeholder="Please Input" />)}
       </FormItem>
 
+
+
       
       <FormItem
         labelCol={{ span: 10}}
@@ -254,6 +257,19 @@ const UpdateForm = Form.create()(props => {
         {form.getFieldDecorator("notes", {
           initialValue: record.notes
         })(<TextArea placeholder="Please Input" />)}
+      </FormItem>
+
+      <FormItem
+        labelCol={{ span: 10 }}
+        wrapperCol={{ span: 10 }}
+        label="Is Driver License Verified"
+      >
+        {form.getFieldDecorator("licenseStatus", {
+          initialValue: record.licenseStatus 
+        })(<Select>
+            <Option value={1}>Verified</Option>
+            <Option value={0}>Not Verified</Option>
+           </Select>)}
       </FormItem>
 
       <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10}} label="Phone Model">

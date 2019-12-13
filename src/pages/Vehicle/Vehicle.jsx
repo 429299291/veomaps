@@ -1341,7 +1341,6 @@ class Vehicle extends PureComponent {
 
                 {
                   errorStatus.map((status) => {
-                    console.log(status);
                   return <Option value={status} key={status}>{errorStatusIndexs[status]}</Option>;
                   })
                 }
