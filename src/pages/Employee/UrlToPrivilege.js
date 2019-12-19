@@ -165,7 +165,9 @@ export default {
     "GET /api/admins/dashboard/stripe_revenue_by_period":"get.stripe.revenue.by.period",
     "GET /api/admins/dashboard/ride_revenue": "get.ride.revenue",
     "GET /api/admins/dashboard/daily_ride_revenue": "get.daily.ride.revenue",
-    "GET /api/admins/dashboard/connectivity": "get.connectivity.by.period"
+    "GET /api/admins/dashboard/connectivity": "get.connectivity.by.period",
+    "GET /api/admins/dashboard/total_area_distance": "get.area.distance",
+    "GET /api/admins/dashboard/total_minutes": "get.area.minutes",
   },
 
   "Performance": {

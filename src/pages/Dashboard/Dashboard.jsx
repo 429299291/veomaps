@@ -72,7 +72,9 @@ const { TabPane } = Tabs;
   revenueLoading:  loading.models.areas || loading.effects["dashboard/fetchStripeDailyRevenue"],
   currentActiveRideLoading: loading.models.areas || loading.effects["dashboard/fetchDailyRideCounts"],
   weeklyBatterySwapLoading: loading.models.areas || loading.effects["dashboard/fetchDailyRideCounts"],
-  dailyRideRevenueLoading: loading.models.areas || loading.effects["dashboard/fetchDailyRideRevenue"]
+  dailyRideRevenueLoading: loading.models.areas || loading.effects["dashboard/fetchDailyRideRevenue"],
+  totalAreaMinutesLoading: loading.models.areas || loading.effects["dashboard/areaTotalMinutes"],
+  totalAreaDistanceLoading: loading.models.areas || loading.effects["dashboard/areaTotalDistance"],
 }))
 class Dashboard extends Component {
 
@@ -343,6 +345,48 @@ getRangeEnd(end) {
 
   }
 
+  fetchAreaMinutes() {
+    const { dispatch, selectedAreaId } = this.props;
+    const { rangePickerValue } = this.state;
+
+    if (!authority.includes("get.area.minutes")) {
+      return;
+    }
+
+    dispatch({
+      type: "dashboard/fetchAreaMinutes",
+      params: Object.assign(
+        {}, 
+        {
+          areaId: selectedAreaId,
+          start: rangePickerValue[0].unix() * 1000,
+          end: rangePickerValue[1].unix() * 1000, 
+        })
+    });
+
+  }
+
+  fetchAreaDistance() {
+    const { dispatch, selectedAreaId } = this.props;
+    const { rangePickerValue } = this.state;
+
+    if (!authority.includes("get.area.distance")) {
+      return;
+    }
+
+
+    dispatch({
+      type: "dashboard/fetchAreaDistance",
+      params: Object.assign(
+        {}, 
+        {
+          areaId: selectedAreaId,
+          start: rangePickerValue[0].unix() * 1000,
+          end: rangePickerValue[1].unix() * 1000, 
+        })
+    });
+  }
+
   fetchRidePerVehicleRank() {
     const { dispatch, selectedAreaId } = this.props;
 
@@ -372,7 +416,13 @@ getRangeEnd(end) {
       this.loadWeeklyBatteryStatus();
       this.loadDailyRideRevenue();
       this.loadStripeRevenue();
-      this.setState({areaIsChanged: false});
+      this.fetchAreaDistance();
+      this.fetchAreaMinutes();
+      this.setState({areaIsChanged: true});
+    }
+    if (prevState.rangePickerValue !== this.state.rangePickerValue) {
+      this.fetchAreaDistance();
+      this.fetchAreaMinutes();
     }
   }
 
@@ -526,7 +576,13 @@ getRangeEnd(end) {
     );
 
 
-    
+    const formatDistance = (distance) => {
+      if (distance === null || distance === undefined) {
+        return null;
+      } else { 
+        return distance.toFixed(2);
+      }
+    } 
                               
                  
     
@@ -543,7 +599,10 @@ getRangeEnd(end) {
 
       const dailyRideRevenue = dashboard.dailyRideRevenue;
 
+      const totalRideMinutes = dashboard.totalRideMinutes;
 
+      const totalRideDistance = dashboard.totalRideDistance;
+      
       const weeklyBatterySwap = batteryState.weeklyBatterySwap
       &&  batteryState.weeklyBatterySwap
       .map( group => {
@@ -813,6 +872,28 @@ getRangeEnd(end) {
                   </Row>
                   </TabPane> 
               }
+              { 
+              authority.includes("get.area.minutes") &&  <TabPane
+                tab="Ride Metrics"
+                key="metrics"
+              >
+                <Row>
+                  <Col xl={16} lg={12} md={12} sm={24} xs={24}>
+                    <div className={styles.salesBar}>
+                    <span>
+                      <h2>Total Ride Distance (miles)</h2>
+                      <h3>{formatDistance(totalRideDistance.totalDistance)}</h3>
+                    </span>
+                    <span>
+                      <h2>Total Ride Time (minutes)</h2>
+                      <h3>{totalRideMinutes.totalMinutes}</h3>
+                    </span>
+                    </div>
+                  </Col>
+                  {this.getRankingBoard()}
+                </Row>
+                </TabPane> 
+            }
             </Tabs>
           </div>
         </Card>

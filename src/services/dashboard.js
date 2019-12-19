@@ -56,3 +56,15 @@ export async function getConnectivityByPeriod(params) {
     method: "GET"
   });
 }
+
+export async function getAreaTotalMinutes(params) {
+  return request(`/admins/dashboard/total_minutes?${stringify(params, { indices: false })}`, {
+    method: "GET"
+  });
+}
+
+export async function getAreaTotalDistance(params) {
+  return request(`/admins/dashboard/total_area_distance?${stringify(params, { indices: false })}`, {
+    method: "GET"
+  });
+}

@@ -8,7 +8,9 @@ import {
   getDailyRideRevenue,
   getWeeklyBatteryState,
   getStripRevenueByPeriod,
-  getConnectivityByPeriod
+  getConnectivityByPeriod,
+  getAreaTotalDistance,
+  getAreaTotalMinutes
 } from "@/services/dashboard";
 import { message } from "antd";
 
@@ -23,7 +25,8 @@ export default {
     batteryState: {},
     stripeRevenue: {},
     dailyRideRevenue: {},
-
+    totalRideMinutes: {},
+    totalRideDistance: {},
   },
 
   effects: {
@@ -205,9 +208,6 @@ export default {
 
     *fetchStripeDailyRevenue({params}, { call, put }) {
 
-
-      const response = yield call(getStripeDailyRevenue, params);
-
       if (response) {
         yield put({
           type: "save",
@@ -216,8 +216,35 @@ export default {
           }
         });
       }
+    },
+
+    *fetchAreaMinutes({params}, { call, put }) {
+      const response = yield call(getAreaTotalMinutes, params);
+
+      console.log({response});
+      if (response) {
+        yield put({
+          type: "save",
+          payload: {
+            totalRideMinutes: response
+          }
+        });
+      }
+
+    },
+
+    *fetchAreaDistance({params}, { call, put }) {
+      const response = yield call(getAreaTotalDistance, params);
+
+      if (response) {
+        yield put({
+          type: "save",
+          payload: {
+            totalRideDistance: response
+          }
+        });
+      }
     }
-    
 
   },
 
@@ -236,7 +263,9 @@ export default {
         dailyRideCount: {},
         batteryState: {},
         stripeRevenue: {},
-        rideRevenue: {}
+        rideRevenue: {},
+        totalRideDistance: {},
+        totalRideMinutes: {},
       };
     }
   }

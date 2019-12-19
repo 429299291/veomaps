@@ -40,7 +40,6 @@ import {
       },
       *generateCodePromo({ id, payload }, { call, put }) {
 
-
         const response = yield call(generatePromoWithCode, id, payload); // gen code
   
         if (response) {
