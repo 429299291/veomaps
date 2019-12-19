@@ -204,8 +204,9 @@ export default {
     },
 
     *fetchStripeDailyRevenue({params}, { call, put }) {
-      const response = yield call(getStripeDailyRevenue, params);
 
+
+      const response = yield call(getStripeDailyRevenue, params);
 
       if (response) {
         yield put({

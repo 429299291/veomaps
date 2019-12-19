@@ -55,6 +55,7 @@ import {fenceType, fenceTypeColor} from "@/constant";
 
 import { exportCSVFile } from "../../utils/utils";
 import moment from "moment";
+import 'moment-timezone';
 import VehicleMap from "@/components/Map/VehicleMap";
 
 const authority = getAuthority();
@@ -109,14 +110,15 @@ class Dashboard extends Component {
         this.setState({
           loading: false
         });
-      }, 600);
+      },2000);
 
       this.pollingId = setInterval(()=> {
         this.loadDailyRideCount();
         this.loadWeeklyBatteryStatus();
         this.loadDailyRideRevenue();
+        this.loadStripeRevenue();
         this.setState({areaIsChanged: false});
-      },10000);
+      },30000);
 
     });
   }
@@ -146,11 +148,12 @@ class Dashboard extends Component {
         return;
       }
 
+
     dispatch({
       type: "dashboard/fetchDailyRideCounts",
       params: {
         areaId: selectedAreaId,
-        midnight: moment().startOf("day").unix()
+        midnight: moment().tz("America/Chicago").startOf("day").unix()
       }
     });
 
@@ -167,7 +170,7 @@ class Dashboard extends Component {
         type: "dashboard/fetchDailyRideRevenue",
         params: {
           areaId: selectedAreaId,
-          midnight: moment().startOf("day").unix()
+          midnight: moment().tz("America/Chicago").startOf("day").unix()
         }
       });
   }
@@ -185,7 +188,7 @@ class Dashboard extends Component {
         type: "dashboard/fetchStripeDailyRevenue",
         params: {
           areaId: selectedAreaId,
-          midnight: moment().startOf("day").unix()
+          midnight: moment().tz("America/Chicago").startOf("day").unix()
         }
       });
 
@@ -203,7 +206,7 @@ class Dashboard extends Component {
         type: "dashboard/fetchDailyRideRevenue",
         params: {
           areaId: selectedAreaId,
-          midnight: moment().startOf("day").unix()
+          midnight: moment().tz("America/Chicago").startOf("day").unix()
         }
       });
 
@@ -366,8 +369,10 @@ getRangeEnd(end) {
     if ((prevProps.selectedAreaId !== this.props.selectedAreaId)) {
       this.loadBarCharData();
       this.loadDailyRideCount();
+      this.loadWeeklyBatteryStatus();
+      this.loadDailyRideRevenue();
       this.loadStripeRevenue();
-      this.setState({areaIsChanged: true});
+      this.setState({areaIsChanged: false});
     }
   }
 
@@ -633,8 +638,8 @@ getRangeEnd(end) {
                     <Icon type="info-circle-o" />
                   </Tooltip>
                 }
-                loading={false}
-                total={ revenueLoading ? "loading" : (stripeRevenue.dailyRevenue / 100)}
+                loading={dailyRideRevenueLoading}
+                total={ dailyRideRevenueLoading ? "loading" : (stripeRevenue.dailyRevenue / 100)}
                 footer={
                   <Field
                     label="Total Revenue"
