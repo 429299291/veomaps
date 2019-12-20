@@ -208,6 +208,8 @@ export default {
 
     *fetchStripeDailyRevenue({params}, { call, put }) {
 
+      const response = yield call(getStripeDailyRevenue, params);
+
       if (response) {
         yield put({
           type: "save",
@@ -221,7 +223,6 @@ export default {
     *fetchAreaMinutes({params}, { call, put }) {
       const response = yield call(getAreaTotalMinutes, params);
 
-      console.log({response});
       if (response) {
         yield put({
           type: "save",

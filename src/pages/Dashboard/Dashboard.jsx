@@ -69,9 +69,9 @@ const { TabPane } = Tabs;
   barChartloading: loading.models.areas || loading.effects["dashboard/fetchRideCount"] || loading.effects["dashboard/fetchCustomerCount"] ,
   activeRideCountLoading:  loading.models.areas || loading.effects["dashboard/fetchDailyRideCounts"],
   weeklyBatteryStateLoading:  loading.models.areas || loading.effects["dashboard/fetchWeeklyBatteryState"],
-  revenueLoading:  loading.models.areas || loading.effects["dashboard/fetchStripeDailyRevenue"],
   currentActiveRideLoading: loading.models.areas || loading.effects["dashboard/fetchDailyRideCounts"],
-  weeklyBatterySwapLoading: loading.models.areas || loading.effects["dashboard/fetchDailyRideCounts"],
+  weeklyBatterySwapLoading: loading.models.areas || loading.effects["dashboard/fetchWeeklyBatteryState"],
+  stripeRevenueLoading: loading.models.areas || loading.effects["dashboard/fetchStripeDailyRevenue"],
   dailyRideRevenueLoading: loading.models.areas || loading.effects["dashboard/fetchDailyRideRevenue"],
   totalAreaMinutesLoading: loading.models.areas || loading.effects["dashboard/areaTotalMinutes"],
   totalAreaDistanceLoading: loading.models.areas || loading.effects["dashboard/areaTotalDistance"],
@@ -515,7 +515,7 @@ getRangeEnd(end) {
       barChartloading,
       activeRideCountLoading,
       dashboard,
-      revenueLoading,
+      stripeRevenueLoading,
       currentActiveRideLoading,
       weeklyBatterySwapLoading,
       dailyRideRevenueLoading
@@ -624,11 +624,11 @@ getRangeEnd(end) {
                     <Icon type="info-circle-o" />
                   </Tooltip>
                 }
-                total={areaIsChanged ? "loading" :  dailyRideCount.currentActiveRideCount}
+                total={activeRideCountLoading ? "loading" :  dailyRideCount.currentActiveRideCount}
                 footer={
                   <Field
                     label="Total Ride Today"
-                    value={areaIsChanged ? "loading" : `${dailyRideCount.todayRideCount}`}
+                    value={activeRideCountLoading ? "loading" : `${dailyRideCount.todayRideCount}`}
                   />
                 }
                 contentHeight={60}
@@ -670,11 +670,11 @@ getRangeEnd(end) {
                       <Icon type="info-circle-o" />
                     </Tooltip>
                   }
-                  total={areaIsChanged ? "loading" : (weeklyBatterySwap[weeklyBatterySwap.length - 1] && numeral(weeklyBatterySwap[weeklyBatterySwap.length - 1].y).format("0,0"))}
+                  total={weeklyBatterySwapLoading ? "loading" : (weeklyBatterySwap[weeklyBatterySwap.length - 1] && numeral(weeklyBatterySwap[weeklyBatterySwap.length - 1].y).format("0,0"))}
                   footer={
                     <Field
                       label="Low Battery Vehicles"
-                      value={areaIsChanged ? "loading" : numeral(batteryState.lowBatteryCount).format("0,0")}
+                      value={weeklyBatterySwapLoading ? "loading" : numeral(batteryState.lowBatteryCount).format("0,0")}
                     />
                   }
                   contentHeight={60}
@@ -697,12 +697,12 @@ getRangeEnd(end) {
                     <Icon type="info-circle-o" />
                   </Tooltip>
                 }
-                loading={dailyRideRevenueLoading}
-                total={ dailyRideRevenueLoading ? "loading" : (stripeRevenue.dailyRevenue / 100)}
+                loading={stripeRevenueLoading}
+                total={ stripeRevenueLoading ? "loading" : (stripeRevenue.dailyRevenue / 100)}
                 footer={
                   <Field
                     label="Total Revenue"
-                    value={revenueLoading ? "loading" : `${stripeRevenue.totalRevenue  / 100}`}
+                    value={stripeRevenueLoading ? "loading" : `${stripeRevenue.totalRevenue  / 100}`}
                   />
                 }
                 contentHeight={60}
@@ -712,14 +712,14 @@ getRangeEnd(end) {
                     id="app.analysis.week"
                     defaultMessage="Weekly Changes"
                   />
-                  <span className={styles.trendText}> {revenueLoading ? "loading" : Math.round(((stripeRevenue.dailyRevenue - stripeRevenue.lastWeekRevenue) /stripeRevenue.lastWeekRevenue) * 100)}%</span>
+                  <span className={styles.trendText}> {stripeRevenueLoading ? "loading" : Math.round(((stripeRevenue.dailyRevenue - stripeRevenue.lastWeekRevenue) /stripeRevenue.lastWeekRevenue) * 100)}%</span>
                 </Trend>
                 <Trend flag={stripeRevenue.dailyRevenue - stripeRevenue.yesterdayRevenue > 0 ? "up" : "down"}>
                   <FormattedMessage
                     id="app.analysis.day"
                     defaultMessage="Daily Changes"
                   />
-                  <span className={styles.trendText}>{revenueLoading ? "loading"  : Math.round(((stripeRevenue.dailyRevenue - stripeRevenue.yesterdayRevenue) /stripeRevenue.yesterdayRevenue) * 100)}%</span>
+                  <span className={styles.trendText}>{stripeRevenueLoading ? "loading"  : Math.round(((stripeRevenue.dailyRevenue - stripeRevenue.yesterdayRevenue) /stripeRevenue.yesterdayRevenue) * 100)}%</span>
                 </Trend>
               </ChartCard>
             </Col>
@@ -737,8 +737,8 @@ getRangeEnd(end) {
                     <Icon type="info-circle-o" />
                   </Tooltip>
                 }
-                loading={false}
-                total={ areaIsChanged ? "loading" : (dailyRideRevenue.dailyRevenue)}
+                loading={dailyRideRevenueLoading}
+                total={ dailyRideRevenueLoading ? "loading" : (dailyRideRevenue.dailyRevenue)}
                 footer={
                   <Field
                     label="Total Revenue"
