@@ -143,6 +143,13 @@ class Dashboard extends Component {
     this.getConnectivityByPeriod();
   }
 
+  clearMinutesAndDistance() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "dashboard/clearMinutesAndDistance"
+    })
+  }
+
   loadDailyRideCount() {
       const { dispatch, selectedAreaId } = this.props;
 
@@ -416,9 +423,15 @@ getRangeEnd(end) {
       this.loadWeeklyBatteryStatus();
       this.loadDailyRideRevenue();
       this.loadStripeRevenue();
-      this.fetchAreaDistance();
-      this.fetchAreaMinutes();
+
       this.setState({areaIsChanged: true});
+      if (this.props.selectedAreaId === null) {
+        this.clearMinutesAndDistance();
+      }
+      if (this.props.selectedAreaId !== null) {
+        this.fetchAreaDistance();
+        this.fetchAreaMinutes();
+      }
     }
     if (prevState.rangePickerValue !== this.state.rangePickerValue) {
       this.fetchAreaDistance();
@@ -873,7 +886,8 @@ getRangeEnd(end) {
                   </TabPane> 
               }
               { 
-              authority.includes("get.area.minutes") &&  <TabPane
+              (authority.includes("get.area.minutes") && this.props.selectedAreaId !== null) && 
+              <TabPane
                 tab="Ride Metrics"
                 key="metrics"
               >

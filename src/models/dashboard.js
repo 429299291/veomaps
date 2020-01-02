@@ -256,6 +256,13 @@ export default {
         ...payload
       };
     },
+    clearMinutesAndDistance(state) {
+      return {
+        ...state,
+        totalRideDistance: {},
+        totalRideMinutes: {},
+      }
+    },
     clear() {
       return {
         rideCountData: [],
