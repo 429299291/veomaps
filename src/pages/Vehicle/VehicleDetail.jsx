@@ -444,6 +444,16 @@ const UpdateForm = Form.create()(props => {
         </div>
       </FormItem>
 
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Firmware"
+      >
+        <div>
+          {record.firmware}
+        </div>
+      </FormItem>
+
 
       <FormItem
         labelCol={{ span: 5 }}
@@ -962,6 +972,8 @@ class VehicleDetail extends PureComponent {
       handleEndRide: this.handleEndRide,
       handleEndRideVisible: this.handleEndRideVisible
     };
+
+    console.log(record);
 
     return (
       <Modal
