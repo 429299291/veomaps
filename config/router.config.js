@@ -66,6 +66,12 @@ export default [
             name: "Report",
             component: "./Vehicle/Error",
             authority: "get.errors"
+          },
+          {
+            path: "/vehicle-management/violations",
+            name: "Violation",
+            component: "./Vehicle/VehicleViolation",
+            authority: "get.vehicle.violations"
           }
         ]
       },

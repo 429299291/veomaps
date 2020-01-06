@@ -103,6 +103,13 @@ let routes = [
             "exact": true
           },
           {
+            "path": "/vehicle-management/violations",
+            "name": "Violation",
+            "component": dynamic({ loader: () => import('../Vehicle/VehicleViolation'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
+            "authority": "get.vehicle.violations",
+            "exact": true
+          },
+          {
             "component": () => React.createElement(require('/Users/zhuangenze/Desktop/manhattan-admin-web/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })
           }
         ]

@@ -22,6 +22,13 @@ const fenceTypeColor = [
   "#336600"
 ];
 
+const violationStatus = [
+  {name: "waiting for Review", color: "#fcba03"}, 
+  {name: "Rejected", color: "red"},
+  {name: "Approved", color: "green"},
+  {name: "Reverted", color: "blue"},
+];
+
 const transactionType = [
   "Admin",
   "Membership Refund",
@@ -31,7 +38,8 @@ const transactionType = [
   "Promo",
   "Migration",
   "Ride",
-  "Deposit"
+  "Deposit",
+  "Violation"
 ];
 
 const parkingViolationType = [
@@ -59,4 +67,4 @@ const technicianActionTypes = [
   "End Swap Battery",
 ]
 
-export { fenceType, fenceTypeColor, transactionType, parkingViolationType, technicianActionTypes };
+export { fenceType, fenceTypeColor, transactionType, parkingViolationType, technicianActionTypes, violationStatus};

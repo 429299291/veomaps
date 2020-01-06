@@ -4,7 +4,6 @@ import router from "umi/router";
 import hash from "hash.js";
 import { isAntdPro } from "./utils";
 
-
 //const urlPrefix = "https://localhost:8444/api";
 //const urlPrefix = "https://develop.veoride.com:8444/api";
 //const urlPrefix = "https://manhattan-dev.veoride.com:8444/api";
@@ -21,7 +20,7 @@ const codeMessage = {
   202: "A request has entered the background queue (asynchronous task).",
   204: "Delete data successfully.",
   400: "The request was made with an error, and the server did not perform operations to create or modify data.",
-  401: "User don't have permission (token, username, password).", 
+  401: "User don't have permission (token, username, password).",
   403: "User is authorized, but access is forbidden.",
   404: "The request was made to a record that does not exist, and the server did not operate.",
   406: "The format of the request is not available.",
@@ -99,14 +98,12 @@ export default function request(url, options) {
     .then(response =>
       response.json().then(json => {
         if (!response.ok || (json.code && json.code != 0)) {
-
         }
         return json && json.data;
       })
     )
     .catch(e => {
       const status = e.name;
-
 
       console.log(e);
 

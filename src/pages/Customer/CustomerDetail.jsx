@@ -873,7 +873,7 @@ class CustomerDetail extends PureComponent {
     {
       title: "Type",
       dataIndex: "type",
-      render: value =>  <span>{ transactionType[value]} </span>
+      render: (value, record) =>  <span>{ transactionType[value] + (value === 0 && record.metaData ? `(${JSON.parse(record.metaData).adminEmail})` : "") } </span>
     },
     {
       title: "Deposit Change",

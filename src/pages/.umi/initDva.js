@@ -37,6 +37,7 @@ app.model({ namespace: 'role', ...(require('/Users/zhuangenze/Desktop/manhattan-
 app.model({ namespace: 'setting', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/setting.js').default) });
 app.model({ namespace: 'technician', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/technician.js').default) });
 app.model({ namespace: 'user', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/user.js').default) });
+app.model({ namespace: 'vehicle-violation', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/vehicle-violation.js').default) });
 app.model({ namespace: 'vehicle', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/vehicle.js').default) });
 app.model({ namespace: 'violation', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/violation.js').default) });
 app.model({ namespace: 'register', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/pages/User/models/register.js').default) });

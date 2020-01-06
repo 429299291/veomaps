@@ -892,9 +892,12 @@ class Ride extends PureComponent {
               onCancel={() => this.handleDetailModalVisible()}
               onOk={() => this.handleDetailModalVisible()}
             >
+            <Row>
               {Object.keys(selectedRecord).map(key => (
                 <p key={key}>{`${key} : ${selectedRecord[key]}`}</p>
               ))}
+            </Row>
+            <Row>
               {selectedRidePath &&
                 selectedRidePath.length >= 2 && (
                   <RouteMap
@@ -902,12 +905,21 @@ class Ride extends PureComponent {
                     fences={geo.fences}
                   />
                 )}
+                </Row>
+               
 
                 {
                   rideImageUrl &&
+                  <Row style={{height: "600px"}}>
                     
-                  <img  src={rideImageUrl} style={{marginTop: "50px", marginBottom: "50px", width: "80%"}} className={styles.rotate90} />
+                  <img  src={rideImageUrl} style={{ width: "600px", maxHeight: "550px", marginLeft: "-70px", marginTop: "90px"}} className={styles.rotate90} />
+
+                  </Row>
                 }
+
+
+               
+             
             </Modal>
           )}
 

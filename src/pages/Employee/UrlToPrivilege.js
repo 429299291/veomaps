@@ -47,7 +47,11 @@ export default {
     "GET /api/admins/vehicles/{id}/location/reference": "get.ref",
     "POST /api/admins/vehicles/{vehicleNumber}/action": "apply.action",
     "PUT /api/admins/vehicles/{id}/control": "vehicle.control",
-    "PUT /api/admins/vehicles/{id}/control_extension": "vehicle.control.extension" 
+    "PUT /api/admins/vehicles/{id}/control_extension": "vehicle.control.extension",
+    "GET /api/admins/violations": "get.vehicle.violations",
+    "PUT /api/admins/violations/{violationId}": "update.vehicle.violation",
+    "GET /api/admins/violations/count": "get.vehicle.violation.count",
+    "GET /api/admins/violations/{violationId}/detail": "get.vehicle.violation.detail",
   },
   "Riding History": {
     "GET /api/admins/rides": "get.rides",

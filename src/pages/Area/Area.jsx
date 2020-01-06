@@ -145,8 +145,10 @@ const AreaFeatureForm = Form.create()(props => {
             metaData.freeRideConfig = fieldsValue.freeRideConfig;
           }
 
-          const finalResult = {};
 
+          const finalResult = {};
+          
+          finalResult.violationActivated = fieldsValue.violationActivated;
           finalResult.driverLicenseActivated = fieldsValue.driverLicenseActivated;
           finalResult.eduRideActivated = fieldsValue.eduRideActivated;
           finalResult.freeTimeActivated = fieldsValue.freeTimeActivated;
@@ -170,6 +172,7 @@ const AreaFeatureForm = Form.create()(props => {
   const lincenseActivated = record.areaFeature && record.areaFeature.driverLicenseActivated;
 
  
+  const violationActivated = record.areaFeature && record.areaFeature.violationActivated;
 
   const eduRideActivated = record.areaFeature && record.areaFeature.eduRideActivated;
 
@@ -213,6 +216,15 @@ const AreaFeatureForm = Form.create()(props => {
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
+    <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Violation Activated">
+        {form.getFieldDecorator("violationActivated", {
+          valuePropName: 'checked',
+          initialValue: violationActivated ? true : false,
+        })(<Switch  disabled={!isEditable} />)}
+    </FormItem>
+    {form.getFieldValue("violationActivated") && 
+      <span> hello world</span>
+    }
     <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Lincense Check Activated">
         {form.getFieldDecorator("driverLicenseActivated", {
           valuePropName: 'checked',
@@ -300,18 +312,19 @@ const AreaFeatureForm = Form.create()(props => {
           valuePropName: 'checked',
         })(<Switch  disabled={!isEditable}  />)}
       </FormItem>
-      <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Time Limit Activated">
-        {form.getFieldDecorator("timeLimitActivated", {
-          initialValue: timeLimitActivated ? true : false,
-          valuePropName: 'checked'
-        })(<Switch  disabled={!isEditable}  />)}
-      </FormItem>
       <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} label="Max Speed">
         {form.getFieldDecorator("maxSpeed", {
           initialValue: maxSpeed,
           valuePropName: 'checked'
         })(<InputNumber min={1} max={25} defaultValue={maxSpeed} />)}
       </FormItem>
+      <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Time Limit Activated">
+        {form.getFieldDecorator("timeLimitActivated", {
+          initialValue: timeLimitActivated ? true : false,
+          valuePropName: 'checked'
+        })(<Switch  disabled={!isEditable}  />)}
+      </FormItem>
+     
         {form.getFieldValue("timeLimitActivated") && 
       
           <div>
