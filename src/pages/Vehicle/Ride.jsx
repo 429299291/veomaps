@@ -236,13 +236,17 @@ const RouteMap = compose(
     googleMapURL:
       "https://maps.googleapis.com/maps/api/js?key=AIzaSyDdCuc9RtkM-9wV9e3OrULPj67g2CHIdZI&v=3.exp&libraries=geometry,drawing,places",
     loadingElement: <div style={{ height: `100%` }} />,
-    containerElement: <div style={{ height: `400px` }} />,
+    containerElement: <div style={{ height: `250px` }} />,
     mapElement: <div style={{ height: `100%` }} />
   }),
   withScriptjs,
   withGoogleMap
 )(props => {
-  const { path, fences } = props;
+  const { pathInfo, fences } = props;
+
+  const path = pathInfo.path;
+
+  const distance = pathInfo.distance;
 
   const center = path[Math.round(path.length / 2)];
 
@@ -253,58 +257,68 @@ const RouteMap = compose(
   };
 
   return (
-    <GoogleMap defaultZoom={15} center={center}>
-      <Marker position={path[0]} label={"start"} />
-      <Marker position={path[path.length - 1]} label={"end"}  />
-      <Polyline
-        path={path}
-        geodesic={true}
-        options={{
-          strokeColor: "#ff0000",
-          strokeOpacity: 0.75,
-          strokeWeight: 2
-        }}
-      />
-
-    {authority.includes("get.fences") && fences && fences.map(fence => (
-        <Polygon
-          path={fence.fenceCoordinates}
-          geodesic={true}
-          key={fence.id}
-          options={{
-            strokeColor: fenceTypeColor[fence.fenceType],
-            strokeOpacity: fence.fenceType === 5 ? 0 : 0.75,
-            strokeWeight: fence.fenceType === 5 ? 0 : 2,
-            fillColor: fenceTypeColor[fence.fenceType],
-            fillOpacity:
-              fence.fenceType === 0 || fence.fenceType === 5 ? 0 : 0.35
-          }}
-        />
-      ))}
-
-      {authority.includes("get.fences") && fences &&  fences.filter(fence => fence.fenceType === 5).map(fence => (
+    
+    <div style={{position: "relative"}}>
+     <div>distance: {Math.round(distance * 100 )/ 100} miles </div>
+      <GoogleMap defaultZoom={15} center={center} style={{height: "90%"}}>
+        <Marker position={path[0]} label={"start"} />
+        <Marker position={path[path.length - 1]} label={"end"}  />
         <Polyline
-          path={fence.fenceCoordinates}
+          path={path}
           geodesic={true}
-          key={fence.id}
           options={{
-            strokeColor: fenceTypeColor[fence.fenceType],
+            strokeColor: "#ff0000",
             strokeOpacity: 0.75,
-            strokeWeight: 2,
-            icons: [
-              {
-                icon: dashLineDot,
-                offset: "0",
-                repeat: "10px"
-              }
-            ],
-            fillColor: fenceTypeColor[5],
-            fillOpacity: 0
+            strokeWeight: 2
           }}
         />
-      ))}
 
-    </GoogleMap>
+      {authority.includes("get.fences") && fences && fences.map(fence => (
+          <Polygon
+            path={fence.fenceCoordinates}
+            geodesic={true}
+            key={fence.id}
+            options={{
+              strokeColor: fenceTypeColor[fence.fenceType],
+              strokeOpacity: fence.fenceType === 5 ? 0 : 0.75,
+              strokeWeight: fence.fenceType === 5 ? 0 : 2,
+              fillColor: fenceTypeColor[fence.fenceType],
+              fillOpacity:
+                fence.fenceType === 0 || fence.fenceType === 5 ? 0 : 0.35
+            }}
+          />
+        ))}
+
+        {authority.includes("get.fences") && fences &&  fences.filter(fence => fence.fenceType === 5).map(fence => (
+          <Polyline
+            path={fence.fenceCoordinates}
+            geodesic={true}
+            key={fence.id}
+            options={{
+              strokeColor: fenceTypeColor[fence.fenceType],
+              strokeOpacity: 0.75,
+              strokeWeight: 2,
+              icons: [
+                {
+                  icon: dashLineDot,
+                  offset: "0",
+                  repeat: "10px"
+                }
+              ],
+              fillColor: fenceTypeColor[5],
+              fillOpacity: 0
+            }}
+          />
+        ))}
+        
+        
+      </GoogleMap>
+      
+     
+
+     
+
+    </div>
   );
 });
 
@@ -543,11 +557,11 @@ class Ride extends PureComponent {
 
   handleDetailModalVisible = (flag, record) => {
     const { dispatch } = this.props;
-    const { filterCriteria } = this.state;
+    const { filterCriteria, rideImageUrl } = this.state;
 
     if (!!flag) {
 
-      authority.includes("get.ride.image") && dispatch({
+      authority.includes("get.ride.image") && record.imageId && dispatch({
         type: "rides/image",
         rideId: record.id,
         onSuccess: imageUrl =>
@@ -562,14 +576,14 @@ class Ride extends PureComponent {
       });
 
       if (authority.includes("get.ride.route")) {
+
+
         dispatch({
           type: "rides/getRoute",
           rideId: record.id,
-          onSuccess: path =>
+          onSuccess: pathInfo =>
             this.setState({
-              selectedRidePath: path,
-              detailModalVisible: true,
-              selectedRecord: record
+              selectedRidePathInfo: pathInfo,
             })
         });
         authority.includes("get.fences") && dispatch({
@@ -577,19 +591,20 @@ class Ride extends PureComponent {
           areaId: record.areaId
         });
         
-      } else {
+      } 
         this.setState({
           detailModalVisible: true,
-          selectedRecord: record
+          selectedRecord: record,
         });
-      }
+      
 
 
     } else {
       this.setState({
         detailModalVisible: false,
-        selectedRecord: null,
-        selectedRidePath: null
+        selectedRecord: undefined,
+        selectedRidePathInfo: undefined,
+        rideImageUrl: undefined
       });
     }
   };
@@ -829,7 +844,7 @@ class Ride extends PureComponent {
       detailModalVisible,
       selectedRecord,
       filterCriteria,
-      selectedRidePath,
+      selectedRidePathInfo,
       vehicleDetailModalVisible,
       selectedVehicleId,
       customerDetailModalVisible,
@@ -892,30 +907,40 @@ class Ride extends PureComponent {
               onCancel={() => this.handleDetailModalVisible()}
               onOk={() => this.handleDetailModalVisible()}
             >
-            <Row>
-              {Object.keys(selectedRecord).map(key => (
-                <p key={key}>{`${key} : ${selectedRecord[key]}`}</p>
-              ))}
-            </Row>
-            <Row>
-              {selectedRidePath &&
-                selectedRidePath.length >= 2 && (
+            <Row width={800}>
+
+              <Col xs={24} sm={12} style={{fontSize: "0.7em"}}>
+                {Object.keys(selectedRecord).map(key => (
+                  <p key={key}>{`${key} : ${selectedRecord[key]}`}</p>
+                ))}
+              </Col>
+
+              <Col xs={24} sm={12}>
+
+              {selectedRidePathInfo &&
+                selectedRidePathInfo.distance > 0 && (
                   <RouteMap
-                    path={selectedRidePath}
+                    pathInfo={selectedRidePathInfo}
                     fences={geo.fences}
                   />
                 )}
-                </Row>
+
                
 
                 {
                   rideImageUrl &&
-                  <Row style={{height: "600px"}}>
                     
-                  <img  src={rideImageUrl} style={{ width: "600px", maxHeight: "550px", marginLeft: "-70px", marginTop: "90px"}} className={styles.rotate90} />
-
-                  </Row>
+                    <div style={{width: "90%", height: "480px"}}>
+                       <img  src={rideImageUrl} style={{ maxWidth: "130%", maxHeight: "435px",  marginTop: "70px", marginLeft: "-40px"}} className={styles.rotate90} />
+                    </div>
+                   
                 }
+                  
+              </Col>
+             
+             
+            </Row>
+             
 
 
                

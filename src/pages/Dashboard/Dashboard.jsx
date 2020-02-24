@@ -141,6 +141,13 @@ class Dashboard extends Component {
     this.getStripeRevenueByPeriod();
     this.fetchRidePerVehicleRank();
     this.getConnectivityByPeriod();
+
+    if (this.props.selectedAreaId !== null) {
+      this.fetchAreaDistance();
+      this.fetchAreaMinutes();
+    }
+  
+    
   }
 
   clearMinutesAndDistance() {
@@ -428,14 +435,7 @@ getRangeEnd(end) {
       if (this.props.selectedAreaId === null) {
         this.clearMinutesAndDistance();
       }
-      if (this.props.selectedAreaId !== null) {
-        this.fetchAreaDistance();
-        this.fetchAreaMinutes();
-      }
-    }
-    if (prevState.rangePickerValue !== this.state.rangePickerValue) {
-      this.fetchAreaDistance();
-      this.fetchAreaMinutes();
+    
     }
   }
 
@@ -531,9 +531,11 @@ getRangeEnd(end) {
       stripeRevenueLoading,
       currentActiveRideLoading,
       weeklyBatterySwapLoading,
-      dailyRideRevenueLoading
+      dailyRideRevenueLoading,
     } = this.props;
 
+
+   
 
     const {
       rangePickerValue,
@@ -596,6 +598,59 @@ getRangeEnd(end) {
         return distance.toFixed(2);
       }
     } 
+
+    const formatAllDayData = data => {
+
+      const {countParams} = this.state;
+
+      if (data === undefined || data.length === 0 ||  countParams.period !== "day" || isNaN(data[0].x)) {
+
+        return data;
+
+      } else {
+
+          const result = 
+          
+            data.sort((x, y) => {
+
+            const xInt = parseInt(x.x, 10); 
+
+            const yInt = parseInt(y.x, 10); 
+
+
+            return xInt - yInt
+
+            })
+            .map(item => {
+
+
+              const intX = parseInt(item.x);
+
+              const formatTime = (( intX - 1) % 12) + ((intX < 12) ? "AM" : "PM");
+
+              item.temp = formatTime;
+
+              item.x = formatTime;
+
+              if (data.length < 20) {
+
+                console.log(item);
+              }
+
+
+              return item;
+
+            })
+
+            console.log(result)
+
+            return result;
+
+
+
+      }
+
+    }
                               
                  
     
@@ -810,7 +865,7 @@ getRangeEnd(end) {
                             defaultMessage="Rides Trend"
                           />
                         }
-                        data={dashboard.rideCountData}
+                        data={formatAllDayData(dashboard.rideCountData)}
                       />
                     </div>
                   </Col>
@@ -838,7 +893,7 @@ getRangeEnd(end) {
                               defaultMessage="Customer Trend"
                             />
                           }
-                          data={dashboard.customerCountData}
+                          data={formatAllDayData(dashboard.customerCountData)}
                         />
                       </div>
                     </Col>
@@ -858,7 +913,7 @@ getRangeEnd(end) {
                         <Bar
                           height={292}
                           title="Revenue Trend"
-                          data={dashboard.stripeRevenueData}
+                          data={formatAllDayData(dashboard.stripeRevenueData)}
                         />
                       </div>
                     </Col>
@@ -877,7 +932,7 @@ getRangeEnd(end) {
                         <Bar
                           height={292}
                           title="Connectivity Trend"
-                          data={dashboard.connectivity}
+                          data={formatAllDayData(dashboard.connectivity)}
                         />
                       </div>
                     </Col>

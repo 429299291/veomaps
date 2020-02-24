@@ -1,5 +1,5 @@
 import fetch from "dva/fetch";
-import { notification, Button } from "antd";
+import { notification, Button, message } from "antd";
 import router from "umi/router";
 import hash from "hash.js";
 import { isAntdPro } from "./utils";
@@ -99,13 +99,18 @@ export default function request(url, options) {
       response.json().then(json => {
         if (!response.ok || (json.code && json.code != 0)) {
         }
+
+        if (json.code !== 0 && json.data === null) {
+
+          message.error(json.msg);
+          
+      }
+
         return json && json.data;
       })
     )
     .catch(e => {
       const status = e.name;
-
-      console.log(e);
 
       if (status === 401) {
         window.g_app._store.dispatch({

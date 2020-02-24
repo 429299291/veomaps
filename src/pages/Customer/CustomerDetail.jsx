@@ -100,7 +100,7 @@ const EndRideForm = Form.create()(props => {
 });
 
 const UpdateForm = Form.create()(props => {
-  const { form, handleUpdate, areas, record, customerActiveDays } = props;
+  const { form, handleUpdate, areas, record, customerActiveDays, customerApprovedViolationCount } = props;
   const okHandle = () => {
     if (form.isFieldsTouched())
       form.validateFields((err, fieldsValue) => {
@@ -286,6 +286,14 @@ const UpdateForm = Form.create()(props => {
         <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Active Days">
           <span> {customerActiveDays} </span>
         </FormItem> 
+
+        {authority.includes("get.customer.approved.violation.count") && 
+
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Customer Approved Violation Count">
+            <span> {customerApprovedViolationCount} </span>
+          </FormItem> 
+
+        }
       
 
       <Row>
@@ -759,7 +767,8 @@ class CustomerDetail extends PureComponent {
     refundType: REFUND_TYPE.FULL,
     needPickupFee: null,
     customerActiveDays: null,
-    customerTransactions: null
+    customerTransactions: null,
+    customerApprovedViolationCount: "Loading"
   };
 
   customerCouponColumns = [
@@ -966,6 +975,7 @@ class CustomerDetail extends PureComponent {
     this.handleGetCustomerMembership(customerId);
     this.handleGetAvailableCustomerMemberships(customerId);
     this.handleGetCustomerTransactions(customerId);
+    this.handleGetCustomerApprovedViolationCount(customerId);
   };
 
   handleEndRideVisible = (flag, record) => {
@@ -1078,6 +1088,26 @@ class CustomerDetail extends PureComponent {
     });
   };
 
+  handleGetCustomerApprovedViolationCount = customerId => {
+    const { dispatch } = this.props;
+
+    if (!authority.includes("get.customer.approved.violation.count")) {
+
+      return;
+
+    }
+
+    dispatch({
+      type: "violation/getCustomerApprovedViolationCount",
+      customerId: customerId,
+      onSuccess: result => {
+
+        this.setState({ customerApprovedViolationCount: result});
+
+      }
+    });
+  };
+
   handleDeleteCoupon = customerCouponId => {
     const { dispatch } = this.props;
     dispatch({
@@ -1185,7 +1215,8 @@ class CustomerDetail extends PureComponent {
       needPickupFee,
       customerActiveDays,
       customerTransactions,
-      refundReason
+      refundReason,
+      customerApprovedViolationCount
     } = this.state;
 
     const {
@@ -1228,6 +1259,7 @@ class CustomerDetail extends PureComponent {
                   record={customerDetail}
                   handleUpdate={this.handleUpdate}
                   customerActiveDays={customerActiveDays}
+                  customerApprovedViolationCount={customerApprovedViolationCount}
                 />
               </Card>
             )}

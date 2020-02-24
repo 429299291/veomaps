@@ -3,6 +3,7 @@ import {
     getMessages,
     createMessage,
     updateMessage,
+    getCustomerApprovedViolationCount
 } from '@/services/violation';
 import { message } from 'antd'; 
 
@@ -44,6 +45,17 @@ export default {
             } else {
                 message.error("Failure adding message");
             }
+        },
+
+
+        *getCustomerApprovedViolationCount({customerId, onSuccess}, {call, put}) {
+
+            const response = yield call(getCustomerApprovedViolationCount, customerId);
+            
+            if (Number.isInteger(response)) {
+                onSuccess(response);
+            }
+
         }
 
     },

@@ -27,6 +27,7 @@ const violationStatus = [
   {name: "Rejected", color: "red"},
   {name: "Approved", color: "green"},
   {name: "Reverted", color: "blue"},
+  {name: "Void", color: "grey"},
 ];
 
 const transactionType = [
@@ -39,7 +40,9 @@ const transactionType = [
   "Migration",
   "Ride",
   "Deposit",
-  "Violation"
+  "Dispute Freeze",
+  "Violation Fine",
+  "Violation Revert"
 ];
 
 const parkingViolationType = [
@@ -67,4 +70,30 @@ const technicianActionTypes = [
   "End Swap Battery",
 ]
 
-export { fenceType, fenceTypeColor, transactionType, parkingViolationType, technicianActionTypes, violationStatus};
+const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "Car"];
+
+const statusMap = ["default", "processing", "success", "error"];
+const operationStatus = ["NORMAL", "MANTAINANCE"];
+const connectStatus = ["Offline", "Online"];
+const lockStatus = ["Unlock", "lock"];
+const rideType = ["USING", "FINISHED"];
+const lockOperationWay = ["GPRS", "BLUETOOTH", "ADMIN", "UNKNOWN"];
+const rideState = ["unconfirmed","success","error"];
+const rideStateColor = ["#e5bb02","#0be024","#ff0000"];
+
+export { 
+  fenceType, 
+  fenceTypeColor, 
+  transactionType, 
+  parkingViolationType, 
+  technicianActionTypes, 
+  violationStatus, 
+  vehicleType, 
+  statusMap, 
+  operationStatus, 
+  connectStatus, 
+  lockStatus, 
+  rideType, 
+  lockOperationWay, 
+  rideState
+};

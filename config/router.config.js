@@ -209,7 +209,7 @@ export default [
       },
       {
         path: "/violation-management",
-        name: "Violation Management",
+        name: "Violation Message Management",
         icon: "warning",
         component: "./Violation/Violation"
       },

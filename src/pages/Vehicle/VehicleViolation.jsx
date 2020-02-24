@@ -15,8 +15,12 @@ import {
   Radio,
   Divider,
   Popconfirm,
-  InputNumber
+  InputNumber,
+  Popover
 } from 'antd';
+
+import VehicleDetail from "@/pages/Vehicle/VehicleDetail";
+import CustomerDetail from "@/pages/Customer/CustomerDetail";
 
 import { compose, withProps } from "recompose";
 import {
@@ -41,12 +45,14 @@ const { Option } = Select;
 import {violationStatus} from "@/constant";
 import violation from '@/models/violation';
 
+import {formatPhoneNumber} from "@/utils/utils"
+
 const ViolationLocation = compose(
   withProps({
     googleMapURL:
       "https://maps.googleapis.com/maps/api/js?key=AIzaSyDdCuc9RtkM-9wV9e3OrULPj67g2CHIdZI&v=3.exp&libraries=geometry,drawing,places",
     loadingElement: <div style={{ height: `100%` }} />,
-    containerElement: <div style={{ height: `400px` }} />,
+    containerElement: <div style={{ height: `250px` }} />,
     mapElement: <div style={{ height: `100%` }} />
   }),
   withScriptjs,
@@ -55,8 +61,8 @@ const ViolationLocation = compose(
   const { location } = props;
 
   return (
-    <GoogleMap defaultZoom={15} center={location}>
-      <Marker position={location} label={"start"} />
+    <GoogleMap defaultZoom={12} center={location}>
+      <Marker position={location} label={"Location"} />
     </GoogleMap>
   );
 });
@@ -103,6 +109,41 @@ const UpdateForm = Form.create()((props) => {
   
   const footer = [];
 
+
+  const getRevertOrRejectButton = (shoudlDisable, name) => {
+
+
+    let statusChange;
+
+    let button;
+
+    if (name === "Reject") {
+
+      button =  <Button key="reject" style={{color: "white", backgroundColor: "#e8380c", margin: "0 0.5em"}} disabled={shoudlDisable} onClick={() => validateFormAndUpdate(violationStatusIndex.REJECT)}>
+                  Reject
+            </Button>
+
+    } else if (name === "Revert") {
+
+      button =   <Button key="revert" type="danger" disabled={shoudlDisable} style={{ margin: "0 0.5em"}}  onClick={() => validateFormAndUpdate(violationStatusIndex.REVERT)}>
+          Revert
+      </Button>
+
+    } else {
+      
+      return undefined;
+
+    }
+
+
+    return shoudlDisable ? <Popover content={`You have to edit Reject/Revert Note in order to ${name} this violation.`}>{button}</Popover> : button;
+
+      
+  }
+
+
+  const isAdmidNoteUpdated = form.isFieldTouched("adminNote") && form.getFieldValue("adminNote") !== "" ;
+
   //wait for review
   if (record.status === violationStatusIndex.WAITING) {
 
@@ -110,18 +151,15 @@ const UpdateForm = Form.create()((props) => {
         Approve
     </Button>);
 
-    footer.push(<Button key="reject" style={{color: "white", backgroundColor: "#e8380c"}} onClick={() => validateFormAndUpdate(violationStatusIndex.REJECT)}>
-        Reject
-    </Button>);
+    footer.push(getRevertOrRejectButton(!isAdmidNoteUpdated, "Reject"));
     
   }
 
   //approved state
   if (record.status === violationStatusIndex.APPROVE) {
 
-    footer.push(<Button key="revert" type="danger"  onClick={() => validateFormAndUpdate(violationStatusIndex.REVERT)}>
-        Revert
-    </Button>);
+    footer.push(getRevertOrRejectButton(!isAdmidNoteUpdated, "Revert"));
+
 
   }
 
@@ -138,9 +176,13 @@ const UpdateForm = Form.create()((props) => {
       title="Detail"
       visible={modalVisible}
       onCancel={cancelUpdate}
+      width={960}
       footer={footer}
     >
-      <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12 }} label="Technician Note">
+      <Row>
+        <Col xs={24} sm={12} style={{height: "90%"}}> 
+
+        <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12 }} label="Technician Note">
         {<span>{record.techNote}</span>}
       </FormItem>
 
@@ -183,21 +225,6 @@ const UpdateForm = Form.create()((props) => {
       }
 
       {
-        record.lat &&  record.lng &&
-        <ViolationLocation 
-          location={{lat: record.lat, lng: record.lng}}
-        />
-
-      }
-      {
-                 recordDetail &&  recordDetail.imageUrl &&
-                  <Row style={{height: "620px"}}>
-                    
-                  <img  src={recordDetail.imageUrl} style={{ width: "600px", maxHeight: "460px", marginLeft: "-60px", marginTop: "80px"}} className={styles.rotate90} />
-
-                  </Row>
-      }
-      {
         recordDetail && recordDetail.operatedBy && recordDetail.operatedBy.adminEmail &&
         <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12 }} label={`${violationStatus[record.status].name} By`}>
             {<span>{recordDetail.operatedBy.adminEmail}</span>}
@@ -209,9 +236,38 @@ const UpdateForm = Form.create()((props) => {
             {<span>{record.adminNote}</span>}
         </FormItem>
       }
-      { isReviewEditable && <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12 }} style={{marginTop: "20px"}} label="Note">
+      { isReviewEditable && <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12 }} style={{marginTop: "160px"}} label="Reject/Revert Note">
         {form.getFieldDecorator('adminNote')(<TextArea placeholder="Please Input" />)}
       </FormItem> }
+        
+        
+      </Col>
+
+        <Col xs={24} sm={12}> 
+        
+            {
+            record.lat &&  record.lng &&
+            <ViolationLocation 
+             style={{height: "100px"}}
+              location={{lat: record.lat, lng: record.lng}}
+            />
+
+            }
+            {
+              recordDetail &&  recordDetail.imageUrl &&
+                <Row style={{height: "420px", textAlign: "center"}}>
+                          
+                  <img  src={recordDetail.imageUrl} style={{ maxWidth: "90%", maxHeight: "420px",  marginTop: "10px"}}  />
+
+                </Row>
+            }
+        
+        </Col>
+      </Row>
+    
+
+      
+     
     </Modal>
   );
 });
@@ -229,6 +285,8 @@ const UpdateForm = Form.create()((props) => {
 @Form.create()
 class VehicleViolation extends PureComponent {
   state = {
+    selectedCustomerId: undefined,
+    selectedVehicleId: undefined,
     modalVisible: false,
     updateModalVisible: false,
     filterCriteria: {currentPage: 1, pageSize: 10 },
@@ -246,6 +304,14 @@ class VehicleViolation extends PureComponent {
       dataIndex: 'vehicleNumber',
     },
     {
+      title: "Customer Phone",
+      render: (text,record) => <a onClick={() => this.setState({selectedCustomerId: record.customerId},() =>  this.handleCustomerDetailModalVisible(true))}>{formatPhoneNumber(record.phone+"")}</a>
+    },
+    {
+      title: "Vehicle Number",
+      render: (text,record) => <a onClick={() => this.setState({selectedVehicleId: record.vehicleId},() =>  this.handleVehicleDetailModalVisible(true))}>{record.vehicleNumber}</a>
+    },
+    {
       title: 'Customer Phone',
       dataIndex: 'phone',
     },
@@ -257,7 +323,7 @@ class VehicleViolation extends PureComponent {
       {
         title: 'Status',
         dataIndex: "status",
-        render: val => <span style={{color: violationStatus[val].color}}> {violationStatus[val].name} </span>
+        render: (val,record) => <span style={{color: violationStatus[val].color}}> {`${violationStatus[val].name} ${ val === 0 ? "" : `(${ moment(record.updated).format('YYYY-MM-DD HH:mm:ss')})` }`} </span>
       },
       {
         title: 'Area',
@@ -279,6 +345,12 @@ class VehicleViolation extends PureComponent {
       ),
     },
   ];
+
+
+  handleVehicleDetailModalVisible = flag => this.setState({vehicleDetailModalVisible: flag})
+
+
+  handleCustomerDetailModalVisible = flag => this.setState({customerDetailModalVisible: flag})
 
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -475,7 +547,11 @@ class VehicleViolation extends PureComponent {
       updateModalVisible,
       selectedRecord,
       filterCriteria,
-      selectedRecordDetail
+      selectedRecordDetail,
+      vehicleDetailModalVisible,
+      selectedVehicleId,
+      customerDetailModalVisible,
+      selectedCustomerId
     } = this.state;
 
 
@@ -495,9 +571,9 @@ class VehicleViolation extends PureComponent {
     return (
       <PageHeaderWrapper title="Violation List">
         <Card bordered={false}>
-        
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
+            <div>Count: {total}</div>
             <StandardTable
               loading={loading}
               data={{ list: violations, pagination: pagination }}
@@ -513,6 +589,23 @@ class VehicleViolation extends PureComponent {
           record={selectedRecord}
           recordDetail={selectedRecordDetail}
         />
+
+        {vehicleDetailModalVisible && selectedVehicleId && (
+          <VehicleDetail
+            isVisible={vehicleDetailModalVisible}
+            handleDetailVisible={this.handleVehicleDetailModalVisible}
+            vehicleId={selectedVehicleId}
+          />
+        )}
+
+        {customerDetailModalVisible && selectedCustomerId && (
+          <CustomerDetail
+            isVisible={customerDetailModalVisible}
+            handleDetailVisible={this.handleCustomerDetailModalVisible}
+            customerId={selectedCustomerId}
+            handleGetRides={this.handleGetRides}
+          />
+        )}
       </PageHeaderWrapper>
     );
   }

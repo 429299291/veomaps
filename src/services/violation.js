@@ -24,6 +24,15 @@ export async function createMessage(message) {
     })
 }
 
+export async function getCustomerApprovedViolationCount(customerId) {
+    return request(`/admins/customers/${customerId}/approved_violation_count`, {
+        method: "GET",
+    })
+}
+
+
+
+
 export async function updateMessage(id, message) {
     return request(`/admins/custom-technician-messages/${id}`, {
         method: "PUT",

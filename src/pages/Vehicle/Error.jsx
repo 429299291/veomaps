@@ -22,6 +22,8 @@ import { getAuthority } from "@/utils/authority";
 import VehicleDetail from "@/pages/Vehicle/VehicleDetail";
 import CustomerDetail from "@/pages/Customer/CustomerDetail";
 
+import { exportCSVFile } from "../../utils/utils";
+
 import {formatPhoneNumber} from "@/utils/utils"
 
 const authority = getAuthority();
@@ -39,6 +41,21 @@ const TextArea = Input.TextArea;
 const ErrorReviewStatus = ["waiting for review","under review","pass","reject"];
 const ErrorType = [undefined, "malfunction","inappropriate parking", "theft", "abandoned", "vandalism"];
 const ErrorPart = [undefined, "Seat","Brake", "Basket", "Light", "Wheel", "Tire", "Pedal", "Chain", "Lock", "Motor", "Kickstand", "Throttle"];
+
+const vehicleErrorCSVHeader = {
+  id: "id",
+  phone: "Customer Phone",
+  vehicleNumber: "Vehicle Number",
+  rideId: "Ride Id",
+  reviewStatus: "Review Status",
+  errorType: "Error Type",
+  errorPart: "Error Part",
+  reviewNote: "Review Note",
+  content: "Content",
+  area: "Market",
+  created: "Created",
+  updated: "Updated",
+};
 
 const UpdateForm = Form.create()(props => {
   const {
@@ -119,6 +136,7 @@ const UpdateForm = Form.create()(props => {
   errors: errors.data,
   areas: areas.data,
   selectedAreaId: areas.selectedAreaId,
+  areaNames: areas.areaNames,
   loading: loading.models.errors
 }))
 @Form.create()
@@ -165,7 +183,15 @@ class Error extends PureComponent {
     {
       title: "Review Status",
       dataIndex: "reviewStatus",
-      render: val => <span>{ErrorReviewStatus[parseInt(val)]}</span>
+      render: (val, record) => {
+    
+        const status = ErrorReviewStatus[val];
+    
+        const date = moment(record.reviewDate !== null ? record.reviewDate : record.updated).format("YYYY-MM-DD HH:mm:ss");
+    
+        return <span> {status + (val <= 1 ? "" : " (" + date + ")")} </span>;
+    
+      }
     },
     {
       title: "Operation",
@@ -194,6 +220,7 @@ class Error extends PureComponent {
       )
     }
   ];
+
 
   componentDidMount() {
     this.handleGetErrors();
@@ -234,7 +261,7 @@ class Error extends PureComponent {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
 
-    this.setState({ filterCriteria: params }, () => this.handleGetErrors());
+    this.setState({ filterCriteria: params });
   };
 
   handleFormReset = () => {
@@ -248,6 +275,43 @@ class Error extends PureComponent {
       () => this.handleGetErrors()
     );
   };
+
+  formatCsvData = errors => {
+    const { areaNames, selectedAreaId } = this.props;
+
+    return errors.map(error => {
+
+      return {
+        id: error.id,
+        phone: error.phone,
+        vehicleNumber: error.vehicleNumber,
+        rideId: error.rideId ? error.rideId : "",
+        reviewStatus: error.reviewStatus ? ErrorReviewStatus[error.reviewStatus] : "",
+        errorType: error.errorType ?  (error.errorType.split(",").reduce((result, val) => result + ErrorType[parseInt(val)] + " | " , "")).slice(0,-3) : "",
+        errorPart: error.errorPart ? (error.errorPart.split(",").reduce((result, val) => result + ErrorPart[parseInt(val)] + " | " , "")).slice(0,-3) : "",
+        reviewNote: error.reviewNote ? `"${error.reviewNote.replace(/"/g, "")}"` : "", 
+        content: error.content ? `"${error.content.replace(/"/g, "")}"` : "",
+        area: error.areaId ?  areaNames[error.areaId] : "",
+        created: moment(error.created).format("YYYY-MM-DD HH:mm:ss"),
+        updated: moment(error.updated).format("YYYY-MM-DD HH:mm:ss"),
+      };
+
+
+      
+    });
+  };
+
+  exportErrorData = () => {
+
+    const {errors, areaNames, selectedAreaId} = this.props;
+
+    exportCSVFile(
+      vehicleErrorCSVHeader,
+      this.formatCsvData(errors),
+      `${ selectedAreaId ? areaNames[selectedAreaId] : "All_Markets"}_Customer_Report`
+    );
+
+  }
 
   handleSearch = e => {
     e.preventDefault();
@@ -519,6 +583,14 @@ class Error extends PureComponent {
               scroll={{x:1300}}
             />
           </div>
+          <div>
+              <Button
+                style={{ marginTop: "1em" }}
+                onClick={this.exportErrorData}
+              >
+                Export
+              </Button>
+            </div>
         </Card>
 
         <UpdateForm

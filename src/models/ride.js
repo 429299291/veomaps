@@ -92,7 +92,7 @@ export default {
     *getRoute({ rideId, onSuccess, onFail }, { call, put }) {
       const path = yield call(getRideRoute, rideId);
 
-      if (path && Array.isArray(path)) {
+      if (path && typeof path === 'object') {
         onSuccess(path);
       }
     },

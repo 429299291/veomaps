@@ -17,6 +17,9 @@ import {
   Switch,
   InputNumber
 } from "antd";
+
+import NumericInput from "@/common/NumericInput";
+
 import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
@@ -25,6 +28,7 @@ import { Divider } from 'antd';
 import styles from "./Area.less";
 
 import { getAuthority } from "@/utils/authority";
+import { array } from "prop-types";
 
 const authority = getAuthority();
 
@@ -33,10 +37,16 @@ const { Step } = Steps;
 const { TextArea } = Input;
 const { Option } = Select;
 const RadioGroup = Radio.Group;
+
 const getValue = obj =>
   Object.keys(obj)
     .map(key => obj[key])
     .join(",");
+
+
+
+
+
 
 const CreateForm = Form.create()(props => {
   const { modalVisible, form, handleAdd, handleModalVisible, areas } = props;
@@ -106,6 +116,112 @@ const checkTimeOffset = (rule, value, callback) => {
 
 };
 
+
+class ViolatoinFineConfigurationForm extends PureComponent {
+
+  state = {
+    deleteMouseOver: undefined,
+  };
+
+   onInputChange = (number, index) => {
+
+
+    const {value, onChange} = this.props;
+  
+
+    const isNumberWith2DigitPrecisionAndlessThan100 = /^\d{0,2}(\.+\d{0,2})?$/;
+
+    if (!isNumberWith2DigitPrecisionAndlessThan100.test(number)) {
+      return;
+    }
+
+
+    const newValue = [...value];
+
+    newValue[index] = number === "" ? "0" : ( number.charAt(0) === "0" ? number.substring(1) : number) ;
+
+    onChange(newValue);
+ 
+   }
+
+
+  render = () => {
+
+    const {value, onChange} = this.props;
+
+    const {deleteMouseOver} = this.state;
+
+    const slicedValue = value.slice(1);
+  
+    return <div> 
+
+            <div>
+              <span> 1st time violation: Warning </span>
+            </div>
+
+            {
+                slicedValue.map((item, index) => 
+                    <Row  key={index}>
+                      <Col span={12}> 
+                        {`${index + 2}st time violation: `} 
+                      </Col> 
+
+                      <Col span={2}> 
+                          $
+                      </Col>
+                
+                      <Col span={8}> 
+                        <Input 
+                          value={item} 
+                          onChange={e => this.onInputChange(e.target.value, index + 1)}
+
+                          style= {{display: "inline"}}
+                        />
+
+                      </Col> 
+
+                      <Col span={2} > 
+                       {index === slicedValue.length - 1  &&  
+                          <Icon 
+                            type="delete" 
+                            
+                            style={{marginLeft: "0.5em", color: deleteMouseOver === index ? "red" : undefined }} 
+                            
+                            onMouseEnter={()=>this.setState({"deleteMouseOver": index})} 
+
+                            onMouseLeave={()=>this.setState({"deleteMouseOver": undefined})} 
+
+                            onClick={()=> {
+
+                              value.splice(index + 1, 1);
+
+                              onChange(value);
+
+                            }}
+                            
+                        /> }
+                      </Col>
+
+                  </Row>
+                )
+            }
+
+            <div>
+              <span> {value.length + 1}st time violation: Account Freeze </span>
+            </div>
+
+            <Button type="primary" disabled={value[value.length - 1] === "0"} onClick={()=>onChange(value.concat(["0"]))}> Add </Button>
+
+          </div>
+  
+    ;
+  }
+
+
+
+
+} 
+
 const AreaFeatureForm = Form.create()(props => {
   const { modalVisible, form, handleUpdateAreaFeature, handleModalVisible, areas, record } = props;
 
@@ -117,7 +233,7 @@ const AreaFeatureForm = Form.create()(props => {
     if (form.isFieldsTouched())
       form.validateFields((err, fieldsValue) => {
         if (err) return;
-          form.resetFields();
+          
 
           const metaData = {}
 
@@ -145,6 +261,12 @@ const AreaFeatureForm = Form.create()(props => {
             metaData.freeRideConfig = fieldsValue.freeRideConfig;
           }
 
+          if (fieldsValue.violationActivated && form.isFieldTouched("violationConfig")) {
+            
+            metaData.violationConfig = fieldsValue.violationConfig.map(parseFloat);
+
+          }
+
 
           const finalResult = {};
           
@@ -160,6 +282,8 @@ const AreaFeatureForm = Form.create()(props => {
           finalResult.maxSpeed = fieldsValue.maxSpeed;
           finalResult.areaId = record.id;
           finalResult.metaData = Object.keys(metaData).length > 0 ? JSON.stringify(metaData) : null;
+
+          form.resetFields();
 
           handleUpdateAreaFeature(areaFeatureId, finalResult);
       });
@@ -208,6 +332,8 @@ const AreaFeatureForm = Form.create()(props => {
 
   const promptConfig = areaFeature && areaFeature.promptConfig;
 
+  const violationConfig = areaFeature && areaFeature.violationConfig;
+
   return (
     <Modal
       destroyOnClose
@@ -222,9 +348,43 @@ const AreaFeatureForm = Form.create()(props => {
           initialValue: violationActivated ? true : false,
         })(<Switch  disabled={!isEditable} />)}
     </FormItem>
-    {form.getFieldValue("violationActivated") && 
-      <span> hello world</span>
-    }
+    
+      {form.getFieldValue("violationActivated") &&
+
+        <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Violation Fine Configuration ">
+                {
+                  form.getFieldDecorator("violationConfig", {
+                    initialValue: violationConfig ? violationConfig : ["0.00","25.00","50.00", "75.00"],
+                    rules: [{validator: (rule, value, callback) => {
+
+
+                      for (let index in value) {
+
+                          if (isNaN(value[index])) {
+                              callback("Fine must be number!");
+                          }
+
+                          const floatValue = parseFloat(value[index]);
+
+                          if (floatValue < 0 || floatValue > 100 ) {
+
+                              callback("the maximun of fine is 100 dollar!");
+
+                          }
+                      }
+
+                      return callback();
+
+                      }}
+                    ]
+                  
+                  })(<ViolatoinFineConfigurationForm />)
+                }
+
+        </FormItem>
+        
+      }
+   
     <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Lincense Check Activated">
         {form.getFieldDecorator("driverLicenseActivated", {
           valuePropName: 'checked',
@@ -267,7 +427,7 @@ const AreaFeatureForm = Form.create()(props => {
                       }
                     ]
                 })(
-                <InputNumber min={1} max={120} defaultValue={licenseConfigAge} />
+                <InputNumber min={1} max={120} />
                 )}
             </FormItem>
           </div>

@@ -79,7 +79,13 @@ export default class GlobalHeader extends PureComponent {
                 defaultValue={"all"}
               >
                 <Option value="all">All</Option>
-                {areas.map(area =>
+                {areas.sort((a, b) => {
+                     if (a.name > b.name) return 1;
+                     if (b.name > a.name) return -1;
+                   
+                     return 0;
+
+                }).map(area =>
                   <Option  value={area.id} key={area.id}>
                     {area.name}
                   </Option>)}

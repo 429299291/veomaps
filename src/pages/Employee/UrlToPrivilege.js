@@ -26,7 +26,8 @@ export default {
       "customer.buy.membership",
     "POST /api/admins/customers/{customerId}/refund": "refund.customer.charge",
     "GET /api/admins/customers/{customerId}/transactions": "get.customer.transactions",
-    "GET /api/admins/customers/{phone_number}/temp_code": "get.customer.verification.code"
+    "GET /api/admins/customers/{phone_number}/temp_code": "get.customer.verification.code",
+    "GET /api/admins/customers/{customerId}/approved_violation_count": "get.customer.approved.violation.count"
   },
   "Vehicle List": {
     "GET /api/admins/vehicles": "get.vehicles",

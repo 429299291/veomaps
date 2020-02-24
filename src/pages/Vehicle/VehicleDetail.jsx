@@ -417,7 +417,7 @@ const UpdateForm = Form.create()(props => {
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
-        label="Connect Status"
+        label="Lock Status"
       >
         <div>
           {record.lockStatus === 0 ? "Unlock" : "Lock"}

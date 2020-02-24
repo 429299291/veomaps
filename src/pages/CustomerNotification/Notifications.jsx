@@ -177,7 +177,7 @@ class Notifications extends PureComponent {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
 
-    this.setState({ filterCriteria: params }, () => this.handleGetErrors());
+    this.setState({ filterCriteria: params }, () => this.handleGetSentNotifications());
   };
 
   handleFormReset = () => {

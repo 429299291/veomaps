@@ -280,7 +280,7 @@ let routes = [
       },
       {
         "path": "/violation-management",
-        "name": "Violation Management",
+        "name": "Violation Message Management",
         "icon": "warning",
         "component": dynamic({ loader: () => import('../Violation/Violation'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
         "exact": true
