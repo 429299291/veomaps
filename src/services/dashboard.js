@@ -68,3 +68,16 @@ export async function getAreaTotalDistance(params) {
     method: "GET"
   });
 }
+
+export async function getTotalRideRevenue(params) {
+  return request(`/admins/dashboard/ride_revenue?${stringify(params, { indices: false })}`, {
+    method: "GET"
+  });
+}
+
+export async function getTotalRefund(params) {
+  return request(`/admins/dashboard/total_refund?${stringify(params, { indices: false })}`, {
+    method: "GET"
+  });
+}
+

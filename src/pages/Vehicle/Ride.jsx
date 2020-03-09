@@ -43,7 +43,8 @@ const rideCsvHeader = {
   areaId: "areaId",
   created: "created",
   vehicleId: "vehicleId",
-  customerId: "customerId"
+  customerId: "customerId",
+  distance: "Distance"
 }
 
 
@@ -402,6 +403,10 @@ class Ride extends PureComponent {
         const minutsDiff = (record.end ? moment(record.end) : moment()).diff(moment(record.start), 'minutes'); 
         return <span>{minutsDiff}</span>
       }
+    },
+    {
+      title: "Distance",
+      dataIndex: "distance",
     },
     {
       title: "operation",
@@ -785,7 +790,8 @@ class Ride extends PureComponent {
         areaId: ride.areaId,
         created: moment(ride.created).format("MM-DD-YYYY HH:mm:ss"),
         vehicleId: ride.vehicleId,
-        customerId: ride.customerId
+        customerId: ride.customerId,
+        distance: ride.distance
       }
     })
   }

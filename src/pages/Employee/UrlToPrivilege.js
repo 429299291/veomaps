@@ -173,6 +173,8 @@ export default {
     "GET /api/admins/dashboard/connectivity": "get.connectivity.by.period",
     "GET /api/admins/dashboard/total_area_distance": "get.area.distance",
     "GET /api/admins/dashboard/total_minutes": "get.area.minutes",
+    "GET /api/admins/dashboard/total_refund": "get.total.refund",
+    "GET /api/admins/dashboard/ride_revenue": "get.total.ride.revenue"
   },
 
   "Performance": {

@@ -10,7 +10,9 @@ import {
   getStripRevenueByPeriod,
   getConnectivityByPeriod,
   getAreaTotalDistance,
-  getAreaTotalMinutes
+  getAreaTotalMinutes,
+  getTotalRideRevenue,
+  getTotalRefund
 } from "@/services/dashboard";
 import { message } from "antd";
 
@@ -27,6 +29,8 @@ export default {
     dailyRideRevenue: {},
     totalRideMinutes: {},
     totalRideDistance: {},
+    totalRefund: {},
+    totalRideRevenue: "loading"
   },
 
   effects: {
@@ -245,7 +249,34 @@ export default {
           }
         });
       }
+
+    },
+
+    *fetchTotalRefund({params}, { call, put }) {
+      const response = yield call(getTotalRefund, params);
+
+      yield put({
+        type: "save",
+        payload: {
+          totalRefund: response ? response : {}
+        }
+      });
+    },
+
+    *fetchTotalRideRevenue({params}, { call, put }) {
+      const response = yield call(getTotalRideRevenue, params);
+
+     
+        yield put({
+          type: "save",
+          payload: {
+            totalRideRevenue: response
+          }
+        });
+      
     }
+
+
 
   },
 
@@ -274,6 +305,8 @@ export default {
         rideRevenue: {},
         totalRideDistance: {},
         totalRideMinutes: {},
+        totalRefund: {},
+        totalRideRevenue: "loading"
       };
     }
   }

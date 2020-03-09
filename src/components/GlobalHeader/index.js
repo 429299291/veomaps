@@ -73,7 +73,7 @@ export default class GlobalHeader extends PureComponent {
               <Select
                 onChange={this.handleAreaSelect}
                 className="area-select"
-                style={{ width: 200, marginLeft: "1em" }}
+                style={{ width: 200, marginLeft: "1em" }} 
                 showSearch
                 filterOption={this.filterOption}
                 defaultValue={"all"}

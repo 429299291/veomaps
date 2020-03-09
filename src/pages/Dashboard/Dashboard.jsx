@@ -135,12 +135,62 @@ class Dashboard extends Component {
     clearInterval(this.pollingId);
   }
 
+  fetchTotalRideRevenue() {
+
+    const { dispatch, selectedAreaId } = this.props;
+
+    const { rangePickerValue} = this.state;
+
+
+     if (!authority.includes("get.total.ride.revenue")) {
+       return;
+     }
+
+
+
+    dispatch({
+      type: "dashboard/fetchTotalRideRevenue",
+      params: { 
+        areaId: selectedAreaId,
+        start: rangePickerValue[0].unix(),
+        end: rangePickerValue[1].unix()
+      }
+    });
+
+  }
+
+  fetchTotalRefund() {
+
+    const { dispatch, selectedAreaId } = this.props;
+
+    const { rangePickerValue} = this.state;
+
+
+     if (!authority.includes("get.total.refund")) {
+       return;
+     }
+
+
+
+    dispatch({
+      type: "dashboard/fetchTotalRefund",
+      params: { 
+        areaId: selectedAreaId,
+        start: rangePickerValue[0].unix(),
+        end: rangePickerValue[1].unix()
+      }
+    });
+    
+  }
+
   loadBarCharData() {
     this.fetchRideCount();
     this.fetchCustomerCount();
     this.getStripeRevenueByPeriod();
     this.fetchRidePerVehicleRank();
     this.getConnectivityByPeriod();
+    this.fetchTotalRefund();
+    this.fetchTotalRideRevenue();
 
     if (this.props.selectedAreaId !== null) {
       this.fetchAreaDistance();
@@ -533,8 +583,6 @@ getRangeEnd(end) {
       weeklyBatterySwapLoading,
       dailyRideRevenueLoading,
     } = this.props;
-
-
    
 
     const {
@@ -590,6 +638,18 @@ getRangeEnd(end) {
       </div>
     );
 
+
+    const round2Decimal = raw => {
+
+      if (raw > 0) {
+
+       return Math.round(raw * 100) / 100;
+
+      }
+
+      return raw;
+
+    }
 
     const formatDistance = (distance) => {
       if (distance === null || distance === undefined) {
@@ -935,6 +995,24 @@ getRangeEnd(end) {
                           data={formatAllDayData(dashboard.connectivity)}
                         />
                       </div>
+                    </Col>
+                    {this.getRankingBoard()}
+                  </Row>
+                  </TabPane> 
+              }
+              { 
+                authority.includes("get.total.refund") && authority.includes("get.total.ride.revenue") &&  <TabPane
+                  tab="Finace Report"
+                  key="financeStats"
+                >
+                  <Row>
+                    <Col xl={16} lg={12} md={12} sm={24} xs={24}>
+                      <div style={{marginLeft: "1em"}}>  Total Ride Revenue: { round2Decimal(dashboard.totalRideRevenue) } </div>
+                        
+                      <div style={{marginLeft: "1em"}}> Total Refund to Card: {round2Decimal(dashboard.totalRefund.refundToCard)} </div>
+
+                      <div style={{marginLeft: "1em"}}> Total Refund to Deposit: {round2Decimal(dashboard.totalRefund.refundToDeposit)} </div>
+                               
                     </Col>
                     {this.getRankingBoard()}
                   </Row>

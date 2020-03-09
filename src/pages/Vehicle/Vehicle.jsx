@@ -111,6 +111,8 @@ const vehicleCsvHeader = {
   isTurnedOn: "isTurnedOn",
   heartTime: "heartTime",
   wirelessTech: "wirelessTech",
+  lastRideTime: "lastRideTime",
+  lastDropOffTime: "lastDropOffTime",
   mac: "mac",
   iccid: "iccid",
   firmware: "firmware",
@@ -602,6 +604,12 @@ class Vehicle extends PureComponent {
     {
       title: "Last Ride Time",
       dataIndex: "lastRideTime",
+      sorter: true,
+      render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
+    },
+    {
+      title: "Last Drop Off Time",
+      dataIndex: "lastDropOffTime",
       sorter: true,
       render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
     },
@@ -1375,13 +1383,22 @@ class Vehicle extends PureComponent {
           </Col>
           <Col md={8} sm={24}>
               <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Idle Days">
+                {getFieldDecorator("idleType",  {initialValue: null})(
+
+                  <Select placeholder="select" style={{ width: "50%" }}>
+                      <Option value={0}>Last Ride Time</Option>
+                      <Option value={1}>Last Drop Off Time</Option>
+                      <Option value={null}>Both</Option>
+                  </Select>
+                )}
+
                 {getFieldDecorator("idleDays", {
                   rules: [
                     {
                       validator: checkIdleDays
                     }
                   ]
-                })(<InputNumber placeholder="Please Input" />)}
+                })(<InputNumber placeholder="Please Input" style={{ marginLeft: "1em" }} />)}
           </FormItem>
           </Col>
         </Row>
@@ -1501,6 +1518,8 @@ class Vehicle extends PureComponent {
   formatCsvData = vehicles => {
     return vehicles.map(vehicle => {
       vehicle.heartTime = moment(vehicle.heartTime).format("YYYY-MM-DD HH:mm:ss");
+      vehicle.lastRideTime = vehicle.lastRideTime ? moment(vehicle.lastRideTime * 1000).format("YYYY-MM-DD HH:mm:ss") : null;
+      vehicle.lastDropOffTime = vehicle.lastDropOffTime ? moment(vehicle.lastDropOffTime * 1000).format("YYYY-MM-DD HH:mm:ss") : null;
       return vehicle;
     })
 
