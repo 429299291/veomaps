@@ -70,7 +70,7 @@ export async function getAreaTotalDistance(params) {
 }
 
 export async function getTotalRideRevenue(params) {
-  return request(`/admins/dashboard/ride_revenue?${stringify(params, { indices: false })}`, {
+  return request(`/admins/dashboard/ride_revenue_by_vehicle_type?${stringify(params, { indices: false })}`, {
     method: "GET"
   });
 }

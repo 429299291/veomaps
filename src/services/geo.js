@@ -10,6 +10,25 @@ export async function createPrimeLocation(primeLocation) {
   });
 }
 
+export async function handleCheckPrimeLocation(areaId, payload) {
+  return request(`/admins/prime-locations/area/${areaId}/by-location`, {
+    method: "POST",
+    body: {
+      ...payload
+    }
+  });
+}
+
+
+export async function updatePrimeLocation(primeLocation) {
+  return request(`/admins/prime-locations/${primeLocation.id}`, {
+    method: "PUT",
+    body: {
+      ...primeLocation
+    }
+  });
+}
+
 export async function getPrimeLocationByAreaId(areaId) {
   return request(`/admins/prime-locations/area/${areaId}`, {
     method: "GET",

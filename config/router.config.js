@@ -31,11 +31,11 @@ export default [
             name: "dashboard",
             component: "./Dashboard/Dashboard"
           },
-          {
-            path: "/dashboard/performance",
-            name: "Performance",
-            component: "./Dashboard/Performance"
-          },
+          // {
+          //   path: "/dashboard/performance",
+          //   name: "Performance",
+          //   component: "./Dashboard/Performance"
+          // },
           {
             path: "/dashboard/techmetrics",
             name: "Tech Metrics",

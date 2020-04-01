@@ -49,9 +49,28 @@ export async function applyAction(vehicleNumber, payload) {
   );
 }
 
+
 export async function getAreaSessionLocation(fieldValues, areaId) {
   return request(
     `/admins/customers/session-heat-map?areaId=${areaId}&${stringify(fieldValues, { indices: false })}`,
+    {
+      method: "GET",
+    }
+  );
+}
+
+export async function getVehicleSnapshot(fieldValues) {
+  return request(
+    `/admins/vehicles/snapshot?${stringify(fieldValues, { indices: false })}`,
+    {
+      method: "GET",
+    }
+  );
+}
+
+export async function handleGetPrimLocationSnapshot(fieldValues) {
+  return request(
+    `/admins/vehicles/prime-location-snapshot?${stringify(fieldValues, { indices: false })}`,
     {
       method: "GET",
     }

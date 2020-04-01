@@ -561,7 +561,8 @@ class Vehicle extends PureComponent {
     shouldShowHeatMap: true,
     shoudlShowVehicles: true,
     heatMapMaxIntensity: 0,
-    heatMapRadius: 15
+    heatMapRadius: 15,
+    todayRange: {start: moment().startOf('day').format("MM-DD-YYYY HH:mm:ss"),end: moment().endOf('day').format("MM-DD-YYYY HH:mm:ss")} 
   };
 
   columns = [
@@ -1386,8 +1387,8 @@ class Vehicle extends PureComponent {
                 {getFieldDecorator("idleType",  {initialValue: null})(
 
                   <Select placeholder="select" style={{ width: "50%" }}>
-                      <Option value={0}>Last Ride Time</Option>
-                      <Option value={1}>Last Drop Off Time</Option>
+                      <Option value={1}>Last Ride Time</Option>
+                      <Option value={2}>Last Drop Off Time</Option>
                       <Option value={null}>Both</Option>
                   </Select>
                 )}
@@ -1572,7 +1573,7 @@ handleShowingVehicles = val => {
 
 
   render() {
-    const { vehicles, areas, loading, selectedAreaId, geo, areaNames } = this.props;
+    const { vehicles, areas, loading, selectedAreaId, geo, areaNames, dispatch } = this.props;
 
     const center = geo.area && geo.area.center;
 
@@ -1666,6 +1667,118 @@ handleShowingVehicles = val => {
                />
               }
 
+                  { <Row>
+                      <Col span={6}> <DatePicker defaultValue={moment()} onChange={e => {
+
+                          this.setState({todayRange: {start: e.startOf('day').format("MM-DD-YYYY HH:mm:ss"),end: e.endOf('day').format("MM-DD-YYYY HH:mm:ss")}});
+                      }} /> 
+                      </Col>
+
+                      <Col span={6}> 
+                        <Button onClick={() => 
+                          dispatch(
+                            {
+                              type: "vehicles/getVehicleSnapshot", 
+                              payload: Object.assign({}, 
+                              this.state.todayRange, 
+                              {areaId: selectedAreaId}), 
+                              onSuccess: data => {
+
+                                if (Array.isArray(data) && data.length <= 0 ) {
+
+                                  message.error("Snapshot doesn't exits");
+
+                                  return;
+
+                                }
+                                
+                                const vehicleSnapshotHeader = {
+
+                                  vehicleId: "id",
+                                  imei: "imei",
+                                  vehicleNumber: "vehicleNumber",
+                                  vehicleType: "vehicleType",
+                                  areaName: "Area",
+                                  errorStatus: "errorStatus",
+                                  batteryLevel: "batteryLevel",
+                                  isConnected: "isConnected",
+                                  lastRideIdleHour: "lastRideIdleHour",
+                                  isInGeoFence: "isInGeoFence",
+                                  lastDropOffIdleHour: "lastDropOffIdleHour",
+                                  isInPrimeZone: "isInPrimeZone",
+                                  created: "Created"
+                                }
+
+                                const formatedData = data.map(vehicle => {
+                                    vehicle.vehicleType = vehicle.vehicleType !== null ? vehicleType[vehicle.vehicleType]  : null;
+                                    vehicle.areaName = vehicle.areaId !== null ? areaNames[vehicle.areaId]  : null;
+                                    vehicle.isInGeoFence = vehicle.locationStatus === null ? "Unknown" : vehicle.locationStatus === 0;
+                                    vehicle.errorStatus = errorStatusIndexs[vehicle.errorStatus];
+                                    vehicle.created = formatTime(vehicle.created) + " " +  Intl.DateTimeFormat().resolvedOptions().timeZone;
+                                    return vehicle;
+                                  });
+                              
+
+
+                                exportCSVFile(vehicleSnapshotHeader, formatedData, this.state.todayRange.start.split(' ')[0] + "-" + (selectedAreaId === null ? "All" : areaNames[selectedAreaId]) + "-vehicle-snapshot");
+
+                                } })  } >
+                            Export Vehicle Snapshot
+                        </Button> 
+                        </Col>
+                        <Col span={6}> 
+                        <Button onClick={() => 
+                          dispatch(
+                            {
+                              type: "vehicles/getPrimLocationSnapshot", 
+                              payload: Object.assign({}, 
+                              this.state.todayRange, 
+                              {areaId: selectedAreaId}), 
+                              onSuccess: data => {
+
+                                if (Array.isArray(data) && data.length <= 0 ) {
+
+                                  message.error("Snapshot doesn't exits");
+
+                                  return;
+
+                                }
+
+                                
+                                
+                                const primLocationSnapshotHeader = {
+
+                                  id: "Hub ID",
+                                  lat: "Lat",
+                                  lng: "Lng",
+                                  market: "Market",
+                                  radius: "Radius(ft)",
+                                  target: "Target",
+                                  minimum: "Mimimum",
+                                  total: "Number of Vehicles in Hub",
+                                  created: "Created"
+                                }
+
+                                const formatedData = data.map(primLocation => {
+                                  primLocation.id = primLocation.primeLocationId;
+                                    primLocation.market = primLocation.areaId !== null ? areaNames[primLocation.areaId]  : null;
+                                    primLocation.radius = primLocation.radius === null ? null : primLocation.radius * 328 / 100;
+                                    primLocation.created = formatTime(primLocation.created) + " " +  Intl.DateTimeFormat().resolvedOptions().timeZone;;
+                                    return primLocation;
+                                  });
+                              
+
+
+                                exportCSVFile(primLocationSnapshotHeader, formatedData, this.state.todayRange.start.split(' ')[0] + "-" + (selectedAreaId === null ? "All" : areaNames[selectedAreaId]) + "-Hub-Snapshot");
+
+                                } })  } >
+                            Export Hub Snapshot
+                        </Button> 
+                        </Col>
+                        
+                    </Row>
+
+                    }
              
               </TabPane>
 
@@ -1770,6 +1883,7 @@ handleShowingVehicles = val => {
         
         </Modal>
 
+         
 
       </PageHeaderWrapper>
     );

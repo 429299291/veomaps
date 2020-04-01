@@ -30,7 +30,7 @@ export default {
     totalRideMinutes: {},
     totalRideDistance: {},
     totalRefund: {},
-    totalRideRevenue: "loading"
+    totalRideRevenue: []
   },
 
   effects: {

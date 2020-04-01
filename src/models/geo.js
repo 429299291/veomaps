@@ -10,7 +10,9 @@ import {
   examineParking,
   createPrimeLocation,
   getPrimeLocationByAreaId,
-  deletePrimeLocation
+  deletePrimeLocation,
+  updatePrimeLocation,
+  handleCheckPrimeLocation
 } from "@/services/geo";
 
 import {parkingViolationType} from "@/constant";
@@ -38,6 +40,7 @@ export default {
     *addPrimeLocation({ payload, onSuccess, onError }, { call, put }) {
       const response = yield call(createPrimeLocation, payload); // post
 
+
       if (response) {
         message.success(`Create Success, ID : ${response}`);
         onSuccess && onSuccess();
@@ -46,7 +49,31 @@ export default {
         onError && onError();
       }
     },
+    *checkPrimeLocation({ payload, areaId, }, { call, put }) {
+      const response = yield call(handleCheckPrimeLocation, areaId, payload); // get
+
+
+      if (response) {
+        message.success(`Create Success, ID : ${response}`);
+      } else {
+        message.error(`Create Fail.`);
+      }
+    },
+    *updatePrimeLocation({ payload, onSuccess, onError }, { call, put }) {
+      const response = yield call(updatePrimeLocation, payload); // put
+
+
+      if (response) {
+        message.success(`Update Success, ID : ${payload.id}`);
+        onSuccess && onSuccess();
+      } else {
+        message.error(`Update Fail.`);
+        onError && onError();
+      }
+    },
     *getPrimeLocations({ areaId }, { call, put }) {
+
+
       const response = yield call(getPrimeLocationByAreaId, areaId); // get
 
       const isArray = Array.isArray(response);
@@ -86,6 +113,8 @@ export default {
           return aP - bP;
         });
       }
+
+      yield put({type: "getPrimeLocations", areaId: areaId});
 
       yield put({
         type: "saveFence",

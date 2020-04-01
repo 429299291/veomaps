@@ -20,7 +20,9 @@ import {
   restart,
   applyAction,
   controlVehicle,
-  controlVehicleExtension
+  controlVehicleExtension,
+  getVehicleSnapshot,
+  handleGetPrimLocationSnapshot
 } from "@/services/vehicle";
 import { message } from "antd";
 
@@ -49,6 +51,18 @@ export default {
         data: Array.isArray(data) ? data : [],
         total: total
       });
+    },
+    *getVehicleSnapshot({ payload, onSuccess }, { call, put }) {
+
+      const data = yield call(getVehicleSnapshot, payload);
+      onSuccess(data); 
+      
+    },
+    *getPrimLocationSnapshot({ payload, onSuccess }, { call, put }){
+
+      const data = yield call(handleGetPrimLocationSnapshot, payload);
+      onSuccess(data); 
+
     },
     *getStartPoints({areaId, params, onSuccess}, {call, put}) {
       const data = yield call(getStartPoints,  areaId, params);

@@ -4,15 +4,15 @@ import router from "umi/router";
 import hash from "hash.js";
 import { isAntdPro } from "./utils";
 
-const urlPrefix = "https://localhost:8444/api";
-//const urlPrefix = "https://develop.veoride.com:8444/api";
+//const urlPrefix = "https://localhost:8444/api";
+const urlPrefix = "https://develop.veoride.com:8444/api";
 //const urlPrefix = "https://manhattan-dev.veoride.com:8444/api";
 //const urlPrefix = "https://manhattan-host.veoride.com:8444/api";
 //const urlPrefix = "https://admin.veoride.com:8444/api";
 
 export const ACCESS_TOKEN = "accessToken";
 
-export const  KEN_CREATE_DATE = "tokenCreateDate";
+export const  TOKEN_CREATE_DATE = "tokenCreateDate";
 
 const codeMessage = {
   200: "The server successfully returned the requested data.",

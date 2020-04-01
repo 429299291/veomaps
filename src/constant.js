@@ -70,7 +70,7 @@ const technicianActionTypes = [
   "End Swap Battery",
 ]
 
-const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "Car"];
+const vehicleType = ["Bicycle", "Scooter", "E-Bike", "Car"];
 
 const statusMap = ["default", "processing", "success", "error"];
 const operationStatus = ["NORMAL", "MANTAINANCE"];

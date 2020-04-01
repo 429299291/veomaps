@@ -53,6 +53,8 @@ export default {
     "PUT /api/admins/violations/{violationId}": "update.vehicle.violation",
     "GET /api/admins/violations/count": "get.vehicle.violation.count",
     "GET /api/admins/violations/{violationId}/detail": "get.vehicle.violation.detail",
+    "GET /api/admins/vehicles/snapshot" : "get.vehicle.snapshot",
+    "GET /api/admins/vehicles/prime-location-snapshot" : "get.prime.location.snapshot"
   },
   "Riding History": {
     "GET /api/admins/rides": "get.rides",
@@ -69,6 +71,8 @@ export default {
     "DELETE /api/admins/geo/fences/{fenceId}": "delete.fence",
     "POST /api/admins/geo/fences": "create.fence",
     "PUT /api/admins/geo/fences/{fenceId}": "update.fence",
+    "PUT /api/admins/prime-locations/{id}": "update.prime.location",
+    "POST /api/admins/prime-locations/area/{areaId}/by-location": "check.prime.location",
     "POST /api/admins/geo/area_center": "create.center",
     "PUT /api/admins/geo/area_center/{centerId}": "update.center",
     "DELETE /api/admins/geo/area_center/{centerId}": "delete.center",
@@ -174,7 +178,7 @@ export default {
     "GET /api/admins/dashboard/total_area_distance": "get.area.distance",
     "GET /api/admins/dashboard/total_minutes": "get.area.minutes",
     "GET /api/admins/dashboard/total_refund": "get.total.refund",
-    "GET /api/admins/dashboard/ride_revenue": "get.total.ride.revenue"
+    "GET /api/admins/dashboard/ride_revenue_by_vehicle_type": "get.total.ride.revenue"
   },
 
   "Performance": {

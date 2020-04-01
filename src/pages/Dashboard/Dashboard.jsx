@@ -51,7 +51,7 @@ const topColResponsiveProps = {
   style: { marginBottom: 24 }
 };
 
-import {fenceType, fenceTypeColor} from "@/constant";
+import {fenceType, fenceTypeColor, vehicleType} from "@/constant";
 
 import { exportCSVFile } from "../../utils/utils";
 import moment from "moment";
@@ -870,7 +870,7 @@ getRangeEnd(end) {
                 footer={
                   <Field
                     label="Total Revenue"
-                    value={`${dailyRideRevenue.totalRevenue }`}
+                    value={`${round2Decimal(dailyRideRevenue.totalRevenue)}`}
                   />
                 }
                 contentHeight={60}
@@ -1007,7 +1007,12 @@ getRangeEnd(end) {
                 >
                   <Row>
                     <Col xl={16} lg={12} md={12} sm={24} xs={24}>
-                      <div style={{marginLeft: "1em"}}>  Total Ride Revenue: { round2Decimal(dashboard.totalRideRevenue) } </div>
+                      <div style={{marginLeft: "1em"}}>  Total Ride Revenue: { 
+                        (dashboard.totalRideRevenue && Array.isArray(dashboard.totalRideRevenue))  ? 
+                        dashboard.totalRideRevenue.map(result => `${vehicleType[result.vehicleType]} : ${round2Decimal(result.rideRevenue)}, ` )  :
+                        
+                        "unknown"
+                        } </div>
                         
                       <div style={{marginLeft: "1em"}}> Total Refund to Card: {round2Decimal(dashboard.totalRefund.refundToCard)} </div>
 

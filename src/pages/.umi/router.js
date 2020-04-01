@@ -59,12 +59,6 @@ let routes = [
             "exact": true
           },
           {
-            "path": "/dashboard/performance",
-            "name": "Performance",
-            "component": dynamic({ loader: () => import('../Dashboard/Performance'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
-            "exact": true
-          },
-          {
             "path": "/dashboard/techmetrics",
             "name": "Tech Metrics",
             "component": dynamic({ loader: () => import('../Dashboard/TechMetrics'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),

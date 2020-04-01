@@ -25,6 +25,8 @@ import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
 import {fenceType, fenceTypeColor} from "@/constant";
 
+import NumberInput from "@/components/share/NumberInput";
+
 const FormItem = Form.Item;
 
 
@@ -73,7 +75,8 @@ const MyMapComponent = compose(
     isEditingPrimeLocation,
     editingPrimeLocation,
     setCircleRef,
-    handleExistedPrimeLocationClick
+    handleExistedPrimeLocationClick,
+    selectedExistedPrimeLocation
   } = props;
 
   const centerToRender =
@@ -119,28 +122,31 @@ const MyMapComponent = compose(
             editable={true}
             ref={setCircleRef}
             options={{
-              fillColor: "#e8eb34",
-              strokeColor: '#e8eb78',
-              strokeOpacity: 0.8,
+              fillColor: "#ff9d00",
+              strokeColor: '#ff9d00',
+              strokeOpacity: 2,
               strokeWeight: 2,
+              zIndex: 1
             }}
           />
         )}
         {
           primeLocations.map(
-            circle =>  <Circle
+            circle => selectedExistedPrimeLocation && selectedExistedPrimeLocation.id === circle.id ? undefined : <Circle
               center={circle.center}
               radius={circle.radius}
+              key={circle.id}
               
               onClick={e => handleExistedPrimeLocationClick(e, circle)}
               options={{
-                fillColor: "#55eb34",
-                strokeColor: '#55eb78',
-                strokeOpacity: 0.8,
+                fillColor: "#169902",
+                strokeColor: '#169902',
+                strokeOpacity: 0.9,
                 strokeWeight: 2,
               }}
             />)
         }
+        
       {isEditingFenceClosed && (
         <Polygon
           path={path}
@@ -150,7 +156,8 @@ const MyMapComponent = compose(
             strokeOpacity: 0.75,
             strokeWeight: 2,
             fillColor: fenceTypeColor[editingFence.fenceType],
-            fillOpacity: editingFence.fenceType == 0 ? 0 : 0.35
+            fillOpacity: editingFence.fenceType == 0 ? 0 : 0.35,
+            zIndex: 0
           }}
         />
       )}
@@ -193,6 +200,8 @@ const MyMapComponent = compose(
           }}
         />
       ))}
+
+    
     </GoogleMap>
   );
 });
@@ -369,10 +378,7 @@ class Geo extends PureComponent {
 
     this.cancelEditing();
 
-    dispatch({
-      type: "geo/getFences",
-      areaId: areaId
-    });
+   
 
     dispatch({
       type: "geo/getCenter",
@@ -380,9 +386,14 @@ class Geo extends PureComponent {
     });
 
     dispatch({
-      type: "geo/getPrimeLocations",
+      type: "geo/getFences",
       areaId: areaId
     });
+
+    // dispatch({
+    //   type: "geo/getPrimeLocations",
+    //   areaId: areaId
+    // });
   };
 
 
@@ -408,6 +419,20 @@ class Geo extends PureComponent {
     
   }
 
+  checkPrimeLocation = point => {
+    const {
+        selectedAreaId,
+        dispatch
+    } = this.props;
+
+
+      dispatch({
+        type: "geo/checkPrimeLocation",
+        areaId: selectedAreaId,
+        payload: point
+      })
+  }
+
   handleMapClick = e => {
     const {
       isEditingCenter,
@@ -421,7 +446,9 @@ class Geo extends PureComponent {
 
     const newPoint = { lat: e.latLng.lat(), lng: e.latLng.lng() };
 
-    this.checkParking(newPoint);
+    //this.checkParking(newPoint);
+
+    //this.checkPrimeLocation(newPoint);
 
     if (isEditingCenter) {
       this.setState({ editingCenter: newPoint });
@@ -517,6 +544,7 @@ class Geo extends PureComponent {
       editingFence,
       editingCenter,
       editingPrimeLocation,
+      selectedExistedPrimeLocation,
     } = this.state;
     const { dispatch, geo, selectedAreaId } = this.props;
 
@@ -556,11 +584,34 @@ class Geo extends PureComponent {
 
       const circle = this.cricelRef.state.__SECRET_CIRCLE_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
 
-      dispatch({
-        type: "geo/addPrimeLocation",
-        payload: Object.assign({}, {center: {lat: circle.center.lat(), lng: circle.center.lng()}, radius:  Math.round(circle.radius), areaId : selectedAreaId}) ,
-        onSuccess: this.getAreaGeoInfo
-      });
+      if (selectedExistedPrimeLocation) {
+
+        dispatch({
+          type: "geo/updatePrimeLocation",
+          payload: Object.assign({}, {
+            id: selectedExistedPrimeLocation.id, 
+            location: {lat: circle.center.lat(), lng: circle.center.lng()}, 
+            radius:  Math.round(circle.radius), 
+            minimum: selectedExistedPrimeLocation.minimum,
+            target: selectedExistedPrimeLocation.target,
+            areaId : selectedAreaId
+          }) ,
+          onSuccess: this.getAreaGeoInfo
+        });
+
+      } else {
+
+        dispatch({
+          type: "geo/addPrimeLocation",
+          payload: Object.assign({}, {center: {lat: circle.center.lat(), lng: circle.center.lng()}, radius:  Math.round(circle.radius), areaId : selectedAreaId}) ,
+          onSuccess: this.getAreaGeoInfo
+        });
+
+      }
+
+      
+
+
 
     }
 
@@ -594,7 +645,6 @@ class Geo extends PureComponent {
 
     if (!isEditingCenter && !isEditingFence && !isEditingPrimeLocation ) {
       this.setState({ selectedExistedFence: fence, selectedExistedPrimeLocation: null });
-      //console.log(event);
       const newPoint = { lat: event.latLng.lat(), lng: event.latLng.lng() };
       this.checkParking(newPoint);
     } else if (fence.fenceType === 0 || fence.fenceType === 5 || isEditingPrimeLocation) {
@@ -605,8 +655,15 @@ class Geo extends PureComponent {
   handleExistedPrimeLocationClick = (event, primeLocation) => {
     const { isEditingCenter, isEditingFence, isEditingPrimeLocation} = this.state;
 
+
     if (!isEditingCenter && !isEditingFence && !isEditingPrimeLocation) {
-      this.setState({ selectedExistedPrimeLocation: primeLocation, selectedExistedFence: null });
+      this.setState({ 
+        selectedExistedPrimeLocation: primeLocation, 
+        isEditingPrimeLocation: true,
+        selectedExistedFence: null, 
+        editingPrimeLocation: {center: primeLocation.center, radius: primeLocation.radius  }  
+      });
+      //this.handleMapClick(event);
     } 
   };
 
@@ -637,7 +694,8 @@ class Geo extends PureComponent {
       isEditingCenter,
       editingCenter,
       isEditingPrimeLocation,
-      editingPrimeLocation
+      editingPrimeLocation,
+      selectedExistedPrimeLocation
     } = this.state;
 
     const isAbleToEncloseEditingFence =
@@ -672,6 +730,19 @@ class Geo extends PureComponent {
               >
                 Save
               </Button>
+              
+                {authority.includes("delete.primeLocation") && selectedExistedPrimeLocation  && (
+                  <Button
+                    type="danger"
+                    onClick={() =>
+                      this.setState({ isDeleteModalVisible: true })
+                    }
+                    className={styles.editButton}
+                  >
+                    DELETE
+                  </Button>
+                )}
+
               {isAbleToEncloseEditingFence && (
                 <Button
                   icon="plus"
@@ -731,6 +802,38 @@ class Geo extends PureComponent {
             </Col>
           )}
         </Row>
+
+        {selectedExistedPrimeLocation && 
+          <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
+          
+            <Col sm={24} >
+              {`lat:${selectedExistedPrimeLocation.center.lat } lng:${selectedExistedPrimeLocation.center.lng} radius:${ (selectedExistedPrimeLocation.radius * 328) / 100} ft` }
+            </Col>
+            
+
+          </Row>
+          
+        }
+
+        {selectedExistedPrimeLocation && 
+          <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
+          
+            <Col sm={4} >
+               <NumberInput addonBefore="Minimum" value={selectedExistedPrimeLocation.minimum} onChange={minimum =>  this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, minimum: minimum === "" ? null : minimum}})} /> 
+            </Col>
+
+            <Col sm={4} >
+                <NumberInput addonBefore="Target" value={selectedExistedPrimeLocation.target}   onChange={target => this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, target: target ===  "" ? null : target}})}  />
+            </Col>
+            
+
+          </Row>
+          
+        }
+
+       
+
+       
       </div>
     );
   };
@@ -778,6 +881,7 @@ class Geo extends PureComponent {
     });
   };
 
+
   handleDeleteFence = () => {
     const { selectedExistedFence } = this.state;
 
@@ -792,6 +896,17 @@ class Geo extends PureComponent {
       onError: this.cancelEditing
     });
   };
+
+  shouldShowEditButton = () => {
+
+    const {
+      selectedExistedPrimeLocation,
+      selectedExistedFence
+    } = this.state;
+
+   return (authority.includes("update.fence") && selectedExistedFence);
+
+  }
 
   render() {
     const {
@@ -823,20 +938,20 @@ class Geo extends PureComponent {
       <PageHeaderWrapper title="Geo Management">
         {selectedAreaId && <Card bordered={false}>
           <div>
-            {!isEditing && (selectedExistedFence || selectedExistedPrimeLocation) ? (
+            {!isEditing && selectedExistedFence ? (
               <Row
                 gutter={{ md: 8, lg: 24, xl: 48 }}
                 className={styles.editRow}
               >
                 <Col md={24} sm={24}>
-                  {authority.includes("update.fence") && selectedExistedFence && (
+                  { this.shouldShowEditButton() && (
                     <Button
                       type="primary"
-                      onClick={() => this.handleEditFence()}
+                      onClick={ this.handleEditFence}
                       disabled={isEditing}
                       className={styles.editButton}
                     >
-                      Edit Fence
+                       Edit Fence
                     </Button>
                   )}
                   {(authority.includes("delete.fence") || authority.includes("delete.primeLocation") ) && (
@@ -869,9 +984,7 @@ class Geo extends PureComponent {
                     Name: {selectedExistedFence.name} Type:{" "}
                     {fenceType[selectedExistedFence.fenceType]}
                   </span>}
-                  {selectedExistedPrimeLocation && <span>
-                    {`lat:${selectedExistedPrimeLocation.center.lat } lng:${selectedExistedPrimeLocation.center.lng} radius:${selectedExistedPrimeLocation.radius * 3.28} ft` }
-                  </span>}
+                 
                 </Col>
               </Row>
             ) : (
