@@ -164,6 +164,11 @@ class TechMetrics extends Component {
       return;
     }
 
+    console.log(rangePickerValue[0].toISOString());
+
+    console.log(rangePickerValue[1].toISOString());
+
+
     dispatch({
       type: 'performance/getTechnicianMetricsData',
       params: Object.assign(

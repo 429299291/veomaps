@@ -594,6 +594,7 @@ class Geo extends PureComponent {
             radius:  Math.round(circle.radius), 
             minimum: selectedExistedPrimeLocation.minimum,
             target: selectedExistedPrimeLocation.target,
+            description: selectedExistedPrimeLocation.description,
             areaId : selectedAreaId
           }) ,
           onSuccess: this.getAreaGeoInfo
@@ -796,7 +797,7 @@ class Geo extends PureComponent {
                   disabled={isEditing}
                   className={styles.editButton}
                 >
-                  Add Prime Location
+                  Add Vehicle Hub
                 </Button>
               )}
             </Col>
@@ -824,6 +825,10 @@ class Geo extends PureComponent {
 
             <Col sm={4} >
                 <NumberInput addonBefore="Target" value={selectedExistedPrimeLocation.target}   onChange={target => this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, target: target ===  "" ? null : target}})}  />
+            </Col>
+
+            <Col sm={4} >
+                <Input addonBefore="Description" value={selectedExistedPrimeLocation.description}   onChange={e => this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, description: e.target.value ===  "" ? null : e.target.value}})}  />
             </Col>
             
 

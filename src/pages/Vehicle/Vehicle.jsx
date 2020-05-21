@@ -1705,7 +1705,7 @@ handleShowingVehicles = val => {
                                   lastRideIdleHour: "lastRideIdleHour",
                                   isInGeoFence: "isInGeoFence",
                                   lastDropOffIdleHour: "lastDropOffIdleHour",
-                                  isInPrimeZone: "isInPrimeZone",
+                                  primeLocationId: "Hub Id",
                                   created: "Created"
                                 }
 
@@ -1749,6 +1749,7 @@ handleShowingVehicles = val => {
                                 const primLocationSnapshotHeader = {
 
                                   id: "Hub ID",
+                                  description: "Hub Description",
                                   lat: "Lat",
                                   lng: "Lng",
                                   market: "Market",
@@ -1772,7 +1773,7 @@ handleShowingVehicles = val => {
                                 exportCSVFile(primLocationSnapshotHeader, formatedData, this.state.todayRange.start.split(' ')[0] + "-" + (selectedAreaId === null ? "All" : areaNames[selectedAreaId]) + "-Hub-Snapshot");
 
                                 } })  } >
-                            Export Hub Snapshot
+                            Export Vehicle Hub Snapshot
                         </Button> 
                         </Col>
                         

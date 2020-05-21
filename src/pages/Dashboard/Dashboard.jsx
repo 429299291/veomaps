@@ -85,7 +85,7 @@ class Dashboard extends Component {
 
   state = {
     rangePickerValue: getTimeDistance("month"),
-    offset: ((new Date().getTimezoneOffset()) / -60) + 1,
+    offset: ((new Date().getTimezoneOffset()) / -60),
     countParams:  {period: 'month'}
   };
 
@@ -665,7 +665,31 @@ getRangeEnd(end) {
 
       if (data === undefined || data.length === 0 ||  countParams.period !== "day" || isNaN(data[0].x)) {
 
-        return data;
+        if (Array.isArray(data)) {
+
+          const sortedData = [...data].sort((x, y) => {
+
+            const xSplit = x.x.split("-");
+
+            const ySplit = y.x.split("-");
+
+            const xInt = (parseInt(xSplit[0]) * 10000) + (parseInt(xSplit[1]) * 100) + (parseInt(xSplit[2]));
+
+            const yInt = (parseInt(ySplit[0]) * 10000) + (parseInt(ySplit[1]) * 100) + (parseInt(ySplit[2]));
+
+            return xInt - yInt;
+
+          });
+
+          return sortedData;
+
+        } else {
+
+          return data;
+
+        }
+
+        
 
       } else {
 
@@ -692,17 +716,10 @@ getRangeEnd(end) {
 
               item.x = formatTime;
 
-              if (data.length < 20) {
-
-                console.log(item);
-              }
-
 
               return item;
 
             })
-
-            console.log(result)
 
             return result;
 
