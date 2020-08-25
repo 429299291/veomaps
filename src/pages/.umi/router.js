@@ -71,6 +71,30 @@ let routes = [
         ]
       },
       {
+        "path": "/shop-management",
+        "icon": "shop",
+        "name": "Shop Management",
+        "routes": [
+          {
+            "path": "/shop-management/order",
+            "name": "Order",
+            "component": dynamic({ loader: () => import('../Shop/Order'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
+            "authority": "get.shop.orders",
+            "exact": true
+          },
+          {
+            "path": "/shop-management/",
+            "name": "Listing",
+            "component": dynamic({ loader: () => import('../Shop/Listing'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
+            "authority": "get.shop.listing",
+            "exact": true
+          },
+          {
+            "component": () => React.createElement(require('/Users/zhuangenze/Desktop/manhattan-admin-web/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })
+          }
+        ]
+      },
+      {
         "path": "/vehicle-management",
         "icon": "car",
         "name": "Vehicle Management",
@@ -274,7 +298,7 @@ let routes = [
       },
       {
         "path": "/violation-management",
-        "name": "Violation Message Management",
+        "name": "Violation Management",
         "icon": "warning",
         "component": dynamic({ loader: () => import('../Violation/Violation'), loading: require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/components/PageLoading/index').default }),
         "exact": true

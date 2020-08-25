@@ -116,7 +116,7 @@ const UpdateForm = Form.create()(props => {
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Review Note">
         {form.getFieldDecorator("reviewNote", {initialValue: record.reviewNote})(<TextArea placeholder="Please Input" rows={10}  />)}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Solved">
+      {/* <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Solved">
         {form.getFieldDecorator("status",  {initialValue: record.status})(<Select placeholder="select" style={{ width: "100%" }}>
           <Option key={1} value={1}>
             Yes
@@ -125,7 +125,7 @@ const UpdateForm = Form.create()(props => {
             No
           </Option>
         </Select>)}
-      </FormItem>
+      </FormItem> */}
 
     </Modal>
   );
@@ -484,7 +484,7 @@ class Error extends PureComponent {
           </Col>
         </Row>
         <Row gutter={{ md: 24, lg: 24, xl: 48 }}>
-           <Col lg={6} md={8} sm={24}>
+           {/* <Col lg={6} md={8} sm={24}>
            <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Solved">
               {getFieldDecorator("status")(<Select placeholder="select" style={{ width: "100%" }}>
                 <Option key={1} value={1}>
@@ -496,7 +496,7 @@ class Error extends PureComponent {
                 <Option value={null}>All</Option>
               </Select>)}
           </FormItem>
-            </Col>
+            </Col> */}
           <Col lg={18} md={16} sm={24}>
             <FormItem label="time">
               {getFieldDecorator("time")(

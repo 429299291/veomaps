@@ -1,7 +1,7 @@
 .DS_STORE
 
 node_modules
-dist
+/dist/
 scripts/flow/*/.flowconfig
 *~
 *.pyc

@@ -42,7 +42,7 @@ const authority = getAuthority();
 
 const customerStatus = ["NORMAL", "FROZEN", "ERROR"];
 
-const vehicleType = ["Bicycle", "Scooter", "E-Bike", "Car"];
+const vehicleType = ["Bicycle", "Scooter", "E-Bike", "COSMO"];
 const lockOperationWay = ["GPRS", "BLUETOOTH"];
 const REFUND_TYPE = {"FULL": 0, "CUSTOMER_FAULT": 1, "OTHER": 2};
 
@@ -195,6 +195,32 @@ const UpdateForm = Form.create()(props => {
       <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Migrated">
         {form.getFieldDecorator("migrated", {
           initialValue: record.migrated
+        })(<Select placeholder="select" style={{ width: "100%" }}>
+          <Option key={1} value={true}>
+            Yes
+          </Option>
+          <Option key={0} value={false}>
+            No
+          </Option>
+        </Select>)}
+      </FormItem>
+
+      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Low Income">
+        {form.getFieldDecorator("lowIncome", {
+          initialValue: record.lowIncome
+        })(<Select placeholder="select" style={{ width: "100%" }}>
+          <Option key={1} value={true}>
+            Yes
+          </Option>
+          <Option key={0} value={false}>
+            No
+          </Option>
+        </Select>)}
+      </FormItem>
+
+      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Auto Reload">
+        {form.getFieldDecorator("autoReloaded", {
+          initialValue: record.autoReloaded
         })(<Select placeholder="select" style={{ width: "100%" }}>
           <Option key={1} value={true}>
             Yes

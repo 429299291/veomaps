@@ -20,6 +20,30 @@ export async function getRidePerVehicleRank(params) {
   });
 }
 
+export async function getStripeNetCharge(params) {
+  return request(`/admins/dashboard/stripe-net-charge?${stringify(params, { indices: false })}`, {
+    method: "GET"
+  });
+}
+
+export async function getStripeNetDeposit(params) {
+  return request(`/admins/dashboard/stripe-net-deposit?${stringify(params, { indices: false })}`, {
+    method: "GET"
+  });
+}
+
+export async function getStripeNetDispute(params) {
+  return request(`/admins/dashboard/stripe-net-dispute?${stringify(params, { indices: false })}`, {
+    method: "GET"
+  });
+}
+
+export async function getStripeNetRefund(params) {
+  return request(`/admins/dashboard/stripe-net-refund?${stringify(params, { indices: false })}`, {
+    method: "GET"
+  });
+}
+
 export async function getDailyRideCount(params) {
   return request(`/admins/dashboard/daily_ride_count?${stringify(params, { indices: false })}`, {
     method: "GET"

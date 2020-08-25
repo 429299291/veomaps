@@ -158,15 +158,16 @@ class TechMetrics extends Component {
   getTechnicianData() {
     const { dispatch, selectedAreaId } = this.props;
 
+    if   (!selectedAreaId) {
+      return;
+    }
+
     const { rangePickerValue } = this.state;
 
     if (!authority.includes('get.technician.metrics')) {
       return;
     }
 
-    console.log(rangePickerValue[0].toISOString());
-
-    console.log(rangePickerValue[1].toISOString());
 
 
     dispatch({
@@ -174,15 +175,20 @@ class TechMetrics extends Component {
       params: Object.assign(
         {},
         {
-          areaId: selectedAreaId || -1,
-          startDate: rangePickerValue[0].toISOString(),
-          end: rangePickerValue[1].toISOString(),
+          areaId: selectedAreaId,
+          start:  moment(rangePickerValue[0]).utcOffset(0).format("MM-DD-YYYY HH:mm:ss"),
+          end: moment(rangePickerValue[1]).utcOffset(0).format("MM-DD-YYYY HH:mm:ss"),
         },
       ),
     });
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
+
+    if (!this.props.selectedAreaId) {
+        return;
+    }
+
     if (prevState.rangePickerValue !== this.state.rangePickerValue) {
       this.getTechnicianData();
     }
@@ -305,102 +311,108 @@ class TechMetrics extends Component {
       </div>
     );
 
-    const getMarkers = () => {
-      if (technicianMetricsData) {
-        const totalItems = technicianMetricsData.map((technician) => {
-          const { actions } = technician.actionData;
-          const { technicianId } = technician;
-          const markerItems = actions.map(action => ({
-            name: `${technician.firstName} ${technician.lastName}`,
-            technicianId,
-            action,
-          }));
-          return markerItems;
-        });
-        const flattened = totalItems.flat();
-        return flattened;
-      }
-      return [];
-    };
+    // const getMarkers = () => {
+    //   if (technicianMetricsData) {
+    //     const totalItems = technicianMetricsData.map((technician) => {
+    //       const { actions } = technician.actionData;
+    //       const { technicianId } = technician;
+    //       const markerItems = actions.map(action => ({
+    //         name: `${technician.firstName} ${technician.lastName}`,
+    //         technicianId,
+    //         action,
+    //       }));
+    //       return markerItems;
+    //     });
+    //     const flattened = totalItems.flat();
+    //     return flattened;
+    //   }
+    //   return [];
+    // };
 
 
-    const renderMarkers = markerData => markerData.map((marker) => {
-      const date = moment(marker.date).format('h:mm A MM/DD/YYYY');
-      const actionType = technicianActionTypes[marker.action.actionType];
-      return (
-        <CustomMarker
-          date={date}
-          actionType={actionType}
-          name={marker.name}
-          value={marker}
-          onClick={this.handlePopupOpen}
-          position={marker.action.location}
-        />
-      );
-    });
+    // const renderMarkers = markerData => markerData.map((marker) => {
+    //   const date = moment(marker.date).format('h:mm A MM/DD/YYYY');
+    //   const actionType = technicianActionTypes[marker.action.actionType];
+    //   return (
+    //     <CustomMarker
+    //       date={date}
+    //       actionType={actionType}
+    //       name={marker.name}
+    //       value={marker}
+    //       onClick={this.handlePopupOpen}
+    //       position={marker.action.location}
+    //     />
+    //   );
+    // });
 
-    const ActionMap = compose(
-      withProps({
-        googleMapURL:
-            'https://maps.googleapis.com/maps/api/js?key=AIzaSyDdCuc9RtkM-9wV9e3OrULPj67g2CHIdZI&v=3.exp&libraries=geometry,drawing,places,visualization',
-        loadingElement: <div style={{ height: '100%' }} />,
-        containerElement: <div style={{ height: '400px' }} />,
-        mapElement: <div style={{ height: '100%', width: '100%' }} />,
-      }),
-      withScriptjs,
-      withGoogleMap,
-    )((props) => {
-      const {
-        center,
-        markers,
-      } = props;
+    // const ActionMap = compose(
+    //   withProps({
+    //     googleMapURL:
+    //         'https://maps.googleapis.com/maps/api/js?key=AIzaSyDdCuc9RtkM-9wV9e3OrULPj67g2CHIdZI&v=3.exp&libraries=geometry,drawing,places,visualization',
+    //     loadingElement: <div style={{ height: '100%' }} />,
+    //     containerElement: <div style={{ height: '400px' }} />,
+    //     mapElement: <div style={{ height: '100%', width: '100%' }} />,
+    //   }),
+    //   withScriptjs,
+    //   withGoogleMap,
+    // )((props) => {
+    //   const {
+    //     center,
+    //     markers,
+    //   } = props;
 
-      return (
-        <GoogleMap
-          defaultZoom={13}
-          center={center || defaultCenter}
-        >
-          {markers}
-        </GoogleMap>
-      );
-    });
+    //   return (
+    //     <GoogleMap
+    //       defaultZoom={13}
+    //       center={center || defaultCenter}
+    //     >
+    //       {markers}
+    //     </GoogleMap>
+    //   );
+    // });
 
-    const { geo } = this.props;
+    const { geo, selectedAreaId } = this.props;
 
     const mapCenter = geo.area && geo.area.center;
 
-    const markerData = getMarkers();
+    // const markerData = getMarkers();
 
-    const Markers = renderMarkers(markerData);
+    // const Markers = renderMarkers(markerData);
     return (
       <GridContent>
-        <Card>
-          <Tabs
-            tabBarExtraContent={SalesExtra}
-            size="large"
-            tabBarStyle={{ marginBottom: 24 }}
-          >
-            <TabPane
-              tab="Technicians"
-              key="Technicians"
+        {
+            selectedAreaId &&
+
+            <Card>
+            <Tabs
+              tabBarExtraContent={SalesExtra}
+              size="large"
+              tabBarStyle={{ marginBottom: 24 }}
             >
-              <StandardTable
-                data={{ list: this.props.performance.technicianMetricsData }}
-                columns={this.columns}
-                scroll={{ x: 1300 }}
-              />
-            </TabPane>
-            <TabPane
-              tab="Action Map"
-              key="Map"
-            >
-              <ActionMap
-                center={mapCenter}
-                markers={Markers}
-              />
-            </TabPane>
-          </Tabs>
-        </Card>
+              <TabPane
+                tab="Technicians"
+                key="Technicians"
+              >
+                <StandardTable
+                  data={{ list: this.props.performance.technicianMetricsData }}
+                  columns={this.columns}
+                  scroll={{ x: 1300 }}
+                />
+              </TabPane>
+              {/* <TabPane
+                tab="Action Map"
+                key="Map"
+              >
+                <ActionMap
+                  center={mapCenter}
+                  markers={Markers}
+                />
+              </TabPane> */}
+            </Tabs>
+          </Card>
+           
+        }
+       
       </GridContent>);
   }
 }

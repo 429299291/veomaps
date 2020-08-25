@@ -7,7 +7,8 @@ import {
   getAllAreas,
   getAreaFeatures,
   updateAreaFeature,
-  createAreaFeature
+  createAreaFeature,
+  getHubImageUploadUrl
 } from "@/services/area";
 import { message } from "antd";
 
@@ -53,6 +54,15 @@ export default {
         type: "saveSelectArea",
         payload: areaId
       });
+    },
+    *getHubUploadUrl({ hubId, onSuccess }, { call, put }) {
+
+      const response = yield call(getHubImageUploadUrl, hubId);
+
+      if (typeof onSuccess == "function") {
+        onSuccess(response);
+      }
+
     },
     *update({ id, payload, onSuccess, onError }, { call, put }) {
       const response = yield call(updateArea, id, payload); // put

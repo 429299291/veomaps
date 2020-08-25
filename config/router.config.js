@@ -45,6 +45,25 @@ export default [
         ]
       },
       {
+        path: "/shop-management",
+        icon: "shop",
+        name: "Shop Management",
+        routes: [
+          {
+            path: "/shop-management/order",
+            name: "Order",
+            component: "./Shop/Order",
+            authority: "get.shop.orders"
+          },
+          {
+            path: "/shop-management/",
+            name: "Listing",
+            component: "./Shop/Listing",
+            authority: "get.shop.listing"
+          }
+        ]
+      },
+      {
         path: "/vehicle-management",
         icon: "car",
         name: "Vehicle Management",
@@ -209,7 +228,7 @@ export default [
       },
       {
         path: "/violation-management",
-        name: "Violation Message Management",
+        name: "Violation Management",
         icon: "warning",
         component: "./Violation/Violation"
       },

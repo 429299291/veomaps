@@ -59,7 +59,7 @@ const errorStatusIndexs = {
 
 const errorStatus = Object.keys(errorStatusIndexs);
 
-const vehicleType = ["Bicycle", "Scooter", "E-Bike", "Car"];
+const vehicleType = ["Bicycle", "Scooter", "E-Bike", "COSMO"];
 const lockOperationWay = ["GPRS", "BLUETOOTH"];
 
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;

@@ -42,7 +42,9 @@ const transactionType = [
   "Deposit",
   "Dispute Freeze",
   "Violation Fine",
-  "Violation Revert"
+  "Violation Revert",
+  "Shop Order",
+  "Auto Reload"
 ];
 
 const parkingViolationType = [
@@ -70,7 +72,7 @@ const technicianActionTypes = [
   "End Swap Battery",
 ]
 
-const vehicleType = ["Bicycle", "Scooter", "E-Bike", "Car"];
+const vehicleType = ["Bicycle", "Scooter", "E-Bike", "COSMO"];
 
 const statusMap = ["default", "processing", "success", "error"];
 const operationStatus = ["NORMAL", "MANTAINANCE"];

@@ -64,3 +64,9 @@ export async function getAreaFeatures() {
     method: "GET"
   });
 }
+
+export async function getHubImageUploadUrl(hubId) {
+  return request(`/admins/areas/hubs/${hubId}/upload-url`, {
+    method: "GET"
+  });
+}

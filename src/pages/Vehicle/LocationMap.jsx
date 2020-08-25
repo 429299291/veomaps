@@ -50,7 +50,7 @@ const authority = getAuthority();
 
 const errorStatus = ["NORMAL", "FROZEN", "ERROR"];
 
-const vehicleType = ["Bicycle", "Scooter", "E-Bike", "Car"];
+const vehicleType = ["Bicycle", "Scooter", "E-Bike", "COSMO"];
 const lockOperationWay = ["GPRS", "BLUETOOTH"];
 
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
@@ -95,7 +95,7 @@ const icons = {
 const getVehicleIcon = (vehicleDetail) => {
     switch (vehicleDetail.vehicleType) {
         case 0:
-            if (vehicleDetail.power <= 350) {
+            if (vehicleDetail.power <= 20) {
                 return pedalLowBattery;
             } else {
                 return constructIcon(vehicleDetail, "pedal");
@@ -109,7 +109,7 @@ const getVehicleIcon = (vehicleDetail) => {
             }
             break;
         case 2:
-            if (vehicleDetail.vehiclePower <= 20 || vehicleDetail.power < 350) {
+            if (vehicleDetail.vehiclePower <= 20 || vehicleDetail.power < 20) {
                 return ebikeLowBattery;
             } else {
                 return constructIcon(vehicleDetail, "ebike");

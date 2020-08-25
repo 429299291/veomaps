@@ -71,7 +71,7 @@ export default {
         onError && onError();
       }
     },
-    *getPrimeLocations({ areaId }, { call, put }) {
+    *getPrimeLocations({ areaId, onSuccess }, { call, put }) {
 
 
       const response = yield call(getPrimeLocationByAreaId, areaId); // get
@@ -82,6 +82,8 @@ export default {
         type: "savePrimeLocations",
         payload: isArray ? response : []
       });
+
+      onSuccess && onSuccess(isArray ? response : []);
     },
 
     *removePrimeLocation({ id, onSuccess, onError }, { call, put }) {
@@ -95,7 +97,7 @@ export default {
       }
     },
 
-    *getFences({ areaId }, { call, put }) {
+    *getFences({ areaId, onSuccess }, { call, put }) {
       const response = yield call(getFencesByAreaId, areaId);
 
       const isArray = Array.isArray(response);
@@ -114,12 +116,16 @@ export default {
         });
       }
 
-      yield put({type: "getPrimeLocations", areaId: areaId});
+      
 
       yield put({
         type: "saveFence",
         payload: isArray ? response : []
       });
+
+      yield put({type: "getPrimeLocations", areaId: areaId, onSuccess});
+
+
     },
     *addFence({ payload, onSuccess, onError }, { call, put }) {
       const response = yield call(createFence, payload); // post

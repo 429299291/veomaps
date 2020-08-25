@@ -106,6 +106,8 @@ class Dashboard extends Component {
       this.loadStripeRevenue();
 
       this.loadDailyRideRevenue();
+
+
       
 
       this.timeoutId = setTimeout(() => {
@@ -159,6 +161,72 @@ class Dashboard extends Component {
 
   }
 
+  fetchStripeNetResult() {
+
+    const { dispatch, selectedAreaId } = this.props;
+
+    const { rangePickerValue} = this.state;
+
+
+    if (authority.includes("get.stripe.net.deposit") ) {
+
+
+      dispatch({
+        type: "dashboard/fetchStripeNetDeposit",
+        params: { 
+          areaId: selectedAreaId,
+          start: rangePickerValue[0].unix(),
+          end: rangePickerValue[1].unix()
+        }
+      });
+
+    }
+
+    if (authority.includes("get.stripe.net.charge") ) {
+
+
+      dispatch({
+        type: "dashboard/fetchStripeNetCharge",
+        params: { 
+          areaId: selectedAreaId,
+          start: rangePickerValue[0].unix(),
+          end: rangePickerValue[1].unix()
+        }
+      });
+
+    }
+
+    if (authority.includes("get.stripe.net.refund") ) {
+
+
+      dispatch({
+        type: "dashboard/fetchStripeNetRefund",
+        params: { 
+          areaId: selectedAreaId,
+          start: rangePickerValue[0].unix(),
+          end: rangePickerValue[1].unix()
+        }
+      });
+
+    }
+
+    if (authority.includes("get.stripe.net.dispute") ) {
+
+
+
+      dispatch({
+        type: "dashboard/fetchStripeNetDispute",
+        params: { 
+          areaId: selectedAreaId,
+          start: rangePickerValue[0].unix(),
+          end: rangePickerValue[1].unix()
+        }
+      });
+
+    }
+
+  }
+
   fetchTotalRefund() {
 
     const { dispatch, selectedAreaId } = this.props;
@@ -195,6 +263,7 @@ class Dashboard extends Component {
     if (this.props.selectedAreaId !== null) {
       this.fetchAreaDistance();
       this.fetchAreaMinutes();
+      this.fetchStripeNetResult();
     }
   
     
@@ -641,13 +710,17 @@ getRangeEnd(end) {
 
     const round2Decimal = raw => {
 
-      if (raw > 0) {
+      if (!isNaN(raw)) {
 
        return Math.round(raw * 100) / 100;
 
+      } else {
+
+        return "unknown";
+
       }
 
-      return raw;
+      
 
     }
 
@@ -1018,7 +1091,8 @@ getRangeEnd(end) {
                   </TabPane> 
               }
               { 
-                authority.includes("get.total.refund") && authority.includes("get.total.ride.revenue") &&  <TabPane
+                authority.includes("get.total.refund") && authority.includes("get.total.ride.revenue") &&  
+                <TabPane
                   tab="Finace Report"
                   key="financeStats"
                 >
@@ -1034,11 +1108,36 @@ getRangeEnd(end) {
                       <div style={{marginLeft: "1em"}}> Total Refund to Card: {round2Decimal(dashboard.totalRefund.refundToCard)} </div>
 
                       <div style={{marginLeft: "1em"}}> Total Refund to Deposit: {round2Decimal(dashboard.totalRefund.refundToDeposit)} </div>
+
+                      {selectedAreaId &&
+                          <div>
+
+                            <div style={{marginLeft: "1em"}}> Stripe Gross Volumne: {round2Decimal(dashboard.stripeNetDeposit / 100)} </div>
+
+                            <div style={{marginLeft: "1em"}}> Stripe Net Deposit: {round2Decimal(dashboard.stripeNetCharge / 100)} </div>
+
+                            <div style={{marginLeft: "1em"}}> Stripe Net Refund: {round2Decimal(dashboard.stripeNetRefund / 100)} </div>
+
+                            <div style={{marginLeft: "1em"}}> Stripe Net Dispute: {round2Decimal(dashboard.stripeNetDispute / 100)} </div>
+
+                            <div style={{marginLeft: "1em"}}> Stripe Net Volume: {round2Decimal((dashboard.stripeNetCharge + dashboard.stripeNetRefund  + dashboard.stripeNetDispute) / 100 )} </div>
+
+                            <div style={{marginLeft: "1em"}}> Net Application Fee: {round2Decimal((dashboard.stripeNetDeposit - dashboard.stripeNetCharge) / 100)} </div>
+
+
+                          </div>
+
+
+                      }
                                
                     </Col>
                     {this.getRankingBoard()}
                   </Row>
                   </TabPane> 
+              }
+              { 
+
+
               }
               { 
               (authority.includes("get.area.minutes") && this.props.selectedAreaId !== null) && 

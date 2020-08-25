@@ -29,7 +29,7 @@ import scooterReported from "../../assets/scooter-pin-reportedbackend.png";
 
 import styles from "./VehicleMap.less";
 
-const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "Car"];
+const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "COSMO"];
 
 import {
   Slider,
@@ -62,7 +62,7 @@ const icons = {
 const getVehicleIcon = (vehicleDetail) => {
     switch (vehicleDetail.vehicleType) {
         case 0:
-            if (vehicleDetail.power <= 350) {
+            if (vehicleDetail.power <= 20) {
                 return pedalLowBattery;
             } else {
                 return constructIcon(vehicleDetail, "pedal");

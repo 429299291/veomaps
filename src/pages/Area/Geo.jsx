@@ -19,8 +19,16 @@ import {
   Badge,
   Divider,
   Steps,
-  Radio
+  Radio,
+  Upload,
+  Spin
 } from "antd";
+
+import reqwest from "reqwest";
+
+import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+
+
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
 import {fenceType, fenceTypeColor} from "@/constant";
@@ -334,6 +342,7 @@ const CreateFenceForm = Form.create()(props => {
               <Option value={0}>Bike</Option>
               <Option value={1}>Scooter</Option>
               <Option value={2}>E-Bike</Option>
+              <Option value={3}>COSMO</Option>
             </Select>
           )}
         </FormItem>
@@ -595,6 +604,8 @@ class Geo extends PureComponent {
             minimum: selectedExistedPrimeLocation.minimum,
             target: selectedExistedPrimeLocation.target,
             description: selectedExistedPrimeLocation.description,
+            isVisibleToCustomer: selectedExistedPrimeLocation.isVisibleToCustomer,
+            parkingBonus: selectedExistedPrimeLocation.parkingBonus,
             areaId : selectedAreaId
           }) ,
           onSuccess: this.getAreaGeoInfo
@@ -627,6 +638,43 @@ class Geo extends PureComponent {
     }
   }
 
+  beforeUpload(file) {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file!');
+    }
+    const isLt5M = file.size / 1024 / 1024 < 5;
+    if (!isLt5M) {
+      message.error('Image must smaller than 5MB!');
+    }
+    return isJpgOrPng && isLt5M;
+  }
+
+  getBase64(img, callback) {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => callback(reader.result));
+    reader.readAsDataURL(img);
+  }
+
+  handleChange = info => {
+
+
+    if (info.file.status === 'uploading') {
+      this.setState({ hubUploadLoading: true });
+      return;
+    }
+    if (info.file.status === 'done') {
+      // Get this url from response in real world.
+      this.getBase64(info.file.originFileObj, hubUploadImageUrl =>
+        this.setState({
+          hubUploadImageUrl,
+          hubUploadLoading: false,
+          uploadFileData: info.file.originFileObj
+        }),
+      );
+    }
+  };
+
 
 
   handleUpdateFence = updatedFence => {
@@ -645,7 +693,7 @@ class Geo extends PureComponent {
     const { isEditingCenter, isEditingFence, isEditingPrimeLocation } = this.state;
 
     if (!isEditingCenter && !isEditingFence && !isEditingPrimeLocation ) {
-      this.setState({ selectedExistedFence: fence, selectedExistedPrimeLocation: null });
+      this.setState({ selectedExistedFence: fence, selectedExistedPrimeLocation: null});
       const newPoint = { lat: event.latLng.lat(), lng: event.latLng.lng() };
       this.checkParking(newPoint);
     } else if (fence.fenceType === 0 || fence.fenceType === 5 || isEditingPrimeLocation) {
@@ -655,9 +703,11 @@ class Geo extends PureComponent {
 
   handleExistedPrimeLocationClick = (event, primeLocation) => {
     const { isEditingCenter, isEditingFence, isEditingPrimeLocation} = this.state;
+    const {dispatch } = this.props;
 
 
     if (!isEditingCenter && !isEditingFence && !isEditingPrimeLocation) {
+
       this.setState({ 
         selectedExistedPrimeLocation: primeLocation, 
         isEditingPrimeLocation: true,
@@ -687,6 +737,64 @@ class Geo extends PureComponent {
     }
   };
 
+  handleUploadHubImage = () => {
+
+    const {dispatch, selectedAreaId, geo} = this.props;
+    const {selectedExistedPrimeLocation} = this.state;
+
+    this.setState({hubImageLoading: true});
+
+    dispatch({
+      type: "areas/getHubUploadUrl",
+      hubId: selectedExistedPrimeLocation.id,
+      onSuccess: url => {
+      
+
+        reqwest({
+          url: url,
+          method: 'put',
+          processData: false,
+          data: this.state.uploadFileData,
+          headers: {
+            'Access-Control-Allow-Headers': '*'
+          },
+          success: () => {
+            
+            setTimeout(() => {
+              dispatch({
+                type: "geo/getFences",
+                areaId: selectedAreaId,
+                onSuccess: primeLocations => {                  
+
+                  this.setState({
+                    uploadFileData: null,
+                    hubImageLoading: false,
+                    hubUploadImageUrl: null,
+                    selectedExistedPrimeLocation: primeLocations.filter(hub => hub.id === selectedExistedPrimeLocation.id)[0]
+                  });
+                  message.success('upload successfully.');
+
+                }
+              });
+              
+            }, 2000);
+          },
+          error: () => {
+            this.setState({
+              hubImageLoading: false,
+            });
+            message.error('upload failed.');
+          },
+        });
+
+      }
+  });
+
+
+    
+
+  }
+
   renderHeader = (areas, isEditing) => {
     const {
       isEditingFence,
@@ -696,7 +804,8 @@ class Geo extends PureComponent {
       editingCenter,
       isEditingPrimeLocation,
       editingPrimeLocation,
-      selectedExistedPrimeLocation
+      selectedExistedPrimeLocation,
+      hubImageLoading
     } = this.state;
 
     const isAbleToEncloseEditingFence =
@@ -708,6 +817,16 @@ class Geo extends PureComponent {
       (isEditingFence && isEditingFenceClosed) ||
       (isEditingCenter && editingCenter) || 
       (isEditingPrimeLocation && editingPrimeLocation);
+
+      const uploadButton = (
+        <div>
+          <Icon type={this.state.loading ? 'loading' : 'plus'} />
+          <div className="ant-upload-text">Upload</div>
+        </div>
+      );
+     
+      const { hubUploadImageUrl } = this.state;
+
 
     return (
       <div>
@@ -817,22 +936,78 @@ class Geo extends PureComponent {
         }
 
         {selectedExistedPrimeLocation && 
-          <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
-          
-            <Col sm={4} >
-               <NumberInput addonBefore="Minimum" value={selectedExistedPrimeLocation.minimum} onChange={minimum =>  this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, minimum: minimum === "" ? null : minimum}})} /> 
-            </Col>
-
-            <Col sm={4} >
-                <NumberInput addonBefore="Target" value={selectedExistedPrimeLocation.target}   onChange={target => this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, target: target ===  "" ? null : target}})}  />
-            </Col>
-
-            <Col sm={4} >
-                <Input addonBefore="Description" value={selectedExistedPrimeLocation.description}   onChange={e => this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, description: e.target.value ===  "" ? null : e.target.value}})}  />
-            </Col>
+          <div>
+            <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
             
+              <Col sm={4} >
+                <NumberInput addonBefore="Minimum" value={selectedExistedPrimeLocation.minimum} onChange={minimum =>  this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, minimum: minimum === "" ? null : minimum}})} /> 
+              </Col>
 
-          </Row>
+              <Col sm={4} >
+                  <NumberInput addonBefore="Target" value={selectedExistedPrimeLocation.target}   onChange={target => this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, target: target ===  "" ? null : target}})}  />
+              </Col>
+              
+
+              <Col sm={6} >
+                  <Input addonBefore="Description" value={selectedExistedPrimeLocation.description}   onChange={e => this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, description: e.target.value ===  "" ? null : e.target.value}})}  />
+              </Col>
+
+              
+            </Row>
+            <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
+            <Col sm={5} >
+                  <span style={{marginRight: "1em"}}> Visibility:  </span>
+                  <Select defaultValue={selectedExistedPrimeLocation.isVisibleToCustomer}   style={{ width: 80 }} 
+                    onChange={isVisibleToCustomer => this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, isVisibleToCustomer: isVisibleToCustomer ===  true ? true : false}})}  
+                  >
+                    <Option value={true}>true </Option>
+                    <Option value={false}>false</Option>
+                  </Select>
+              </Col>
+
+              <Col sm={6} >
+                  <span> Parking Bonus $ </span>
+                  <NumberInput style={{ width: 120 }}  value={selectedExistedPrimeLocation.parkingBonus} onChange={parkingBonus =>  this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, parkingBonus: parkingBonus === "" ? null : parkingBonus}})} /> 
+              </Col>
+            </Row>
+            
+            <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
+              {authority.includes("get.hub.upload.url") && <Col sm={4} >
+                <Upload
+                  name="avatar"
+                  listType="picture-card"
+                  className="avatar-uploader"
+                  showUploadList={false}                          
+                  beforeUpload={this.beforeUpload}
+                  onChange={this.handleChange}
+                >
+                {hubUploadImageUrl ? <img src={hubUploadImageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+                  
+                </Upload>
+                {
+                   hubUploadImageUrl && <div style={{marginTop:" 0.5em"}}>
+                      <Button type="primary" onClick={this.handleUploadHubImage} disabled={hubImageLoading}> Upload </Button>
+
+                      <Button  style={{marginLeft:" 0.5em"}}  onClick={() => this.setState({hubUploadImageUrl: null})} disabled={hubImageLoading}> Reset </Button>
+                    
+                    </div> 
+                }
+
+              </Col> 
+            }
+              <Col sm={12} >
+                  { hubImageLoading ? 
+                    <div style={{paddingLeft: "300px", paddingTop: "200px"}}>
+                      <Spin size="large"  />
+                    </div>
+                    :
+                    selectedExistedPrimeLocation.stagingUrl && <img style={{ maxWidth: '100%', maxHeight: "400px" }} src={selectedExistedPrimeLocation.stagingUrl}></img> 
+                  }
+                </Col>
+
+            </Row>
+
+          </div>
           
         }
 

@@ -54,7 +54,8 @@ export default {
     "GET /api/admins/violations/count": "get.vehicle.violation.count",
     "GET /api/admins/violations/{violationId}/detail": "get.vehicle.violation.detail",
     "GET /api/admins/vehicles/snapshot" : "get.vehicle.snapshot",
-    "GET /api/admins/vehicles/prime-location-snapshot" : "get.prime.location.snapshot"
+    "GET /api/admins/vehicles/prime-location-snapshot" : "get.prime.location.snapshot",
+    "POST /api/admins/vehicles/certificates" : "get.vehicle.certificates"
   },
   "Riding History": {
     "GET /api/admins/rides": "get.rides",
@@ -91,6 +92,7 @@ export default {
     "GET /api/admins/areas/features": "get.area.features",
     "PUT /api/admins/areas/features/{id}": "update.area.feature",
     "POST /api/admins/areas/features": "create.area.feature",
+    "GET /api/admins/areas/hubs/{hubId}/upload-url": "get.hub.upload.url",
   },
   "Coupon Management": {
     "DELETE /api/admins/coupons/{couponId}": "delete.coupon",
@@ -162,7 +164,8 @@ export default {
     "DELETE /api/admins/technicians/{technicianId}": "delete.technician",
     "GET /api/admins/technicians": "get.technicians",
     "POST /api/admins/technicians/register_by_email": "register.techncian.email", 
-    "PUT /api/admins/technicians/{technicianId}": "update.technician"
+    "PUT /api/admins/technicians/{technicianId}": "update.technician",
+
   },
   "Dashboard": {
     "GET /api/admins/dashboard/ride_count": "get.ride.count",
@@ -178,7 +181,11 @@ export default {
     "GET /api/admins/dashboard/total_area_distance": "get.area.distance",
     "GET /api/admins/dashboard/total_minutes": "get.area.minutes",
     "GET /api/admins/dashboard/total_refund": "get.total.refund",
-    "GET /api/admins/dashboard/ride_revenue_by_vehicle_type": "get.total.ride.revenue"
+    "GET /api/admins/dashboard/ride_revenue_by_vehicle_type": "get.total.ride.revenue",
+    "GET /api/admins/dashboard/stripe-net-deposit": "get.stripe.net.deposit",
+    "GET /api/admins/dashboard/stripe-net-refund": "get.stripe.net.refund",
+    "GET /api/admins/dashboard/stripe-net-dispute": "get.stripe.net.dispute",
+    "GET /api/admins/dashboard/stripe-net-charge": "get.stripe.net.charge"
   },
 
   "Performance": {
@@ -191,5 +198,13 @@ export default {
     "GET /api/admins/custom-technician-messages/{messageId}": "get.violation.message",
     "POST /api/admins/custom-technician-messages": "create.violation.message",
     "PUT /api/admins/custom-technician-messages/{messageId}": "update.violation.message",
+  },
+  "Shop Management": {
+    "POST /api/admins/commerces/orders/search": "get.shop.orders",
+    "POST /api/admins/commerces/orders/count": "count.shop.orders",
+    "PUT /api/admins/commerces/orders/{id}": "update.shop.orders",
+    "GET /api/admins/commerces/listings": "get.shop.listing",
+    "PUT /api/admins/commerces/listings/items/{id}": "update.shop.listing.item",
+    
   }
 };

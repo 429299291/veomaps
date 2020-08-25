@@ -61,7 +61,7 @@ const statusMap = ["default", "processing", "success", "error"];
 const operationStatus = ["NORMAL", "MANTAINANCE"];
 const connectStatus = ["Offline", "Online"];
 const lockStatus = ["Unlock", "lock"];
-const vehicleType = ["Bicycle", "Scooter", "E-Bike", "Car"];
+const vehicleType = ["Bicycle", "Scooter", "E-Bike", "COSMO"];
 
 import { exportCSVFile } from "../../utils/utils";
 
@@ -300,6 +300,7 @@ const HeatMapForm = Form.create()(props => {
                 <Option value={0} >Bike</Option>
                 <Option value={1} >Scooter</Option>
                 <Option value={2} >E-Bike</Option>
+                <Option value={3} >COSMO</Option>
             </Select>
             )}
       </span>  }
@@ -385,6 +386,7 @@ const CreateForm = Form.create()(props => {
             <Option value="0">Bike</Option>
             <Option value="1">Scooter</Option>
             <Option value="2">E-Bike</Option>
+            <Option value="3">COSMO</Option>
           </Select>
         )}
       </FormItem>
@@ -507,6 +509,7 @@ const UpdateForm = Form.create()(props => {
             <Option value={0}>Bike</Option>
             <Option value={1}>Scooter</Option>
             <Option value={2}>E-Bike</Option>
+            <Option value={3}>COSMO</Option>
           </Select>
         )}
       </FormItem>
@@ -574,7 +577,7 @@ class Vehicle extends PureComponent {
       title: "Power",
       dataIndex: "power",
       render(val) {
-        return <p>{roundTo2Decimal(getPowerPercent(val)) + "%"}</p>;
+        return <p>{roundTo2Decimal(val) + "%"}</p>;
       }
     },
     {
@@ -751,7 +754,7 @@ class Vehicle extends PureComponent {
 
     const {selectedVehicleRefresh} = this.state;
 
-    const lockPower = roundTo2Decimal(getPowerPercent(vehicle.power));
+    const lockPower = roundTo2Decimal(vehicle.power);
     
     const power = vehicle.vehicleType === 0 ? lockPower :  vehicle.vehiclePower;
 
@@ -1334,6 +1337,7 @@ class Vehicle extends PureComponent {
                   <Option value="0">Bike</Option>
                   <Option value="1">Scooter</Option>
                   <Option value="2">e-bike</Option>
+                  <Option value="3">COSMO</Option>
                   <Option value={null}>All</Option>
                 </Select>
               )}

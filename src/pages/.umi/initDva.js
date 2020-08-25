@@ -24,9 +24,11 @@ app.model({ namespace: 'error', ...(require('/Users/zhuangenze/Desktop/manhattan
 app.model({ namespace: 'geo', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/geo.js').default) });
 app.model({ namespace: 'global', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/global.js').default) });
 app.model({ namespace: 'list', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/list.js').default) });
+app.model({ namespace: 'listing', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/listing.js').default) });
 app.model({ namespace: 'login', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/login.js').default) });
 app.model({ namespace: 'membership', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/membership.js').default) });
 app.model({ namespace: 'notification', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/notification.js').default) });
+app.model({ namespace: 'order', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/order.js').default) });
 app.model({ namespace: 'performance', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/performance.js').default) });
 app.model({ namespace: 'price', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/price.js').default) });
 app.model({ namespace: 'privilege', ...(require('/Users/zhuangenze/Desktop/manhattan-admin-web/src/models/privilege.js').default) });

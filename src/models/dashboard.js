@@ -12,7 +12,11 @@ import {
   getAreaTotalDistance,
   getAreaTotalMinutes,
   getTotalRideRevenue,
-  getTotalRefund
+  getTotalRefund,
+  getStripeNetDeposit,
+  getStripeNetDispute,
+  getStripeNetRefund,
+  getStripeNetCharge
 } from "@/services/dashboard";
 import { message } from "antd";
 
@@ -54,7 +58,7 @@ export default {
          return ax.getTime() - bx.getTime();
         });
 
-        const vehicleTypes = ['bike', 'scooter', 'ebike']
+        const vehicleTypes = ['bike', 'scooter', 'ebike', 'COSMO']
 
         vehicleTypes[null] = 'all';
 
@@ -148,7 +152,7 @@ export default {
          return ax.getTime() - bx.getTime();
         });
 
-        const vehicleTypes = ['bike', 'scooter', 'ebike']
+        const vehicleTypes = ['bike', 'scooter', 'ebike', 'COSMO']
 
         vehicleTypes[null] = 'all';
 
@@ -192,6 +196,65 @@ export default {
           type: "save",
           payload: {
             dailyRideCount: response
+          }
+        });
+      }
+    },
+
+    *fetchStripeNetDeposit({params}, { call, put }) {
+      const response = yield call(getStripeNetDeposit, params);
+      console.log(response);
+
+      if (!isNaN(response)) {
+        yield put({
+          type: "save",
+          payload: {
+            stripeNetDeposit: response
+          }
+        });
+      }
+    },
+
+    *fetchStripeNetCharge({params}, { call, put }) {
+      const response = yield call(getStripeNetCharge, params);
+      console.log(response);
+
+      if (!isNaN(response)) {
+        yield put({
+          type: "save",
+          payload: {
+            stripeNetCharge: response
+          }
+        });
+      }
+    },
+
+    *fetchStripeNetRefund({params}, { call, put }) {
+      const response = yield call(getStripeNetRefund, params);
+      console.log(response);
+
+      if (!isNaN(response)) {
+        yield put({
+          type: "save",
+          payload: {
+            stripeNetRefund: response
+          }
+        });
+      }
+    },
+
+    
+
+    *fetchStripeNetDispute({params}, { call, put }) {
+      const response = yield call(getStripeNetDispute, params);
+
+      console.log(response);
+
+      if (!isNaN(response)){
+        yield put({
+          type: "save",
+          payload: {
+            stripeNetDispute: response
           }
         });
       }
@@ -294,6 +357,7 @@ export default {
         totalRideMinutes: {},
       }
     },
+
     clear() {
       return {
         rideCountData: [],
@@ -306,7 +370,13 @@ export default {
         totalRideDistance: {},
         totalRideMinutes: {},
         totalRefund: {},
-        totalRideRevenue: "loading"
+        stripeNetDeposit: undefined,
+        stripeNetDispute: undefined,
+        stripeNetRefund: undefined,
+        stripeNetCharge: undefined,
+        totalRideRevenue: "loading",
+        
+        
       };
     }
   }

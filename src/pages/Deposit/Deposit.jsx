@@ -35,7 +35,7 @@ const getValue = obj =>
     .map(key => obj[key])
     .join(",");
 
-const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "Car"];
+const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "COSMO"];
 
 const CreateForm = Form.create()(props => {
   const {
