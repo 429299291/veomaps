@@ -16,11 +16,14 @@ import {
   Divider,
   Popconfirm,
   InputNumber,
-  Popover
+  Popover,
+  DatePicker
 } from 'antd';
 
 import VehicleDetail from "@/pages/Vehicle/VehicleDetail";
 import CustomerDetail from "@/pages/Customer/CustomerDetail";
+
+const { RangePicker } = DatePicker;
 
 import { compose, withProps } from "recompose";
 import {
@@ -147,7 +150,7 @@ const UpdateForm = Form.create()((props) => {
   //wait for review
   if (record.status === violationStatusIndex.WAITING) {
 
-    footer.push(<Button key="approve" style={{color: "white", backgroundColor: "#53bab6"}} onClick={() => validateFormAndUpdate(violationStatusIndex.APPROVE)}>
+    footer.push(<Button key="approve" style={{color: "white", backgroundColor: "#51B5AA"}} onClick={() => validateFormAndUpdate(violationStatusIndex.APPROVE)}>
         Approve
     </Button>);
 
@@ -186,10 +189,6 @@ const UpdateForm = Form.create()((props) => {
         {<span>{record.techNote}</span>}
       </FormItem>
 
-      <FormItem labelCol={{ span: 8}} wrapperCol={{ span: 12 }} label="Vehicle Number">
-        {<span>{record.vehicleNumber}</span>}
-      </FormItem>
-
       {
 
         recordDetail && recordDetail.techPhone &&
@@ -201,6 +200,24 @@ const UpdateForm = Form.create()((props) => {
         recordDetail && recordDetail.customerViolationCount >= 0 &&
         <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12}} label="Customer Violations">
             {<span>{recordDetail.customerViolationCount}</span>}
+        </FormItem>
+      }
+      {
+        recordDetail && recordDetail.ride &&
+        <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12}} label="Ride Start">
+            {<span>{moment(recordDetail.ride.start).format('YYYY-MM-DD HH:mm:ss') }</span>}
+        </FormItem>
+      }
+      {
+        recordDetail && recordDetail.ride  &&
+        <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12}} label="Ride End">
+            {<span>{moment(recordDetail.ride.end).format('YYYY-MM-DD HH:mm:ss') }</span>}
+        </FormItem>
+      }
+      {
+        recordDetail && recordDetail.ride &&
+        <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12}} label="Ride Duration">
+            {<span>{recordDetail.ride.minutes} mins</span>}
         </FormItem>
       }
       {
@@ -296,24 +313,12 @@ class VehicleViolation extends PureComponent {
 
   columns = [
     {
-        title: 'Tech Note',
-        dataIndex: 'techNote',
-      },
-    {
-      title: 'Vehicle Number',
-      dataIndex: 'vehicleNumber',
-    },
-    {
       title: "Customer Phone",
       render: (text,record) => <a onClick={() => this.setState({selectedCustomerId: record.customerId},() =>  this.handleCustomerDetailModalVisible(true))}>{formatPhoneNumber(record.phone+"")}</a>
     },
     {
       title: "Vehicle Number",
       render: (text,record) => <a onClick={() => this.setState({selectedVehicleId: record.vehicleId},() =>  this.handleVehicleDetailModalVisible(true))}>{record.vehicleNumber}</a>
-    },
-    {
-      title: 'Customer Phone',
-      dataIndex: 'phone',
     },
     {
         title: 'Created',
@@ -369,6 +374,17 @@ class VehicleViolation extends PureComponent {
 
         if (filterCriteria.phone === "") {
             filterCriteria.phone = null;
+        }
+
+        if (fieldsValue.timeRange) {
+        
+          fieldsValue.start = moment(fieldsValue.timeRange[0]).utcOffset(0).format(
+            "MM-DD-YYYY HH:mm:ss"
+          );
+          fieldsValue.end = moment(fieldsValue.timeRange[1]).utcOffset(0).format(
+            "MM-DD-YYYY HH:mm:ss"
+          );
+          fieldsValue.timeRange = undefined;
         }
 
         const values = Object.assign({}, {
@@ -485,16 +501,25 @@ class VehicleViolation extends PureComponent {
               )}
               </FormItem>
             </Col>
-          <Col md={8} sm={24}>
-            <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
-                Search
-              </Button>
-              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-                Reset
-              </Button>
-            </span>
-          </Col>
+            <Col  md={8} sm={24}>
+              <FormItem label="Time" labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} >
+                {getFieldDecorator("timeRange")(
+                  <RangePicker style={{width: "90%"}} format="YYYY-MM-DD HH:mm:ss" showTime />
+                )}
+              </FormItem>
+            </Col>
+            </Row>
+            <Row>
+            <Col md={8} sm={24}>
+              <span className={styles.submitButtons}>
+                <Button type="primary" htmlType="submit">
+                  Search
+                </Button>
+                <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+                  Reset
+                </Button>
+              </span>
+            </Col>
         </Row>
       </Form>
     );

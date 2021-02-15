@@ -12,7 +12,7 @@ import { formatMessage } from "umi/locale";
 import SiderMenu from "@/components/SiderMenu";
 import Authorized from "@/utils/Authorized";
 import SettingDrawer from "@/components/SettingDrawer";
-import logo from "../assets/logo.svg";
+import logo from "../assets/veo_circle.png";
 import Footer from "./Footer";
 import Header from "./Header";
 import Context from "./MenuContext";
@@ -344,7 +344,7 @@ class BasicLayout extends React.PureComponent {
           { isMobile &&
             <div style={{width: "100%", minHeight: "4em",  marginTop:"0.1em", backgroundColor:"white", position: "relative"}}>
               <div 
-                style={{width: "50%", height: "2em", marginTop:"1em",  marginBottom:"1em", border: "2px #53bab6 solid", borderRadius: "8px", textAlign: "center", position: "absolute", margin: "1em 0 0 25%"}}
+                style={{width: "50%", height: "2em", marginTop:"1em",  marginBottom:"1em", border: "2px #51B5AA solid", borderRadius: "8px", textAlign: "center", position: "absolute", margin: "1em 0 0 25%"}}
                 onClick={this.handleStartSelectArea}
               >
                 {(shouldShowAreaSelector ? "- " : "+ ") + selectedAreaName}
@@ -355,11 +355,11 @@ class BasicLayout extends React.PureComponent {
 
                 <div style={{marginTop: "4em"}}>
 
-                  <div style= {{ margin: "0.5em 1em", textAlign: "center", border: "2px " + (selectedAreaId === null ? "#53bab6" : "black") + " solid"}} onClick={()=> this.handleSelectArea(null, "all")} > All </div>
+                  <div style= {{ margin: "0.5em 1em", textAlign: "center", border: "2px " + (selectedAreaId === null ? "#51B5AA" : "black") + " solid"}} onClick={()=> this.handleSelectArea(null, "all")} > All </div>
 
                   {areas.map(area =>
                     {
-                      const border = "2px " + (selectedAreaId === area.id ? "#53bab6" : "black") + " solid";
+                      const border = "2px " + (selectedAreaId === area.id ? "#51B5AA" : "black") + " solid";
 
                       const style = {
                         textAlign: "center",

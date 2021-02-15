@@ -161,6 +161,29 @@ class Dashboard extends Component {
 
   }
 
+  fetchCoupounSummary() {
+
+    const { dispatch, selectedAreaId } = this.props;
+
+    const { rangePickerValue} = this.state;
+
+    
+
+    if (!authority.includes("get.promo.summary")) {
+      return;
+    }
+
+    dispatch({
+      type: "dashboard/fetchPromoSummary",
+      params: { 
+        areaId: selectedAreaId,
+        start: rangePickerValue[0].unix(),
+        end: rangePickerValue[1].unix()
+      }
+    });
+
+  }
+
   fetchStripeNetResult() {
 
     const { dispatch, selectedAreaId } = this.props;
@@ -259,6 +282,7 @@ class Dashboard extends Component {
     this.getConnectivityByPeriod();
     this.fetchTotalRefund();
     this.fetchTotalRideRevenue();
+    this.fetchCoupounSummary();
 
     if (this.props.selectedAreaId !== null) {
       this.fetchAreaDistance();
@@ -477,6 +501,8 @@ getRangeEnd(end) {
 
 
   }
+
+
 
   fetchAreaMinutes() {
     const { dispatch, selectedAreaId } = this.props;
@@ -1124,6 +1150,7 @@ getRangeEnd(end) {
 
                             <div style={{marginLeft: "1em"}}> Net Application Fee: {round2Decimal((dashboard.stripeNetDeposit - dashboard.stripeNetCharge) / 100)} </div>
 
+                            <div style={{marginLeft: "1em"}}> Coupon Usage: {dashboard.promoSummary  ? (round2Decimal((dashboard.promoSummary.totalValue)) + "$") : 'Unknown'}  </div>
 
                           </div>
 

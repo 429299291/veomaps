@@ -105,3 +105,9 @@ export async function getTotalRefund(params) {
   });
 }
 
+export async function getPromoSummary(params) {
+  return request(`/admins/dashboard/promo-summary?${stringify(params, { indices: false })}`, {
+    method: "GET"
+  });
+}
+

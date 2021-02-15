@@ -16,7 +16,8 @@ import {
   getStripeNetDeposit,
   getStripeNetDispute,
   getStripeNetRefund,
-  getStripeNetCharge
+  getStripeNetCharge,
+  getPromoSummary
 } from "@/services/dashboard";
 import { message } from "antd";
 
@@ -337,6 +338,18 @@ export default {
           }
         });
       
+    },
+
+    *fetchPromoSummary({params}, { call, put }) {
+      const response = yield call(getPromoSummary, params);
+
+        yield put({
+          type: "save",
+          payload: {
+            promoSummary: response
+          }
+        });
+      
     }
 
 
@@ -374,6 +387,7 @@ export default {
         stripeNetDispute: undefined,
         stripeNetRefund: undefined,
         stripeNetCharge: undefined,
+        promoSummary: undefined,
         totalRideRevenue: "loading",
         
         

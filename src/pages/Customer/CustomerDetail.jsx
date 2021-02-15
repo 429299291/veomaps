@@ -231,6 +231,19 @@ const UpdateForm = Form.create()(props => {
         </Select>)}
       </FormItem>
 
+      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Education Mode Activated">
+        {form.getFieldDecorator("isEducationModeActivated", {
+          initialValue: record.isEducationModeActivated
+        })(<Select placeholder="select" style={{ width: "100%" }}>
+          <Option key={1} value={true}>
+            Yes
+          </Option>
+          <Option key={0} value={false}>
+            No
+          </Option>
+        </Select>)}
+      </FormItem>
+
       {customerStatus && (
         <FormItem
           labelCol={{ span: 10 }}

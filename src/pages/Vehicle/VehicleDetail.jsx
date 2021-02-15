@@ -487,6 +487,21 @@ const UpdateForm = Form.create()(props => {
         </FormItem>
       )}
 
+    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Provider">
+              {form.getFieldDecorator("provider", {            
+                initialValue: record.provider
+              })(
+                <Select placeholder="select" style={{ width: "100%" }}>
+                   <Option key={0} value={0}>
+                      Omni
+                    </Option>
+                    <Option key={0} value={1}>
+                      Meige
+                    </Option>
+                </Select>
+              )}
+            </FormItem>
+
       <Row>
         <Col>
           <Button

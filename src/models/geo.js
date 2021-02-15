@@ -12,7 +12,8 @@ import {
   getPrimeLocationByAreaId,
   deletePrimeLocation,
   updatePrimeLocation,
-  handleCheckPrimeLocation
+  handleCheckPrimeLocation,
+  getGeoObject
 } from "@/services/geo";
 
 import {parkingViolationType} from "@/constant";
@@ -168,6 +169,11 @@ export default {
         type: "saveCenter",
         payload: response
       });
+    },
+    *fetchGeoObject({ areaId, lat, lng, onNewGeoObject }, { call, put }) {
+      const response = yield call(getGeoObject, areaId, lat, lng);
+
+      onNewGeoObject(response);
     },
     *addCenter({ payload, onSuccess, onError }, { call, put }) {
       const response = yield call(createAreaCenter, payload); // post

@@ -21,6 +21,8 @@ import {
   Steps,
   Radio,
   Upload,
+  TimePicker,
+  Checkbox,
   Spin
 } from "antd";
 
@@ -58,6 +60,122 @@ import styles from "./Geo.less";
 
 const defaultCenter = { lat: 41.879658, lng: -87.629769 };
 
+
+class DynamicFenceConfigForm extends PureComponent {
+
+
+
+   onRangePickerChange = timeRange => {
+    triggerChange({timeRange});
+   }
+
+
+  onCheckboxChange = index => {
+
+  }
+
+  onTimezoneChange = timeRange => { 
+    this.triggerChange({timeRange});
+  }
+
+  triggerChange = changedValue => {
+    const { onChange, value } = this.props;
+    if (onChange) {
+      onChange({
+        ...value,
+        ...changedValue,
+      });
+    }
+  };
+
+  getTimePicker = (field, subField) => {
+      const {value} = this.props;
+
+      return <TimePicker  
+                defaultValue={value[field][subField] ?  moment(value[field][subField], "HH:mm") : undefined}
+                placeholder={subField}
+                onChange={
+                 
+                  val =>  {
+
+                    const newFeildVal = {};
+                    
+                    newFeildVal[field] = value[field];
+
+                    newFeildVal[field][subField] = val ? val.format("HH:mm") : null;
+
+                    this.triggerChange(newFeildVal);
+                  }
+                }
+                format="HH:mm" 
+              />
+  }
+
+
+  render = () => {
+
+    const {value, onChange} = this.props;
+    
+    return <div>
+
+              <Row> 
+                    <Col span={4}> 
+                        Weekday: 
+                    </Col> 
+                    <Col span={8}> 
+                      {this.getTimePicker("weekDayDTO", "start")}
+                    </Col>  
+                    <Col span={1}> ~ </Col> 
+                    <Col span={8}> 
+                    <Col span={8}> 
+                      {this.getTimePicker("weekDayDTO", "end")}
+                    </Col>  
+                    </Col> 
+                    
+              </Row>
+
+              <Row>
+                    <Col span={4}> 
+                        Weekend: 
+                    </Col> 
+                    <Col span={8}> 
+                      {this.getTimePicker("weekendDTO", "start")}
+                    </Col>  
+                    <Col span={1}> ~ </Col> 
+                    <Col span={8}> 
+                    {this.getTimePicker("weekendDTO", "end")}
+                    </Col> 
+                
+              </Row>
+
+  
+
+              <Row> 
+              <Col span={6}> Time Zone: </Col>
+              <Col span={12}> 
+                  <Select defaultValue={value.timeZone ? value.timeZone : undefined} onChange={val => this.triggerChange({timeZone: val})} style={{width: "100%"}}>
+                    <Select.Option key={1} value="US/Pacific"> Pacific Standard Time </Select.Option>
+                    <Select.Option key={2}  value="US/Mountain"> Mountain Standard Time </Select.Option>
+                    <Select.Option key={3} value="US/Central"> Central Standard Time </Select.Option>
+                    <Select.Option key={4} value="US/Eastern"> Eastern Standard Time </Select.Option>
+                  </Select>
+
+              </Col>  
+
+
+              </Row>
+            </div>
+
+  
+  
+    ;
+  }
+
+
+
+
+} 
+
 const MyMapComponent = compose(
   withProps({
     googleMapURL:
@@ -84,7 +202,8 @@ const MyMapComponent = compose(
     editingPrimeLocation,
     setCircleRef,
     handleExistedPrimeLocationClick,
-    selectedExistedPrimeLocation
+    selectedExistedPrimeLocation,
+    selectedGeoObject
   } = props;
 
   const centerToRender =
@@ -145,12 +264,12 @@ const MyMapComponent = compose(
               radius={circle.radius}
               key={circle.id}
               
-              onClick={e => handleExistedPrimeLocationClick(e, circle)}
+              onClick={onMapClick}
               options={{
-                fillColor: "#169902",
-                strokeColor: '#169902',
+                fillColor: circle.turnedOn ? "#169902" : '#e81e1e',
+                strokeColor: circle.turnedOn ?  '#169902' : '#e81e1e',
                 strokeOpacity: 0.9,
-                strokeWeight: 2,
+                strokeWeight: 2
               }}
             />)
         }
@@ -175,14 +294,14 @@ const MyMapComponent = compose(
           path={fence.fenceCoordinates}
           geodesic={true}
           key={fence.id}
-          onClick={e => handleExistedFenceClick(e, fence)}
+          onClick={onMapClick}
           options={{
             strokeColor: fenceTypeColor[fence.fenceType],
-            strokeOpacity: fence.fenceType === 5 ? 0 : 0.75,
+            strokeOpacity: fence.fenceType === 5 ? 0 : (fence.turnedOn ? 0.75 : 0.2),
             strokeWeight: fence.fenceType === 5 ? 0 : 2,
             fillColor: fenceTypeColor[fence.fenceType],
             fillOpacity:
-              fence.fenceType === 0 || fence.fenceType === 5 ? 0 : 0.35
+              fence.fenceType === 0 || fence.fenceType === 5 ? 0 : (fence.turnedOn ? 0.35 : 0.1) 
           }}
         />
       ))}
@@ -238,7 +357,7 @@ const CreateFenceForm = Form.create()(props => {
         fieldsValue.forceVehicleTypes = undefined;
       }
 
-
+      console.log(fieldsValue);
 
       handleNext(fieldsValue);
     });
@@ -258,7 +377,7 @@ const CreateFenceForm = Form.create()(props => {
       title={`${fence ? "Edit" : "Add"} Fence`}
       visible={modalVisible}
       onOk={okHandle}
-      width={500}
+      width={700}
       onCancel={() => handleModalVisible(false)}
     >
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Name">
@@ -272,6 +391,23 @@ const CreateFenceForm = Form.create()(props => {
             }
           ]
         })(<Input placeholder="Please Input" />)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Activated">
+        {form.getFieldDecorator("turnedOn", {
+          initialValue: fence ? (fence.turnedOn === true) : true         
+        })(<Select placeholder="select" style={{ width: "100%" }}>
+           <Select.Option key={true} value={true}>
+              True
+            </Select.Option>
+            <Select.Option key={false} value={false}>
+              False
+            </Select.Option>
+      </Select>)}
+      </FormItem>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Active Time">
+        {form.getFieldDecorator("activeTimeRange", {
+          initialValue: (fence && fence.activeTimeRange) ? fence.activeTimeRange : {weekDayDTO: {start: null, end: null}, weekendDTO: {start: null, end: null}, timeZone: null}        
+        })(<DynamicFenceConfigForm />)}
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Note">
         {form.getFieldDecorator("note", {
@@ -303,6 +439,7 @@ const CreateFenceForm = Form.create()(props => {
           )}
         </FormItem>
       )}
+      
       {(currFenceType === 0 || currFenceType === 5) && (
         <FormItem
           labelCol={{ span: 10 }}
@@ -442,6 +579,18 @@ class Geo extends PureComponent {
       })
   }
 
+  onNewGeoObject = (e, result)  => {
+
+    if (!result) return;
+
+    if (result.geoObjectType === 'FENCE') {
+      this.handleExistedFenceClick(e,  result.data)
+    } else if (result.geoObjectType === 'HUB') {
+      this.handleExistedPrimeLocationClick(e,  result.data)
+    }
+
+  }
+
   handleMapClick = e => {
     const {
       isEditingCenter,
@@ -450,6 +599,11 @@ class Geo extends PureComponent {
       selectedExistedFence,
       isEditingPrimeLocation
     } = this.state;
+
+    const {
+      selectedAreaId,
+      dispatch
+  } = this.props;
 
     const areaId = this.props.selectedAreaId;
 
@@ -461,28 +615,32 @@ class Geo extends PureComponent {
 
     if (isEditingCenter) {
       this.setState({ editingCenter: newPoint });
-    }
-
-    if (isEditingFence) {
+    } else if (isEditingFence) {
       this.setState({
         editingFence: {
           ...this.state.editingFence,
           fenceCoordinates: editingFence.fenceCoordinates.concat([newPoint])
         }
       });
-    }
-
-    if (isEditingPrimeLocation) {
+    }else if (isEditingPrimeLocation) {
       this.setState({
         editingPrimeLocation: {
           center: newPoint,
           radius: 5
         }
       })
-    }
-
-    if (selectedExistedFence) {
+    } else if (selectedExistedFence) {
       this.setState({ selectedExistedFence: null });
+    } else {
+
+      dispatch({
+        type: "geo/fetchGeoObject",
+        areaId: selectedAreaId,
+        lat: newPoint.lat,
+        lng: newPoint.lng,
+        onNewGeoObject: (geoObject) => this.onNewGeoObject(e, geoObject)
+      })
+
     }
   };
 
@@ -603,9 +761,9 @@ class Geo extends PureComponent {
             radius:  Math.round(circle.radius), 
             minimum: selectedExistedPrimeLocation.minimum,
             target: selectedExistedPrimeLocation.target,
-            description: selectedExistedPrimeLocation.description,
-            isVisibleToCustomer: selectedExistedPrimeLocation.isVisibleToCustomer,
+            description: selectedExistedPrimeLocation.description,      
             parkingBonus: selectedExistedPrimeLocation.parkingBonus,
+            turnedOn: selectedExistedPrimeLocation.turnedOn,
             areaId : selectedAreaId
           }) ,
           onSuccess: this.getAreaGeoInfo
@@ -955,19 +1113,18 @@ class Geo extends PureComponent {
               
             </Row>
             <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
-            <Col sm={5} >
-                  <span style={{marginRight: "1em"}}> Visibility:  </span>
-                  <Select defaultValue={selectedExistedPrimeLocation.isVisibleToCustomer}   style={{ width: 80 }} 
-                    onChange={isVisibleToCustomer => this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, isVisibleToCustomer: isVisibleToCustomer ===  true ? true : false}})}  
-                  >
-                    <Option value={true}>true </Option>
-                    <Option value={false}>false</Option>
-                  </Select>
-              </Col>
 
               <Col sm={6} >
                   <span> Parking Bonus $ </span>
                   <NumberInput style={{ width: 120 }}  value={selectedExistedPrimeLocation.parkingBonus} onChange={parkingBonus =>  this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, parkingBonus: parkingBonus === "" ? null : parkingBonus}})} /> 
+              </Col>
+
+              <Col sm={6} >
+                  <span> Activated  </span>
+                  <Select style={{ width: 120 }}  value={selectedExistedPrimeLocation.turnedOn} onChange={turnedOn =>  this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, turnedOn: turnedOn === false ? false : true}})}>
+                      <Option value={true}> true </Option>
+                      <Option value={false}> false </Option>
+                  </Select> 
               </Col>
             </Row>
             
@@ -1210,9 +1367,12 @@ class Geo extends PureComponent {
           visible={isDeleteModalVisible}
           onOk={this.handleDelete}
           onCancel={() => this.setState({ isDeleteModalVisible: false })}
+          okText="Delete"
+          okType="danger"
         >
-          <p>
-            {`Area you sure you want to delete ${selectedExistedFence ? "fence: " + selectedExistedFence.name : "this circle"} ?`}
+          <p style={{fontSize: "2em"}}>
+          <Icon type="warning"  />
+            {`  Area you sure you want to delete ${selectedExistedFence ? "fence: " + selectedExistedFence.name : "this circle"} ?`}
           </p>
         </Modal>
       </PageHeaderWrapper>

@@ -453,7 +453,7 @@ class Customer extends PureComponent {
     },
     {
       title: "Balance",
-      render: (text, record) => <p> {record.rideCredit + record.deposit}</p>
+      render: (text, record) => <p> {(record.rideCredit+ record.deposit).toFixed(2)}</p>
     },
     {
       title: "operation",

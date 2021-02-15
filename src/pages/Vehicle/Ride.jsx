@@ -89,7 +89,7 @@ const connectStatus = ["Offline", "Online"];
 const lockStatus = ["Unlock", "lock"];
 const rideType = ["USING", "FINISHED"];
 const vehicleType = ["Bicycle", "Scooter", "E-Bike", "COSMO"];
-const lockOperationWay = ["GPRS", "BLUETOOTH", "ADMIN", "UNKNOWN"];
+const lockOperationWay = ["GPRS", "BLUETOOTH", "ADMIN", "ABORT", "TIMEOUT", "PRE_AUTH_FAIL", "REACH_MAX"];
 const rideState = ["unconfirmed","success","error"];
 const rideStateColor = ["#e5bb02","#0be024","#ff0000"];
 
@@ -366,6 +366,10 @@ class Ride extends PureComponent {
       dataIndex: "charge",
     },
     {
+      title: "Tax",
+      dataIndex: "tax",
+    },
+    {
       title: "Violate Type",
       dataIndex: "violateType",
       render: getViolateType
@@ -400,7 +404,7 @@ class Ride extends PureComponent {
     {
       title: "Minutes",
       render: (text, record) =>  { 
-        const minutsDiff = (record.end ? moment(record.end) : moment()).diff(moment(record.start), 'minutes'); 
+        const minutsDiff = record.end ? record.minutes : moment().diff(moment(record.start), 'minutes'); 
         return <span>{minutsDiff}</span>
       }
     },

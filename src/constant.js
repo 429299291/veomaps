@@ -44,7 +44,8 @@ const transactionType = [
   "Violation Fine",
   "Violation Revert",
   "Shop Order",
-  "Auto Reload"
+  "Auto Reload",
+  "Hold Captured"
 ];
 
 const parkingViolationType = [

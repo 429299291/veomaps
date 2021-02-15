@@ -455,15 +455,15 @@ const MapComponent = compose(
                         shouldShowLastScan={shouldShowLastScan}
                     />
 
-                    <div style={{position: "absolute", left: "1vw", bottom: "2em", color: "#53bab6"}}>
+                    <div style={{position: "absolute", left: "1vw", bottom: "2em", color: "#51B5AA"}}>
                         <Button onClick={() => this.goMapAndNavigate(vehicleDetail.location.y, vehicleDetail.location.x)} > Go! </Button>
                     </div> 
 
-                    <div style={{position: "absolute", left: "1vw", bottom: "5em", color: "#53bab6"}}>
+                    <div style={{position: "absolute", left: "1vw", bottom: "5em", color: "#51B5AA"}}>
                         <Checkbox onChange={this.handleGetMyLocation}>Show My Position</Checkbox>
                     </div> 
 
-                    <div style={{position: "absolute", left: "1vw", bottom: "7em", color: "#53bab6"}}>
+                    <div style={{position: "absolute", left: "1vw", bottom: "7em", color: "#51B5AA"}}>
                         <Checkbox onChange={this.handleShowLastScan}>Show Last Scan Position</Checkbox>
                     </div> 
 

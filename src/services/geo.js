@@ -35,6 +35,12 @@ export async function getPrimeLocationByAreaId(areaId) {
   });
 }
 
+export async function getGeoObject(areaId,lat, lng) {
+  return request(`/admins/areas/${areaId}/geo-object?lat=${lat}&lng=${lng}`, {
+    method: "GET",
+  });
+}
+
 export async function deletePrimeLocation(id) {
   return request(`/admins/prime-locations/${id}`, {
     method: "DELETE",

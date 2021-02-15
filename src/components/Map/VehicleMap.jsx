@@ -26,6 +26,11 @@ import scooterLowBattery from "../../assets/scooter-pin-lo-batterybackend.png";
 import scooterLocked from "../../assets/scooter-pin-lockedbackend.png";
 import scooterUnLocked from "../../assets/scooter-pin-unlockedbackend.png";
 import scooterReported from "../../assets/scooter-pin-reportedbackend.png";
+import cosmoError from "../../assets/cosmo_broken.png";
+import cosmoLowBattery from "../../assets/cosmo_low_battery.png";
+import cosmoLocked from "../../assets/cosmo_locked.png";
+import cosmoUnLocked from "../../assets/cosmo_normal.png";
+import cosmoReported from "../../assets/cosmo_reported.png";
 
 import styles from "./VehicleMap.less";
 
@@ -56,7 +61,12 @@ const icons = {
     scooterLowBattery,
     scooterLocked,
     scooterUnLocked,
-    scooterReported
+    scooterReported,
+    cosmoError,
+    cosmoLowBattery,
+    cosmoLocked,
+    cosmoUnLocked,
+    cosmoReported
 }
 
 const getVehicleIcon = (vehicleDetail) => {
@@ -80,6 +90,13 @@ const getVehicleIcon = (vehicleDetail) => {
                 return ebikeLowBattery;
             } else {
                 return constructIcon(vehicleDetail, "ebike");
+            }
+            break;
+        case 3:
+            if (vehicleDetail.vehiclePower <= 20) {
+                return cosmoLowBattery;
+            } else {
+                return constructIcon(vehicleDetail, "cosmo");
             }
             break;
         default:

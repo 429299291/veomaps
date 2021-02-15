@@ -451,18 +451,7 @@ const UpdateForm = Form.create()(props => {
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="ID">
-        {form.getFieldDecorator("vehicleNumber", {
-          rules: [
-            {
-              required: true,
-              message: "At least 8 Digits!",
-              min: 1
-            }
-          ],
-          initialValue: record.vehicleNumber + ""
-        })(<Input placeholder="Please Input" />)}
-      </FormItem>
+     
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
@@ -577,7 +566,7 @@ class Vehicle extends PureComponent {
       title: "Power",
       dataIndex: "power",
       render(val) {
-        return <p>{roundTo2Decimal(val) + "%"}</p>;
+        return <p>{roundTo2Decimal(val > 100 ? getPowerPercent(val)  : val) + "%"}</p>;
       }
     },
     {

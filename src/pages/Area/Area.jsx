@@ -15,7 +15,8 @@ import {
   Radio,
   TimePicker,
   Switch,
-  InputNumber
+  InputNumber,
+  Tooltip
 } from "antd";
 
 import NumericInput from "@/common/NumericInput";
@@ -145,25 +146,37 @@ class ViolatoinFineConfigurationForm extends PureComponent {
    }
 
 
+   indexFormat = (index) => {
+
+        if (index == 1) {
+            return "1st"
+        } else if (index == 2) {
+            return "2nd"
+        } else if (index == 3) {
+            return "3rd"
+        } else {
+          return index + "th";
+        }
+
+    }
+
+
   render = () => {
 
     const {value, onChange} = this.props;
 
     const {deleteMouseOver} = this.state;
 
-    const slicedValue = value.slice(1);
   
     return <div> 
 
-            <div>
-              <span> 1st time violation: Warning </span>
-            </div>
+          
 
             {
-                slicedValue.map((item, index) => 
+                value.map((item, index) => 
                     <Row  key={index}>
                       <Col span={12}> 
-                        {`${index + 2}st time violation: `} 
+                        {`${this.indexFormat(index + 1)} time violation:`} 
                       </Col> 
 
                       <Col span={2}> 
@@ -173,7 +186,7 @@ class ViolatoinFineConfigurationForm extends PureComponent {
                       <Col span={8}> 
                         <Input 
                           value={item} 
-                          onChange={e => this.onInputChange(e.target.value, index + 1)}
+                          onChange={e => this.onInputChange(e.target.value, index)}
 
                           style= {{display: "inline"}}
                         />
@@ -181,7 +194,7 @@ class ViolatoinFineConfigurationForm extends PureComponent {
                       </Col> 
 
                       <Col span={2} > 
-                       {index === slicedValue.length - 1  &&  
+                       {index === value.length - 1  &&  index > 0  &&
                           <Icon 
                             type="delete" 
                             
@@ -193,7 +206,7 @@ class ViolatoinFineConfigurationForm extends PureComponent {
 
                             onClick={()=> {
 
-                              value.splice(index + 1, 1);
+                              value.pop();
 
                               onChange(value);
 
@@ -206,9 +219,6 @@ class ViolatoinFineConfigurationForm extends PureComponent {
                 )
             }
 
-            <div>
-              <span> {value.length + 1}st time violation: Account Freeze </span>
-            </div>
 
             <Button type="primary" disabled={value[value.length - 1] === "0"} onClick={()=>onChange(value.concat(["0"]))}> Add </Button>
 
@@ -267,10 +277,28 @@ const AreaFeatureForm = Form.create()(props => {
 
           }
 
+          if (fieldsValue.surveyUrl && fieldsValue.surveyUrl !== '') {
+            metaData.surveyUrl = fieldsValue.surveyUrl;
+          } else {
+            metaData.surveyUrl = null;
+          }
+
+          if (fieldsValue.taxRate && fieldsValue.taxRate !== '') {
+            metaData.taxRate = fieldsValue.taxRate;
+          } else {
+            metaData.taxRate = null;
+          }
+
+          if (fieldsValue.outOfBalancePreAuthorizationFee && fieldsValue.outOfBalancePreAuthorizationFee !== '') {
+            metaData.outOfBalancePreAuthorizationFee = fieldsValue.outOfBalancePreAuthorizationFee;
+          } else {
+            metaData.outOfBalancePreAuthorizationFee = null;
+          }
+
 
           const finalResult = {};
           
-          finalResult.violationActivated = fieldsValue.violationActivated;
+          finalResult.violationActivated = fieldsValue.violationActivated;        
           finalResult.driverLicenseActivated = fieldsValue.driverLicenseActivated;
           finalResult.eduRideActivated = fieldsValue.eduRideActivated;
           finalResult.freeTimeActivated = fieldsValue.freeTimeActivated;
@@ -293,7 +321,7 @@ const AreaFeatureForm = Form.create()(props => {
 
 
 
-  const lincenseActivated = record.areaFeature && record.areaFeature.driverLicenseActivated;
+  const licenseActivated = record.areaFeature && record.areaFeature.driverLicenseActivated;
 
  
   const violationActivated = record.areaFeature && record.areaFeature.violationActivated;
@@ -334,14 +362,23 @@ const AreaFeatureForm = Form.create()(props => {
 
   const violationConfig = areaFeature && areaFeature.violationConfig;
 
+  const surveyUrl = areaFeature && areaFeature.surveyUrl;
+
+  const taxRate = areaFeature && areaFeature.taxRate;
+
+  const outOfBalancePreAuthorizationFee = areaFeature && areaFeature.outOfBalancePreAuthorizationFee;
+
   return (
     <Modal
       destroyOnClose
       title="Update Area Feature"
       visible={modalVisible}
       onOk={okHandle}
+      okText="Save"
+      width="600px"
       onCancel={() => handleModalVisible()}
     >
+
     <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Violation Activated">
         {form.getFieldDecorator("violationActivated", {
           valuePropName: 'checked',
@@ -351,7 +388,7 @@ const AreaFeatureForm = Form.create()(props => {
     
       {form.getFieldValue("violationActivated") &&
 
-        <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Violation Fine Configuration ">
+        <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label={<span> Violation Fine Configuration <Tooltip title="Set to 0 to warn customer only. Last violation will automatically freeze customer account."> <Icon type="info-circle" /> </Tooltip> </span>}>
                 {
                   form.getFieldDecorator("violationConfig", {
                     initialValue: violationConfig ? violationConfig : ["0.00","25.00","50.00", "75.00"],
@@ -385,15 +422,15 @@ const AreaFeatureForm = Form.create()(props => {
         
       }
    
-    <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Lincense Check Activated">
+    <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="License Check Activated">
         {form.getFieldDecorator("driverLicenseActivated", {
           valuePropName: 'checked',
-          initialValue: lincenseActivated ? true : false,
+          initialValue: licenseActivated ? true : false,
         })(<Switch  disabled={!isEditable} />)}
       </FormItem>
       {form.getFieldValue("driverLicenseActivated") && 
           <div>
-            <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Drive Lincese Types">
+            <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Drive License Types">
               {form.getFieldDecorator("licenseConfigTypes", {
                 initialValue: licenseConfigTypes ? licenseConfigTypes : undefined,
                 rules: [
@@ -408,7 +445,7 @@ const AreaFeatureForm = Form.create()(props => {
                   style={{width: "70%"}}
                 >
                 <Option value={0}>
-                  Driver Lincese
+                  Driver License
                 </Option>
                 <Option value={1}>
                   Id Card
@@ -549,6 +586,24 @@ const AreaFeatureForm = Form.create()(props => {
           })( <TextArea autosize={{ minRows: 3, maxRows: 10 }} disabled={!isEditable} />  )}
         </FormItem> 
       }
+
+      <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} label="Survey Url">
+        {form.getFieldDecorator("surveyUrl", {
+          initialValue: surveyUrl
+        })(<Input   />)}
+      </FormItem>
+
+      <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} label="Tax Rate %">
+        {form.getFieldDecorator("taxRate", {
+          initialValue: taxRate
+        })(<InputNumber min={1} max={99} defaultValue={taxRate} />)}
+      </FormItem>
+
+      <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} label="Ride Hold">
+        {form.getFieldDecorator("outOfBalancePreAuthorizationFee", {
+          initialValue: outOfBalancePreAuthorizationFee
+        })(<InputNumber min={1} max={100} defaultValue={outOfBalancePreAuthorizationFee} />)}
+      </FormItem>
       
       
     </Modal>
@@ -836,6 +891,7 @@ class Area extends PureComponent {
               </Button>
             </span>
           </Col>
+          
         </Row>
       </Form>
     );

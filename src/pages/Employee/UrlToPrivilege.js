@@ -27,7 +27,8 @@ export default {
     "POST /api/admins/customers/{customerId}/refund": "refund.customer.charge",
     "GET /api/admins/customers/{customerId}/transactions": "get.customer.transactions",
     "GET /api/admins/customers/{phone_number}/temp_code": "get.customer.verification.code",
-    "GET /api/admins/customers/{customerId}/approved_violation_count": "get.customer.approved.violation.count"
+    "GET /api/admins/customers/{customerId}/approved_violation_count": "get.customer.approved.violation.count",
+    "GET /api/admins/customers/{customerId}/token": "get.customer.token"
   },
   "Vehicle List": {
     "GET /api/admins/vehicles": "get.vehicles",
@@ -81,6 +82,7 @@ export default {
     "POST /api/admins/prime-locations": "create.primeLocation",
     "DELETE /api/admins/prime-locations/{id}": "delete.primeLocation",
     "GET /api/admins/prime-locations/area/{areaId}": "get.primeLocation.by.areaId",
+    "GET /api/admins/areas/{areaId}/geo-object": "get.geo.object",
   },
   "Area Management": {
     "GET /api/admins/areas/{area_id}": "get.area.detail",
@@ -185,7 +187,8 @@ export default {
     "GET /api/admins/dashboard/stripe-net-deposit": "get.stripe.net.deposit",
     "GET /api/admins/dashboard/stripe-net-refund": "get.stripe.net.refund",
     "GET /api/admins/dashboard/stripe-net-dispute": "get.stripe.net.dispute",
-    "GET /api/admins/dashboard/stripe-net-charge": "get.stripe.net.charge"
+    "GET /api/admins/dashboard/stripe-net-charge": "get.stripe.net.charge",
+    "GET /api/admins/dashboard/promo-summary": "get.promo.summary"
   },
 
   "Performance": {
