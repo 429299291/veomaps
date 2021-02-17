@@ -65,17 +65,6 @@ const vehicleType = ["Bicycle", "Scooter", "E-Bike", "COSMO"];
 
 import { exportCSVFile } from "../../utils/utils";
 
-// const errorStatus = [
-//   "Normal",
-//   "Error",
-//   "Auto Error",
-//   "Deactivated",
-//   "Waiting for Activation",
-//   "Rebalance",
-//   "Maintain",
-//   "Out of Service",
-// ];
-
 const errorStatusIndexs = {
   0: "Normal",
   1: "Error",
@@ -546,7 +535,7 @@ class Vehicle extends PureComponent {
     expandForm: false,
     selectedRows: [],
     vehicleLocations: [],
-    filterCriteria: { currentPage: 1, pageSize: 10 },
+    filterCriteria: {pagination: {page: 0, pagSize: 10}},
     selectedRecord: {},
     selectedMarker: null,
     selectedTab: "1",
@@ -563,8 +552,8 @@ class Vehicle extends PureComponent {
       dataIndex: "vehicleNumber"
     },
     {
-      title: "Power",
-      dataIndex: "power",
+      title: "IoT Power",
+      dataIndex: "iotBattery",
       render(val) {
         return <p>{roundTo2Decimal(val > 100 ? getPowerPercent(val)  : val) + "%"}</p>;
       }
@@ -574,11 +563,11 @@ class Vehicle extends PureComponent {
       dataIndex: "connectStatus",
       render: (text, record) => (
         <Fragment>
-          <span>{lockStatus[record.lockStatus]}</span>
+          <span>{record.locked ? "lock" : "unlock"}</span>
           <Divider type="vertical" />
-          <span>{errorStatusIndexs[record.errorStatus]}</span>
+          <span>{errorStatusIndexs[record.status]}</span>
           <Divider type="vertical" />
-          <span>{this.isConnected(record)}</span>
+          <span>{record.connected ? "connect" : "disconnect"}</span>
         </Fragment>
       )
     },
@@ -615,16 +604,16 @@ class Vehicle extends PureComponent {
     },
     {
       title: "Vehicle Power",
-      dataIndex: "vehiclePower",
+      dataIndex: "vehicleBattery",
       render(val) {
         return <p>{`${val}%`}</p>;
       }
     },
     {
       title: "Chain Lock",
-      dataIndex: "chainLockStatus",
+      dataIndex: "chainLock",
       render(val) {
-        return <p>{`${(val !== null) ? lockStatus[val] : 'null'}`}</p>;
+        return <p>{`${(val !== null) ? val.chainLockNumber : 'unknown'}`}</p>;
       }
     },
     {
@@ -659,9 +648,10 @@ class Vehicle extends PureComponent {
       ...filterCriteria
     };
 
-    params.currentPage = current;
-    params.pageSize = pageSize;
-
+    params.pagination = {
+        page: 0,
+        pageSize: 10 
+    }
 
     this.setState({ filterCriteria: params });
 
@@ -743,9 +733,9 @@ class Vehicle extends PureComponent {
 
     const {selectedVehicleRefresh} = this.state;
 
-    const lockPower = roundTo2Decimal(vehicle.power);
+    const lockPower = roundTo2Decimal(vehicle.iotBattery);
     
-    const power = vehicle.vehicleType === 0 ? lockPower :  vehicle.vehiclePower;
+    const power = vehicle.vehicleType === 0 ? lockPower :  vehicle.vehicleBattery;
 
 
     const batteryColor = power => power > 60 ? "#04e508" : (power < 40 ? "#e81309" : "#EFAF13");
@@ -785,7 +775,7 @@ class Vehicle extends PureComponent {
 
                     <Col span={12}> Lock Power : <span style={{color: batteryColor(lockPower)}}> {lockPower} % </span>  </Col>
 
-                    <Col span={12}> Vehicle Power : <span style={{color: batteryColor(vehicle.vehiclePower)}}>  {vehicle.vehiclePower} % </span>  </Col>
+                    <Col span={12}> Vehicle Power : <span style={{color: batteryColor(vehicle.vehicleBattery)}}>  {vehicle.vehicleBattery} % </span>  </Col>
 
               </Row>
 
@@ -915,6 +905,7 @@ class Vehicle extends PureComponent {
   }
 
   componentDidMount() {
+    
     this.handleSearch();
 
     if (this.props.isMobile ) {
@@ -940,11 +931,6 @@ class Vehicle extends PureComponent {
     const { filterCriteria } = this.state;
 
     dispatch({
-      type: "vehicles/getCount",
-      payload: filterCriteria
-    });
-
-    dispatch({
       type: "vehicles/get",
       payload: filterCriteria
     });
@@ -958,19 +944,28 @@ class Vehicle extends PureComponent {
       ...filterCriteria
     };
 
-    params.currentPage = pagination.current;
-    params.pageSize = pagination.pageSize;
+    params.pagination = {};
+
+    params.pagination.page = pagination.current - 1;
+
+    params.pagination.pageSize = pagination.pageSize;
 
     if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
+
+      params.pagination.sort = {};
+
+      params.pagination.sort.direction = sorter.order;
+
+      params.pagination.sort.sortBy = sorter.field;
+      
     }
 
-    this.setState({ filterCriteria: params });
-
-    dispatch({
+    this.setState({ filterCriteria: params }, 
+      () => dispatch({
       type: "vehicles/get",
       payload: params
-    });
+    }));
+
   };
 
   handleFormReset = () => {
@@ -978,17 +973,8 @@ class Vehicle extends PureComponent {
     const { filterCriteria } = this.state;
     form.resetFields();
 
-    const params = {
-      currentPage: 1,
-      pageSize: filterCriteria.pageSize
-    };
+    this.handleSearch();
 
-    this.setState(
-      {
-        filterCriteria: params
-      },
-      () => this.handleSearch()
-    );
   };
 
   toggleForm = () => {
@@ -1015,15 +1001,83 @@ class Vehicle extends PureComponent {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
-      const values = Object.assign({}, filterCriteria, fieldsValue, {
-        currentPage: 1,
-        pageSize: 10,
-        areaId: selectedAreaId
-      });
-      
-      if (fieldsValue.vehiclePowerCustom) {
-        values.vehiclePower =  fieldsValue.vehiclePowerCustom;
+      let values;
+
+      if (selectedTab == 1) {
+
+       values = Object.assign({}, filterCriteria, fieldsValue, {
+          // currentPage: 1,
+          // pageSize: 10,
+          pagination: {
+              page: 0,
+              pageSize: 10
+          },
+          areaIds: selectedAreaId ? [selectedAreaId] : null
+        });
+  
+        if (values.numberOrImei) {
+          if (values.numberOrImei.toString().length == 15) {
+            values.imei = values.numberOrImei;
+          } else {
+            values.vehicleNumber = values.numberOrImei;  
+          }
+          values.numberOrImei = undefined;
+        }  else {
+          values.imei = null;
+          values.vehicleNumber = null;
+        }
+  
+  
+        values.vehicleTypes = values.vehicleType ? [values.vehicleType] : null;
+  
+        if (values.idleDays) {
+          values.idleQuery = {idleDays: values.idleDays};
+        } else {
+          values.idleQuery = null;
+        }
+        
+        if (fieldsValue.vehiclePowerCustom) {
+          values.vehicleBattery =  fieldsValue.vehiclePowerCustom;
+        }    
+        
+      } else {
+
+        values = Object.assign({}, filterCriteria, fieldsValue, {
+          // currentPage: 1,
+          // pageSize: 10,
+         
+          areaId: selectedAreaId ? selectedAreaId: null
+        });
+
+        if (values.connected !== null && values.connected !== undefined) {
+          values.connectStatus = values.connected ? "1" : "0";
+
+        }
+
+        if (values.iotBattery) {
+          values.iotBattery === 100 ? "1" : "0";
+        }
+
+        if (values.locked !== null && values.locked !== undefined) {
+          values.lockStatus = values.locked  ? "1" : "0";
+        }
+
+        if (values.statuses) {
+          values.errorStatus = values.statuses;
+        }
+
+        if (values.vehicleBattery) {
+          values.vehiclePower = values.vehicleBattery;
+        }
+
+        if (fieldsValue.vehiclePowerCustom) {
+          values.vehiclePower =  fieldsValue.vehiclePowerCustom;
+        }   
+
       }
+     
+
+ 
 
       this.setState(
         {
@@ -1032,6 +1086,7 @@ class Vehicle extends PureComponent {
         () => {
           switch (selectedTab) {
             case "1":
+
             this.handleGetListVehicles();
             break;
           case "2":
@@ -1223,10 +1278,10 @@ class Vehicle extends PureComponent {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="Connection Status">
-              {getFieldDecorator("connectStatus")(
+              {getFieldDecorator("connected")(
                 <Select placeholder="select" style={{ width: "100%" }}>
-                  <Option value="0">offline</Option>
-                  <Option value="1">online</Option>
+                  <Option value={false}>offline</Option>
+                  <Option value={true}>online</Option>
                   <Option value={null}>All</Option>
                 </Select>
               )}
@@ -1283,10 +1338,10 @@ class Vehicle extends PureComponent {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="Lock Battery Status">
-              {getFieldDecorator("lockPower")(
+              {getFieldDecorator("iotBattery")(
                 <Select placeholder="select" style={{ width: "100%" }}>
-                  <Option value="0">Low Battery</Option>
-                  <Option value="1">Full Battery</Option>
+                  <Option value={40}>Low Battery</Option>
+                  <Option value={100}>Full Battery</Option>
                   <Option value={null}>All</Option>
                 </Select>
               )}
@@ -1295,10 +1350,10 @@ class Vehicle extends PureComponent {
 
           <Col md={8} sm={24}>
             <FormItem label="Connection Status">
-              {getFieldDecorator("connectStatus")(
+              {getFieldDecorator("connected")(
                 <Select placeholder="select" style={{ width: "100%" }}>
-                  <Option value="0">offline</Option>
-                  <Option value="1">online</Option>
+                  <Option value={false}>offline</Option>
+                  <Option value={true}>online</Option>
                   <Option value={null}>All</Option>
                 </Select>
               )}
@@ -1310,10 +1365,10 @@ class Vehicle extends PureComponent {
 
           <Col md={8} sm={24}>
             <FormItem label="Lock Status">
-              {getFieldDecorator("lockStatus")(
+              {getFieldDecorator("locked")(
                 <Select placeholder="select" style={{ width: "100%" }}>
-                  <Option value="0">Unlock</Option>
-                  <Option value="1">Lock</Option>
+                  <Option value={false}>Unlock</Option>
+                  <Option value={true}>Lock</Option>
                   <Option value={null}>All</Option>
                 </Select>
               )}
@@ -1334,7 +1389,7 @@ class Vehicle extends PureComponent {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="Error Status">
-              {getFieldDecorator("errorStatus", {initialValue: ["0", "1",  "5", "6", "7"]})(
+              {getFieldDecorator("statuses", {initialValue: ["0", "1",  "5", "6", "7"]})(
                 <Select
                   mode="multiple"
                   placeholder="select"
@@ -1366,10 +1421,10 @@ class Vehicle extends PureComponent {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="Vehicle Power Status">
-              {getFieldDecorator("vehiclePower")(
+              {getFieldDecorator("vehicleBattery")(
                 <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value="0">Low Battery</Option>
-                <Option value="1">Full Battery</Option>
+                <Option value={40}>Low Battery</Option>
+                <Option value={100}>Full Battery</Option>
                 <Option value={null}>All</Option>
               </Select>
               )}
@@ -1377,14 +1432,14 @@ class Vehicle extends PureComponent {
           </Col>
           <Col md={8} sm={24}>
               <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Idle Days">
-                {getFieldDecorator("idleType",  {initialValue: null})(
+                {/* {getFieldDecorator("idleType",  {initialValue: null})(
 
                   <Select placeholder="select" style={{ width: "50%" }}>
                       <Option value={1}>Last Ride Time</Option>
                       <Option value={2}>Last Drop Off Time</Option>
                       <Option value={null}>Both</Option>
                   </Select>
-                )}
+                )} */}
 
                 {getFieldDecorator("idleDays", {
                   rules: [
@@ -1603,8 +1658,8 @@ handleShowingVehicles = val => {
 
     const pagination = {
       defaultCurrent: 1,
-      current: filterCriteria.currentPage,
-      pageSize: filterCriteria.pageSize,
+      current: filterCriteria.pagination.page + 1,
+      pageSize: filterCriteria.pagination.pageSize,
       total: vehicles.total
     };
 

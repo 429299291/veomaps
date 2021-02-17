@@ -10,7 +10,7 @@ import { isAntdPro } from "./utils";
 //const urlPrefix = "https://manhattan-host.veoride.com:8444/api";
 const urlPrefix = "https://admin.veoride.com:8444/api";
 
-const adminApiUrl = "https://admin.veoride.com:8444/api/admin";
+const adminApiUrl = "https://cluster-prod.veoride.com";
 
 
 export const ACCESS_TOKEN = "accessToken";
@@ -77,7 +77,10 @@ const cachedSave = (response, hashcode) => {
  * @return {object}           An object containing either "data" or "err"
  */
 export default function request(url, options) {
-  url = urlPrefix + url;
+
+  url = (url.startsWith("/api/admins") ? adminApiUrl : urlPrefix) + url;
+
+  
 
   const headers = new Headers({
     "Content-Type": "application/json"

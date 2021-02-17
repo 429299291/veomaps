@@ -1,9 +1,18 @@
 import { stringify } from "qs";
 import request from "@/utils/request";
 
+// export async function getVehicles(params) {
+//   return request(`/admins/vehicles?${stringify(params, { indices: false })}`, {
+//     method: "GET"
+//   });
+// }
+
 export async function getVehicles(params) {
-  return request(`/admins/vehicles?${stringify(params, { indices: false })}`, {
-    method: "GET"
+  return request(`/api/admins/vehicles/search`, {
+    method: "POST",
+    body: {
+      ...params
+    }
   });
 }
 

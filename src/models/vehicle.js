@@ -38,20 +38,21 @@ export default {
 
   effects: {
     *get({ payload }, { call, put }) {
-      const total = yield call(countVehicles, payload);
+      //const total = yield call(countVehicles, payload);
 
-      const data = yield call(getVehicles, payload);
+      const result = yield call(getVehicles, payload);
 
-      if (Array.isArray(data)) {
-        data.map(bike => (bike.key = bike.id));
+      if (Array.isArray(result.content)) {
+        result.content.map(vehicle => (vehicle.key = vehicle.id));
     }
 
       yield put({
         type: "save",
-        data: Array.isArray(data) ? data : [],
-        total: total
+        data: Array.isArray(result.content) ? result.content : [],
+        total: result.totalSize
       });
     },
+    
     *getVehicleSnapshot({ payload, onSuccess }, { call, put }) {
 
       const data = yield call(getVehicleSnapshot, payload);
