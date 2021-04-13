@@ -16,8 +16,6 @@ class ResponsiveList extends PureComponent {
   }
 
 
-
-
   render() {
     const { selectedRowKeys, needTotalList } = this.state;
     

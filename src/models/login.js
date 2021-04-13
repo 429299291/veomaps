@@ -5,7 +5,7 @@ import { setAuthority } from "@/utils/authority";
 import { getPageQuery } from "@/utils/utils";
 import { reloadAuthorized } from "@/utils/Authorized";
 import { notification } from "antd";
-import { accountLogin, updateToken } from "../services/user";
+import { accountLogin, updateToken, verifyPhoneNumber} from "../services/user";
 import { ACCESS_TOKEN, TOKEN_CREATE_DATE } from "../utils/request";
 
 export default {
@@ -19,8 +19,38 @@ export default {
     *login({ payload, onSuccess }, { call, put }) {
       const response = yield call(accountLogin, payload);
 
-      if (response && response.accessToken) {
-        localStorage.setItem(ACCESS_TOKEN, response.accessToken);
+      if (response) {
+        onSuccess(response);
+      }
+
+      // if (response && response.accessToken) {
+      //   localStorage.setItem(ACCESS_TOKEN, response.accessToken);
+      //   localStorage.setItem(
+      //     TOKEN_CREATE_DATE,
+      //     new Date().getTime().toString()
+      //   );
+
+      //   setAuthority("basic.admin");
+      //   reloadAuthorized();
+
+      //   if (typeof onSuccess === "function") {
+      //     onSuccess();
+      //   }
+
+      //   yield put(routerRedux.replace("/"));
+      // } else {
+      //   notification.error({
+      //     message: "Login Failed",
+      //     description: "wrong password or username"
+      //   });
+      // }
+    },
+    *phoneVerification({ payload , onSuccess, onFail }, { call, put }) {
+      const response = yield call(verifyPhoneNumber, payload);
+
+
+     if (response && response.token) {
+        localStorage.setItem(ACCESS_TOKEN, response.token);
         localStorage.setItem(
           TOKEN_CREATE_DATE,
           new Date().getTime().toString()
@@ -39,6 +69,8 @@ export default {
           message: "Login Failed",
           description: "wrong password or username"
         });
+
+        onFail();
       }
     },
     *updateToken({ payload }, { call, put }) {

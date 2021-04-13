@@ -9,7 +9,7 @@ export async function queryCurrent() {
 }
 
 export async function accountLogin(params) {
-  return request("/auth/admins/signin", {
+  return request("/api/admins/auth/auth-code", {
     method: "POST",
     body: params
   });
@@ -17,6 +17,12 @@ export async function accountLogin(params) {
 
 export async function getMe() {
   return request("/admins/me", {
+    method: "GET"
+  });
+}
+
+export async function getNewMe() {
+  return request("/api/admins", {
     method: "GET"
   });
 }
@@ -29,15 +35,23 @@ export async function updateToken() {
 
 
 
-
 export async function updateMe(me) {
-  return request(`/admins/me`, {
-    method: "PUT",
+  return request(`/api/admins`, {
+    method: "PATCH",
     body: {
       ...me
     }
   });
 }
+
+export async function verifyPhoneNumber(params) {
+  return request("/api/admins/auth/auth-code/verification", {
+    method: "POST",
+    body: params
+  });
+}
+
+
 
 
 export async function updatePassword(newPassword) {

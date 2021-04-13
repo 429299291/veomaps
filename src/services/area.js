@@ -51,8 +51,8 @@ export async function createAreaFeature(feature) {
 }
 
 export async function updateAreaFeature(featureId, feature) {
-  return request(`/admins/areas/features/${featureId}`, {
-    method: "PUT",
+  return request(`/api/admins/areas/features/${featureId}`, {
+    method: "PATCH",
     body: {
       ...feature
     }
@@ -70,3 +70,10 @@ export async function getHubImageUploadUrl(hubId) {
     method: "GET"
   });
 }
+
+export async function getAreaFeature(areaId) {
+  return request(`/api/admins/areas/${areaId}/features`, {
+    method: "GET"
+  });
+}
+

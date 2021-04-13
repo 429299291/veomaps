@@ -17,10 +17,12 @@ import {
   Popconfirm,
   InputNumber,
   Popover,
-  DatePicker
+  DatePicker,
+  message
 } from 'antd';
 
 import VehicleDetail from "@/pages/Vehicle/VehicleDetail";
+import RideDetail from "@/pages/Vehicle/RideDetail";
 import CustomerDetail from "@/pages/Customer/CustomerDetail";
 
 const { RangePicker } = DatePicker;
@@ -49,6 +51,10 @@ import {violationStatus} from "@/constant";
 import violation from '@/models/violation';
 
 import {formatPhoneNumber} from "@/utils/utils"
+
+import { getAuthority } from "@/utils/authority";
+
+const authority = getAuthority();
 
 const ViolationLocation = compose(
   withProps({
@@ -344,12 +350,78 @@ class VehicleViolation extends PureComponent {
               this.handleGetViolationDetail(record.id);
               }}>
                 Review
-
+          </a>
+          <Divider  type="vertical" />
+          <a onClick={() => { 
+                this.props.dispatch({
+                  type: "rides/detail",
+                  id: record.rideId,
+                  onSuccess: result => this.handleRideModalVisible(true, result),
+                  onError: () => {
+                    message.error("backend error: can't get ride detail.")
+                  }
+                });
+              }}>
+                Ride Detail
           </a>
         </div>
       ),
     },
   ];
+
+  handleRideModalVisible = (flag, record) => {
+    const { dispatch } = this.props;
+
+    if (!!flag) {
+
+      this.setState({selectedRide: record});
+
+      authority.includes("get.ride.image") && record.imageId && dispatch({
+        type: "rides/image",
+        rideId: record.id,
+        onSuccess: imageUrl =>
+          this.setState({
+            rideImageUrl: imageUrl
+          }),
+        onError: () => {
+          this.setState({
+            rideImageUrl: undefined
+          })
+        }
+      });
+
+      if (authority.includes("get.ride.route")) {
+
+
+        dispatch({
+          type: "rides/getRoute",
+          rideId: record.id,
+          onSuccess: pathInfo =>
+            this.setState({
+              selectedRidePathInfo: pathInfo,
+            })
+        });
+        authority.includes("get.fences") && dispatch({
+          type: "geo/getFences",
+          areaId: record.areaId
+        });
+
+      }
+      this.setState({
+        rideModalVisible: true,
+        selectedRide: record,
+      });
+
+
+    } else {
+      this.setState({
+        rideModalVisible: false,
+        selectedRide: undefined,
+        selectedRidePathInfo: undefined,
+        rideImageUrl: undefined
+      });
+    }
+  };
 
 
   handleVehicleDetailModalVisible = flag => this.setState({vehicleDetailModalVisible: flag})
@@ -576,7 +648,11 @@ class VehicleViolation extends PureComponent {
       vehicleDetailModalVisible,
       selectedVehicleId,
       customerDetailModalVisible,
-      selectedCustomerId
+      selectedCustomerId,
+      selectedRide,
+      rideModalVisible,
+      selectedRidePathInfo,
+      rideImageUrl
     } = this.state;
 
 
@@ -622,6 +698,16 @@ class VehicleViolation extends PureComponent {
             vehicleId={selectedVehicleId}
           />
         )}
+
+        {selectedRide && rideModalVisible && (
+            <RideDetail
+              isVisible={rideModalVisible}
+              ride={selectedRide}
+              ridePath={selectedRidePathInfo}
+              rideImageUrl={rideImageUrl}
+              handleDetailModalVisible={this.handleRideModalVisible}
+            />
+          )}
 
         {customerDetailModalVisible && selectedCustomerId && (
           <CustomerDetail

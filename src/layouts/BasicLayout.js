@@ -1,5 +1,5 @@
 import React from "react";
-import { Layout } from "antd";
+import { Layout,Modal } from "antd";
 import DocumentTitle from "react-document-title";
 import isEqual from "lodash/isEqual";
 import memoizeOne from "memoize-one";
@@ -18,6 +18,7 @@ import Header from "./Header";
 import Context from "./MenuContext";
 import Exception403 from "../pages/Exception/403";
 import TabController from './TabController';
+import router from 'umi/router';
 
 
 
@@ -103,7 +104,8 @@ class BasicLayout extends React.PureComponent {
     isMobile: false,
     menuData: this.getMenuData(),
     selectedAreaName: "all",
-    isMobile: window.innerWidth <= 600
+    isMobile: window.innerWidth <= 600,
+    isUpdatePhoneVisible: true
   };
 
   resize() {
@@ -273,6 +275,16 @@ class BasicLayout extends React.PureComponent {
     this.setState({shouldShowAreaSelector: !this.state.shouldShowAreaSelector});
   }
 
+  handlePhoneModalOK = () => {
+    this.setState({isUpdatePhoneVisible: false});
+    router.push('/account/settings/base');
+  }
+
+  handlePhoneModalCancel = () => {
+    this.setState({isUpdatePhoneVisible: false});
+    router.push('/account/settings/base');
+  }
+
   handleSelectArea = (areaId, areaName) => {
     const { dispatch } = this.props;
 
@@ -292,7 +304,8 @@ class BasicLayout extends React.PureComponent {
       children,
       location: { pathname },
       match,
-      selectedAreaId
+      selectedAreaId,
+      currentUser
     } = this.props;
 
     const pageTitle = this.getPageTitle(pathname);
@@ -307,10 +320,21 @@ class BasicLayout extends React.PureComponent {
     }
 
 
-    const { isMobile, menuData, shouldShowAreaSelector, selectedAreaName } = this.state;
+    const { isMobile, menuData, shouldShowAreaSelector, selectedAreaName, isUpdatePhoneVisible} = this.state;
     const isTop = PropsLayout === "topmenu";
     const routerConfig = this.matchParamsPath(pathname);
     
+    //console.log(currentUser);
+
+    if (this.props.isUserFetched && !currentUser.phone && isUpdatePhoneVisible) 
+     Modal.warning({
+       title: "Phone Update",
+       onOk: this.handlePhoneModalOK,       
+       onCancel: this.handlePhoneModalCancel,
+       content: ( <div><p>Veo managemnt system will start using 2-factor authentication on <b>24th March. </b> </p>
+        <p> please update your phone number ASAP so you can keep using our service.</p></div>)
+     });
+      
     
     const layout = (
       <Layout>
@@ -326,6 +350,7 @@ class BasicLayout extends React.PureComponent {
             {...this.props}
           />
         )}
+        
         <Layout
           style={{
             ...this.getLayoutStyle(),
@@ -341,6 +366,7 @@ class BasicLayout extends React.PureComponent {
               {...this.props}
               />
           }
+          
           { isMobile &&
             <div style={{width: "100%", minHeight: "4em",  marginTop:"0.1em", backgroundColor:"white", position: "relative"}}>
               <div 
@@ -426,6 +452,7 @@ export default connect(({ global, setting, user, areas }) => ({
   collapsed: global.collapsed,
   layout: setting.layout,
   isUserFetched: user.isUserFetched,
+  currentUser: user.currentUser.basic,
   areas: areas.data,
   selectedAreaId: areas.selectedAreaId,
   ...setting

@@ -988,8 +988,6 @@ class VehicleDetail extends PureComponent {
       handleEndRideVisible: this.handleEndRideVisible
     };
 
-    console.log(record);
-
     return (
       <Modal
         destroyOnClose

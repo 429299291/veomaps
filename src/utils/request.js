@@ -11,6 +11,7 @@ import { isAntdPro } from "./utils";
 const urlPrefix = "https://admin.veoride.com:8444/api";
 
 const adminApiUrl = "https://cluster-prod.veoride.com";
+//const adminApiUrl = "https://cluster-dev.veoride.com";
 
 
 export const ACCESS_TOKEN = "accessToken";

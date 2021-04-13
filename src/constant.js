@@ -83,6 +83,9 @@ const rideType = ["USING", "FINISHED"];
 const lockOperationWay = ["GPRS", "BLUETOOTH", "ADMIN", "UNKNOWN"];
 const rideState = ["unconfirmed","success","error"];
 const rideStateColor = ["#e5bb02","#0be024","#ff0000"];
+const violateType = ["Normal", "In restricted fence", "out of geo fence", "out of force parking zone", "unknown"];
+const limitType = ["Normal", "No Ride Zone", "limit speed zone", "unknown"];
+const violateTypeColor = ["black", "#ff0000", "#b72126", "#1300ff", "#f1fc64"];
 
 export { 
   fenceType, 
@@ -98,5 +101,8 @@ export {
   lockStatus, 
   rideType, 
   lockOperationWay, 
-  rideState
+  rideState,
+  violateType,
+  limitType,
+  violateTypeColor
 };

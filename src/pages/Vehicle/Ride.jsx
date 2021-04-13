@@ -21,8 +21,9 @@ import {
 import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 import VehicleDetail from "@/pages/Vehicle/VehicleDetail";
+import RideDetail from "@/pages/Vehicle/RideDetail";
 import CustomerDetail from "@/pages/Customer/CustomerDetail";
-import {formatPhoneNumber} from "@/utils/utils"
+import { formatPhoneNumber } from "@/utils/utils"
 
 import { exportCSVFile } from "../../utils/utils";
 
@@ -66,10 +67,10 @@ import { getAuthority } from "@/utils/authority";
 const authority = getAuthority();
 
 const getViolateType = (val, record) => {
-  const violateColor = val >= 0 ?  violateTypeColor[val] : "black";
-  const limitColor = record.limitType >= 0 ?  violateTypeColor[record.limitType] : "black";
-  const violateContent = <span style={{color: violateColor}}>  {(val >= 0 ? violateType[val] : "unknown")  }</span>;
-  const limitContent = <span style={{color: limitColor}}> {(record.vehicleType === 1 ? " | " + limitType[record.limitType] : "")}</span>;
+  const violateColor = val >= 0 ? violateTypeColor[val] : "black";
+  const limitColor = record.limitType >= 0 ? violateTypeColor[record.limitType] : "black";
+  const violateContent = <span style={{ color: violateColor }}>  {(val >= 0 ? violateType[val] : "unknown")}</span>;
+  const limitContent = <span style={{ color: limitColor }}> {(record.vehicleType === 1 ? " | " + limitType[record.limitType] : "")}</span>;
 
   return <span>{violateContent}{limitContent}</span>
 };
@@ -90,15 +91,15 @@ const lockStatus = ["Unlock", "lock"];
 const rideType = ["USING", "FINISHED"];
 const vehicleType = ["Bicycle", "Scooter", "E-Bike", "COSMO"];
 const lockOperationWay = ["GPRS", "BLUETOOTH", "ADMIN", "ABORT", "TIMEOUT", "PRE_AUTH_FAIL", "REACH_MAX"];
-const rideState = ["unconfirmed","success","error"];
-const rideStateColor = ["#e5bb02","#0be024","#ff0000"];
+const rideState = ["unconfirmed", "success", "error"];
+const rideStateColor = ["#e5bb02", "#0be024", "#ff0000"];
 
 
 const violateType = ["Normal", "In restricted fence", "out of geo fence", "out of force parking zone", "unknown"];
 const limitType = ["Normal", "No Ride Zone", "limit speed zone", "unknown"];
-const violateTypeColor = ["black", "#ff0000", "#b72126","#1300ff", "#f1fc64"];
+const violateTypeColor = ["black", "#ff0000", "#b72126", "#1300ff", "#f1fc64"];
 
-import {fenceType, fenceTypeColor} from "@/constant";
+import { fenceType, fenceTypeColor } from "@/constant";
 
 
 const refundReason = ["Other", "Lock Issue", "Accidental Deposit", "No Longer in Market", "Fraud", "Scooter Issue", "App Issue", "Phone Issue"];
@@ -116,16 +117,16 @@ const RefundForm = Form.create()(props => {
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) {
-        
-        return; 
+
+        return;
 
       } else {
         form.resetFields();
-      
+
         handleRefundRide(ride.id, fieldsValue);
       }
-    
-     
+
+
     });
   };
 
@@ -139,7 +140,7 @@ const RefundForm = Form.create()(props => {
 
     >
 
-    <FormItem
+      <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="Refund Type"
@@ -147,11 +148,11 @@ const RefundForm = Form.create()(props => {
         {form.getFieldDecorator("refundType", {
           initialValue: 1
         })(<Select >
-            <Option  value={1}>
-                Deposit
+          <Option value={1}>
+            Deposit
             </Option>
-            <Option  value={2}>
-                Credi Card
+          <Option value={2}>
+            Credi Card
             </Option>
         </Select>)}
       </FormItem>
@@ -163,31 +164,31 @@ const RefundForm = Form.create()(props => {
       >
         {form.getFieldDecorator("refundReason", {
           initialValue: 1
-        })(<Select  style={{ width: 200 }}>
-             {refundReason.map((reason, index) => (
-                    <Option key={index} value={index}>
-                      {reason}
-                    </Option>
-            ))}
-        
+        })(<Select style={{ width: 200 }}>
+          {refundReason.map((reason, index) => (
+            <Option key={index} value={index}>
+              {reason}
+            </Option>
+          ))}
+
         </Select>)}
       </FormItem>
       {form.getFieldValue("refundReason") === 0 && <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="Notes"
-        >
-          {form.getFieldDecorator("note", {
-            rules: [
-              {
-                required: true,
-                message: "note can't be empty",
-                max: 50,
-                min: 1
-              }
-            ]
-          })(<TextArea autosize={{ minRows: 3, maxRows: 10 }} />)}
-      </FormItem> }
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Notes"
+      >
+        {form.getFieldDecorator("note", {
+          rules: [
+            {
+              required: true,
+              message: "note can't be empty",
+              max: 50,
+              min: 1
+            }
+          ]
+        })(<TextArea autosize={{ minRows: 3, maxRows: 10 }} />)}
+      </FormItem>}
     </Modal>
   );
 });
@@ -232,105 +233,13 @@ const EndRideForm = Form.create()(props => {
   );
 });
 
-const RouteMap = compose(
-  withProps({
-    googleMapURL:
-      "https://maps.googleapis.com/maps/api/js?key=AIzaSyDdCuc9RtkM-9wV9e3OrULPj67g2CHIdZI&v=3.exp&libraries=geometry,drawing,places",
-    loadingElement: <div style={{ height: `100%` }} />,
-    containerElement: <div style={{ height: `250px` }} />,
-    mapElement: <div style={{ height: `100%` }} />
-  }),
-  withScriptjs,
-  withGoogleMap
-)(props => {
-  const { pathInfo, fences } = props;
-
-  const path = pathInfo.path;
-
-  const distance = pathInfo.distance;
-
-  const center = path[Math.round(path.length / 2)];
-
-  const dashLineDot = {
-    path: window.google.maps.SymbolPath.CIRCLE,
-    fillOpacity: 1,
-    scale: 2
-  };
-
-  return (
-    
-    <div style={{position: "relative"}}>
-     <div>distance: {Math.round(distance * 100 )/ 100} miles </div>
-      <GoogleMap defaultZoom={15} center={center} style={{height: "90%"}}>
-        <Marker position={path[0]} label={"start"} />
-        <Marker position={path[path.length - 1]} label={"end"}  />
-        <Polyline
-          path={path}
-          geodesic={true}
-          options={{
-            strokeColor: "#ff0000",
-            strokeOpacity: 0.75,
-            strokeWeight: 2
-          }}
-        />
-
-      {authority.includes("get.fences") && fences && fences.map(fence => (
-          <Polygon
-            path={fence.fenceCoordinates}
-            geodesic={true}
-            key={fence.id}
-            options={{
-              strokeColor: fenceTypeColor[fence.fenceType],
-              strokeOpacity: fence.fenceType === 5 ? 0 : 0.75,
-              strokeWeight: fence.fenceType === 5 ? 0 : 2,
-              fillColor: fenceTypeColor[fence.fenceType],
-              fillOpacity:
-                fence.fenceType === 0 || fence.fenceType === 5 ? 0 : 0.35
-            }}
-          />
-        ))}
-
-        {authority.includes("get.fences") && fences &&  fences.filter(fence => fence.fenceType === 5).map(fence => (
-          <Polyline
-            path={fence.fenceCoordinates}
-            geodesic={true}
-            key={fence.id}
-            options={{
-              strokeColor: fenceTypeColor[fence.fenceType],
-              strokeOpacity: 0.75,
-              strokeWeight: 2,
-              icons: [
-                {
-                  icon: dashLineDot,
-                  offset: "0",
-                  repeat: "10px"
-                }
-              ],
-              fillColor: fenceTypeColor[5],
-              fillOpacity: 0
-            }}
-          />
-        ))}
-        
-        
-      </GoogleMap>
-      
-     
-
-     
-
-    </div>
-  );
-});
-
-
 
 /* eslint react/no-multi-comp:0 */
 @connect(({ rides, areas, geo, loading }) => ({
   rides,
   areas: areas.data,
   geo,
-  selectedAreaId : areas.selectedAreaId,
+  selectedAreaId: areas.selectedAreaId,
   areaNames: areas.areaNames,
   loading: loading.models.rides
 }))
@@ -345,11 +254,11 @@ class Ride extends PureComponent {
   columns = [
     {
       title: "Phone",
-      render: (text,record) => <a onClick={() => this.setState({selectedCustomerId: record.customerId},() =>  this.handleCustomerDetailModalVisible(true))}>{formatPhoneNumber(record.phone+"")}</a>
+      render: (text, record) => <a onClick={() => this.setState({ selectedCustomerId: record.customerId }, () => this.handleCustomerDetailModalVisible(true))}>{formatPhoneNumber(record.phone + "")}</a>
     },
     {
       title: "Vehicle Number",
-      render: (text,record) => <a onClick={() => this.setState({selectedVehicleId: record.vehicleId},() =>  this.handleVehicleDetailModalVisible(true))}>{record.vehicleNumber}</a>
+      render: (text, record) => <a onClick={() => this.setState({ selectedVehicleId: record.vehicleId }, () => this.handleVehicleDetailModalVisible(true))}>{record.vehicleNumber}</a>
     },
     {
       title: "Vehicle Type",
@@ -391,20 +300,20 @@ class Ride extends PureComponent {
       sorter: true,
       render: (val, record) => {
 
-        const endTime = val ?  moment(val).format("YYYY-MM-DD HH:mm:ss") : "not finished";
+        const endTime = val ? moment(val).format("YYYY-MM-DD HH:mm:ss") : "not finished";
 
         const metaData = JSON.parse(record.metaData);
 
         const endBy = metaData && metaData.adminEmail;
 
         return <span>{endTime + (endBy ? ("|" + endBy) : "")}</span>
-        
+
       }
     },
     {
       title: "Minutes",
-      render: (text, record) =>  { 
-        const minutsDiff = record.end ? record.minutes : moment().diff(moment(record.start), 'minutes'); 
+      render: (text, record) => {
+        const minutsDiff = record.end ? record.minutes : moment().diff(moment(record.start), 'minutes');
         return <span>{minutsDiff}</span>
       }
     },
@@ -421,20 +330,20 @@ class Ride extends PureComponent {
               End Ride
             </a>
           )}
-         
-         <Divider type="vertical" />
-          
+
+          <Divider type="vertical" />
+
           {this.isRideRefundable(record) && (
-              
-              <a onClick={() => this.handleRefundModalVisible(true, record)}>
-                Refund
+
+            <a onClick={() => this.handleRefundModalVisible(true, record)}>
+              Refund
               </a>
           )}
 
           <Divider type="vertical" />
 
-            <a onClick={() =>  this.handleDetailModalVisible(true, record)}>
-              Detail
+          <a onClick={() => this.handleDetailModalVisible(true, record)}>
+            Detail
             </a>
 
         </Fragment>
@@ -445,7 +354,7 @@ class Ride extends PureComponent {
   componentDidMount() {
     this.handleSearch();
   }
-   
+
 
   isRideRefundable = (ride) => {
 
@@ -455,7 +364,7 @@ class Ride extends PureComponent {
 
   }
 
-  
+
 
   handleGetRides = () => {
     const { dispatch } = this.props;
@@ -518,7 +427,7 @@ class Ride extends PureComponent {
       if (err) return;
 
       if (fieldsValue.timeRange) {
-        
+
         fieldsValue.rideStart = moment(fieldsValue.timeRange[0]).utcOffset(0).format(
           "MM-DD-YYYY HH:mm:ss"
         );
@@ -550,10 +459,10 @@ class Ride extends PureComponent {
     });
   };
 
-  handleVehicleDetailModalVisible = flag => this.setState({vehicleDetailModalVisible: flag})
+  handleVehicleDetailModalVisible = flag => this.setState({ vehicleDetailModalVisible: flag })
 
 
-  handleCustomerDetailModalVisible = flag => this.setState({customerDetailModalVisible: flag})
+  handleCustomerDetailModalVisible = flag => this.setState({ customerDetailModalVisible: flag })
 
   handleRefundModalVisible = (flag, record) => {
 
@@ -577,11 +486,11 @@ class Ride extends PureComponent {
           this.setState({
             rideImageUrl: imageUrl
           }),
-          onError: () => {
-            this.setState({
-              rideImageUrl: undefined
-            })
-          }
+        onError: () => {
+          this.setState({
+            rideImageUrl: undefined
+          })
+        }
       });
 
       if (authority.includes("get.ride.route")) {
@@ -599,13 +508,13 @@ class Ride extends PureComponent {
           type: "geo/getFences",
           areaId: record.areaId
         });
-        
-      } 
-        this.setState({
-          detailModalVisible: true,
-          selectedRecord: record,
-        });
-      
+
+      }
+      this.setState({
+        detailModalVisible: true,
+        selectedRecord: record,
+      });
+
 
 
     } else {
@@ -728,7 +637,7 @@ class Ride extends PureComponent {
           <Col lg={7} md={12} sm={24}>
             <FormItem label="Time" labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} >
               {getFieldDecorator("timeRange")(
-                <RangePicker style={{width: "90%"}} format="YYYY-MM-DD HH:mm:ss" showTime />
+                <RangePicker style={{ width: "90%" }} format="YYYY-MM-DD HH:mm:ss" showTime />
               )}
             </FormItem>
           </Col>
@@ -775,7 +684,7 @@ class Ride extends PureComponent {
   };
 
   formatCsvData = rides => {
-    const {areaNames, selectedAreaId} = this.props;
+    const { areaNames, selectedAreaId } = this.props;
 
     return rides.map(ride => {
       return {
@@ -810,7 +719,7 @@ class Ride extends PureComponent {
       if (err) return;
 
       if (fieldsValue.timeRange) {
-        
+
         fieldsValue.rideStart = moment(fieldsValue.timeRange[0]).utcOffset(0).format(
           "MM-DD-YYYY HH:mm:ss"
         );
@@ -820,7 +729,7 @@ class Ride extends PureComponent {
         fieldsValue.timeRange = undefined;
       }
 
-      const values = Object.assign({}, filterCriteria, {areaId: selectedAreaId}  ,fieldsValue, {
+      const values = Object.assign({}, filterCriteria, { areaId: selectedAreaId }, fieldsValue, {
         currentPage: null,
         pageSize: null,
         areaId: selectedAreaId
@@ -891,10 +800,10 @@ class Ride extends PureComponent {
             />
 
             {selectedAreaId >= 1 && <div>
-                        <Button style={{marginTop: "1em"}} onClick={this.handleExportData} >
-                            Export
+              <Button style={{ marginTop: "1em" }} onClick={this.handleExportData} >
+                Export
                         </Button>
-                      </div>
+            </div>
             }
           </div>
         </Card>
@@ -909,54 +818,15 @@ class Ride extends PureComponent {
 
         {selectedRecord &&
           detailModalVisible && (
-            <Modal
-              destroyOnClose
-              title="Detail"
-              visible={detailModalVisible}
-              width={"50%"}
-              onCancel={() => this.handleDetailModalVisible()}
-              onOk={() => this.handleDetailModalVisible()}
-            >
-            <Row width={800}>
-
-              <Col xs={24} sm={12} style={{fontSize: "0.7em"}}>
-                {Object.keys(selectedRecord).map(key => (
-                  <p key={key}>{`${key} : ${selectedRecord[key]}`}</p>
-                ))}
-              </Col>
-
-              <Col xs={24} sm={12}>
-
-              {selectedRidePathInfo &&
-                selectedRidePathInfo.distance > 0 && (
-                  <RouteMap
-                    pathInfo={selectedRidePathInfo}
-                    fences={geo.fences}
-                  />
-                )}
-
-               
-
-                {
-                  rideImageUrl &&
-                    
-                    <div style={{width: "90%", height: "480px"}}>
-                       <img  src={rideImageUrl} style={{ maxWidth: "130%", maxHeight: "435px",  marginTop: "70px", marginLeft: "-40px"}} className={styles.rotate90} />
-                    </div>
-                   
-                }
-                  
-              </Col>
-             
-             
-            </Row>
-             
-
-
-               
-             
-            </Modal>
+            <RideDetail
+              isVisible={detailModalVisible}
+              ride={selectedRecord}
+              ridePath={selectedRidePathInfo}
+              rideImageUrl={rideImageUrl}
+              handleDetailModalVisible={this.handleDetailModalVisible}
+            />
           )}
+             
 
         {vehicleDetailModalVisible && selectedVehicleId && authority.includes("get.vehicle") && (
           <VehicleDetail
@@ -975,14 +845,14 @@ class Ride extends PureComponent {
           />
         )}
 
-      {isRefundModalVisible && 
-        <RefundForm 
-          isModalVisible={isRefundModalVisible}
-          handleModalVisible={this.handleRefundModalVisible}
-          handleRefundRide={this.handleRefundRide}
-          ride={selectedRecord}
-        />
-      }
+        {isRefundModalVisible &&
+          <RefundForm
+            isModalVisible={isRefundModalVisible}
+            handleModalVisible={this.handleRefundModalVisible}
+            handleRefundRide={this.handleRefundRide}
+            ride={selectedRecord}
+          />
+        }
 
       </PageHeaderWrapper>
     );

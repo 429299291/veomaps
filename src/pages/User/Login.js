@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "dva";
 import { formatMessage, FormattedMessage } from "umi/locale";
-import { Checkbox, Alert, Icon } from "antd";
+import { Checkbox, Alert, Icon, Modal, Input} from "antd";
 import Login from "@/components/Login";
 import styles from "./Login.less";
+
 
 const { UserName, Password, Submit } = Login;
 
@@ -14,7 +15,9 @@ const { UserName, Password, Submit } = Login;
 class LoginPage extends Component {
   state = {
     type: "account",
-    autoLogin: true
+    autoLogin: true,
+    phone: null,
+    code:null
   };
 
   onTabChange = type => {
@@ -40,7 +43,7 @@ class LoginPage extends Component {
 
   handleSubmit = (err, values) => {
     const payload = {
-      usernameOrEmail: values.userName,
+      email: values.userName,
       password: values.password
     };
 
@@ -52,13 +55,28 @@ class LoginPage extends Component {
         payload: {
           ...payload
         },
-        onSuccess: () =>
-          dispatch({
-            type: "user/fetchCurrent"
-          })
+        onSuccess: phone =>
+          this.setState({phone: phone})
+          // dispatch({
+          //   type: "user/fetchCurrent"
+          // })
       });
     }
   };
+
+  handlePhoneVerfication = () => {
+    const { code, phone } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: "login/phoneVerification",
+      payload: {phone: phone, code: code},
+      onSuccess: () =>
+        dispatch({
+          type: "user/fetchCurrent"
+        }),
+      onFail: () => this.setState({phone: null, code: null})
+    });
+  }
 
   changeAutoLogin = e => {
     this.setState({
@@ -77,9 +95,22 @@ class LoginPage extends Component {
 
   render() {
     const { login, submitting } = this.props;
-    const { type, autoLogin } = this.state;
+    const { type, autoLogin, phone, code } = this.state;
     return (
       <div className={styles.main}>
+          <Modal
+            title="Phone Verification"
+            visible={phone}
+            onOk={this.handlePhoneVerfication}
+            onCancel={() => this.setState({phone: null, code: null})}
+          > 
+          <p> Verification Code has been sent to {phone} </p>
+          <div style={{ textAlign: "center"}}>
+            <Input maxLength={4}  style={{ width: "30%"}} onChange={value => 
+             this.setState({ code: value.target.value }) 
+            }/>  
+          </div>
+         </Modal> 
         <Login
           defaultActiveKey={type}
           onSubmit={this.handleSubmit}
@@ -87,10 +118,10 @@ class LoginPage extends Component {
             this.loginForm = form;
           }}
         >
-          <UserName name="userName" placeholder="username: admin" />
+          <UserName name="userName" placeholder="your veo email address" />
           <Password
             name="password"
-            placeholder="password: admin"
+            placeholder="password"
             onPressEnter={() =>
               this.loginForm.validateFields(this.handleSubmit)
             }

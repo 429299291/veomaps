@@ -9,7 +9,7 @@ import {
   getRideImage,
   endRide,
   getCustomerRides,
-  refundRide
+  refundRide,
 } from "@/services/ride";
 import { message } from "antd";
 
@@ -36,6 +36,14 @@ export default {
         data: Array.isArray(data) ? data : [],
         total: total
       });
+    },
+    *detail({ id, onSuccess, onError }, { call, put }) {
+      const result = yield call(getRideDetail, id);
+      if (result) {
+        onSuccess(result);
+      } else {
+        onError(); 
+      }      
     },
 
     *refund({ id , payload, onSuccess }, { call, put }) {

@@ -6,6 +6,7 @@ import {
   updateArea,
   getAllAreas,
   getAreaFeatures,
+  getAreaFeature,
   updateAreaFeature,
   createAreaFeature,
   getHubImageUploadUrl
@@ -129,7 +130,18 @@ export default {
         message.error(`Update Fail.`);
         onError && onError();
       }
+    },
+    
+    *getAreaFeature({ areaId, onSuccess }, { call, put, take}) {
+      const response = yield call(getAreaFeature, areaId); // get
+  
+      if (response) {
+        onSuccess && onSuccess(response);
+      } else {
+        message.error(`Get area feature fail: ` + response);
+      }
     }
+
   },
 
   

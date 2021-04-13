@@ -21,6 +21,8 @@ import {
 
 import NumericInput from "@/common/NumericInput";
 
+import BusinessHourForm from "@/common/BusinessHourForm"; 
+
 import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
@@ -295,10 +297,12 @@ const AreaFeatureForm = Form.create()(props => {
             metaData.outOfBalancePreAuthorizationFee = null;
           }
 
-
+        
           const finalResult = {};
           
-          finalResult.violationActivated = fieldsValue.violationActivated;        
+          finalResult.areaAvailability = fieldsValue.areaAvailability;
+          finalResult.violationActivated = fieldsValue.violationActivated;
+          finalResult.isActivated = fieldsValue.isActivated;        
           finalResult.driverLicenseActivated = fieldsValue.driverLicenseActivated;
           finalResult.eduRideActivated = fieldsValue.eduRideActivated;
           finalResult.freeTimeActivated = fieldsValue.freeTimeActivated;
@@ -307,7 +311,8 @@ const AreaFeatureForm = Form.create()(props => {
           finalResult.promptActivated = fieldsValue.promptActivated;
           finalResult.timeLimitActivated = fieldsValue.timeLimitActivated;
           finalResult.endRidePhotoActivated = fieldsValue.endRidePhotoActivated;
-          finalResult.maxSpeed = fieldsValue.maxSpeed;
+          finalResult.maxSpeed = Math.min(fieldsValue.maxSpeed, 15);
+          finalResult.billingAddressActivated = fieldsValue.billingAddressActivated;
           finalResult.areaId = record.id;
           finalResult.metaData = Object.keys(metaData).length > 0 ? JSON.stringify(metaData) : null;
 
@@ -323,7 +328,8 @@ const AreaFeatureForm = Form.create()(props => {
 
   const licenseActivated = record.areaFeature && record.areaFeature.driverLicenseActivated;
 
- 
+  const billingAddressActivated = record.areaFeature && record.areaFeature.billingAddressActivated;
+
   const violationActivated = record.areaFeature && record.areaFeature.violationActivated;
 
   const eduRideActivated = record.areaFeature && record.areaFeature.eduRideActivated;
@@ -368,6 +374,11 @@ const AreaFeatureForm = Form.create()(props => {
 
   const outOfBalancePreAuthorizationFee = areaFeature && areaFeature.outOfBalancePreAuthorizationFee;
 
+  const areaAvailability = (record.areaFeature  && record.areaFeature.areaAvailability) ? record.areaFeature.areaAvailability : {};
+
+
+  const isActivated = record.areaFeature && record.areaFeature.isActivated;
+
   return (
     <Modal
       destroyOnClose
@@ -375,9 +386,16 @@ const AreaFeatureForm = Form.create()(props => {
       visible={modalVisible}
       onOk={okHandle}
       okText="Save"
-      width="600px"
+      width="800px"
       onCancel={() => handleModalVisible()}
     >
+
+    <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Market Activated">
+        {form.getFieldDecorator("isActivated", {
+          valuePropName: 'checked',
+          initialValue: isActivated ? true : false,
+        })(<Switch  disabled={!isEditable} />)}
+    </FormItem>
 
     <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Violation Activated">
         {form.getFieldDecorator("violationActivated", {
@@ -513,13 +531,13 @@ const AreaFeatureForm = Form.create()(props => {
         {form.getFieldDecorator("maxSpeed", {
           initialValue: maxSpeed,
           valuePropName: 'checked'
-        })(<InputNumber min={1} max={25} defaultValue={maxSpeed} />)}
+        })(<InputNumber min={1} max={15} defaultValue={maxSpeed} />)}
       </FormItem>
       <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Time Limit Activated">
         {form.getFieldDecorator("timeLimitActivated", {
           initialValue: timeLimitActivated ? true : false,
           valuePropName: 'checked'
-        })(<Switch  disabled={!isEditable}  />)}
+        })(<Switch  disabled={true}  />)}
       </FormItem>
      
         {form.getFieldValue("timeLimitActivated") && 
@@ -534,7 +552,7 @@ const AreaFeatureForm = Form.create()(props => {
                     message: "start time is required",
                   }
                 ]
-              })(<Input placeholder="1230" disabled={!isEditable}   />)}
+              })(<Input placeholder="1230" disabled={true}   />)}
             </FormItem>
             <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} label="SERVICE END">
               {form.getFieldDecorator("serviceTimeConfigEnd", {
@@ -545,7 +563,7 @@ const AreaFeatureForm = Form.create()(props => {
                     message: "end time is required",
                   }
                 ]
-              })(<Input placeholder="1230" disabled={!isEditable}  />)}
+              })(<Input placeholder="1230" disabled={true}  />)}
             </FormItem>
             <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} label="TIME ZONE">
               {form.getFieldDecorator("serviceTimeOffset", {
@@ -553,7 +571,7 @@ const AreaFeatureForm = Form.create()(props => {
                 rules: [{
                   validator: checkTimeOffset
                 }]
-              })(<Select placeholder="-500 for chicago time" disabled={!isEditable}  > 
+              })(<Select placeholder="-500 for chicago time" disabled={true}  > 
                   <Option value={-400}> Eastern Time Zone</Option>
                   <Option value={-500}> Central Time Zone </Option>
                   <Option value={-600}> Mountain Time Zone</Option>
@@ -565,10 +583,69 @@ const AreaFeatureForm = Form.create()(props => {
               {form.getFieldDecorator("serviceTimeForceEndRide", {
                 initialValue: serviceTimeForceEndRide ? true : false,
                 valuePropName: 'checked',
-              })(<Switch  disabled={!isEditable}  />)}
+              })(<Switch  disabled={true}  />)}
             </FormItem>
           </div>
       }
+
+
+      {/* <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Market Operating">
+        {form.getFieldDecorator("areaAvailabilityActivated", {
+          initialValue: areaAvailability.isOpen  ? true : false,
+          valuePropName: 'checked'
+        })(<Switch  disabled={!isEditable}  />)}
+      </FormItem> */}
+     
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Bussiness Hour">
+        {form.getFieldDecorator("areaAvailability", {
+          initialValue: areaAvailability? areaAvailability : {},
+          
+          rules: [{validator: (rule, value, callback) => {
+
+             let isValueChanged = false; 
+              
+            for (let property in value) {
+              if (value[property] !== areaAvailability[property]) {
+
+                isValueChanged = true;
+
+                break;
+              }              
+            }
+
+            
+
+
+            if (isValueChanged && value.isOpen === null) {
+
+              for (let property in value) {
+
+                if ( property !== "isOpen" && 
+                    property !== "description"  && 
+                    (!value[property] || value[property] == "")
+                )
+
+                  callback(property +  " can't be empty!");
+
+              }
+
+            }
+
+           
+
+            return callback();
+
+            }}
+          ] 
+        })(<BusinessHourForm />)}
+      </FormItem>
+
+      <FormItem labelCol={{ span: 12 }} wrapperCol={{ span: 12 }} label="Billing Address Activated">
+        {form.getFieldDecorator("billingAddressActivated", {
+          initialValue: !!billingAddressActivated,
+          valuePropName: 'checked',
+        })(<Switch  disabled={!isEditable}  />)}
+      </FormItem>
 
 
 
@@ -596,13 +673,13 @@ const AreaFeatureForm = Form.create()(props => {
       <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} label="Tax Rate %">
         {form.getFieldDecorator("taxRate", {
           initialValue: taxRate
-        })(<InputNumber min={1} max={99} defaultValue={taxRate} />)}
+        })(<InputNumber min={1} max={99}  />)}
       </FormItem>
 
       <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} label="Ride Hold">
         {form.getFieldDecorator("outOfBalancePreAuthorizationFee", {
           initialValue: outOfBalancePreAuthorizationFee
-        })(<InputNumber min={1} max={100} defaultValue={outOfBalancePreAuthorizationFee} />)}
+        })(<InputNumber min={1} max={100}  />)}
       </FormItem>
       
       
@@ -733,7 +810,7 @@ class Area extends PureComponent {
     dispatch({
       type: "areas/get",
       payload: filterCriteria,
-      onSuccess: this.handleGetAreaFeatures 
+      // onSuccess: this.handleGetAreaFeatures 
     });
   };
 
@@ -812,10 +889,30 @@ class Area extends PureComponent {
 
   handleDetailModalVisible = (flag, record) => {
 
-    this.setState({
-      detailModalVisible: !!flag,
-      selectedRecord: record || {}
-    });
+    const { dispatch } = this.props;
+
+    if (flag) {
+
+      dispatch({
+        type: "areas/getAreaFeature",
+        areaId: record.id,
+        onSuccess: feature => {
+          record.areaFeature = feature;
+          this.setState({
+            detailModalVisible: true,
+            selectedRecord: record
+          });
+        }
+      });
+
+    } else {
+
+        this.setState({
+          detailModalVisible: false,
+          selectedRecord: {}
+        });
+    }
+   
   };
 
   handleDeleteModalVisible = (flag, record) => {

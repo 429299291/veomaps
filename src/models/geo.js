@@ -11,7 +11,7 @@ import {
   createPrimeLocation,
   getPrimeLocationByAreaId,
   deletePrimeLocation,
-  updatePrimeLocation,
+  updateHub,
   handleCheckPrimeLocation,
   getGeoObject
 } from "@/services/geo";
@@ -61,7 +61,7 @@ export default {
       }
     },
     *updatePrimeLocation({ payload, onSuccess, onError }, { call, put }) {
-      const response = yield call(updatePrimeLocation, payload); // put
+      const response = yield call(updateHub, payload); // put
 
 
       if (response) {

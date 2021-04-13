@@ -39,10 +39,6 @@ export async function endRide(rideId, minutes) {
   });
 }
 
-export async function getRideDetail(id) {
-  return request(`/admins/rides/${id}`);
-}
-
 export async function createRide(area) {
   return request(`/admins/rides`, {
     method: "POST",
@@ -69,6 +65,12 @@ export async function updateRide(id, params) {
 
 export async function getRideImage(rideId) {
   return request(`/admins/rides/${rideId}/image`, {
+    method: "GET"
+  });
+}
+
+export async function getRideDetail(id) {
+  return request(`/api/admins/rides/${id}`, {
     method: "GET"
   });
 }

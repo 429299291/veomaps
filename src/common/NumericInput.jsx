@@ -46,12 +46,7 @@ class NumericInput extends React.Component {
       'Input a number'
     );
     return (
-      <Tooltip
-        trigger={['focus']}
-        title={title}
-        placement="topLeft"
-        overlayClassName="numeric-input"
-      >
+
         <Input
           {...this.props}
           onChange={this.onChange}
@@ -59,7 +54,7 @@ class NumericInput extends React.Component {
           placeholder="Input a number"
           maxLength={25}
         />
-      </Tooltip>
+      
     );
   }
 }

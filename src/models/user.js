@@ -1,4 +1,4 @@
-import { query as queryUsers, getMe, updateMe, updatePassword } from "@/services/user";
+import { query as queryUsers, getMe, updateMe, updatePassword, getNewMe } from "@/services/user";
 import UrlToPrivilege from "../pages/Employee/UrlToPrivilege";
 import { setAuthority } from "@/utils/authority";
 import { reloadAuthorized } from "@/utils/Authorized";
@@ -61,6 +61,8 @@ export default {
 
       const response = yield call(getMe);
 
+      const newReponse = yield call(getNewMe);
+
       const flatUrlToPrivileges = Object.keys(UrlToPrivilege)
         .map(key => UrlToPrivilege[key])
         .reduce((result, group) => Object.assign({}, result, group), {});
@@ -81,6 +83,8 @@ export default {
         setAuthority(permissions);
         reloadAuthorized();
       }
+
+      response.basic.phone = newReponse.phone;
 
       yield put({
         type: "saveCurrentUser",

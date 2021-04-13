@@ -20,7 +20,7 @@ export async function getCustomerTransactions(customerId) {
 }
 
 export async function getTempCode(phoneNumber) {
-  return request(`/admins/customers/${phoneNumber}/temp_code`, {
+  return request(`/api/admins/customers/phone/${phoneNumber}/auth-code`, {
     method: "GET"
   });
 }

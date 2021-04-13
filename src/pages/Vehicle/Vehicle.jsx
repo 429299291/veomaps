@@ -822,12 +822,12 @@ class Vehicle extends PureComponent {
                 <Col span={6}> {vehicle.vehicleNumber} </Col>
                 <Col span={11}> 
                     <span> 
-                      <Icon type={vehicle.lockStatus === 1? "lock" : "unlock"} style={{color: (vehicle.lockStatus === 1 ?  "blue" : "orange")}} /> 
+                      <Icon type={vehicle.locked? "lock" : "unlock"} style={{color: (vehicle.lockStatus === 1 ?  "blue" : "orange")}} /> 
                       {" | "}
                     </span> 
-                    <span style={{color: (vehicle.errorStatus === 0 ?  "#04e508" : "red")}}>{errorStatusIndexs[vehicle.errorStatus]}</span>
+                    <span style={{color: (vehicle.status === 0 ?  "#04e508" : "red")}}>{errorStatusIndexs[vehicle.status]}</span>
                     {" | "}
-                    <span style={{color: (vehicle.connectStatus === 1 ?  "#04e508" : "red")}}>{this.isConnected(vehicle)}</span>
+                    <span style={{color: (vehicle.connected ?  "#04e508" : "red")}}>{this.isConnected(vehicle)}</span>
                 </Col>
                 <Col span={7} >Battery: <span style={{color: batteryColor(power)}}> {power + "%"} </span> </Col>
 
@@ -843,13 +843,13 @@ class Vehicle extends PureComponent {
                        authority.includes("unlock.vehicle") ?
 
                        <a onClick={() => this.changeLockStatus(vehicle)}>
-                        {((vehicle.lockStatus === 0 && vehicle.vehicleType === 1) ?  "Lock" : "Unlock")}
+                        {((!vehicle.locked && vehicle.vehicleType === 1) ?  "Lock" : "Unlock")}
                        </a> 
 
                        :
 
                        <span  style={{color: "grey"}}>
-                          {((vehicle.lockStatus === 0 && vehicle.vehicleType === 1) ?  "Lock" : "Unlock")}
+                          {((!vehicle.locked  && vehicle.vehicleType === 1) ?  "Lock" : "Unlock")}
                        </span> 
                     }
 
@@ -923,7 +923,7 @@ class Vehicle extends PureComponent {
     // const heartime = moment.utc(vehicle.heartTime);
     // return now.diff(heartime,'minutes') < 10 ? 'online' : 'offline';
 
-    return vehicle.connectStatus === 1 ? 'online' : 'offline';
+    return vehicle.connected ? 'online' : 'offline';
   }
 
   handleGetListVehicles = () => {
@@ -954,7 +954,7 @@ class Vehicle extends PureComponent {
 
       params.pagination.sort = {};
 
-      params.pagination.sort.direction = sorter.order;
+      params.pagination.sort.direction = sorter.order.startsWith("desc") ? "desc" : "asc";
 
       params.pagination.sort.sortBy = sorter.field;
       

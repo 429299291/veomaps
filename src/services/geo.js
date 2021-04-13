@@ -20,29 +20,29 @@ export async function handleCheckPrimeLocation(areaId, payload) {
 }
 
 
-export async function updatePrimeLocation(primeLocation) {
-  return request(`/admins/prime-locations/${primeLocation.id}`, {
-    method: "PUT",
+export async function updateHub(hub) {
+  return request(`/api/admins/areas/hubs/${hub.id}`, {
+    method: "PATCH",
     body: {
-      ...primeLocation
+      ...hub
     }
   });
 }
 
 export async function getPrimeLocationByAreaId(areaId) {
-  return request(`/admins/prime-locations/area/${areaId}`, {
+  return request(`/api/admins/areas/${areaId}/hubs`, {
     method: "GET",
   });
 }
 
 export async function getGeoObject(areaId,lat, lng) {
-  return request(`/admins/areas/${areaId}/geo-object?lat=${lat}&lng=${lng}`, {
+  return request(`/api/admins/areas/${areaId}/geo-object?lat=${lat}&lng=${lng}`, {
     method: "GET",
   });
 }
 
 export async function deletePrimeLocation(id) {
-  return request(`/admins/prime-locations/${id}`, {
+  return request(`/api/admins/areas/hubs/${id}`, {
     method: "DELETE",
   });
 }

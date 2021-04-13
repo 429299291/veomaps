@@ -757,13 +757,14 @@ class Geo extends PureComponent {
           type: "geo/updatePrimeLocation",
           payload: Object.assign({}, {
             id: selectedExistedPrimeLocation.id, 
-            location: {lat: circle.center.lat(), lng: circle.center.lng()}, 
+            center: {lat: circle.center.lat(), lng: circle.center.lng()}, 
             radius:  Math.round(circle.radius), 
             minimum: selectedExistedPrimeLocation.minimum,
             target: selectedExistedPrimeLocation.target,
             description: selectedExistedPrimeLocation.description,      
             parkingBonus: selectedExistedPrimeLocation.parkingBonus,
             turnedOn: selectedExistedPrimeLocation.turnedOn,
+            priority: selectedExistedPrimeLocation.priority,
             areaId : selectedAreaId
           }) ,
           onSuccess: this.getAreaGeoInfo
@@ -1114,16 +1115,25 @@ class Geo extends PureComponent {
             </Row>
             <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
 
-              <Col sm={6} >
+              <Col sm={5} >
                   <span> Parking Bonus $ </span>
                   <NumberInput style={{ width: 120 }}  value={selectedExistedPrimeLocation.parkingBonus} onChange={parkingBonus =>  this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, parkingBonus: parkingBonus === "" ? null : parkingBonus}})} /> 
               </Col>
 
-              <Col sm={6} >
+              <Col sm={5} >
                   <span> Activated  </span>
                   <Select style={{ width: 120 }}  value={selectedExistedPrimeLocation.turnedOn} onChange={turnedOn =>  this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, turnedOn: turnedOn === false ? false : true}})}>
                       <Option value={true}> true </Option>
                       <Option value={false}> false </Option>
+                  </Select> 
+              </Col>
+              <Col sm={5} >
+                  <span> Priority  </span>
+                  <Select style={{ width: 120 }}  value={selectedExistedPrimeLocation.priority} onChange={priority =>  this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, priority: priority}})}>
+                      <Option value={0}> 0 </Option>
+                      <Option value={1}> 1 </Option>
+                      <Option value={2}> 2 </Option>
+                      <Option value={3}> 3 </Option>
                   </Select> 
               </Col>
             </Row>

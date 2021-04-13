@@ -85,7 +85,7 @@ class BaseView extends Component {
 
 
   handleUpdateMe = () => {
-    const {form, dispatch} = this.props;
+    const {form, dispatch, currentUser} = this.props;
 
 
     if (form.isFieldsTouched())
@@ -93,7 +93,10 @@ class BaseView extends Component {
         if (err) return;
 
         form.resetFields();
+        
+        //fieldsValue.password = currentUser.basic.password;
 
+        //console.log(currentUser);
 
         dispatch({
           type: "user/updateMe",
@@ -115,7 +118,16 @@ class BaseView extends Component {
       <div className={styles.baseView} ref={this.getViewDom}>
         <div className={styles.left}>
           <Form layout="vertical" onSubmit={this.handleSubmit} hideRequiredMark>
-            <FormItem label="Username">
+          <FormItem label="Phone Number">
+              {getFieldDecorator('phone', {
+                rules: [
+                  {
+                    required: true                    
+                  },
+                ],
+              })(<Input />)}
+            </FormItem>
+            {/* <FormItem label="Username">
               {getFieldDecorator('username', {
                 rules: [
                   {
@@ -144,7 +156,7 @@ class BaseView extends Component {
                   },
                 ],
               })(<Input />)}
-            </FormItem>
+            </FormItem> */}
             <Button type="primary"  onClick={this.handleUpdateMe}>
               <FormattedMessage
                 id="app.settings.basic.update"

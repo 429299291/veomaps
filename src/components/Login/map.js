@@ -13,7 +13,7 @@ export default {
     rules: [
       {
         required: true,
-        message: 'Please enter username!',
+        message: 'Please enter your veo email address',
       },
     ],
   },
