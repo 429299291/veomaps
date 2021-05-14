@@ -10,6 +10,7 @@ import {
   endRide,
   getCustomerRides,
   refundRide,
+  getRefundCalculateResult
 } from "@/services/ride";
 import { message } from "antd";
 
@@ -67,6 +68,15 @@ export default {
         message.error("Fail to get all rides.");
       }
       
+    },
+    *getRefundCalculateResult({ id, payload, onSuccess }, { call, put }) {
+      const data = yield call(getRefundCalculateResult, id, payload);
+      
+      if (data) {
+        onSuccess && onSuccess(data);
+      } else {
+        message.error("Fail to get all rides.");
+      }
     },
     *image({ rideId, onSuccess, onError }, { call, put }) {
       const url = yield call(getRideImage, rideId);

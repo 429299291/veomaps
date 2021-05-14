@@ -67,7 +67,6 @@ class RideRefundForm extends PureComponent {
       dispatch({
         type: "rides/transaction",
         id: ride.id,
-        onSuccess: 
       });
 
     };

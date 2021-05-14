@@ -18,7 +18,7 @@ export async function getAdminRidesTotal(params) {
 
 export async function refundRide(id,fieldValues ) {
   return request(
-    `/admins/rides/${id}/refund`,
+    `/api/admins/rides/${id}/refund`,
     {
       method: "POST",
       body: fieldValues
@@ -74,3 +74,14 @@ export async function getRideDetail(id) {
     method: "GET"
   });
 }
+
+export async function getRefundCalculateResult(id, payload) {
+  return request(`/api/admins/rides/${id}/refund/calculate`, {
+    method: "POST",
+    body: {
+      ...payload
+    }
+  });
+}
+
+

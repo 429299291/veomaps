@@ -112,7 +112,9 @@ const RefundForm = Form.create()(props => {
     handleModalVisible,
     form,
     handleRefundRide,
-    ride
+    ride,
+    handleGetRideRefundCalculateResult,
+    rideRefundCalculateResult
   } = props;
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
@@ -123,36 +125,54 @@ const RefundForm = Form.create()(props => {
       } else {
         form.resetFields();
 
-        handleRefundRide(ride.id, fieldsValue);
+        const payload = {
+          refundType: fieldsValue.refundType, 
+          refundReason: refundReason[fieldsValue.refundReason],
+          note: fieldsValue.note
+        }
+
+        if (rideRefundCalculateResult) {
+          const refundDetail = rideRefundCalculateResult.refundDetail;
+          payload.refundDetail = refundDetail;
+        }
+
+        //console.log(payload);
+
+        handleRefundRide(ride.id, payload);
+
       }
 
 
     });
   };
 
+  const shouldOkButtonDisable = form.getFieldValue("refundWay") === "PARTIAL_REFUND" && !rideRefundCalculateResult;
+
   return (
     <Modal
       destroyOnClose
       title="Refund Ride"
       visible={isModalVisible}
-      onOk={() => okHandle()}
+      width="800px"
+      onOk={okHandle}
       onCancel={() => handleModalVisible(false)}
-
+      okButtonProps={{disabled:  shouldOkButtonDisable}}
+      okText="Refund"
     >
 
       <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 18 }}
         label="Refund Type"
       >
         {form.getFieldDecorator("refundType", {
-          initialValue: 1
+          initialValue: "DEPOSIT"
         })(<Select >
-          <Option value={1}>
+          <Option value={"DEPOSIT"}>
             Deposit
             </Option>
-          <Option value={2}>
-            Credi Card
+          <Option value={"CREDIT_CARD"}>
+            Credit Card
             </Option>
         </Select>)}
       </FormItem>
@@ -174,8 +194,8 @@ const RefundForm = Form.create()(props => {
         </Select>)}
       </FormItem>
       {form.getFieldValue("refundReason") === 0 && <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 18 }}
         label="Notes"
       >
         {form.getFieldDecorator("note", {
@@ -189,10 +209,114 @@ const RefundForm = Form.create()(props => {
           ]
         })(<TextArea autosize={{ minRows: 3, maxRows: 10 }} />)}
       </FormItem>}
+      <FormItem
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 18 }}
+        label="Refund Way"
+      >
+        {form.getFieldDecorator("refundWay", {
+          initialValue: "FULLY_REFUND"
+        })(<Select >
+          <Option value={"FULLY_REFUND"}>
+            Fully Refund
+              </Option>
+          <Option value={"PARTIAL_REFUND"}>
+            Partial Refund
+            </Option>
+        </Select>)}
+      </FormItem>
+      {form.getFieldValue("refundWay") === "PARTIAL_REFUND" &&
+        <Row>
+          <Col span={6} />
+          <Col span={18} >
+            <span> originally {ride.minutes} minutes. </span>
+            <span>
+              Refund Ride as
+                {form.getFieldDecorator("minutes", {
+                initialValue: 1
+              })(<InputNumber style={{margin: "0.5em", width:"10%"}} />)}
+              minutes
+            </span>
+            <Button 
+              style={{marginLeft: "2em"}}
+              type="primary"
+              onClick={() => {
+
+                const minutes = form.getFieldValue("minutes");
+                const refundType = form.getFieldValue("refundType");
+
+                handleGetRideRefundCalculateResult(ride.id, { minutes: minutes, refundType: refundType });
+
+              }}
+            > 
+            Estimate
+            </Button>
+          </Col>
+        </Row>
+      }
+
+      {
+        rideRefundCalculateResult && form.getFieldValue("refundWay") === "PARTIAL_REFUND" &&
+        <Row>
+          <Col span={6} />
+          <Col span={18}>
+            {rideRefundCalculateResult.info &&  <div style={{marginTop: "0.5em"}}> <Icon type="warning"  /> {rideRefundCalculateResult.info}  </div>}
+            
+            <table className={styles.refundTable} style={{marginTop: "0.5em"}} >
+                            
+              <tbody>
+                <tr>
+                  <th>original total amount</th>
+                  <th>new total amount</th>
+                  <th>total to refund</th>
+                  {/* <th>mfm</th>
+                      <th>mfrm</th>
+                      <th>charge frequency</th>
+                      <th>charge price</th>
+                      <th>unlock fee</th>
+                      <th>is low income</th>
+                      <th> max charge </th> */}
+                </tr>
+                <tr>
+                  <th>${-1 * (rideRefundCalculateResult.rideTransaction.depositChange
+                    + rideRefundCalculateResult.rideTransaction.rideCreditChange
+                    - rideRefundCalculateResult.rideTransaction.paymentCharge)
+                  }</th>
+                  <th>${rideRefundCalculateResult.billingInfo.subTotal
+                    + rideRefundCalculateResult.billingInfo.tax}</th>
+
+                  <th>${-1 * (rideRefundCalculateResult.rideTransaction.depositChange
+                    + rideRefundCalculateResult.rideTransaction.rideCreditChange
+                    - rideRefundCalculateResult.rideTransaction.paymentCharge)
+                    - rideRefundCalculateResult.billingInfo.subTotal
+                    - rideRefundCalculateResult.billingInfo.tax}</th>
+                </tr>
+              </tbody>
+            </table>
+            
+            <div style={{marginTop: "0.5em"}}>estimated refund transaction: </div>
+            
+              <table className={styles.refundTable} style={{marginTop: "0.5em"}} >
+                <tbody>
+                  <tr>
+                    <th>refund to deposit</th>
+                    <th>refund to ride credit</th>
+                    <th>refund to credit card</th>
+                  </tr>
+                  <tr>
+                    <th>${rideRefundCalculateResult.refundDetail.refundToDeposit}</th>
+                    <th>${rideRefundCalculateResult.refundDetail.refundToRideCredit}</th>
+                    <th>${rideRefundCalculateResult.refundDetail.refundToCard}</th>
+                  </tr>
+                </tbody>
+              </table>
+            
+          </Col>                  
+        </Row>
+      }
     </Modal>
   );
 });
-
 
 const EndRideForm = Form.create()(props => {
   const {
@@ -249,6 +373,7 @@ class Ride extends PureComponent {
     isEndRideVisible: false,
     filterCriteria: { currentPage: 1, pageSize: 10 },
     selectedRecord: null,
+    rideRefundCalculateResult: null
   };
 
   columns = [
@@ -376,6 +501,17 @@ class Ride extends PureComponent {
     });
   };
 
+  handleGetRideRefundCalculateResult = (id, payload) => {
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: "rides/getRefundCalculateResult",
+      payload: payload,
+      id: id,
+      onSuccess: result => this.setState({ rideRefundCalculateResult: result })
+    });
+  };
+
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
@@ -468,7 +604,8 @@ class Ride extends PureComponent {
 
     this.setState({
       isRefundModalVisible: !!flag,
-      selectedRecord: record
+      selectedRecord: record,
+      rideRefundCalculateResult: null
     });
 
   }
@@ -559,7 +696,7 @@ class Ride extends PureComponent {
   };
 
 
-  handleRefundRide = (rideId, fieldValues) => {
+  handleRefundRide = (rideId, payload) => {
     const { dispatch } = this.props;
 
     if (!authority.includes("refund.ride"))
@@ -567,7 +704,7 @@ class Ride extends PureComponent {
 
     dispatch({
       type: "rides/refund",
-      payload: fieldValues,
+      payload: payload,
       id: rideId,
       onSuccess: this.handleGetRides
     });
@@ -769,7 +906,8 @@ class Ride extends PureComponent {
       customerDetailModalVisible,
       selectedCustomerId,
       rideImageUrl,
-      isRefundModalVisible
+      isRefundModalVisible,
+      rideRefundCalculateResult
     } = this.state;
 
     const endRideMethod = {
@@ -826,7 +964,7 @@ class Ride extends PureComponent {
               handleDetailModalVisible={this.handleDetailModalVisible}
             />
           )}
-             
+
 
         {vehicleDetailModalVisible && selectedVehicleId && authority.includes("get.vehicle") && (
           <VehicleDetail
@@ -851,6 +989,9 @@ class Ride extends PureComponent {
             handleModalVisible={this.handleRefundModalVisible}
             handleRefundRide={this.handleRefundRide}
             ride={selectedRecord}
+            handleGetRideRefundCalculateResult={this.handleGetRideRefundCalculateResult}
+            rideRefundCalculateResult={rideRefundCalculateResult}
+
           />
         }
 
