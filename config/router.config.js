@@ -1,5 +1,6 @@
 export default [
   // user
+  { path: "/", redirect: "/dashboard/main" },
   {
     path: "/user",
     component: "../layouts/UserLayout",

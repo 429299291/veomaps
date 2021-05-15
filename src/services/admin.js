@@ -1,9 +1,10 @@
 import { stringify } from "qs";
 import request from "@/utils/request";
-
-export async function getAdmins(params) {
-  return request(`/admins`, {
-    method: "GET"
+import { message, Button } from "antd";
+export async function getAdmins(payload) {
+  return request(`/api/admins/search`, {
+    method: "POST",
+    body: payload
   });
 }
 
@@ -28,8 +29,8 @@ export async function removeAdmin(id) {
 }
 
 export async function updateAdmin(id, params) {
-  return request(`/admins/${id}`, {
-    method: "PUT",
+  return request(`/api/admins/${id}`, {
+    method: "PATCH",
     body: {
       ...params
     }
@@ -37,17 +38,34 @@ export async function updateAdmin(id, params) {
 }
 
 export async function updateAdminPassword(adminId, newPassword) {
-  return request(`/admins/${adminId}/update_password`, {
-    method: "POST",
+  return request(`/api/admins/${adminId}`, {
+    method: "PATCH",
     body: {
-      newPassword: newPassword
+      password: newPassword
     }
   });
 }
 
 export async function registerByEmail(email) {
-  return request(`/admins/register_by_email`, {
+  return request(`/api/admins`, {
     method: "POST",
     body: email
   });
+}
+export async function adminSearch(payload) {
+  return request("/api/admins/search", {
+    method: "POST",
+    body: payload
+  })
+    .then(response => {
+      if (response.content.length > 0) {
+        message.success("search successful");
+      } else {
+        message.success("none");
+      }
+      return response;
+    })
+    .catch(err => {
+      console.log(err);
+    });
 }
