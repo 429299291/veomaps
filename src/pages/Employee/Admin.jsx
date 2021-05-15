@@ -335,7 +335,6 @@ const UpdateForm = Form.create()(props => {
     roles,
     record
   } = props;
-  console.log(record);
   const okHandle = () => {
     if (form.isFieldsTouched())
       form.validateFields((err, fieldsValue) => {
@@ -418,9 +417,6 @@ const UpdateForm = Form.create()(props => {
           })(
             <Select placeholder="select" style={{ width: "100%" }}>
               {roles.map(role => {
-                // if (role.id === superAdminId) return;
-                // else
-                // console.log(role);
                   return (
                     <Option key={role.id} value={role.id}>
                       {" "}
@@ -682,7 +678,6 @@ class Admin extends PureComponent {
 
   handleStandardTableChange = (page) => {
     const { dispatch, admins } = this.props;
-    console.log(page);
     dispatch({
       type: "admins/getadminsdata",
       saveState:this.saveState,
