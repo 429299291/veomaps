@@ -51,7 +51,6 @@ export default {
     *update({ id, payload, onSuccess, onError,pagination }, { call, put }) {
       payload.roleId = payload.role.id
       const response = yield call(updateAdmin, id, payload); // put
-      console.log(pagination);
       yield put({
         type: "get",
         payload:{
@@ -133,7 +132,13 @@ export default {
       const response = yield call(adminSearch, payload);
       yield put({
         type: "newSave",
-        payload: response.content
+        payload: response.content,
+        pagenation:{
+          page:response.page,
+          pageSize: response.pageSize ? response.pageSize :10,
+          totalPages:response.totalPages,
+          totalSize:response.totalSize
+        }
       });
       // saveState(response.content);
     },

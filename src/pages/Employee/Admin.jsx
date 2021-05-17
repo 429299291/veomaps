@@ -13,6 +13,7 @@ import {
   Modal,
   Steps,
   Radio,
+  Space ,
   Tag,
   Divider,
   message,
@@ -28,11 +29,13 @@ import { getAuthority } from "@/utils/authority";
 const authority = getAuthority();
 
 const superAdminId = 1;
-const { Search } = Input;
+const { Search,TextAdmin } = Input;
+
 const FormItem = Form.Item;
 const { Step } = Steps;
-const { TextAdmin } = Input;
 const { Option } = Select;
+import { AudioOutlined } from '@ant-design/icons';
+
 const RadioGroup = Radio.Group;
 const getValue = obj =>
   Object.keys(obj)
@@ -349,7 +352,6 @@ const UpdateForm = Form.create()(props => {
       });
     else handleModalVisible();
   };
-
   return (
     <Modal
       destroyOnClose
@@ -393,14 +395,7 @@ const UpdateForm = Form.create()(props => {
         label="phone"
       >
         {form.getFieldDecorator("phone", {
-          rules: [
-            {
-              required: true,
-              message: "phone is required",
-              min: 1
-            }
-          ],
-          validateTrigger: 'onBlur',
+          rules: [{ required: true, message: 'Please input your username!' }],
           initialValue: record.phone
         })(<Input placeholder="Please Input" />)}
       </FormItem>
@@ -648,7 +643,7 @@ class Admin extends PureComponent {
     this.setState({ filteredAdmins: response});
   };
   handleGetAdmins = () => {
-    const { dispatch } = this.props;
+    const { dispatch,admins } = this.props;
     const { filterCriteria } = this.state;
 
     dispatch({
@@ -656,7 +651,7 @@ class Admin extends PureComponent {
       // payload: filterCriteria,
       payload:{
         pagination: {
-          page: 0,
+          page:admins.pagenation?admins.pagenation.page-1:0,
           pageSize: 10,
         }
       },
@@ -683,7 +678,7 @@ class Admin extends PureComponent {
       saveState:this.saveState,
       payload: {
         pagination: {
-          page: page.current,
+          page: page.current-1,
           pageSize: page.pageSize,
         }
       }
@@ -706,13 +701,13 @@ class Admin extends PureComponent {
               className={styles.search}
               enterButton
             />
-            <Button
+            {/* <Button
               className={styles.button}
               style = {{display: this.state.arrlength ? 'inline-block': 'none'}}
               onClick={() => this.getAdminsAll()}
             >
               Reset
-            </Button>
+            </Button> */}
             {/* <FormItem label="Name">
               {getFieldDecorator("name")(
                 <Input placeholder="Name" />
@@ -761,7 +756,7 @@ class Admin extends PureComponent {
         payload:{
           pagination: {
             page: 0,
-            pageSize: 10,
+            pageSize: admins.pagenation.pageSize,
           }
         },
       });
@@ -770,7 +765,11 @@ class Admin extends PureComponent {
       dispatch({
         type: "admins/adminSearch",
         payload: {
-          name: value
+          name: value,
+          pagination: {
+            page: 0,
+            pageSize: admins.pagenation.pageSize,
+          }
         },
       });
     } else if (
@@ -781,14 +780,22 @@ class Admin extends PureComponent {
       dispatch({
         type: "admins/adminSearch",
         payload: {
-          phone: value
+          phone: value,
+          pagination: {
+            page: 0,
+            pageSize: admins.pagenation.pageSize,
+          }
         },
       });
     } else if (/@/.test(value) && value.includes("@") && value.length > 0) {
       dispatch({
         type: "admins/adminSearch",
         payload: {
-          email: value
+          email: value,
+          pagination: {
+            page: 0,
+            pageSize: admins.pagenation.pageSize,
+          }
         },
       });
     } else {
@@ -862,7 +869,7 @@ class Admin extends PureComponent {
       payload: fields,
       id: id,
       pagination:{
-        page:admins.pagenation.page,
+        page:admins.pagenation.page-1,
         pageSize:admins.pagenation.pageSize
       },
       onSuccess: this.handleGetAdmins
@@ -919,16 +926,6 @@ class Admin extends PureComponent {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
-              {/*{authority.includes("add.admin") && (*/}
-                {/*<Button*/}
-                  {/*icon="plus"*/}
-                  {/*type="primary"*/}
-                  {/*onClick={() => this.handleModalVisible(true)}*/}
-                {/*>*/}
-                  {/*Add*/}
-                {/*</Button>*/}
-              {/*)}*/}
-
               {
                 this.renderSimpleForm()
               }
@@ -942,7 +939,7 @@ class Admin extends PureComponent {
               // data={{ list: filteredAdmins, pagination: {
               data={{ list: admins.payload, pagination: {
                 total: totalSize,
-                defaultCurrent:1,
+                defaultCurrent:admins.pagenation?admins.page:1,
               } }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}

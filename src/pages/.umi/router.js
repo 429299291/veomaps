@@ -8,11 +8,6 @@ let Router = require('dva/router').routerRedux.ConnectedRouter;
 
 let routes = [
   {
-    "path": "/",
-    "redirect": "/dashboard/main",
-    "exact": true
-  },
-  {
     "path": "/user",
     "component": dynamic({ loader: () => import('../../layouts/UserLayout'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
     "routes": [

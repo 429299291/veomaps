@@ -70,7 +70,7 @@ const MessageAreaSender = Form.create()(props => {
                                 min: 1
                                 }
                         ]
-                        })(<TextArea autoSize={{minRows: 20, maxRows: 23}} />)}
+                        })(<TextArea autosize={{minRows: 20, maxRows: 23}} />)}
                     </Col>
             </Row>
 
