@@ -80,7 +80,8 @@ const EmailRegisterForm = Form.create()(props => {
           rules: [
             {
               required: true,
-              message: "email cant be empty.",
+              type:'email',
+              message: "The email format is incorrect",
               min: 5
             }
           ]
@@ -95,8 +96,9 @@ const EmailRegisterForm = Form.create()(props => {
           rules: [
             {
               required: true,
-              message: "phone cant be empty.",
-              min: 5
+              message: "The phone number must be ten digits",
+              min: 10,
+              max:13
             }
           ]
         })(<Input placeholder="Please Input" />)}
@@ -367,8 +369,12 @@ const UpdateForm = Form.create()(props => {
             {
               required: true,
               message: "email is required",
-              min: 1
-            }
+              min: 3,
+            },
+            {
+              message: "The email format is incorrect",
+              type:'email'
+            },
           ],
           initialValue: record.email
         })(<Input placeholder="Please Input" />)}
@@ -396,7 +402,7 @@ const UpdateForm = Form.create()(props => {
         label="phone"
       >
         {form.getFieldDecorator("phone", {
-          rules: [{ required: true, message: 'Please input your username!' }],
+          rules: [{ required: true, message: 'Please input your username!',min:10 }],
           initialValue: record.phone
         })(<Input placeholder="Please Input" />)}
       </FormItem>
@@ -406,7 +412,7 @@ const UpdateForm = Form.create()(props => {
             rules: [
               {
                 required: true,
-                message: "Role is required"
+                message: "Role is required",
               }
             ],
             initialValue: record.role ? record.role.id : null
@@ -654,7 +660,7 @@ class Admin extends PureComponent {
       // payload: filterCriteria,
       payload:{
         pagination: {
-          page:admins.pagenation?admins.pagenation.page-1:0,
+          page:0,
           pageSize: 10,
         }
       },
