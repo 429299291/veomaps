@@ -1002,7 +1002,6 @@ class Area extends PureComponent {
       detailModalVisible,
       selectedRecord
     } = this.state;
-
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible

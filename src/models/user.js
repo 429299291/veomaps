@@ -85,6 +85,8 @@ export default {
       }
 
       response.basic.phone = newReponse.phone;
+      response.basic.areaIds = newReponse.areaIds;
+      // console.log(response.basic.areaIds);
 
       yield put({
         type: "saveCurrentUser",

@@ -32,21 +32,6 @@ export default {
           totalSize:response.totalSize
         }
       });
-
-
-      // if (Array.isArray(response)) {
-      //   response.map(admin => (admin.key = admin.id));
-      // }
-
-     
-      // yield put({
-      //   type: "save",
-      //   payload: Array.isArray(response) ? response : []
-      // });
-
-      // if (typeof onSuccess === "function") {
-      //   onSuccess();
-      // }
     },
     *update({ id, payload, onSuccess, onError,pagination }, { call, put }) {
       payload.roleId = payload.role.id

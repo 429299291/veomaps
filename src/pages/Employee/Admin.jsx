@@ -35,6 +35,7 @@ const FormItem = Form.Item;
 const { Step } = Steps;
 const { Option } = Select;
 import { AudioOutlined } from '@ant-design/icons';
+import { string } from "prop-types";
 
 const RadioGroup = Radio.Group;
 const getValue = obj =>
@@ -502,7 +503,8 @@ class Admin extends PureComponent {
     updatePasswordModalVisible: false,
     registerEmailModalVisible: false,
     areas: [],
-    filteredAdmins: []
+    filteredAdmins: [],
+    search:''
   };
 
   columns = [
@@ -597,6 +599,7 @@ class Admin extends PureComponent {
     this.handleGetAdmins();
     this.handleGetRoles();
     this.handleGetAreas();
+    // console.log(this.props);
   }
 
   getRoleNameById = roleId => {
@@ -673,16 +676,28 @@ class Admin extends PureComponent {
 
   handleStandardTableChange = (page) => {
     const { dispatch, admins } = this.props;
-    dispatch({
-      type: "admins/getadminsdata",
-      saveState:this.saveState,
-      payload: {
-        pagination: {
-          page: page.current-1,
-          pageSize: page.pageSize,
+    if(this.state.search){
+      this.handleSearch({
+        value:this.state.search,
+        page: page.current-1,
+        // pagination: {
+        //   page: page.current >0 ?page.current-1 :0,
+        //   pageSize: page.pageSize,
+        // }
+      })
+    }else{
+      dispatch({
+        type: "admins/getadminsdata",
+        saveState:this.saveState,
+        payload: {
+          pagination: {
+            page: page.current >0 ?page.current-1 :0,
+            pageSize: page.pageSize,
+          }
         }
-      }
-    });
+      });
+    }
+
   };
 
   renderSimpleForm() {
@@ -746,9 +761,11 @@ class Admin extends PureComponent {
     );
   };
 
-  handleSearch = value => {
+  handleSearch = (value) => {
     const { dispatch, admins } = this.props;
-    value = value.trim();
+    if(typeof value === 'string'){
+      value = value.trim()
+    }
     if(!value){
       dispatch({
         type: "admins/get",
@@ -799,8 +816,22 @@ class Admin extends PureComponent {
         },
       });
     } else {
+      dispatch({
+        type: "admins/adminSearch",
+        payload: {
+          name: value.value,
+          pagination: {
+            page:value.page,
+            pageSize: admins.pagenation.pageSize,
+          }
+        },
+      });
       return false
     }
+    this.setState({
+      search:value
+    })
+    admins.pagenation.page = 0
   };
 
   handleModalVisible = flag => {
@@ -869,7 +900,7 @@ class Admin extends PureComponent {
       payload: fields,
       id: id,
       pagination:{
-        page:admins.pagenation.page-1,
+        page:admins.pagenation.page,
         pageSize:admins.pagenation.pageSize
       },
       onSuccess: this.handleGetAdmins
@@ -939,7 +970,8 @@ class Admin extends PureComponent {
               // data={{ list: filteredAdmins, pagination: {
               data={{ list: admins.payload, pagination: {
                 total: totalSize,
-                defaultCurrent:admins.pagenation?admins.page:1,
+                current:admins.pagenation?admins.pagenation.page+1:1,
+                defaultCurrent:1,
               } }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
