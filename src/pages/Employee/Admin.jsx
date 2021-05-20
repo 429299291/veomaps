@@ -402,7 +402,12 @@ const UpdateForm = Form.create()(props => {
         label="phone"
       >
         {form.getFieldDecorator("phone", {
-          rules: [{ required: true, message: 'Please input your username!',min:10 }],
+          rules: [
+            {
+              required:true,
+              message:'Phone is required',
+            }
+          ],
           initialValue: record.phone
         })(<Input placeholder="Please Input" />)}
       </FormItem>
@@ -562,7 +567,7 @@ class Admin extends PureComponent {
           <span />
         ) : (
           <Fragment>
-            {authority.includes("update.admin.detail") && (
+            {authority.includes("admin") && (
               <a onClick={() => this.handleUpdateModalVisible(true, record)}>
                 Update
               </a>
@@ -570,7 +575,7 @@ class Admin extends PureComponent {
 
             <Divider type="vertical" />
 
-            {authority.includes("update.admin.password") && (
+            {authority.includes("admin") && (
               <a
                 href="#"
                 onClick={() =>

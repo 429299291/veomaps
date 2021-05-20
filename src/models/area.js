@@ -25,8 +25,7 @@ export default {
 
   effects: {
     *get({ payload, onSuccess }, { call, put }) {
-      const response = yield call(getAdminAreas, payload);
-
+      const response = (yield call(getAdminAreas, payload)).content;
       if (Array.isArray(response)) {
         response.map(area => (area.key = area.id));
       }

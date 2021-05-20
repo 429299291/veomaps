@@ -190,6 +190,7 @@ export default {
     },
 
     *fetchDailyRideCounts({params}, { call, put }) {
+
       const response = yield call(getDailyRideCount, params);
 
       if (response) {
@@ -204,7 +205,6 @@ export default {
 
     *fetchStripeNetDeposit({params}, { call, put }) {
       const response = yield call(getStripeNetDeposit, params);
-      console.log(response);
 
       if (!isNaN(response)) {
         yield put({
@@ -218,7 +218,6 @@ export default {
 
     *fetchStripeNetCharge({params}, { call, put }) {
       const response = yield call(getStripeNetCharge, params);
-      console.log(response);
 
       if (!isNaN(response)) {
         yield put({
@@ -232,7 +231,6 @@ export default {
 
     *fetchStripeNetRefund({params}, { call, put }) {
       const response = yield call(getStripeNetRefund, params);
-      console.log(response);
 
       if (!isNaN(response)) {
         yield put({
@@ -249,7 +247,6 @@ export default {
     *fetchStripeNetDispute({params}, { call, put }) {
       const response = yield call(getStripeNetDispute, params);
 
-      console.log(response);
 
       if (!isNaN(response)){
         yield put({

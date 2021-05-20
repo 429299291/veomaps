@@ -197,14 +197,14 @@ class Error extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          {authority.includes("update.error.detail") && authority.includes("get.image.paths") &&
+          {authority.includes("vehicle") && authority.includes("get.image.paths") &&
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>
             Process
           </a>}
 
           <Divider type="vertical" />
 
-          {authority.includes("update.error.detail") &&
+          {authority.includes("vehicle") &&
           <Popconfirm
             title="Are you sure？"
             icon={<Icon type="question-circle-o" style={{ color: "red" }}/>}

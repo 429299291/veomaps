@@ -19,8 +19,9 @@ export function getAuthority(str) {
 }
 
 export function setAuthority(authority) {
-  const proAuthority = typeof authority === "string" ? [authority] : authority;
+  // authority = ['get.customer.detail',"create.customer"]
 
+  const proAuthority = typeof authority === "string" ? [authority] : authority;
   return localStorage.setItem(
     "veoride-authority",
     JSON.stringify(proAuthority)
