@@ -1046,7 +1046,6 @@ class Geo extends PureComponent {
             </Col>
           ) : (
             <Col md={24} sm={24}>
-              {authority.includes("update.fence") && (
                 <Button
                   type="primary"
                   onClick={() => this.handleEditCenter(true)}
@@ -1055,8 +1054,6 @@ class Geo extends PureComponent {
                 >
                   Edit Center
                 </Button>
-              )}
-              {authority.includes("create.fence") && (
                 <Button
                   type="primary"
                   onClick={() => this.handleCreateFence(true)}
@@ -1065,7 +1062,7 @@ class Geo extends PureComponent {
                 >
                   Add Fence
                 </Button>
-              )}
+
 
               {/* </Col>{authority.includes("create.primeLocation") && ( */}
                 {true && (
@@ -1139,7 +1136,7 @@ class Geo extends PureComponent {
             </Row>
             
             <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
-              {authority.includes("get.hub.upload.url") && <Col sm={4} >
+               <Col sm={4} >
                 <Upload
                   name="avatar"
                   listType="picture-card"
@@ -1161,7 +1158,7 @@ class Geo extends PureComponent {
                 }
 
               </Col> 
-            }
+            
               <Col sm={12} >
                   { hubImageLoading ? 
                     <div style={{paddingLeft: "300px", paddingTop: "200px"}}>

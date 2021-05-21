@@ -326,13 +326,11 @@ const UpdateForm = Form.create()(props => {
           <span> {customerActiveDays} </span>
         </FormItem> 
 
-        {authority.includes("get.customer.approved.violation.count") && 
+
 
           <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Customer Approved Violation Count">
             <span> {customerApprovedViolationCount} </span>
           </FormItem> 
-
-        }
       
 
       <Row>
@@ -842,7 +840,7 @@ class CustomerDetail extends PureComponent {
             icon={<Icon type="question-circle-o" style={{ color: "red" }} />}
             onConfirm={() => this.handleDeleteCoupon(record.id)}
           >
-            {authority.includes("delete.customer.coupons") && (
+            {authority.includes("") && (
               <a href="#" style={{ color: "red" }}>
                 Delete
               </a>
@@ -900,7 +898,7 @@ class CustomerDetail extends PureComponent {
       render: (text, record) => {
         return <Fragment>
           {!record.end &&
-            authority.includes("end.ride") && (
+            authority.includes("") && (
               <Popconfirm
                 title="Are you Sure？"
                 icon={
@@ -967,7 +965,7 @@ class CustomerDetail extends PureComponent {
       title: "Refund",
       render: (text, record) => (
         <Fragment>
-          {authority.includes("refund.customer.charge") && (
+          {authority.includes("") && (
             <Popconfirm
               title="Are you Sure？"
               icon={
@@ -1130,12 +1128,6 @@ class CustomerDetail extends PureComponent {
   handleGetCustomerApprovedViolationCount = customerId => {
     const { dispatch } = this.props;
 
-    if (!authority.includes("get.customer.approved.violation.count")) {
-
-      return;
-
-    }
-
     dispatch({
       type: "violation/getCustomerApprovedViolationCount",
       customerId: customerId,
@@ -1202,10 +1194,6 @@ class CustomerDetail extends PureComponent {
   handleGetCustomerTransactions = () => {
     const { dispatch, customerId } = this.props;
 
-    if (!authority.includes("get.customer.transactions")) {
-      return;
-    }
-
     dispatch({
       type: "customers/getTransactions",
       customerId: customerId,
@@ -1257,7 +1245,6 @@ class CustomerDetail extends PureComponent {
       refundReason,
       customerApprovedViolationCount
     } = this.state;
-
     const {
       areas,
       coupons,
@@ -1291,7 +1278,7 @@ class CustomerDetail extends PureComponent {
       >
         {customerDetail && (
           <div>
-            {authority.includes("update.customer.detail") && (
+            {(
               <Card title="Update Customer">
                 <UpdateForm
                   areas={areas.data}
@@ -1303,7 +1290,7 @@ class CustomerDetail extends PureComponent {
               </Card>
             )}
 
-          {authority.includes("get.customer.transactions") && customerTransactions &&
+          { customerTransactions &&
             <Card title="Customer Transactions" style={{ marginTop: "2em" }}>
 
               <Table
@@ -1315,7 +1302,7 @@ class CustomerDetail extends PureComponent {
             </Card> 
           }
 
-            {authority.includes("get.rides") &&
+            {
             <Card title="Customer Rides" style={{ marginTop: "2em" }}>
               {customerRides && <div style={{marginBottom: "1em"}}> count : {customerRides.length}</div>  }
             
@@ -1334,7 +1321,7 @@ class CustomerDetail extends PureComponent {
               )}
             </Card> }
 
-            {authority.includes("get.customer.payment") &&
+            {
             <Card title="Payment History" style={{ marginTop: "2em" }}>
               <Table
                 dataSource={customerPayments}
@@ -1355,7 +1342,7 @@ class CustomerDetail extends PureComponent {
               )}
             </Card>}
 
-            {authority.includes("get.customer.coupons") && (
+            {(
               <Card title="Customer Coupons" style={{ marginTop: "2em" }}>
                 <Row>
                   <Col>
@@ -1367,7 +1354,7 @@ class CustomerDetail extends PureComponent {
                   </Col>
                 </Row>
 
-                {authority.includes("assign.coupon.to.customer") && (
+                { (
                   <AddCouponForm
                     coupons={this.filterCouponsByAreaId(
                       coupons.data,
@@ -1379,14 +1366,14 @@ class CustomerDetail extends PureComponent {
               </Card>
             )}
 
-            {authority.includes("get.customer.available.membership") &&
+            {
             <Card title="Membership" style={{ marginTop: "2em" }}>
               {customerMembership && Object.keys(customerMembership).map(
                 (key, index) => <div key={index}>
                   {`${key} :  ${(key === 'startTime' || key === 'endTime') ? moment(customerMembership[key]).format("YYYY-MM-DD HH:mm:ss") : customerMembership[key]}`}
                 </div>
               )}
-              {authority.includes("customer.buy.membership") &&
+              {
                 <MembershipForm
                   memberships={availableMemberships}
                   handleBuyMembership={this.handleBuyMembership}

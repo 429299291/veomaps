@@ -22,28 +22,6 @@ export default {
       if (response) {
         onSuccess(response);
       }
-
-      // if (response && response.accessToken) {
-      //   localStorage.setItem(ACCESS_TOKEN, response.accessToken);
-      //   localStorage.setItem(
-      //     TOKEN_CREATE_DATE,
-      //     new Date().getTime().toString()
-      //   );
-
-      //   setAuthority("basic.admin");
-      //   reloadAuthorized();
-
-      //   if (typeof onSuccess === "function") {
-      //     onSuccess();
-      //   }
-
-      //   yield put(routerRedux.replace("/"));
-      // } else {
-      //   notification.error({
-      //     message: "Login Failed",
-      //     description: "wrong password or username"
-      //   });
-      // }
     },
     *phoneVerification({ payload , onSuccess, onFail }, { call, put }) {
       const response = yield call(verifyPhoneNumber, payload);

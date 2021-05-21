@@ -39,7 +39,6 @@ let routes = [
   {
     "path": "/",
     "redirect": "/vehicle-management/ride",
-    "authority": "vehicle",
     "exact": true
   },
   {
@@ -172,7 +171,6 @@ let routes = [
           {
             "path": "/area/promo-management/",
             "name": "Promo Management",
-            "icon": "barcode",
             "component": dynamic({ loader: () => import('../area/Promo/Promo'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
             "authority": "area.promo",
             "exact": true
@@ -180,7 +178,6 @@ let routes = [
           {
             "path": "/area/deposit-management/",
             "name": "Deposit Management",
-            "icon": "dollar",
             "component": dynamic({ loader: () => import('../area/Deposit/Deposit'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
             "authority": "area.deposit",
             "exact": true
@@ -188,7 +185,6 @@ let routes = [
           {
             "path": "/area/membership-management",
             "name": "Membership Management",
-            "icon": "wallet",
             "authority": "area.membership",
             "component": dynamic({ loader: () => import('../area/Membership/Membership'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
             "exact": true

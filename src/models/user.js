@@ -62,27 +62,6 @@ export default {
       const response = yield call(getMe);
       const newReponse = yield call(getNewMe);
 
-      // const flatUrlToPrivileges = Object.keys(UrlToPrivilege)
-      //   .map(key => UrlToPrivilege[key])
-      //   .reduce((result, group) => Object.assign({}, result, group), {});
-
-      // if (response.privileges) {
-      //   const permissions = response.privileges.reduce((result, privilege) => {
-      //     const permission =
-      //       flatUrlToPrivileges[`${privilege.method} ${privilege.url}`];
-      //     if (permission) {
-      //       result.push(permission);
-      //     }
-
-      //     return result;
-      //   }, []);
-
-      //   permissions.push("basic.admin");
-
-      //   setAuthority(permissions);
-      //   reloadAuthorized();
-      // }
-      
       if (newReponse.role) {
       let  permissions = newReponse.role.permissions
         permissions = permissions.map(permission=>{
