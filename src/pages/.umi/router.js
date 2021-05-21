@@ -38,8 +38,8 @@ let routes = [
   },
   {
     "path": "/",
-    "redirect": "/dashboard/main",
-    "authority": "dashboard",
+    "redirect": "/vehicle-management/ride",
+    "authority": "vehicle",
     "exact": true
   },
   {
@@ -83,7 +83,7 @@ let routes = [
             "exact": true
           },
           {
-            "path": "/shop-management/",
+            "path": "/shop-management/listing",
             "name": "Listing",
             "component": dynamic({ loader: () => import('../Shop/Listing'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
             "exact": true
@@ -118,12 +118,6 @@ let routes = [
             "exact": true
           },
           {
-            "path": "/vehicle-management/violations",
-            "name": "Violation",
-            "component": dynamic({ loader: () => import('../Vehicle/VehicleViolation'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
-            "exact": true
-          },
-          {
             "component": () => React.createElement(require('C:/Users/42929/Desktop/veo-admin-website/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })
           }
         ]
@@ -144,6 +138,12 @@ let routes = [
             "path": "/customer-management/notifications",
             "name": "Notifications",
             "component": dynamic({ loader: () => import('../CustomerNotification/Notifications'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
+            "exact": true
+          },
+          {
+            "path": "/customer-management/violations",
+            "name": "Violation",
+            "component": dynamic({ loader: () => import('../Customer/VehicleViolation'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
             "exact": true
           },
           {
@@ -170,33 +170,33 @@ let routes = [
             "exact": true
           },
           {
+            "path": "/area/promo-management/",
+            "name": "Promo Management",
+            "icon": "barcode",
+            "component": dynamic({ loader: () => import('../area/Promo/Promo'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
+            "authority": "area.promo",
+            "exact": true
+          },
+          {
+            "path": "/area/deposit-management/",
+            "name": "Deposit Management",
+            "icon": "dollar",
+            "component": dynamic({ loader: () => import('../area/Deposit/Deposit'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
+            "authority": "area.deposit",
+            "exact": true
+          },
+          {
+            "path": "/area/membership-management",
+            "name": "Membership Management",
+            "icon": "wallet",
+            "authority": "area.membership",
+            "component": dynamic({ loader: () => import('../area/Membership/Membership'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
+            "exact": true
+          },
+          {
             "component": () => React.createElement(require('C:/Users/42929/Desktop/veo-admin-website/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })
           }
         ]
-      },
-      {
-        "path": "/membership-management",
-        "name": "Membership Management",
-        "icon": "wallet",
-        "authority": "area.membership",
-        "component": dynamic({ loader: () => import('../Membership/Membership'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
-        "exact": true
-      },
-      {
-        "path": "/promo-management/",
-        "name": "Promo Management",
-        "icon": "barcode",
-        "component": dynamic({ loader: () => import('../Promo/Promo'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
-        "authority": "area.promo",
-        "exact": true
-      },
-      {
-        "path": "/deposit-management/",
-        "name": "Deposit Management",
-        "icon": "dollar",
-        "component": dynamic({ loader: () => import('../Deposit/Deposit'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
-        "authority": "area.deposit",
-        "exact": true
       },
       {
         "path": "/price-management/",

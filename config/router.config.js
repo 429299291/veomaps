@@ -10,7 +10,7 @@ export default [
       { path: "/user/register-result", component: "./User/RegisterResult" }
     ]
   },
-  { path: "/", redirect: "/dashboard/main", authority: "dashboard"},
+  { path: "/", redirect: "/vehicle-management/ride", authority: "vehicle"},
 
   // app
   {
@@ -48,7 +48,7 @@ export default [
             component: "./Shop/Order",
           },
           {
-            path: "/shop-management/",
+            path: "/shop-management/listing",
             name: "Listing",
             component: "./Shop/Listing",
           }
@@ -75,11 +75,6 @@ export default [
             name: "Report",
             component: "./Vehicle/Error",
           },
-          {
-            path: "/vehicle-management/violations",
-            name: "Violation",
-            component: "./Vehicle/VehicleViolation",
-          }
         ]
       },
       {
@@ -97,6 +92,11 @@ export default [
             path: "/customer-management/notifications",
             name: "Notifications",
             component: "./CustomerNotification/Notifications",
+          },
+          {
+            path: "/customer-management/violations",
+            name: "Violation",
+            component: "./Customer/VehicleViolation",
           }
         ]
       },
@@ -115,29 +115,29 @@ export default [
             path: "/area/area-management/",
             name: "Area Management",
             component: "./Area/Area",
-          }
+          },
+          {
+            path: "/area/promo-management/",
+            name: "Promo Management",
+            icon: "barcode",
+            component: "./area/Promo/Promo",
+            authority: "area.promo"
+          },
+          {
+            path: "/area/deposit-management/",
+            name: "Deposit Management",
+            icon: "dollar",
+            component: "./area/Deposit/Deposit",
+            authority: "area.deposit"
+          },
+          {
+            path: "/area/membership-management",
+            name: "Membership Management",
+            icon: "wallet",
+            authority: "area.membership",
+            component: "./area/Membership/Membership",
+          },
         ]
-      },
-      {
-        path: "/membership-management",
-        name: "Membership Management",
-        icon: "wallet",
-        authority: "area.membership",
-        component: "./Membership/Membership",
-      },
-      {
-        path: "/promo-management/",
-        name: "Promo Management",
-        icon: "barcode",
-        component: "./Promo/Promo",
-        authority: "area.promo"
-      },
-      {
-        path: "/deposit-management/",
-        name: "Deposit Management",
-        icon: "dollar",
-        component: "./Deposit/Deposit",
-        authority: "area.deposit"
       },
       {
         path: "/price-management/",
