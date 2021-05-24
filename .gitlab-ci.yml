@@ -1,0 +1,69 @@
+image: docker:latest
+services:
+  - docker:dind
+
+variables:
+  DOCKER_DRIVER: overlay
+  DOCKER_TLS_CERTDIR: ""
+  SPRING_PROFILES_ACTIVE: gitlab-ci
+  DOCKER_HOST: tcp://localhost:2375
+  MAVEN_OPTS: -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository
+  AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
+
+
+
+stages:
+  - package
+  - build
+  # - deploy
+
+
+
+root-build:
+  stage: package
+  image: node:latest
+  script:
+    - npm install
+    - npm run build
+    - ls dist
+  artifacts:
+    paths:
+      - ./dist
+    expire_in: 30 mins
+  only:
+    refs:
+    - develop
+    # - master
+
+
+services-build:
+  stage: build
+  before_script:
+    - apk update && apk add bash && apk add git && apk add py-pip
+    - pip install awscli
+  script:
+    - set -e
+    - docker -v
+    - aws ecr get-login
+    - eval $(aws ecr get-login | sed 's/-e none//g')
+    - ls
+  only:
+    refs:
+    - develop
+    # - master
+
+
+
+# services-deploy:
+#   stage: deploy
+#   cache:
+#     paths:
+#       - /usr/local/bin/kubectl
+#   script:
+#      - apk update && apk add bash && apk add git
+#      - set -e
+#      - /bin/bash ./scripts/kube_deploy.sh
+#   only:
+#     refs:
+#     - develop
+#     # - master
