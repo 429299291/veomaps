@@ -10,7 +10,8 @@ import {
   endRide,
   getCustomerRides,
   refundRide,
-  getRefundCalculateResult
+  getRefundCalculateResult,
+  getRideBillingInfo
 } from "@/services/ride";
 import { message } from "antd";
 
@@ -44,6 +45,12 @@ export default {
         onSuccess(result);
       } else {
         onError(); 
+      }      
+    },
+    *billingInfo({ id, onSuccess }, { call, put }) {
+      const result = yield call(getRideBillingInfo, id);
+      if (result) {
+        onSuccess(result);
       }      
     },
 

@@ -64,7 +64,8 @@ class RideDetail extends PureComponent {
 
 
   render() {
-    const { isVisible, ride, ridePath, rideImageUrl, geo, handleDetailModalVisible } = this.props;
+    const { isVisible, ride, ridePath, rideImageUrl, geo, handleDetailModalVisible, billingInfo } = this.props;
+
 
     return <Modal
       destroyOnClose
@@ -76,7 +77,12 @@ class RideDetail extends PureComponent {
     >
       <Row width={800}>
 
+
+
         <Col xs={24} sm={12} style={{ fontSize: "0.7em" }}>
+
+          {billingInfo && billingInfo.billingInfo && <div> Bill Detail ：{JSON.stringify(billingInfo.billingInfo)}  </div> } 
+
           {Object.keys(ride).map(key => (
             <p key={key}>{`${key} : ${this.formatValue(key)}`}</p>
           ))}

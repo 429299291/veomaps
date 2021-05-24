@@ -84,4 +84,10 @@ export async function getRefundCalculateResult(id, payload) {
   });
 }
 
+export async function getRideBillingInfo(id, payload) {
+  return request(`/api/admins/rides/${id}/detail`, {
+    method: "GET",
+  });
+}
+
 

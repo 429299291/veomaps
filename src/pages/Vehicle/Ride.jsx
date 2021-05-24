@@ -641,12 +641,25 @@ class Ride extends PureComponent {
               selectedRidePathInfo: pathInfo,
             })
         });
+
         authority.includes("get.fences") && dispatch({
           type: "geo/getFences",
           areaId: record.areaId
         });
 
       }
+
+      dispatch({
+        type: "rides/billingInfo",
+        id: record.id,
+        
+        onSuccess: billingInfo =>
+          this.setState({
+            selectedRideBillingInfo: billingInfo,
+          })
+      });
+
+
       this.setState({
         detailModalVisible: true,
         selectedRecord: record,
@@ -659,7 +672,8 @@ class Ride extends PureComponent {
         detailModalVisible: false,
         selectedRecord: undefined,
         selectedRidePathInfo: undefined,
-        rideImageUrl: undefined
+        rideImageUrl: undefined,
+        selectedRideBillingInfo: undefined
       });
     }
   };
@@ -907,7 +921,8 @@ class Ride extends PureComponent {
       selectedCustomerId,
       rideImageUrl,
       isRefundModalVisible,
-      rideRefundCalculateResult
+      rideRefundCalculateResult,
+      selectedRideBillingInfo
     } = this.state;
 
     const endRideMethod = {
@@ -961,6 +976,7 @@ class Ride extends PureComponent {
               ride={selectedRecord}
               ridePath={selectedRidePathInfo}
               rideImageUrl={rideImageUrl}
+              billingInfo={selectedRideBillingInfo}
               handleDetailModalVisible={this.handleDetailModalVisible}
             />
           )}
