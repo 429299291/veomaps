@@ -1,0 +1,35 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: manhattan-frontend
+spec:
+  selector:
+    app: manhattan-frontend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: manhattan-frontend-deployment
+spec:
+  selector:
+    matchLabels:
+      app: manhattan-frontend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: manhattan-frontend
+    spec:
+      containers:
+      - name: manhattan-frontend
+        image: 488938767527.dkr.ecr.us-east-2.amazonaws.com/veo-service:manhattan-frontend-test
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+      nodeSelector:
+        environment: dev
