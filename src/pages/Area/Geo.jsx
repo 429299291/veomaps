@@ -1010,7 +1010,7 @@ class Geo extends PureComponent {
                 Save
               </Button>
               
-                {authority.includes("delete.primeLocation") && selectedExistedPrimeLocation  && (
+                {selectedExistedPrimeLocation  && (
                   <Button
                     type="danger"
                     onClick={() =>
@@ -1248,7 +1248,7 @@ class Geo extends PureComponent {
       selectedExistedFence
     } = this.state;
 
-   return (authority.includes("update.fence") && selectedExistedFence);
+   return (authority.includes("admin") && selectedExistedFence);
 
   }
 
@@ -1298,7 +1298,6 @@ class Geo extends PureComponent {
                        Edit Fence
                     </Button>
                   )}
-                  {(authority.includes("delete.fence") || authority.includes("delete.primeLocation") ) && (
                     <Button
                       type="danger"
                       onClick={() =>
@@ -1309,7 +1308,6 @@ class Geo extends PureComponent {
                     >
                       DELETE
                     </Button>
-                  )}
                    <Button
                       type="default"
                       onClick={() =>
@@ -1324,7 +1322,7 @@ class Geo extends PureComponent {
                     >
                       Cancel
                     </Button>
-                  {selectedExistedFence && <span>
+                  {selectedExistedFence &&<span>
                     Name: {selectedExistedFence.name} Type:{" "}
                     {fenceType[selectedExistedFence.fenceType]}
                   </span>}
