@@ -14,7 +14,7 @@ describe('Login', () => {
   beforeEach(async () => {
     page = await browser.newPage();
     await page.goto(`${BASE_URL}/user/login`, { waitUntil: 'networkidle2' });
-    await page.evaluate(() => window.localStorage.setItem('antd-pro-authority', 'guest'));
+    // await page.evaluate(() => window.localStorage.setItem('antd-pro-authority', 'guest'));
   });
 
   afterEach(() => page.close());

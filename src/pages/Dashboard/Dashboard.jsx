@@ -1006,7 +1006,6 @@ getRangeEnd(end) {
 
 
         { 
-          (authority.includes("admin") || authority.includes("get.ride.count")) && 
           
           <Card loading={barChartloading} bordered={false} bodyStyle={{ padding: 0 }}>
           <div className={styles.salesCard}>
@@ -1015,7 +1014,8 @@ getRangeEnd(end) {
               size="large"
               tabBarStyle={{ marginBottom: 24 }}
             >
-             { authority.includes("get.ride.count") &&  <TabPane
+             { authority.includes("admin") &&  
+             <TabPane
                 tab={
                   <FormattedMessage
                     id="app.analysis.sales"
@@ -1111,7 +1111,7 @@ getRangeEnd(end) {
                   </TabPane> 
               }
               { 
-                authority.includes("admin") && authority.includes("get.total.ride.revenue") &&  
+                authority.includes("admin") &&  
                 <TabPane
                   tab="Finace Report"
                   key="financeStats"

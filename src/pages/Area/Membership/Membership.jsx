@@ -492,20 +492,15 @@ class Membership extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          {authority.includes("area.membership") &&
             <a onClick={() => this.handleUpdateModalVisible(true, record)}>
               Update
             </a>
-          }
           <Divider type="vertical" />
-          { 
-            authority.includes("area.membership") &&
+
               <a onClick={() =>  this.handleDetailModalVisible(true, record)}>
                 Detail
               </a>
-          }
           <Divider type="vertical" />
-          {authority.includes("area.membership") &&
             <Popconfirm
               title="Are you Sure？"
               icon={<Icon type="question-circle-o" style={{ color: "red" }}/>}
@@ -516,7 +511,6 @@ class Membership extends PureComponent {
                 Delete
               </a>
             </Popconfirm>
-          }
         </Fragment>
       )
     }
@@ -729,7 +723,6 @@ class Membership extends PureComponent {
               {this.renderSimpleForm()}
             </div>
             <div className={styles.tableListOperator}>
-              {authority.includes("create.membership") &&
                 <Button
                   icon="plus"
                   type="primary"
@@ -737,7 +730,6 @@ class Membership extends PureComponent {
                 >
                   Add
                 </Button>
-              }
 
             </div>
             <StandardTable

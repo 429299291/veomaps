@@ -10,13 +10,14 @@ export default [
       { path: "/user/register-result", component: "./User/RegisterResult" }
     ]
   },
-  { path: "/", redirect: "/vehicle-management/ride"},
+  // { path: "/", redirect: "/vehicle-management/ride"},
 
   // app
   {
     path: "/",
     component: "../layouts/BasicLayout",
     Routes: ["src/pages/Authorized"],
+    authority: "admin",
     routes: [
       {
         path: "/dashboard",
@@ -29,17 +30,12 @@ export default [
             name: "dashboard",
             component: "./Dashboard/Dashboard"
           },
-          {
-            path: "/dashboard/techmetrics",
-            name: "Tech Metrics",
-            component: "./Dashboard/TechMetrics",
-          },
         ]
       },
       {
         path: "/shop-management",
         icon: "shop",
-        name: "Shop Management Menu",
+        name: "Shop Management",
         authority: "shop",
         routes: [
           {
@@ -80,7 +76,7 @@ export default [
       {
         path: "/customer-management",
         icon: "user",
-        name: "Customer Management Menu",
+        name: "Customer Management",
         authority: "customer",
         routes: [
           {
@@ -103,7 +99,7 @@ export default [
       {
         path: "/area",
         icon: "global",
-        name: "Area Management Menu",
+        name: "Area Management",
         authority:'area',
         routes: [
           {
@@ -178,14 +174,20 @@ export default [
           {
             path: "/technician-management/main",
             name: "Technician Management",
-            icon: "user",
+            // icon: "user",
             component: "./Technician/Technician",
           },
           {
             path: "/technician-management/violation-management",
             name: "Violation Management",
-            icon: "warning",
+            // icon: "warning",
             component: "./Technician/Violation",
+          },
+          {
+            path: "/technician-management/techmetrics",
+            name: "Tech Metrics",
+            // icon: "user",
+            component: "./Technician/TechMetrics",
           }
         ]
       },

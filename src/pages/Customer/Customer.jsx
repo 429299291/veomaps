@@ -662,7 +662,7 @@ class Customer extends PureComponent {
           <Col md={{ span: 8, offset: 12}} sm={24}>
             <span className={styles.submitButtons} style={{ float: "right" }}>
 
-            {authority.includes("get.customer.verification.code") && <Button type="primary" onClick={() => this.handleGenTempCodeModalVisible(true)}>
+            {<Button type="primary" onClick={() => this.handleGenTempCodeModalVisible(true)}>
                   Generate Verification Code
               </Button> }
 

@@ -351,20 +351,16 @@ class Promo extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          {authority.includes("area.promo") &&
             <a onClick={() => this.handleUpdateModalVisible(true, record)}>
               Update
             </a>
-          }
 
 
           <Divider type="vertical" />
 
-          {authority.includes("area.promo") &&
           <a onClick={() => this.handleGenerateCodePromoModalVisible(true, record)}>
             Generate Promo with Code
           </a>
-          }
 
         </Fragment>
       )

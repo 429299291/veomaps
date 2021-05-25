@@ -33,8 +33,7 @@ export default {
           TOKEN_CREATE_DATE,
           new Date().getTime().toString()
         );
-
-        setAuthority("basic.admin");
+        setAuthority("admin");
         reloadAuthorized();
 
         if (typeof onSuccess === "function") {

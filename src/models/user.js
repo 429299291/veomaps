@@ -61,16 +61,16 @@ export default {
 
       const response = yield call(getMe);
       const newReponse = yield call(getNewMe);
-
+      // role set start
       if (newReponse.role) {
       let  permissions = newReponse.role.permissions
         permissions = permissions.map(permission=>{
           return permission.name
         })
+        permissions.push('test')
         setAuthority(permissions);
         reloadAuthorized();
       }
-
       response.basic.phone = newReponse.phone;
       response.basic.areaIds = newReponse.areaIds;
       yield put({

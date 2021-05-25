@@ -785,15 +785,13 @@ class Area extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          {authority.includes("update.area.detail") && (
             <a onClick={() => this.handleUpdateModalVisible(true, record)}>
               Update
             </a>
-          )}
           <Divider type="vertical" />
-          {authority.includes("get.area.features") && <a onClick={() => this.handleDetailModalVisible(true, record)}>
+          <a onClick={() => this.handleDetailModalVisible(true, record)}>
               Detail
-          </a>}
+          </a>
         </Fragment>
       )
     }
@@ -1019,7 +1017,6 @@ class Area extends PureComponent {
               {this.renderSimpleForm()}
             </div>
             <div className={styles.tableListOperator}>
-              {authority.includes("create.area") && (
                 <Button
                   icon="plus"
                   type="primary"
@@ -1027,7 +1024,6 @@ class Area extends PureComponent {
                 >
                   Add
                 </Button>
-              )}
             </div>
             <StandardTable
               loading={loading}

@@ -1248,7 +1248,7 @@ class Geo extends PureComponent {
       selectedExistedFence
     } = this.state;
 
-   return (authority.includes("admin") && selectedExistedFence);
+   return (selectedExistedFence);
 
   }
 

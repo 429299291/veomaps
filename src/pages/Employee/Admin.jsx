@@ -341,6 +341,7 @@ const UpdateForm = Form.create()(props => {
     roles,
     record
   } = props;
+  console.log(record);
   const okHandle = () => {
     if (form.isFieldsTouched())
       form.validateFields((err, fieldsValue) => {
@@ -541,8 +542,8 @@ class Admin extends PureComponent {
       dataIndex: "activated",
       render: (text, record) => 
         (
-        <Tag color= {record.isActivated ? "green" : "volcano"}>
-        {record.isActivated ? "√" : "X"}
+        <Tag style={{cursor:'default'}} color= {record.isActivated ? "green" : "volcano"}>
+        {record.isActivated ? "true" : "false"}
       </Tag>
       )
     },
@@ -563,9 +564,8 @@ class Admin extends PureComponent {
     {
       title: "Operation",
       render: (text, record) =>
-        record.roleId === superAdminId ? (
-          <span />
-        ) : (
+      record.role ?  record.role.name === 'Super Admin'? (<span />) :
+      (
           <Fragment>
             {authority.includes("admin") && (
               <a onClick={() => this.handleUpdateModalVisible(true, record)}>
@@ -585,24 +585,12 @@ class Admin extends PureComponent {
                 Update Password
               </a>
             )}
-
-            {/* <Divider type="vertical" />
-
-            {authority.includes("update.admin.detail") && (
-              <Popconfirm
-                title="Are you Sure？"
-                icon={
-                  <Icon type="question-circle-o" style={{ color: record.activated ?  "red" : "green" }} />
-                }
-                onConfirm={() => this.handleUpdate(record.id, Object.assign({}, record, {activated: !record.activated }) )}
-              >
-                <a href="#" style={{ color:  record.activated ? "red" : "green" }}>
-                   {record.activated ?  "Deactivate" : "Activate"}
-                </a>
-              </Popconfirm>
-            )} */}
           </Fragment>
         )
+      
+      
+      :(<span />)
+
     }
   ];
 

@@ -376,7 +376,7 @@ class VehicleViolation extends PureComponent {
 
       this.setState({selectedRide: record});
 
-      authority.includes("get.ride.image") && record.imageId && dispatch({
+      authority.includes("vehicle") && record.imageId && dispatch({
         type: "rides/image",
         rideId: record.id,
         onSuccess: imageUrl =>
@@ -390,7 +390,7 @@ class VehicleViolation extends PureComponent {
         }
       });
 
-      if (authority.includes("get.ride.route")) {
+      if (authority.includes("vehicle")) {
 
 
         dispatch({
