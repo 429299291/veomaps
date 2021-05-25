@@ -341,7 +341,6 @@ const UpdateForm = Form.create()(props => {
     roles,
     record
   } = props;
-  console.log(record);
   const okHandle = () => {
     if (form.isFieldsTouched())
       form.validateFields((err, fieldsValue) => {
@@ -564,7 +563,7 @@ class Admin extends PureComponent {
     {
       title: "Operation",
       render: (text, record) =>
-      record.role ?  record.role.name === 'Super Admin'? (<span />) :
+      record.role ?  record.role.name === 'Super Admin'? (<span>Super administrator cannot modify</span>) :
       (
           <Fragment>
             {authority.includes("admin") && (
@@ -589,7 +588,7 @@ class Admin extends PureComponent {
         )
       
       
-      :(<span />)
+      :(<span>No permission</span>)
 
     }
   ];
@@ -598,7 +597,6 @@ class Admin extends PureComponent {
     this.handleGetAdmins();
     this.handleGetRoles();
     this.handleGetAreas();
-    // console.log(this.props);
   }
 
   getRoleNameById = roleId => {
