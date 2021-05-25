@@ -633,27 +633,18 @@ class Ride extends PureComponent {
 
 
 
-        dispatch({
+      dispatch({
           type: "rides/getRoute",
           rideId: record.id,
           onSuccess: pathInfo =>
             this.setState({
               selectedRidePathInfo: pathInfo,
             })
-        });
-<<<<<<< HEAD
-
-        authority.includes("get.fences") && dispatch({
-=======
-        dispatch({
->>>>>>> develop_davis
+      });
+      dispatch({
           type: "geo/getFences",
           areaId: record.areaId
         });
-
-<<<<<<< HEAD
-      }
-
       dispatch({
         type: "rides/billingInfo",
         id: record.id,
@@ -663,10 +654,6 @@ class Ride extends PureComponent {
             selectedRideBillingInfo: billingInfo,
           })
       });
-
-
-=======
->>>>>>> develop_davis
       this.setState({
         detailModalVisible: true,
         selectedRecord: record,
