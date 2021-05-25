@@ -6,6 +6,7 @@ import {
   updateAdmin,
   updateAdminPassword,
   registerByEmail,
+  adminSearch,
   updateMe
 } from "@/services/admin";
 import { message } from "antd";
@@ -18,33 +19,36 @@ export default {
   },
 
   effects: {
-    *get({ payload, onSuccess }, { call, put }) {
+    *get({ payload, onSuccess,saveState }, { call, put }) {
       const response = yield call(getAdmins, payload);
 
-      if (Array.isArray(response)) {
-        response.map(admin => (admin.key = admin.id));
-      }
-
-     
       yield put({
-        type: "save",
-        payload: Array.isArray(response) ? response : []
+        type: "newSave",
+        payload: response.content,
+        pagenation:{
+          page:response.page,
+          pageSize:response.pageSize,
+          totalPages:response.totalPages,
+          totalSize:response.totalSize
+        }
       });
-
-      if (typeof onSuccess === "function") {
-        onSuccess();
-      }
     },
-    *update({ id, payload, onSuccess, onError }, { call, put }) {
+    *update({ id, payload, onSuccess, onError,pagination }, { call, put }) {
+      payload.roleId = payload.role.id
       const response = yield call(updateAdmin, id, payload); // put
-
-      if (response) {
-        message.success(`Add Success, ID : ${response}`);
-        onSuccess && onSuccess();
-      } else {
-        message.error(`Add Fail.`);
-        onError && onError();
-      }
+      yield put({
+        type: "get",
+        payload:{
+          pagination
+        }
+      });
+      // if (response) {
+      //   message.success(`Add Success, ID : ${response}`);
+      //   onSuccess && onSuccess();
+      // } else {
+      //   message.error(`Add Fail.`);
+      //   onError && onError();
+      // }
     },
     *updatePassword({ id, newPassword, onSuccess, onError }, { call, put }) {
       const response = yield call(updateAdminPassword, id, newPassword); // put
@@ -90,7 +94,40 @@ export default {
         message.error(`Add Fail.`);
         onError && onError();
       }
-    }
+    },
+    *getadminsdata({ payload, saveState,savepagenations }, { put, call }) {
+      const response = yield call(getAdmins, payload);
+
+      yield put({
+        type: "newSave",
+        payload: response.content,
+        pagenation:{
+          page:response.page,
+          pageSize:response.pageSize,
+          totalPages:response.totalPages,
+          totalSize:response.totalSize
+        }
+      });
+      saveState ? saveState(response.content) : savepagenations(response.content)
+    },
+    *adminSearch(
+      { id, payload, onSuccess, onError, saveState },
+      { call, put }
+    ) {
+      const response = yield call(adminSearch, payload);
+      yield put({
+        type: "newSave",
+        payload: response.content,
+        pagenation:{
+          page:response.page,
+          pageSize: response.pageSize ? response.pageSize :10,
+          totalPages:response.totalPages,
+          totalSize:response.totalSize
+        }
+      });
+      // saveState(response.content);
+    },
+
   },
 
   reducers: {
@@ -99,6 +136,14 @@ export default {
         ...state,
         data: action.payload
       };
+    },
+    newSave(state, { payload,pagenation }) {
+      return {
+        ...state,
+        // data: payload,
+        data: {payload,pagenation},
+      };
     }
+
   }
 };

@@ -60,32 +60,19 @@ export default {
 
 
       const response = yield call(getMe);
-
       const newReponse = yield call(getNewMe);
-
-      const flatUrlToPrivileges = Object.keys(UrlToPrivilege)
-        .map(key => UrlToPrivilege[key])
-        .reduce((result, group) => Object.assign({}, result, group), {});
-
-      if (response.privileges) {
-        const permissions = response.privileges.reduce((result, privilege) => {
-          const permission =
-            flatUrlToPrivileges[`${privilege.method} ${privilege.url}`];
-          if (permission) {
-            result.push(permission);
-          }
-
-          return result;
-        }, []);
-
-        permissions.push("basic.admin");
-
+      // role set start
+      if (newReponse.role) {
+      let  permissions = newReponse.role.permissions
+        permissions = permissions.map(permission=>{
+          return permission.name
+        })
+        permissions.push('test')
         setAuthority(permissions);
         reloadAuthorized();
       }
-
       response.basic.phone = newReponse.phone;
-
+      response.basic.areaIds = newReponse.areaIds;
       yield put({
         type: "saveCurrentUser",
         payload: response

@@ -256,7 +256,7 @@ class Deposit extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          {authority.includes("update.deposit.detail") &&
+          {authority.includes("area.deposit") &&
             <a onClick={() => this.handleUpdateModalVisible(true, record)}>
               Update
             </a>
@@ -265,7 +265,7 @@ class Deposit extends PureComponent {
 
           <Divider type="vertical" />
 
-          {authority.includes("delete.deposit") &&
+          {authority.includes("area.deposit") &&
             <Popconfirm
               title="Are you sure？"
               icon={<Icon type="question-circle-o" style={{ color: "red" }} />}

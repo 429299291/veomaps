@@ -164,11 +164,9 @@ class TechMetrics extends Component {
 
     const { rangePickerValue } = this.state;
 
-    if (!authority.includes('get.technician.metrics')) {
-      return;
-    }
-
-
+    // if (!authority.includes('get.technician.metrics')) {
+    //   return;
+    // }
 
     dispatch({
       type: 'performance/getTechnicianMetricsData',

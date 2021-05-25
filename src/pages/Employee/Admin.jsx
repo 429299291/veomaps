@@ -13,6 +13,8 @@ import {
   Modal,
   Steps,
   Radio,
+  Space ,
+  Tag,
   Divider,
   message,
   Popconfirm
@@ -27,11 +29,14 @@ import { getAuthority } from "@/utils/authority";
 const authority = getAuthority();
 
 const superAdminId = 1;
+const { Search,TextAdmin } = Input;
 
 const FormItem = Form.Item;
 const { Step } = Steps;
-const { TextAdmin } = Input;
 const { Option } = Select;
+import { AudioOutlined } from '@ant-design/icons';
+import { string } from "prop-types";
+
 const RadioGroup = Radio.Group;
 const getValue = obj =>
   Object.keys(obj)
@@ -65,7 +70,6 @@ const EmailRegisterForm = Form.create()(props => {
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
-      width="600px"
     >
       <FormItem
         labelCol={{ span: 7 }}
@@ -76,8 +80,40 @@ const EmailRegisterForm = Form.create()(props => {
           rules: [
             {
               required: true,
-              message: "email cant be empty.",
+              type:'email',
+              message: "The email format is incorrect",
               min: 5
+            }
+          ]
+        })(<Input placeholder="Please Input" />)}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 7 }}
+        wrapperCol={{ span: 15 }}
+        label="VeoRide Phone"
+      >
+        {form.getFieldDecorator("phone", {
+          rules: [
+            {
+              required: true,
+              message: "The phone number must be ten digits",
+              min: 10,
+              max:13
+            }
+          ]
+        })(<Input placeholder="Please Input" />)}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 7 }}
+        wrapperCol={{ span: 15 }}
+        label="VeoRide Name"
+      >
+        {form.getFieldDecorator("name", {
+          rules: [
+            {
+              required: true,
+              message: "name cant be empty.",
+              min: 2
             }
           ]
         })(<Input placeholder="Please Input" />)}
@@ -319,55 +355,26 @@ const UpdateForm = Form.create()(props => {
       });
     else handleModalVisible();
   };
-
   return (
     <Modal
       destroyOnClose
-      title="Add"
+      title="update admins"
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem
-        labelCol={{ span: 7 }}
-        wrapperCol={{ span: 15 }}
-        label="Last Name"
-      >
-        {form.getFieldDecorator("lastName", {
-          rules: [
-            {
-              required: true,
-              message: "Last Name is required",
-              min: 1
-            }
-          ],
-          initialValue: record.lastName
-        })(<Input placeholder="Please Input" />)}
-      </FormItem>
-      <FormItem
-        labelCol={{ span: 7 }}
-        wrapperCol={{ span: 15 }}
-        label="First Name"
-      >
-        {form.getFieldDecorator("firstName", {
-          rules: [
-            {
-              required: true,
-              message: "First Name is required",
-              min: 1
-            }
-          ],
-          initialValue: record.firstName
-        })(<Input placeholder="Please Input" />)}
-      </FormItem>
       <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} label="E-mail">
         {form.getFieldDecorator("email", {
           rules: [
             {
               required: true,
               message: "email is required",
-              min: 1
-            }
+              min: 3,
+            },
+            {
+              message: "The email format is incorrect",
+              type:'email'
+            },
           ],
           initialValue: record.email
         })(<Input placeholder="Please Input" />)}
@@ -375,34 +382,48 @@ const UpdateForm = Form.create()(props => {
       <FormItem
         labelCol={{ span: 7 }}
         wrapperCol={{ span: 15 }}
-        label="Username"
+        label="name"
       >
-        {form.getFieldDecorator("username", {
+        {form.getFieldDecorator("name", {
           rules: [
             {
               required: true,
               message: "username is required",
+              whitespace: false,
               min: 1
             }
           ],
-          initialValue: record.username
+          initialValue: record.name
+        })(<Input placeholder="Please Input" />)}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 7 }}
+        wrapperCol={{ span: 15 }}
+        label="phone"
+      >
+        {form.getFieldDecorator("phone", {
+          rules: [
+            {
+              required:true,
+              message:'Phone is required',
+            }
+          ],
+          initialValue: record.phone
         })(<Input placeholder="Please Input" />)}
       </FormItem>
       {roles && (
         <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} label="Role">
-          {form.getFieldDecorator("roleId", {
+          {form.getFieldDecorator("role.id", {
             rules: [
               {
                 required: true,
-                message: "Role is required"
+                message: "Role is required",
               }
             ],
-            initialValue: record.roleId
+            initialValue: record.role ? record.role.id : null
           })(
             <Select placeholder="select" style={{ width: "100%" }}>
               {roles.map(role => {
-                if (role.id === superAdminId) return;
-                else
                   return (
                     <Option key={role.id} value={role.id}>
                       {" "}
@@ -427,7 +448,7 @@ const UpdateForm = Form.create()(props => {
                 message: "area is required"
               }
             ],
-            initialValue: record.areaIds,
+            initialValue:record.areaIds ? record.areaIds : [],
             normalize: values =>
               values.includes("all")
                 ? values.filter(value => value === "all")
@@ -455,14 +476,14 @@ const UpdateForm = Form.create()(props => {
         labelCol={{ span: 7 }}
         wrapperCol={{ span: 15 }}
       >
-        {form.getFieldDecorator("activated", {
+        {form.getFieldDecorator("isActivated", {
           rules: [
             {
               required: true,
               message: "Activated is required"
             }
           ],
-          initialValue: record.activated ? 1 : 0
+          initialValue: record.isActivated ? 1 : 0
         })(
           <Select placeholder="select" style={{ width: "100%" }}>
             <Option value={0}>false</Option>
@@ -493,50 +514,59 @@ class Admin extends PureComponent {
     updatePasswordModalVisible: false,
     registerEmailModalVisible: false,
     areas: [],
-    filteredAdmins: []
+    filteredAdmins: [],
+    search:''
   };
 
   columns = [
     {
       title: "Name",
-      dataIndex: "lastName",
-      render: (text, record) => (
-        <span>{`${record.firstName ? record.firstName : ""} ${
-          record.lastName ? record.lastName : ""
-        }`}</span>
-      )
+      dataIndex: "name",
+      // render: (text, record) => (
+      //   <span>{`${record.firstName ? record.firstName : ""} ${
+      //     record.lastName ? record.lastName : ""
+      //   }`}</span>
+      // )
     },
     {
       title: "Email",
       dataIndex: "email"
     },
     {
+      title: "phone",
+      dataIndex: "phone"
+    },
+    {
       title: "Is Activated",
       dataIndex: "activated",
-      render: (text, record) => (record.activated ? "true" : "false")
+      render: (text, record) => 
+        (
+        <Tag style={{cursor:'default'}} color= {record.isActivated ? "green" : "volcano"}>
+        {record.isActivated ? "true" : "false"}
+      </Tag>
+      )
     },
     {
       title: "Role",
       dataIndex: "role",
       render: (text, record) => (
-        <span>{this.getRoleNameById(record.roleId)}</span>
+        record.role ? record.role.name : ''
       )
     },
-    {
-      title: "Areas",
-      dataIndex: "area",
-      render: (text, record) => (
-        <Fragment>{this.getNameByAreaIds(record.areaIds)}</Fragment>
-      )
-    },
+    // {
+    //   title: "Areas",
+    //   dataIndex: "area",
+    //   render: (text, record) => (
+    //     <Fragment>{this.getNameByAreaIds(record.areaIds)}</Fragment>
+    //   )
+    // },
     {
       title: "Operation",
       render: (text, record) =>
-        record.roleId === superAdminId ? (
-          <span />
-        ) : (
+      record.role ?  record.role.name === 'Super Admin'? (<span>Super administrator cannot modify</span>) :
+      (
           <Fragment>
-            {authority.includes("update.admin.detail") && (
+            {authority.includes("admin") && (
               <a onClick={() => this.handleUpdateModalVisible(true, record)}>
                 Update
               </a>
@@ -544,7 +574,7 @@ class Admin extends PureComponent {
 
             <Divider type="vertical" />
 
-            {authority.includes("update.admin.password") && (
+            {authority.includes("admin") && (
               <a
                 href="#"
                 onClick={() =>
@@ -554,24 +584,12 @@ class Admin extends PureComponent {
                 Update Password
               </a>
             )}
-
-            <Divider type="vertical" />
-
-            {authority.includes("update.admin.detail") && (
-              <Popconfirm
-                title="Are you Sure？"
-                icon={
-                  <Icon type="question-circle-o" style={{ color: record.activated ?  "red" : "green" }} />
-                }
-                onConfirm={() => this.handleUpdate(record.id, Object.assign({}, record, {activated: !record.activated }) )}
-              >
-                <a href="#" style={{ color:  record.activated ? "red" : "green" }}>
-                   {record.activated ?  "Deactivate" : "Activate"}
-                </a>
-              </Popconfirm>
-            )}
           </Fragment>
         )
+      
+      
+      :(<span>No permission</span>)
+
     }
   ];
 
@@ -621,14 +639,22 @@ class Admin extends PureComponent {
       payload: {}
     });
   };
-
+  saveState = response => {
+    this.setState({ filteredAdmins: response});
+  };
   handleGetAdmins = () => {
-    const { dispatch } = this.props;
+    const { dispatch,admins } = this.props;
     const { filterCriteria } = this.state;
 
     dispatch({
       type: "admins/get",
-      payload: filterCriteria,
+      // payload: filterCriteria,
+      payload:{
+        pagination: {
+          page:0,
+          pageSize: 10,
+        }
+      },
       onSuccess: this.handleSearch
     });
   };
@@ -645,18 +671,30 @@ class Admin extends PureComponent {
     });
   };
 
-  handleStandardTableChange = (filtersArg, sorter) => {
-    const { filterCriteria } = this.state;
-
-    const params = {
-      ...filterCriteria
-    };
-
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
+  handleStandardTableChange = (page) => {
+    const { dispatch, admins } = this.props;
+    if(this.state.search){
+      this.handleSearch({
+        value:this.state.search,
+        page: page.current-1,
+        // pagination: {
+        //   page: page.current >0 ?page.current-1 :0,
+        //   pageSize: page.pageSize,
+        // }
+      })
+    }else{
+      dispatch({
+        type: "admins/getadminsdata",
+        saveState:this.saveState,
+        payload: {
+          pagination: {
+            page: page.current >0 ?page.current-1 :0,
+            pageSize: page.pageSize,
+          }
+        }
+      });
     }
 
-    // this.setState({ filterCriteria: params }, () => this.handleGetAdmins());
   };
 
   renderSimpleForm() {
@@ -666,31 +704,44 @@ class Admin extends PureComponent {
 
     const areas = this.props.areas;
     return (
-      <Form onSubmit={this.handleSearch} layout="inline">
+      <Form layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={6} sm={24}>
-            <FormItem label="Name">
+          <Col span={6}>
+            <Search
+              placeholder="name, phone or email"
+              onSearch={this.handleSearch}
+              className={styles.search}
+              enterButton
+            />
+            {/* <Button
+              className={styles.button}
+              style = {{display: this.state.arrlength ? 'inline-block': 'none'}}
+              onClick={() => this.getAdminsAll()}
+            >
+              Reset
+            </Button> */}
+            {/* <FormItem label="Name">
               {getFieldDecorator("name")(
                 <Input placeholder="Name" />
               )}
-            </FormItem>
+            </FormItem> */}
           </Col>
-          <Col md={6} sm={24}>
-            <FormItem >
+          <Col span={10}>
+            <FormItem>
               {authority.includes("register.admin.email") && (
                 <Button
                   icon="plus"
                   type="primary"
+                  className = {styles.buttonStyle}
                   onClick={() => this.handleEmailRegisterModalVisible(true)}
                   style={{ marginLeft: "0.5em" }}
                 >
                   Register By Email
                 </Button>
               )}
-              </FormItem>
+            </FormItem>
           </Col>
         </Row>
-
       </Form>
     );
   }
@@ -707,24 +758,77 @@ class Admin extends PureComponent {
     );
   };
 
-  handleSearch = e => {
-    e && e.preventDefault();
-
-    const { dispatch, form, admins } = this.props;
-    const { filterCriteria } = this.state;
-
-    let result = admins;
-
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      
-      if (fieldsValue.name) {
-        result = admins.filter(admin => (admin.firstName + " " + admin.lastName).includes(fieldsValue.name));
-      }
-
-      this.setState({filteredAdmins: result});
-      
-    });
+  handleSearch = (value) => {
+    const { dispatch, admins } = this.props;
+    if(typeof value === 'string'){
+      value = value.trim()
+    }
+    if(!value){
+      dispatch({
+        type: "admins/get",
+        // payload: filterCriteria,
+        payload:{
+          pagination: {
+            page: 0,
+            pageSize: admins.pagenation.pageSize,
+          }
+        },
+      });
+    }
+    else if (/^[a-zA-Z]/.test(value) && !value.includes("@") && value.length > 0) {
+      dispatch({
+        type: "admins/adminSearch",
+        payload: {
+          name: value,
+          pagination: {
+            page: 0,
+            pageSize: admins.pagenation.pageSize,
+          }
+        },
+      });
+    } else if (
+      /^[0-9]/.test(value) &&
+      !value.includes("@") &&
+      value.length > 0
+    ) {
+      dispatch({
+        type: "admins/adminSearch",
+        payload: {
+          phone: value,
+          pagination: {
+            page: 0,
+            pageSize: admins.pagenation.pageSize,
+          }
+        },
+      });
+    } else if (/@/.test(value) && value.includes("@") && value.length > 0) {
+      dispatch({
+        type: "admins/adminSearch",
+        payload: {
+          email: value,
+          pagination: {
+            page: 0,
+            pageSize: admins.pagenation.pageSize,
+          }
+        },
+      });
+    } else {
+      dispatch({
+        type: "admins/adminSearch",
+        payload: {
+          name: value.value,
+          pagination: {
+            page:value.page,
+            pageSize: admins.pagenation.pageSize,
+          }
+        },
+      });
+      return false
+    }
+    this.setState({
+      search:value
+    })
+    admins.pagenation.page = 0
   };
 
   handleModalVisible = flag => {
@@ -787,12 +891,15 @@ class Admin extends PureComponent {
   };
 
   handleUpdate = (id, fields) => {
-    const { dispatch } = this.props;
-
+    const { dispatch,admins } = this.props;
     dispatch({
       type: "admins/update",
       payload: fields,
       id: id,
+      pagination:{
+        page:admins.pagenation.page,
+        pageSize:admins.pagenation.pageSize
+      },
       onSuccess: this.handleGetAdmins
     });
 
@@ -810,10 +917,10 @@ class Admin extends PureComponent {
 
     this.handleUpdatePasswordModalVisible();
   };
-
   render() {
     const { admins, loading, roles } = this.props;
     const { areas, filteredAdmins } = this.state;
+    const totalSize = admins.pagenation? admins.pagenation.totalSize :0
     const {
       modalVisible,
       updateModalVisible,
@@ -847,16 +954,6 @@ class Admin extends PureComponent {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
-              {/*{authority.includes("add.admin") && (*/}
-                {/*<Button*/}
-                  {/*icon="plus"*/}
-                  {/*type="primary"*/}
-                  {/*onClick={() => this.handleModalVisible(true)}*/}
-                {/*>*/}
-                  {/*Add*/}
-                {/*</Button>*/}
-              {/*)}*/}
-
               {
                 this.renderSimpleForm()
               }
@@ -864,8 +961,15 @@ class Admin extends PureComponent {
             </div>
             <StandardTable
               scroll={{ x: 1300 }}
+              rowKey={record => record.id}
               loading={loading}
-              data={{ list: filteredAdmins, pagination: {} }}
+              selectPagenations = {this.selectPagenations}
+              // data={{ list: filteredAdmins, pagination: {
+              data={{ list: admins.payload, pagination: {
+                total: totalSize,
+                current:admins.pagenation?admins.pagenation.page+1:1,
+                defaultCurrent:1,
+              } }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

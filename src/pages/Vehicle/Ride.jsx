@@ -485,7 +485,8 @@ class Ride extends PureComponent {
 
     const meta = JSON.parse(ride.metaData);
 
-    return (authority.includes("refund.ride")) && ride.end && (!meta || !meta.refunded);
+    // return (authority.includes("refund.ride")) && ride.end && (!meta || !meta.refunded);
+    return  ride.end && (!meta || !meta.refunded);
 
   }
 
@@ -616,7 +617,7 @@ class Ride extends PureComponent {
 
     if (!!flag) {
 
-      authority.includes("get.ride.image") && record.imageId && dispatch({
+      record.imageId && dispatch({
         type: "rides/image",
         rideId: record.id,
         onSuccess: imageUrl =>
@@ -630,7 +631,6 @@ class Ride extends PureComponent {
         }
       });
 
-      if (authority.includes("get.ride.route")) {
 
 
         dispatch({
@@ -641,12 +641,17 @@ class Ride extends PureComponent {
               selectedRidePathInfo: pathInfo,
             })
         });
+<<<<<<< HEAD
 
         authority.includes("get.fences") && dispatch({
+=======
+        dispatch({
+>>>>>>> develop_davis
           type: "geo/getFences",
           areaId: record.areaId
         });
 
+<<<<<<< HEAD
       }
 
       dispatch({
@@ -660,6 +665,8 @@ class Ride extends PureComponent {
       });
 
 
+=======
+>>>>>>> develop_davis
       this.setState({
         detailModalVisible: true,
         selectedRecord: record,
@@ -712,9 +719,6 @@ class Ride extends PureComponent {
 
   handleRefundRide = (rideId, payload) => {
     const { dispatch } = this.props;
-
-    if (!authority.includes("refund.ride"))
-      return;
 
     dispatch({
       type: "rides/refund",
@@ -982,7 +986,7 @@ class Ride extends PureComponent {
           )}
 
 
-        {vehicleDetailModalVisible && selectedVehicleId && authority.includes("get.vehicle") && (
+        {vehicleDetailModalVisible && selectedVehicleId && (
           <VehicleDetail
             isVisible={vehicleDetailModalVisible}
             handleDetailVisible={this.handleVehicleDetailModalVisible}
