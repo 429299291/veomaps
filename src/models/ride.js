@@ -10,7 +10,8 @@ import {
   endRide,
   getCustomerRides,
   refundRide,
-  getRefundCalculateResult
+  getRefundCalculateResult,
+  getRideBillingInfo
 } from "@/services/ride";
 import { message } from "antd";
 
@@ -43,12 +44,18 @@ export default {
       if (result) {
         onSuccess(result);
       } else {
-        onError(); 
-      }      
+        onError();
+      }
+    },
+    *billingInfo({ id, onSuccess }, { call, put }) {
+      const result = yield call(getRideBillingInfo, id);
+      if (result) {
+        onSuccess(result);
+      }
     },
 
-    *refund({ id , payload, onSuccess }, { call, put }) {
-      const isSuccess = yield call(refundRide, id,  payload);
+    *refund({ id, payload, onSuccess }, { call, put }) {
+      const isSuccess = yield call(refundRide, id, payload);
 
       if (isSuccess) {
         onSuccess();
@@ -59,19 +66,17 @@ export default {
     },
 
     *getAll({ payload, onSuccess }, { call, put }) {
-
       const data = yield call(getAdminRides, payload);
-      
+
       if (data) {
         onSuccess && onSuccess(data);
       } else {
         message.error("Fail to get all rides.");
       }
-      
     },
     *getRefundCalculateResult({ id, payload, onSuccess }, { call, put }) {
       const data = yield call(getRefundCalculateResult, id, payload);
-      
+
       if (data) {
         onSuccess && onSuccess(data);
       } else {
@@ -81,10 +86,10 @@ export default {
     *image({ rideId, onSuccess, onError }, { call, put }) {
       const url = yield call(getRideImage, rideId);
 
-      if (url && typeof url  === 'string') {
+      if (url && typeof url === "string") {
         onSuccess(url);
       } else {
-        onError(); 
+        onError();
       }
     },
     *getCustomerRides({ customerId, onSuccess }, { call, put }) {
@@ -110,7 +115,7 @@ export default {
     *getRoute({ rideId, onSuccess, onFail }, { call, put }) {
       const path = yield call(getRideRoute, rideId);
 
-      if (path && typeof path === 'object') {
+      if (path && typeof path === "object") {
         onSuccess(path);
       }
     },

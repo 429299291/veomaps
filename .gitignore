@@ -1,7 +1,6 @@
 .DS_STORE
 
 node_modules
-/dist/
 scripts/flow/*/.flowconfig
 *~
 *.pyc
@@ -24,8 +23,8 @@ chrome-user-data
 .vscode
 *.swp
 *.swo
-package-lock.json
 .temp/
 src/pages/.umi
-dist/
-src/pages/.umi
+dist/*
+dist.zip
+src/pages/.umi/*
