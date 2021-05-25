@@ -7,33 +7,36 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   SPRING_PROFILES_ACTIVE: gitlab-ci
   DOCKER_HOST: tcp://localhost:2375
-  MAVEN_OPTS: -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository
-  AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
 
 
 
 stages:
   - package
   - build
-  # - deploy
+  - deploy
 
 
 
 root-build:
   stage: package
+  cache:
+    paths:
+      - /node_modules
   image: node:latest
   script:
-    - npm install
+    - npm install 
+    - /bin/bash ./k8s/set-env.sh
     - npm run build
     - ls dist
+    - sed -i 's/1890ff/51B5AA/g' dist/color.less    
   artifacts:
     paths:
       - ./dist
-    expire_in: 30 mins
+    expire_in: 5 mins
   only:
     refs:
-    - develop
-    # - master
+    - develop    
+    - master
 
 
 services-build:
@@ -47,23 +50,25 @@ services-build:
     - aws ecr get-login
     - eval $(aws ecr get-login | sed 's/-e none//g')
     - ls
+    - docker build -t "488938767527.dkr.ecr.us-east-2.amazonaws.com/veo-service:manhattan-frontend-${CI_COMMIT_SHA}" .
+    - docker push "488938767527.dkr.ecr.us-east-2.amazonaws.com/veo-service:manhattan-frontend-${CI_COMMIT_SHA}"
   only:
     refs:
     - develop
-    # - master
+    - master
 
 
 
-# services-deploy:
-#   stage: deploy
-#   cache:
-#     paths:
-#       - /usr/local/bin/kubectl
-#   script:
-#      - apk update && apk add bash && apk add git
-#      - set -e
-#      - /bin/bash ./scripts/kube_deploy.sh
-#   only:
-#     refs:
-#     - develop
-#     # - master
+services-deploy:
+  stage: deploy
+  cache:
+    paths:
+      - /usr/local/bin/kubectl
+  script:
+     - apk update && apk add bash && apk add git
+     - set -e
+     - /bin/bash ./k8s/kube_deploy.sh
+  only:
+    refs:
+    - develop
+    - master

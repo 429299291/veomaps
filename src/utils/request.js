@@ -3,20 +3,11 @@ import { notification, Button, message } from "antd";
 import router from "umi/router";
 import hash from "hash.js";
 import { isAntdPro } from "./utils";
-
-//const urlPrefix = "https://localhost:8444/api";
-const urlPrefix = "https://develop.veoride.com:8444/api";
-//const urlPrefix = "https://manhattan-dev.veoride.com:8444/api";
-//const urlPrefix = "https://manhattan-host.veoride.com:8444/api";
-//const urlPrefix = "https://admin.veoride.com:8444/api";
-
-//const adminApiUrl = "https://cluster-prod.veoride.com";
-const adminApiUrl = "https://cluster-dev.veoride.com";
-
+import { urlPrefix, adminApiUrl } from "@/dev";
 
 export const ACCESS_TOKEN = "accessToken";
 
-export const  TOKEN_CREATE_DATE = "tokenCreateDate";
+export const TOKEN_CREATE_DATE = "tokenCreateDate";
 
 const codeMessage = {
   200: "The server successfully returned the requested data.",
@@ -78,10 +69,7 @@ const cachedSave = (response, hashcode) => {
  * @return {object}           An object containing either "data" or "err"
  */
 export default function request(url, options) {
-
   url = (url.startsWith("/api/admins") ? adminApiUrl : urlPrefix) + url;
-
-  
 
   const headers = new Headers({
     "Content-Type": "application/json"
@@ -108,10 +96,8 @@ export default function request(url, options) {
         }
 
         if (json.code !== 0 && json.data === null) {
-
           message.error(json.msg);
-          
-      }
+        }
 
         return json && json.data;
       })
