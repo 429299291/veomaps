@@ -696,7 +696,6 @@ class Ride extends PureComponent {
     const { filterCriteria, rideImageUrl } = this.state;
 
     if (!!flag) {
-<<<<<<< HEAD
 
       record.imageId && dispatch({
         type: "rides/image",
@@ -712,36 +711,6 @@ class Ride extends PureComponent {
         }
       });
 
-
-
-      dispatch({
-          type: "rides/getRoute",
-=======
-      record.imageId &&
-        dispatch({
-          type: "rides/image",
->>>>>>> fa5c9e9d841f8d7df658fc12262a0dea60c213ae
-          rideId: record.id,
-          onSuccess: imageUrl =>
-            this.setState({
-              rideImageUrl: imageUrl
-            }),
-          onError: () => {
-            this.setState({
-<<<<<<< HEAD
-              selectedRidePathInfo: pathInfo,
-            })
-      });
-      dispatch({
-          type: "geo/getFences",
-          areaId: record.areaId
-        });
-=======
-              rideImageUrl: undefined
-            });
-          }
-        });
-
       dispatch({
         type: "rides/getRoute",
         rideId: record.id,
@@ -756,7 +725,6 @@ class Ride extends PureComponent {
         areaId: record.areaId
       });
 
->>>>>>> fa5c9e9d841f8d7df658fc12262a0dea60c213ae
       dispatch({
         type: "rides/billingInfo",
         id: record.id,
@@ -766,10 +734,7 @@ class Ride extends PureComponent {
             selectedRideBillingInfo: billingInfo
           })
       });
-<<<<<<< HEAD
-=======
 
->>>>>>> fa5c9e9d841f8d7df658fc12262a0dea60c213ae
       this.setState({
         detailModalVisible: true,
         selectedRecord: record
