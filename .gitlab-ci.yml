@@ -22,6 +22,8 @@ root-build:
   image: node:latest
   script:  
     - ls 
+  script:
+    - ls
     - npm install 
     - /bin/bash ./k8s/set-env.sh
     - npm run build
