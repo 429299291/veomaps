@@ -161,14 +161,14 @@ let routes = [
           {
             "path": "/area/promo-management/",
             "name": "Promo Management",
-            "component": dynamic({ loader: () => import('../area/Promo/Promo'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
+            "component": dynamic({ loader: () => import('../Area/Promo/Promo'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
             "authority": "area.promo",
             "exact": true
           },
           {
             "path": "/area/deposit-management/",
             "name": "Deposit Management",
-            "component": dynamic({ loader: () => import('../area/Deposit/Deposit'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
+            "component": dynamic({ loader: () => import('../Area/Deposit/Deposit'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
             "authority": "area.deposit",
             "exact": true
           },
@@ -176,14 +176,14 @@ let routes = [
             "path": "/area/membership-management",
             "name": "Membership Management",
             "authority": "area.membership",
-            "component": dynamic({ loader: () => import('../area/Membership/Membership'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
+            "component": dynamic({ loader: () => import('../Area/Membership/Membership'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
             "exact": true
           },
           {
             "path": "/area/price-management/",
             "name": "Price Management",
             "authority": "area.price",
-            "component": dynamic({ loader: () => import('../area/Price/Price'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
+            "component": dynamic({ loader: () => import('../Area/Price/Price'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
             "exact": true
           },
           {

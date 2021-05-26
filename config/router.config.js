@@ -116,14 +116,14 @@ export default [
             path: "/area/promo-management/",
             name: "Promo Management",
             // icon: "barcode",
-            component: "./area/Promo/Promo",
+            component: "./Area/Promo/Promo",
             authority: "area.promo"
           },
           {
             path: "/area/deposit-management/",
             name: "Deposit Management",
             // icon: "dollar",
-            component: "./area/Deposit/Deposit",
+            component: "./Area/Deposit/Deposit",
             authority: "area.deposit"
           },
           {
@@ -131,14 +131,14 @@ export default [
             name: "Membership Management",
             // icon: "wallet",
             authority: "area.membership",
-            component: "./area/Membership/Membership",
+            component: "./Area/Membership/Membership",
           },
           {
             path: "/area/price-management/",
             name: "Price Management",
             // icon: "wallet",
             authority: "area.price",
-            component: "./area/Price/Price"
+            component: "./Area/Price/Price"
           },
         ]
       },
