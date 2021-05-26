@@ -133,14 +133,14 @@ export default [
             authority: "area.membership",
             component: "./area/Membership/Membership",
           },
+          {
+            path: "/area/price-management/",
+            name: "Price Management",
+            // icon: "wallet",
+            authority: "area.price",
+            component: "./area/Price/Price"
+          },
         ]
-      },
-      {
-        path: "/price-management/",
-        name: "Price Management",
-        icon: "wallet",
-        authority: "area.price",
-        component: "./Price/Price"
       },
       {
         path: "/employee-management/",

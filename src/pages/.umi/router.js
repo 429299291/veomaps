@@ -180,17 +180,16 @@ let routes = [
             "exact": true
           },
           {
+            "path": "/area/price-management/",
+            "name": "Price Management",
+            "authority": "area.price",
+            "component": dynamic({ loader: () => import('../area/Price/Price'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
+            "exact": true
+          },
+          {
             "component": () => React.createElement(require('C:/Users/42929/Desktop/veo-admin-website/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })
           }
         ]
-      },
-      {
-        "path": "/price-management/",
-        "name": "Price Management",
-        "icon": "wallet",
-        "authority": "area.price",
-        "component": dynamic({ loader: () => import('../Price/Price'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
-        "exact": true
       },
       {
         "path": "/employee-management/",
