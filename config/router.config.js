@@ -111,35 +111,7 @@ export default [
             path: "/area/area-management/",
             name: "Area Management",
             component: "./Area/Area",
-          },
-          {
-            path: "/area/promo-management/",
-            name: "Promo Management",
-            // icon: "barcode",
-            component: "./area/Promo/Promo",
-            authority: "area.promo"
-          },
-          {
-            path: "/area/deposit-management/",
-            name: "Deposit Management",
-            // icon: "dollar",
-            component: "./area/Deposit/Deposit",
-            authority: "area.deposit"
-          },
-          {
-            path: "/area/membership-management",
-            name: "Membership Management",
-            // icon: "wallet",
-            authority: "area.membership",
-            component: "./area/Membership/Membership",
-          },
-          {
-            path: "/area/price-management/",
-            name: "Price Management",
-            // icon: "wallet",
-            authority: "area.price",
-            component: "./area/Price/Price"
-          },
+          }
         ]
       },
       {
