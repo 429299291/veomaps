@@ -216,7 +216,7 @@ class Listing extends PureComponent {
         dataIndex: 'operation',
         render: (text, record) => (
             <div>
-              <a onClick={() => this.handleUpdateModalVisible(true, record)} disabled={!authority.includes("update.shop.listing.item") }>
+              <a onClick={() => this.handleUpdateModalVisible(true, record)} disabled={!authority.includes("shop") }>
                     Update
               </a>
             </div>

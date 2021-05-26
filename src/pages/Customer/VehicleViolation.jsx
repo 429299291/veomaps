@@ -376,7 +376,7 @@ class VehicleViolation extends PureComponent {
 
       this.setState({selectedRide: record});
 
-      authority.includes("vehicle") && record.imageId && dispatch({
+       record.imageId && dispatch({
         type: "rides/image",
         rideId: record.id,
         onSuccess: imageUrl =>
@@ -390,7 +390,7 @@ class VehicleViolation extends PureComponent {
         }
       });
 
-      if (authority.includes("vehicle")) {
+      if (authority.includes("area")) {
 
 
         dispatch({
@@ -401,7 +401,7 @@ class VehicleViolation extends PureComponent {
               selectedRidePathInfo: pathInfo,
             })
         });
-        authority.includes("get.fences") && dispatch({
+        authority.includes("area") && dispatch({
           type: "geo/getFences",
           areaId: record.areaId
         });

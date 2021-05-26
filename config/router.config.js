@@ -10,37 +10,25 @@ export default [
       { path: "/user/register-result", component: "./User/RegisterResult" }
     ]
   },
+  // { path: "/", redirect: "/vehicle-management/ride"},
+
   // app
   {
     path: "/",
     component: "../layouts/BasicLayout",
     Routes: ["src/pages/Authorized"],
-    authority: "basic.admin",
+    authority: "admin",
     routes: [
-      // dashboard
-
-      { path: "/", redirect: "/vehicle-management/vehicle" },
       {
         path: "/dashboard",
         name: "dashboard",
         icon: "dashboard",
-        //authority: "get.dashboard",
+        authority: "dashboard",
         routes: [
           {
             path: "/dashboard/main",
             name: "dashboard",
             component: "./Dashboard/Dashboard"
-          },
-          // {
-          //   path: "/dashboard/performance",
-          //   name: "Performance",
-          //   component: "./Dashboard/Performance"
-          // },
-          {
-            path: "/dashboard/techmetrics",
-            name: "Tech Metrics",
-            component: "./Dashboard/TechMetrics",
-            authority: "get.technician.metrics"
           },
         ]
       },
@@ -48,18 +36,17 @@ export default [
         path: "/shop-management",
         icon: "shop",
         name: "Shop Management",
+        authority: "shop",
         routes: [
           {
             path: "/shop-management/order",
             name: "Order",
             component: "./Shop/Order",
-            authority: "get.shop.orders"
           },
           {
-            path: "/shop-management/",
+            path: "/shop-management/listing",
             name: "Listing",
             component: "./Shop/Listing",
-            authority: "get.shop.listing"
           }
         ]
       },
@@ -67,38 +54,30 @@ export default [
         path: "/vehicle-management",
         icon: "car",
         name: "Vehicle Management",
+        authority: "vehicle",
         routes: [
           {
             path: "/vehicle-management/vehicle",
             name: "Vehicle List",
             component: "./Vehicle/Vehicle",
-            authority: "get.vehicles"
           },
           {
             path: "/vehicle-management/ride",
             name: "Riding History",
             component: "./Vehicle/Ride",
-            authority: "get.rides"
           },
           {
             path: "/vehicle-management/error",
             name: "Report",
             component: "./Vehicle/Error",
-            authority: "get.errors"
           },
-          {
-            path: "/vehicle-management/violations",
-            name: "Violation",
-            component: "./Vehicle/VehicleViolation",
-            authority: "get.vehicle.violations"
-          }
         ]
       },
       {
         path: "/customer-management",
         icon: "user",
         name: "Customer Management",
-        authority: "get.customers",
+        authority: "customer",
         routes: [
           {
             path: "/customer-management/customer",
@@ -109,7 +88,11 @@ export default [
             path: "/customer-management/notifications",
             name: "Notifications",
             component: "./CustomerNotification/Notifications",
-            authority: "get.customers.notifications"
+          },
+          {
+            path: "/customer-management/violations",
+            name: "Violation",
+            component: "./Customer/VehicleViolation",
           }
         ]
       },
@@ -117,76 +100,70 @@ export default [
         path: "/area",
         icon: "global",
         name: "Area Management",
+        authority:'area',
         routes: [
           {
             path: "/area/geo-management/",
             name: "Geo Management",
             component: "./Area/Geo",
-            authority: "get.fences"
           },
           {
             path: "/area/area-management/",
             name: "Area Management",
             component: "./Area/Area",
-            authority: "get.areas"
           }
         ]
       },
       {
-        path: "/membership-management",
-        name: "Membership Management",
-        icon: "wallet",
-        component: "./Membership/Membership",
-        authority: "get.memberships"
-      },
-      {
-        path: "/promo-management/",
-        name: "Promo Management",
-        icon: "barcode",
-        component: "./Promo/Promo",
-        authority: "get.promos"
-      },
-      {
-        path: "/deposit-management/",
-        name: "Deposit Management",
-        icon: "dollar",
-        component: "./Deposit/Deposit",
-        authority: "get.deposits"
-      },
-      {
-        path: "/price-management/",
-        name: "Price Management",
-        icon: "wallet",
-        authority: "get.prices",
-        component: "./Price/Price"
-      },
-      {
         path: "/employee-management/",
-        name: "Employee Management",
+        name: "Admin Management",
         icon: "user",
-        authority: "get.admins",
+        authority: "admin",
         routes: [
           {
             path: "/employee-management/role",
             name: "Role Management",
             component: "./Employee/Role",
-            authority: "get.roles.details"
           },
           {
             path: "/employee-management/privilege",
             name: "Privilege Management",
             component: "./Employee/Privilege",
-            authority: "get.privileges"
           },
           {
             path: "/employee-management/admin",
             name: "Admin Management",
             component: "./Employee/Admin",
-            authority: "get.admins"
           }
         ]
       },
       {
+        path: "/technician-management/",
+        name: "technician Management",
+        icon: "user",
+        authority: "technician",
+        routes: [
+          {
+            path: "/technician-management/main",
+            name: "Technician Management",
+            // icon: "user",
+            component: "./Technician/Technician",
+          },
+          {
+            path: "/technician-management/violation-management",
+            name: "Violation Management",
+            // icon: "warning",
+            component: "./Technician/Violation",
+          },
+          {
+            path: "/technician-management/techmetrics",
+            name: "Tech Metrics",
+            // icon: "user",
+            component: "./Technician/TechMetrics",
+          }
+        ]
+      },
+        {
         name: "account",
         icon: "user",
         path: "/account",
@@ -219,18 +196,6 @@ export default [
             ]
           }
         ]
-      },
-      {
-        path: "/technician-management/",
-        name: "Technician Management",
-        icon: "user",
-        component: "./Technician/Technician"
-      },
-      {
-        path: "/violation-management",
-        name: "Violation Management",
-        icon: "warning",
-        component: "./Violation/Violation"
       },
       {
         component: "404"

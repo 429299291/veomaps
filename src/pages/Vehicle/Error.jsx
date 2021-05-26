@@ -197,14 +197,13 @@ class Error extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          {authority.includes("update.error.detail") && authority.includes("get.image.paths") &&
+          {authority.includes("vehicle") &&
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>
             Process
           </a>}
 
           <Divider type="vertical" />
 
-          {authority.includes("update.error.detail") &&
           <Popconfirm
             title="Are you sure？"
             icon={<Icon type="question-circle-o" style={{ color: "red" }}/>}
@@ -214,7 +213,6 @@ class Error extends PureComponent {
               Delete
             </a>
           </Popconfirm>
-          }
 
         </Fragment>
       )
@@ -601,7 +599,7 @@ class Error extends PureComponent {
           errorImages={errorImages}
         />
 
-      {vehicleDetailModalVisible && selectedVehicleId && authority.includes("get.vehicle") && (
+      {vehicleDetailModalVisible && selectedVehicleId && authority.includes("vehicle") && (
           <VehicleDetail
             isVisible={vehicleDetailModalVisible}
             handleDetailVisible={this.handleVehicleDetailModalVisible}

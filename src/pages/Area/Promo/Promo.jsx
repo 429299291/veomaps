@@ -19,7 +19,7 @@ import {
 import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 
-import styles from "./Deposit.less";
+import styles from "./Promo.less";
 
 import { getAuthority } from "@/utils/authority";
 
@@ -27,7 +27,7 @@ const authority = getAuthority();
 
 const FormItem = Form.Item;
 const { Step } = Steps;
-const { TextDeposit } = Input;
+const { TextPromo } = Input;
 const { Option } = Select;
 const RadioGroup = Radio.Group;
 const getValue = obj =>
@@ -43,7 +43,7 @@ const CreateForm = Form.create()(props => {
     form,
     handleAdd,
     handleModalVisible,
-    deposits,
+    promos,
     areas
   } = props;
   const okHandle = () => {
@@ -62,8 +62,8 @@ const CreateForm = Form.create()(props => {
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Description">
-        {form.getFieldDecorator("description", {
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="NAME">
+        {form.getFieldDecorator("name", {
           rules: [
             {
               required: true,
@@ -76,9 +76,9 @@ const CreateForm = Form.create()(props => {
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
-        label="Deposit"
+        label="Valid Days"
       >
-        {form.getFieldDecorator("deposit", {
+        {form.getFieldDecorator("days", {
           rules: [
             {
               required: true
@@ -91,7 +91,7 @@ const CreateForm = Form.create()(props => {
         wrapperCol={{ span: 15 }}
         label="Ride Credits"
       >
-        {form.getFieldDecorator("rideCredit", {
+        {form.getFieldDecorator("amount", {
           rules: [
             {
               required: true
@@ -150,8 +150,8 @@ const UpdateForm = Form.create()(props => {
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Description">
-        {form.getFieldDecorator("description", {
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="NAME">
+        {form.getFieldDecorator("name", {
           rules: [
             {
               required: true,
@@ -159,21 +159,21 @@ const UpdateForm = Form.create()(props => {
               min: 1
             }
           ],
-          initialValue: record.description
+          initialValue: record.name
         })(<Input placeholder="Please Input" />)}
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
-        label="Deposit"
+        label="Valid Days"
       >
-        {form.getFieldDecorator("deposit", {
+        {form.getFieldDecorator("days", {
           rules: [
             {
               required: true
             }
           ],
-          initialValue: record.deposit
+          initialValue: record.days
         })(<InputNumber placeholder="Please Input" />)}
       </FormItem>
       <FormItem
@@ -181,13 +181,13 @@ const UpdateForm = Form.create()(props => {
         wrapperCol={{ span: 15 }}
         label="Ride Credits"
       >
-        {form.getFieldDecorator("rideCredit", {
+        {form.getFieldDecorator("amount", {
           rules: [
             {
               required: true
             }
           ],
-          initialValue: record.rideCredit
+          initialValue: record.amount
         })(<InputNumber placeholder="Please Input" />)}
       </FormItem>
       {areas && (
@@ -215,19 +215,110 @@ const UpdateForm = Form.create()(props => {
 });
 
 
+const GeneratePromoWithCodeForm = Form.create()(props => {
+  const {
+    form,
+    modalVisible,
+    handleGeneratePromoWithCode,
+    handleModalVisible,
+    record
+  } = props;
+  const okHandle = () => {
+    if (form.isFieldsTouched())
+      form.validateFields((err, fieldsValue) => {
+        if (err) return;
+        form.resetFields();
+
+        handleGeneratePromoWithCode(record.id, fieldsValue);
+      });
+    else handleModalVisible();
+  };
+
+  const checkAmount = (rule, value, callback) => {
+    if (value > 0) {
+      callback();
+      return;
+    }
+
+    callback("Amount must be larger than zero.");
+  };
+
+  return (
+    <Modal
+      destroyOnClose
+      title="Generate Promo with Code"
+      visible={modalVisible}
+      onOk={okHandle}
+      onCancel={() => handleModalVisible()}
+    >
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Start Time"
+      >
+        {form.getFieldDecorator("start", {
+          rules: [
+            {
+              required: true,
+              message: "You have to pick a time to start!"
+            }
+          ]
+        })(
+          <DatePicker
+            showTime
+            format="YYYY-MM-DD HH:mm:ss"
+            placeholder="Select Start Time"
+          />
+        )}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Amount"
+      >
+        {form.getFieldDecorator("amount", {
+          rules: [
+            {
+              required: true
+            },
+            {
+              validator: checkAmount
+            }
+          ]
+        })(<InputNumber placeholder="Please Input" />)}
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Code"
+      >
+        {form.getFieldDecorator("code", {
+          rules: [
+            {
+              required: true
+            }
+          ]
+        })(<Input placeholder="Please Input" />)}
+      </FormItem>
+    </Modal>
+  );
+});
+
+
+
 /* eslint react/no-multi-comp:0 */
-@connect(({ deposits, areas, loading }) => ({
-  deposits,
+@connect(({ promos, areas, loading }) => ({
+  promos,
   areas,
   selectedAreaId: areas.selectedAreaId,
-  loading: loading.models.deposits
+  loading: loading.models.promos
 }))
 @Form.create()
-class Deposit extends PureComponent {
+class Promo extends PureComponent {
   state = {
     createModalVisible: false,
     updateModalVisible: false,
-    generateCodeDepositVisible: false,
+    generateCodePromoVisible: false,
     expandForm: false,
     selectedRows: [],
     filterCriteria: {},
@@ -236,16 +327,20 @@ class Deposit extends PureComponent {
 
   columns = [
     {
-      title: "Description",
-      dataIndex: "description"
+      title: "Name",
+      dataIndex: "name"
     },
     {
-      title: "Deposit",
-      dataIndex: "deposit"
+      title: "Valid Days",
+      dataIndex: "days"
     },
     {
       title: "Ride Credit",
-      dataIndex: "rideCredit"
+      dataIndex: "amount"
+    },
+    {
+      title: "Redeem Count",
+      dataIndex: "redeemCount"
     },
     {
       title: "Area",
@@ -256,26 +351,16 @@ class Deposit extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          {authority.includes("area.deposit") &&
             <a onClick={() => this.handleUpdateModalVisible(true, record)}>
               Update
             </a>
-          }
 
 
           <Divider type="vertical" />
 
-          {authority.includes("area.deposit") &&
-            <Popconfirm
-              title="Are you sure？"
-              icon={<Icon type="question-circle-o" style={{ color: "red" }} />}
-              onConfirm={() => this.handleDelete(record.id)}
-            >
-              <a href="#" style={{ color: "red" }}>
-                Delete
-              </a>
-            </Popconfirm>
-          }
+          <a onClick={() => this.handleGenerateCodePromoModalVisible(true, record)}>
+            Generate Promo with Code
+          </a>
 
         </Fragment>
       )
@@ -283,23 +368,23 @@ class Deposit extends PureComponent {
   ];
 
   componentDidMount() {
-    this.handleGetDeposits();
+    this.handleGetPromos();
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
 
     if (prevProps.selectedAreaId !== this.props.selectedAreaId) {
-      this.handleGetDeposits();
+      this.handleGetPromos();
     }
 
   }
 
-  handleGetDeposits = () => {
+  handleGetPromos = () => {
     const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
 
     dispatch({
-      type: "deposits/get",
+      type: "promos/get",
       payload: selectedAreaId ? Object.assign({}, filterCriteria, {areaId: selectedAreaId}) :  filterCriteria
     });
   };
@@ -315,7 +400,7 @@ class Deposit extends PureComponent {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
 
-    this.setState({ filterCriteria: params }, () => this.handleGetDeposits());
+    this.setState({ filterCriteria: params }, () => this.handleGetPromos());
   };
 
   handleFormReset = () => {
@@ -326,7 +411,7 @@ class Deposit extends PureComponent {
       {
         filterCriteria: {}
       },
-      () => this.handleGetDeposits()
+      () => this.handleGetPromos()
     );
   };
 
@@ -345,7 +430,7 @@ class Deposit extends PureComponent {
         {
           filterCriteria: values
         },
-        () => this.handleGetDeposits()
+        () => this.handleGetPromos()
       );
     });
   };
@@ -363,13 +448,31 @@ class Deposit extends PureComponent {
     });
   };
 
-  handleDelete = id => {
+
+  handleGenerateCodePromoModalVisible = (flag, record) => {
+    this.setState({
+      generateCodePromoVisible: !!flag,
+      selectedRecord: record || {}
+    });
+  }
+
+
+  handleGeneratePromoWithCode = (id, payload) => {
     const { dispatch } = this.props;
 
     dispatch({
-      type: "deposits/delete",
-      id: id,
-      onSuccess: this.handleGetDeposits
+      type: "promos/generateCodePromo",
+      payload: payload,
+      id: id
+    });
+
+    this.handleGenerateCodePromoModalVisible();
+  };
+
+  handleDeleteModalVisible = (flag, record) => {
+    this.setState({
+      updateModalVisible: !!flag,
+      selectedRecord: record || {}
     });
   };
 
@@ -377,9 +480,9 @@ class Deposit extends PureComponent {
     const { dispatch } = this.props;
 
     dispatch({
-      type: "deposits/add",
+      type: "promos/add",
       payload: fields,
-      onSuccess: this.handleGetDeposits
+      onSuccess: this.handleGetPromos
     });
 
     this.handleCreateModalVisible();
@@ -389,22 +492,51 @@ class Deposit extends PureComponent {
     const { dispatch } = this.props;
 
     dispatch({
-      type: "deposits/update",
+      type: "promos/update",
       payload: fields,
       id: id,
-      onSuccess: this.handleGetDeposits
+      onSuccess: this.handleGetPromos
     });
 
     this.handleUpdateModalVisible();
   };
 
+  renderSimpleForm() {
+    const {
+      form: { getFieldDecorator }
+    } = this.props;
+
+    const areas = this.props.areas.data;
+    return (
+      <Form onSubmit={this.handleSearch} layout="inline">
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={8} sm={24}>
+            <FormItem label="Keywords">
+              {getFieldDecorator("name")(<Input placeholder="name" />)}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <span className={styles.submitButtons}>
+              <Button type="primary" htmlType="submit">
+                Search
+              </Button>
+              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+                Reset
+              </Button>
+            </span>
+          </Col>
+        </Row>
+      </Form>
+    );
+  }
+
   render() {
-    const { deposits, loading, areas } = this.props;
+    const { promos, loading, areas } = this.props;
     const {
       createModalVisible,
       updateModalVisible,
       selectedRecord,
-      generateCodeDepositVisible
+      generateCodePromoVisible
     } = this.state;
 
     const parentMethods = {
@@ -416,18 +548,20 @@ class Deposit extends PureComponent {
       handleUpdate: this.handleUpdate
     };
 
-    const codeDepositMethods = {
-      handleModalVisible: this.handleGenerateCodeDepositModalVisible,
-      handleGenerateDepositWithCode: this.handleGenerateDepositWithCode
+    const codePromoMethods = {
+      handleModalVisible: this.handleGenerateCodePromoModalVisible,
+      handleGeneratePromoWithCode: this.handleGeneratePromoWithCode
     };
 
     return (
-      <PageHeaderWrapper title="Deposit List">
+      <PageHeaderWrapper title="Promo List">
         <Card bordered={false}>
           <div className={styles.tableList}>
-          
+            <div className={styles.tableListForm}>
+              {this.renderSimpleForm()}
+            </div>
             <div className={styles.tableListOperator}>
-              {authority.includes("create.deposit") &&
+              {authority.includes("create.promo") &&
                 <Button
                   icon="plus"
                   type="primary"
@@ -440,7 +574,7 @@ class Deposit extends PureComponent {
             </div>
             <StandardTable
               loading={loading}
-              data={{ list: deposits.data, pagination: {} }}
+              data={{ list: promos.data, pagination: {} }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />
@@ -449,7 +583,7 @@ class Deposit extends PureComponent {
         <CreateForm
           {...parentMethods}
           modalVisible={createModalVisible}
-          deposits={deposits.data}
+          promos={promos.data}
           areas={areas.data}
         />
 
@@ -457,14 +591,18 @@ class Deposit extends PureComponent {
           {...updateMethods}
           modalVisible={updateModalVisible}
           record={selectedRecord}
-          deposits={deposits.data}
+          promos={promos.data}
           areas={areas.data}
         />
 
-      
+        <GeneratePromoWithCodeForm
+          {...codePromoMethods}
+          modalVisible={generateCodePromoVisible}
+          record={selectedRecord}
+        />
       </PageHeaderWrapper>
     );
   }
 }
 
-export default Deposit;
+export default Promo;

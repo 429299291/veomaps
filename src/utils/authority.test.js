@@ -13,7 +13,10 @@ describe('getAuthority should be strong', () => {
   it('array with single item', () => {
     expect(getAuthority('["admin"]')).toEqual(['admin']);
   });
+  // it('array with multiple items', () => {
+  //   expect(getAuthority('["admin", "guest"]')).toEqual(['admin', 'guest']);
+  // });
   it('array with multiple items', () => {
-    expect(getAuthority('["admin", "guest"]')).toEqual(['admin', 'guest']);
+    expect(getAuthority('["admin"]')).toEqual(['admin']);
   });
 });
