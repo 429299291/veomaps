@@ -19,11 +19,9 @@ stages:
 
 root-build:
   stage: package
-  cache:
-    paths:
-      - /node_modules
   image: node:latest
-  script:
+  script:  
+    - ls 
     - npm install 
     - /bin/bash ./k8s/set-env.sh
     - npm run build
@@ -37,6 +35,7 @@ root-build:
     refs:
     - develop    
     - master
+    - develop_davis
 
 
 services-build:
@@ -56,6 +55,7 @@ services-build:
     refs:
     - develop
     - master
+    - develop_davis
 
 
 
@@ -72,3 +72,4 @@ services-deploy:
     refs:
     - develop
     - master
+    - develop_davis
