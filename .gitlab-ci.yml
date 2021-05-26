@@ -25,7 +25,6 @@ root-build:
     - npm install 
     - /bin/bash ./k8s/set-env.sh
     - npm run build
-    - ls /root/.npm/
     - ls dist
     - sed -i 's/1890ff/51B5AA/g' dist/color.less    
   artifacts:
