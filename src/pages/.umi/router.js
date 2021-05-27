@@ -182,6 +182,7 @@ let routes = [
           {
             "path": "/area/price-management/",
             "name": "Price Management",
+            "icon": "wallet",
             "authority": "area.price",
             "component": dynamic({ loader: () => import('../Area/Price/Price'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
             "exact": true
