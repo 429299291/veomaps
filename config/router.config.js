@@ -140,6 +140,7 @@ export default [
             authority: "area.price",
             component: "./Area/Price/Price"
           },
+
         ]
       },
       {

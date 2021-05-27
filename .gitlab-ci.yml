@@ -20,8 +20,6 @@ stages:
 root-build:
   stage: package
   image: node:latest
-  script:  
-    - ls 
   script:
     - ls
     - npm install 
@@ -37,7 +35,6 @@ root-build:
     refs:
     - develop    
     - master
-    - develop_davis
 
 
 services-build:
@@ -57,7 +54,6 @@ services-build:
     refs:
     - develop
     - master
-    - develop_davis
 
 
 
@@ -74,4 +70,3 @@ services-deploy:
     refs:
     - develop
     - master
-    - develop_davis
