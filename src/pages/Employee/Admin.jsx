@@ -563,53 +563,32 @@ class Admin extends PureComponent {
     {
       title: "Operation",
       render: (text, record) =>
-      <Fragment>
-      {authority.includes("admin") && (
-        <a onClick={() => this.handleUpdateModalVisible(true, record)}>
-          Update
-        </a>
-      )}
+      record.role ?  record.role.name === 'Super Admin'? (<span>Super administrator cannot modify</span>) :
+      (
+          <Fragment>
+            {authority.includes("admin") && (
+              <a onClick={() => this.handleUpdateModalVisible(true, record)}>
+                Update
+              </a>
+            )}
 
-      <Divider type="vertical" />
+            <Divider type="vertical" />
 
-      {authority.includes("admin") && (
-        <a
-          href="#"
-          onClick={() =>
-            this.handleUpdatePasswordModalVisible(true, record)
-          }
-        >
-          Update Password
-        </a>
-      )}
-    </Fragment>
-  
-      // record.role ?  record.role.name === 'Super Admin'? (<span>Super administrator cannot modify</span>) :
-      // (
-      //     <Fragment>
-      //       {authority.includes("admin") && (
-      //         <a onClick={() => this.handleUpdateModalVisible(true, record)}>
-      //           Update
-      //         </a>
-      //       )}
-
-      //       <Divider type="vertical" />
-
-      //       {authority.includes("admin") && (
-      //         <a
-      //           href="#"
-      //           onClick={() =>
-      //             this.handleUpdatePasswordModalVisible(true, record)
-      //           }
-      //         >
-      //           Update Password
-      //         </a>
-      //       )}
-      //     </Fragment>
-      //   )
+            {authority.includes("admin") && (
+              <a
+                href="#"
+                onClick={() =>
+                  this.handleUpdatePasswordModalVisible(true, record)
+                }
+              >
+                Update Password
+              </a>
+            )}
+          </Fragment>
+        )
       
       
-      // :(<span>No permission</span>)
+      :(<span>No permission</span>)
 
     }
   ];
