@@ -239,7 +239,7 @@ const AreaFeatureForm = Form.create()(props => {
 
   const areaFeatureId = record.areaFeature && record.areaFeature.id;
 
-  const isEditable = authority.includes("update.area.feature" ) && authority.includes("create.area.feature");
+  const isEditable = authority.includes("area" );
 
   const okHandle = () => {
     if (form.isFieldsTouched())

@@ -136,7 +136,7 @@ export default [
           {
             path: "/area/price-management/",
             name: "Price Management",
-            icon: "wallet",
+            // icon: "wallet",
             authority: "area.price",
             component: "./Area/Price/Price"
           },
