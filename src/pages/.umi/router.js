@@ -40,7 +40,7 @@ let routes = [
     "path": "/",
     "component": dynamic({ loader: () => import('../../layouts/BasicLayout'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
     "Routes": [require('../Authorized').default],
-    "authority": "admin",
+    "authority": "area",
     "routes": [
       {
         "path": "/dashboard",
