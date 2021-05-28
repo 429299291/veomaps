@@ -816,7 +816,7 @@ class Area extends PureComponent {
 
     const { dispatch } = this.props;
 
-    if (!authority.includes("get.area.features")) {
+    if (!authority.includes("area")) {
       return;
     }
 
