@@ -728,7 +728,7 @@ class Admin extends PureComponent {
           </Col>
           <Col span={10}>
             <FormItem>
-              {authority.includes("register.admin.email") && (
+              {authority.includes("admin") && (
                 <Button
                   icon="plus"
                   type="primary"
