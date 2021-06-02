@@ -25,11 +25,10 @@ export default {
 
   effects: {
     *get({ payload, onSuccess }, { call, put }) {
-      const response = (yield call(getAdminAreas, payload)).content;
+      let response = (yield call(getAdminAreas, payload)).content;
       if (Array.isArray(response)) {
         response.map(area => (area.key = area.id));
       }
-
       yield put({
         type: "save",
         payload: Array.isArray(response) ? response : []
@@ -41,8 +40,10 @@ export default {
 
     },
     *getAll({ payload, onSuccess }, { call, put }) {
-      const response = yield call(getAllAreas, payload);
-
+      // const response = yield call(getAllAreas, payload);
+      // console.log(response);
+      let response = yield call(getAdminAreas, payload);
+      response= response.content
 
       if (typeof onSuccess == "function") {
         onSuccess(response);
@@ -149,7 +150,6 @@ export default {
   reducers: {
     save(state, action) {
       const areaNames = [];
-
       action.payload.map(area => (areaNames[area.id] = area.name));
 
       return {

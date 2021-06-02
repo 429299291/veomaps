@@ -567,7 +567,7 @@ class Admin extends PureComponent {
       (
         //other permissions
           <Fragment>
-            {authority.includes("admin") && (
+            {authority.includes("me") && (
               <a onClick={() => this.handleUpdateModalVisible(true, record)}>
                 Update
               </a>
@@ -575,7 +575,7 @@ class Admin extends PureComponent {
 
             <Divider type="vertical" />
 
-            {authority.includes("admin") && (
+            {authority.includes("me") && (
               <a
                 href="#"
                 onClick={() =>
@@ -592,7 +592,7 @@ class Admin extends PureComponent {
       :(
         //no permissions
         <Fragment>
-        {authority.includes("admin") && (
+        {authority.includes("me") && (
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>
             Update
           </a>
@@ -600,7 +600,7 @@ class Admin extends PureComponent {
 
         <Divider type="vertical" />
 
-        {authority.includes("admin") && (
+        {authority.includes("me") && (
           <a
             href="#"
             onClick={() =>
@@ -641,7 +641,7 @@ class Admin extends PureComponent {
 
   getNameByAreaIds = areaIds => {
     const {areas} = this.state;
-
+    
 
 
     if (areas.length === 0) return "";
@@ -687,7 +687,6 @@ class Admin extends PureComponent {
   handleGetAreas = () => {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
-
 
     dispatch({
       type: "areas/getAll",
