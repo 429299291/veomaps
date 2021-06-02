@@ -42,7 +42,8 @@ let routes = [
     "Routes": [require('../Authorized').default],
     "authority": [
       "area",
-      "admin"
+      "admin",
+      "me"
     ],
     "routes": [
       {
@@ -66,7 +67,10 @@ let routes = [
         "path": "/shop-management",
         "icon": "shop",
         "name": "Shop Management",
-        "authority": "shop",
+        "authority": [
+          "shop",
+          "me"
+        ],
         "routes": [
           {
             "path": "/shop-management/order",
@@ -86,21 +90,27 @@ let routes = [
         ]
       },
       {
+        "path": "/ride/",
+        "name": "Riding management",
+        "component": dynamic({ loader: () => import('../Ride/Ride'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
+        "authority": [
+          "me"
+        ],
+        "exact": true
+      },
+      {
         "path": "/vehicle-management",
         "icon": "car",
         "name": "Vehicle Management",
-        "authority": "vehicle",
+        "authority": [
+          "vehicle",
+          "me"
+        ],
         "routes": [
           {
             "path": "/vehicle-management/vehicle",
             "name": "Vehicle List",
             "component": dynamic({ loader: () => import('../Vehicle/Vehicle'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
-            "exact": true
-          },
-          {
-            "path": "/vehicle-management/ride",
-            "name": "Riding History",
-            "component": dynamic({ loader: () => import('../Vehicle/Ride'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
             "exact": true
           },
           {
@@ -118,7 +128,10 @@ let routes = [
         "path": "/customer-management",
         "icon": "user",
         "name": "Customer Management",
-        "authority": "customer",
+        "authority": [
+          "customer",
+          "me"
+        ],
         "routes": [
           {
             "path": "/customer-management/customer",
@@ -147,7 +160,10 @@ let routes = [
         "path": "/area",
         "icon": "global",
         "name": "Area Management",
-        "authority": "area",
+        "authority": [
+          "area",
+          "me"
+        ],
         "routes": [
           {
             "path": "/area/geo-management/",
@@ -198,7 +214,10 @@ let routes = [
         "path": "/employee-management/",
         "name": "Admin Management",
         "icon": "user",
-        "authority": "admin",
+        "authority": [
+          "admin",
+          "me"
+        ],
         "routes": [
           {
             "path": "/employee-management/role",
@@ -227,7 +246,10 @@ let routes = [
         "path": "/technician-management/",
         "name": "technician Management",
         "icon": "user",
-        "authority": "technician",
+        "authority": [
+          "technician",
+          "me"
+        ],
         "routes": [
           {
             "path": "/technician-management/main",

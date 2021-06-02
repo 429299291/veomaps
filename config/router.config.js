@@ -17,7 +17,7 @@ export default [
     path: "/",
     component: "../layouts/BasicLayout",
     Routes: ["src/pages/Authorized"],
-    authority: ["area", "admin"],
+    authority: ["area", "admin",'me'],
     routes: [
       {
         path: "/dashboard",
@@ -36,7 +36,7 @@ export default [
         path: "/shop-management",
         icon: "shop",
         name: "Shop Management",
-        authority: "shop",
+        authority: ["shop","me"],
         routes: [
           {
             path: "/shop-management/order",
@@ -51,10 +51,16 @@ export default [
         ]
       },
       {
+        path: "/ride/",
+        name: "Riding management",
+        component: "./Ride/Ride",
+        authority: ["me"],
+      },
+      {
         path: "/vehicle-management",
         icon: "car",
         name: "Vehicle Management",
-        authority: "vehicle",
+        authority:[ "vehicle","me"],
         routes: [
           {
             path: "/vehicle-management/vehicle",
@@ -62,22 +68,24 @@ export default [
             component: "./Vehicle/Vehicle",
           },
           {
-            path: "/vehicle-management/ride",
-            name: "Riding History",
-            component: "./Vehicle/Ride",
-          },
-          {
             path: "/vehicle-management/error",
             name: "Report",
             component: "./Vehicle/Error",
           },
+          // {
+          //   path: "/vehicle-management/ride/",
+          //   name: "Riding management",
+          //   component: "./Vehicle/Ride",
+          //   authority: "vehicle",
+          // },
+    
         ]
       },
       {
         path: "/customer-management",
         icon: "user",
         name: "Customer Management",
-        authority: "customer",
+        authority: ["customer","me"],
         routes: [
           {
             path: "/customer-management/customer",
@@ -100,7 +108,7 @@ export default [
         path: "/area",
         icon: "global",
         name: "Area Management",
-        authority:'area',
+        authority:['area',"me"],
         routes: [
           {
             path: "/area/geo-management/",
@@ -147,7 +155,7 @@ export default [
         path: "/employee-management/",
         name: "Admin Management",
         icon: "user",
-        authority: "admin",
+        authority: ["admin","me"],
         routes: [
           {
             path: "/employee-management/role",
@@ -170,7 +178,7 @@ export default [
         path: "/technician-management/",
         name: "technician Management",
         icon: "user",
-        authority: "technician",
+        authority: ["technician","me"],
         routes: [
           {
             path: "/technician-management/main",

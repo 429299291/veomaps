@@ -10,7 +10,7 @@ export async function getAdminAreas(params) {
   return request(`/api/admins/areas/search`, {
     method: "POST",
     body:{
-      params
+      ...params
     }
   });
 }

@@ -286,7 +286,6 @@ class Technician extends PureComponent {
   handleGetAreas = () => {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
-
     dispatch({
       type: "areas/getAll",
       payload: filterCriteria,

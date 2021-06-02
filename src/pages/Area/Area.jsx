@@ -805,11 +805,11 @@ class Area extends PureComponent {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
 
-    dispatch({
-      type: "areas/get",
-      payload: filterCriteria,
-      // onSuccess: this.handleGetAreaFeatures 
-    });
+    // dispatch({
+    //   type: "areas/get",
+    //   payload: filterCriteria,
+    //   // onSuccess: this.handleGetAreaFeatures 
+    // });
   };
 
   handleGetAreaFeatures = () => {

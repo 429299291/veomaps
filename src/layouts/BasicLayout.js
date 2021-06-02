@@ -122,16 +122,19 @@ class BasicLayout extends React.PureComponent {
 
   componentDidMount() {
     const { dispatch,admins,user } = this.props;
+    setTimeout(() => {
 
+      dispatch({
+        type: "areas/get",
+        payload:{
+          areaIds:this.props.user.areaIds
+        }
+      });
+    }, 300);
+    
 
     dispatch({
       type: "user/fetchCurrent"
-    });
-    dispatch({
-      type: "areas/get",
-      payload:{
-        areaIds:user.areaIds
-      }
     });
 
     dispatch({
@@ -155,7 +158,6 @@ class BasicLayout extends React.PureComponent {
     });
   }
   componentDidUpdate(preProps) {
-
     // After changing to phone mode,
     // if collapsed is true, you need to click twice to display
     this.breadcrumbNameMap = this.getBreadcrumbNameMap();
