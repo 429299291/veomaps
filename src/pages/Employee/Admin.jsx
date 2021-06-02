@@ -339,8 +339,17 @@ const UpdateForm = Form.create()(props => {
     handleModalVisible,
     areas,
     roles,
+    currentArea,
     record
   } = props;
+  let currentAreaData = currentArea.map(data=>{
+    return data.name
+  })
+  if(areas && currentArea){
+    if(areas.length == currentArea.length){
+      currentAreaData.push('all')
+    }
+  }
   const okHandle = () => {
     if (form.isFieldsTouched())
       form.validateFields((err, fieldsValue) => {
@@ -459,11 +468,11 @@ const UpdateForm = Form.create()(props => {
               style={{ width: "100%" }}
               mode="multiple"
             >
-              <Option key={"all"} value={"all"}>
+              <Option key={"all"} value={"all"} disabled={!currentAreaData.includes('all')}>
                 All
               </Option>
               {areas.map(area => (
-                <Option key={area.id} value={area.id}>
+                <Option key={area.id} value={area.id} disabled={!currentAreaData.includes(area.name)}>
                   {area.name}
                 </Option>
               ))}
@@ -499,6 +508,7 @@ const UpdateForm = Form.create()(props => {
 @connect(({ admins, roles, areas, loading }) => ({
   admins: admins.data,
   roles: roles.data,
+  areas,
   loading: loading.models.admins && loading.models.roles
 }))
 @Form.create()
@@ -513,7 +523,7 @@ class Admin extends PureComponent {
     selectedRecord: {},
     updatePasswordModalVisible: false,
     registerEmailModalVisible: false,
-    areas: [],
+    areasAll: [],
     filteredAdmins: [],
     search:''
   };
@@ -639,22 +649,22 @@ class Admin extends PureComponent {
     });
   };
 
-  getNameByAreaIds = areaIds => {
-    const {areas} = this.state;
+  // getNameByAreaIds = areaIds => {
+  //   const {areas} = this.state;
     
 
 
-    if (areas.length === 0) return "";
-    else if (areas.length === areaIds.length) return "all";
-    else
-      return areas
-        .filter(area => areaIds.includes(area.id))
-        .map(area => (
-          <span key={area.id}>
-            {area.name} <Divider type="vertical" />
-          </span>
-        ));
-  };
+  //   if (areas.length === 0) return "";
+  //   else if (areas.length === areaIds.length) return "all";
+  //   else
+  //     return areas
+  //       .filter(area => areaIds.includes(area.id))
+  //       .map(area => (
+  //         <span key={area.id}>
+  //           {area.name} <Divider type="vertical" />
+  //         </span>
+  //       ));
+  // };
 
   handleGetRoles = () => {
     const { dispatch } = this.props;
@@ -673,7 +683,6 @@ class Admin extends PureComponent {
 
     dispatch({
       type: "admins/get",
-      // payload: filterCriteria,
       payload:{
         pagination: {
           page:0,
@@ -690,8 +699,8 @@ class Admin extends PureComponent {
 
     dispatch({
       type: "areas/getAll",
-      payload: filterCriteria,
-      onSuccess: areas => this.setState({areas: areas})
+      // payload: filterCriteria,
+      // onSuccess: areas => this.setState({areasAll: areas})
     });
   };
 
@@ -726,7 +735,6 @@ class Admin extends PureComponent {
       form: { getFieldDecorator }
     } = this.props;
 
-    const areas = this.props.areas;
     return (
       <Form layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -811,10 +819,11 @@ class Admin extends PureComponent {
         },
       });
     } else if (
-      /^[0-9]/.test(value) &&
+      /[0-9]()/.test(value) &&
       !value.includes("@") &&
       value.length > 0
     ) {
+      value = value.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'')
       dispatch({
         type: "admins/adminSearch",
         payload: {
@@ -942,8 +951,8 @@ class Admin extends PureComponent {
     this.handleUpdatePasswordModalVisible();
   };
   render() {
-    const { admins, loading, roles } = this.props;
-    const { areas, filteredAdmins } = this.state;
+    const { admins, loading, roles,areas:{data,allAreas} } = this.props;
+    // const { areas, filteredAdmins } = this.state;
     const totalSize = admins.pagenation? admins.pagenation.totalSize :0
     const {
       modalVisible,
@@ -1004,7 +1013,7 @@ class Admin extends PureComponent {
           modalVisible={modalVisible}
           admins={admins}
           roles={roles}
-          areas={areas}
+          // areas={allAreas}
         />
 
         <UpdateForm
@@ -1013,7 +1022,8 @@ class Admin extends PureComponent {
           record={selectedRecord}
           admins={admins}
           roles={roles}
-          areas={areas}
+          areas={allAreas}
+          currentArea={data}
         />
 
         <UpdatePasswordForm
@@ -1022,7 +1032,7 @@ class Admin extends PureComponent {
           record={selectedRecord}
           admins={admins}
           roles={roles}
-          areas={areas}
+          // areas={allAreas}
         />
 
         <EmailRegisterForm

@@ -52,7 +52,7 @@ export default [
       },
       {
         path: "/ride/",
-        name: "Riding management",
+        name: "Riding Management",
         component: "./Ride/Ride",
         authority: ["me"],
       },

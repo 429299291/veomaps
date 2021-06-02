@@ -91,7 +91,7 @@ let routes = [
       },
       {
         "path": "/ride/",
-        "name": "Riding management",
+        "name": "Riding Management",
         "component": dynamic({ loader: () => import('../Ride/Ride'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
         "authority": [
           "me"
