@@ -31,7 +31,7 @@ export default {
       }
       yield put({
         type: "save",
-        payload: Array.isArray(response) ? response : []
+        payload: Array.isArray(response) ? response : [1,2]
       });
 
       if (typeof onSuccess == "function") {
@@ -41,13 +41,12 @@ export default {
     },
     *getAll({ payload, onSuccess }, { call, put }) {
       // const response = yield call(getAllAreas, payload);
-      // console.log(response);
       let response = yield call(getAdminAreas, payload);
       response= response.content
-
-      if (typeof onSuccess == "function") {
-        onSuccess(response);
-      }
+      yield put({
+        type: "saveAllAreas",
+        payload: Array.isArray(response) ? response : []
+      });
     },
     *selectArea({ areaId }, { call, put }) {
 
@@ -151,13 +150,18 @@ export default {
     save(state, action) {
       const areaNames = [];
       action.payload.map(area => (areaNames[area.id] = area.name));
-
       return {
         ...state,
         data: action.payload,
         areaNames: areaNames,
         total: action.payload.length
       };
+    },
+    saveAllAreas(state,action){
+      return{
+        ...state,
+        allAreas:action.payload
+      }
     },
     saveSelectArea(state, action) {
 
