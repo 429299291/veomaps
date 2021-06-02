@@ -562,9 +562,10 @@ class Admin extends PureComponent {
     // },
     {
       title: "Operation",
-      render: (text, record) =>
+      render: (text, record) =>(
       record.role ?  record.role.name === 'Super Admin'? (<span>Super administrator cannot modify</span>) :
       (
+        //other permissions
           <Fragment>
             {authority.includes("admin") && (
               <a onClick={() => this.handleUpdateModalVisible(true, record)}>
@@ -588,7 +589,31 @@ class Admin extends PureComponent {
         )
       
       
-      :(<span>No permission</span>)
+      :(
+        //no permissions
+        <Fragment>
+        {authority.includes("admin") && (
+          <a onClick={() => this.handleUpdateModalVisible(true, record)}>
+            Update
+          </a>
+        )}
+
+        <Divider type="vertical" />
+
+        {authority.includes("admin") && (
+          <a
+            href="#"
+            onClick={() =>
+              this.handleUpdatePasswordModalVisible(true, record)
+            }
+          >
+            Update Password
+          </a>
+        )}
+      </Fragment>
+
+      )
+      )
 
     }
   ];

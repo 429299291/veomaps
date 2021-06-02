@@ -8,7 +8,7 @@ import styles from "./Center.less";
 
 @connect(({ loading, user, project }) => ({
   listLoading: loading.effects["list/fetch"],
-  currentUser: user.currentUser.basic,
+  currentUser: user.currentUser,
   currentUserLoading: loading.effects["user/fetchCurrent"],
   project,
   projectLoading: loading.effects["project/fetchNotice"]
@@ -137,7 +137,7 @@ class Center extends PureComponent {
               {currentUser && Object.keys(currentUser).length ? (
                 <div>
                   <div className={styles.avatarHolder}>
-                    <div className={styles.name}>{currentUser.username}</div>
+                    <div className={styles.name}>{currentUser.name}</div>
                   </div>
                   <div className={styles.detail}>
                     <p>

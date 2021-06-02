@@ -130,7 +130,7 @@ class BasicLayout extends React.PureComponent {
     dispatch({
       type: "areas/get",
       payload:{
-        areaIds:user.basic?user.basic.areaIds:[]
+        areaIds:user.areaIds
       }
     });
 
@@ -452,7 +452,7 @@ export default connect(({ global, setting, user, areas }) => ({
   collapsed: global.collapsed,
   layout: setting.layout,
   isUserFetched: user.isUserFetched,
-  currentUser: user.currentUser.basic,
+  currentUser: user.currentUser,
   areas: areas.data,
   user: user.currentUser,
   selectedAreaId: areas.selectedAreaId,
