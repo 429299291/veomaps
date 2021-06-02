@@ -811,10 +811,11 @@ class Admin extends PureComponent {
         },
       });
     } else if (
-      /^[0-9]/.test(value) &&
+      /[0-9]()/.test(value) &&
       !value.includes("@") &&
       value.length > 0
     ) {
+      value = value.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'')
       dispatch({
         type: "admins/adminSearch",
         payload: {
