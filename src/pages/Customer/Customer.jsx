@@ -569,7 +569,11 @@ class Customer extends PureComponent {
         currentPage: 1,
         pageSize: 10
       });
-
+      if(/[0-9]()/.test(values.nameOrPhoneOrEmail) &&
+      !values.nameOrPhoneOrEmail.includes("@")
+      ) {
+        values.nameOrPhoneOrEmail = values.nameOrPhoneOrEmail.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
+      }
       this.setState(
         {
           filterCriteria: values
