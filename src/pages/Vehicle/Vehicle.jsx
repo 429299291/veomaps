@@ -997,10 +997,14 @@ class Vehicle extends PureComponent {
 
     const { dispatch, form, selectedAreaId } = this.props;
     const { filterCriteria, selectedTab } = this.state;
-
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-
+      if(/[0-9]()/.test(fieldsValue.numberOrImei) &&
+      !fieldsValue.numberOrImei.includes("@")
+      ) {
+        fieldsValue.numberOrImei = fieldsValue.numberOrImei.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
+      }
+    
       let values;
 
       if (selectedTab == 1) {
@@ -1014,7 +1018,6 @@ class Vehicle extends PureComponent {
           },
           areaIds: selectedAreaId ? [selectedAreaId] : null
         });
-  
         if (values.numberOrImei) {
           if (values.numberOrImei.toString().length == 15) {
             values.imei = values.numberOrImei;
