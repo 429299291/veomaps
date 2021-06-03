@@ -54,7 +54,8 @@ export default [
         path: "/ride/",
         name: "Riding Management",
         component: "./Ride/Ride",
-        authority: ["me"],
+        icon: "car",
+        authority: ["ride","me"],
       },
       {
         path: "/vehicle-management",
@@ -100,6 +101,7 @@ export default [
           {
             path: "/customer-management/violations",
             name: "Violation",
+            authority: ["customer.violation"],
             component: "./Customer/VehicleViolation",
           }
         ]
@@ -191,12 +193,14 @@ export default [
             name: "Violation Management",
             // icon: "warning",
             component: "./Technician/Violation",
+            authority: ["technician.violation"],
           },
           {
             path: "/technician-management/techmetrics",
             name: "Tech Metrics",
             // icon: "user",
             component: "./Technician/TechMetrics",
+            authority: ["technician.metric"],
           }
         ]
       },
