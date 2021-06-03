@@ -785,7 +785,7 @@ class Admin extends PureComponent {
   handleSearch = (value) => {
     const { dispatch, admins } = this.props;
     if(typeof value === 'string'){
-      value = value.trim()
+      value = value.trim().replace(/\s*/g,"")
     }
     if(!value){
       dispatch({
