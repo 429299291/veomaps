@@ -695,12 +695,8 @@ class Admin extends PureComponent {
 
   handleGetAreas = () => {
     const { dispatch } = this.props;
-    const { filterCriteria } = this.state;
-
     dispatch({
       type: "areas/getAll",
-      // payload: filterCriteria,
-      // onSuccess: areas => this.setState({areasAll: areas})
     });
   };
 
@@ -710,10 +706,6 @@ class Admin extends PureComponent {
       this.handleSearch({
         value:this.state.search,
         page: page.current-1,
-        // pagination: {
-        //   page: page.current >0 ?page.current-1 :0,
-        //   pageSize: page.pageSize,
-        // }
       })
     }else{
       dispatch({
