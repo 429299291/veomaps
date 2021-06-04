@@ -624,39 +624,39 @@ getRangeEnd(end) {
 
     const { dashboard, areaNames } = this.props;
 
-  return authority.includes("admin") &&
-              <Col xl={8} lg={12} md={12} sm={24} xs={24}>
-                  <div className={styles.salesRank}>
-                    <h4 className={styles.rankingTitle}>
-                      <FormattedMessage
-                        id="app.dashboard.rides-ranking"
-                        defaultMessage="Rides Ranking"
-                      />
-                    </h4>
-                    <ul className={styles.rankingList} style={{height:200, marginBottom: "20px", overflow: "scroll"}}>
-                      {dashboard.ridePerVehicleRank.map((item, i) => (
-                        <li key={item.areaId}>
-                          <span
-                            className={`${styles.rankingItemNumber} ${
-                              i < 3 ? styles.active : ""
-                            }`}
-                          >
-                            {i + 1}
-                          </span>
-                          <span
-                            className={styles.rankingItemTitle}
-                            title={areaNames[item.areaId]}
-                          >
-                            {areaNames[item.areaId]}
-                          </span>
-                          <span className={styles.rankingItemValue}>
-                            {numeral(item.avgRides).format("0,0.00")}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </Col>
+  return <Col xl={8} lg={12} md={12} sm={24} xs={24}>
+  <div className={styles.salesRank}>
+    <h4 className={styles.rankingTitle}>
+      <FormattedMessage
+        id="app.dashboard.rides-ranking"
+        defaultMessage="Rides Ranking"
+      />
+    </h4>
+    <ul className={styles.rankingList} style={{height:200, marginBottom: "20px", overflow: "scroll"}}>
+      {dashboard.ridePerVehicleRank.map((item, i) => (
+        <li key={item.areaId}>
+          <span
+            className={`${styles.rankingItemNumber} ${
+              i < 3 ? styles.active : ""
+            }`}
+          >
+            {i + 1}
+          </span>
+          <span
+            className={styles.rankingItemTitle}
+            title={areaNames[item.areaId]}
+          >
+            {areaNames[item.areaId]}
+          </span>
+          <span className={styles.rankingItemValue}>
+            {numeral(item.avgRides).format("0,0.00")}
+          </span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</Col>
+              
   }
 
 
@@ -850,7 +850,7 @@ getRangeEnd(end) {
     return (
       <GridContent >
         <Row gutter={24} style={{marginTop: "2em"}}>
-          {authority.includes("admin") && 
+          {/*authority.includes("admin")&& */ 
             <Col {...topColResponsiveProps}>
               <ChartCard
                 bordered={false}
@@ -888,7 +888,7 @@ getRangeEnd(end) {
               </ChartCard>
             </Col>
           }
-          {authority.includes("admin") && weeklyBatterySwap &&
+          {/*authority.includes("admin")&& */  weeklyBatterySwap &&
               <Col {...topColResponsiveProps}>
                 <ChartCard
                   bordered={false}
@@ -923,7 +923,7 @@ getRangeEnd(end) {
 
             }
 
-          {authority.includes("admin") && stripeRevenue &&
+          {/*authority.includes("admin")&& */  stripeRevenue &&
             <Col {...topColResponsiveProps}>
               <ChartCard
                 bordered={false}
@@ -963,7 +963,7 @@ getRangeEnd(end) {
             </Col>
           }
 
-        {authority.includes("admin") && dailyRideRevenue &&
+        {/*authority.includes("admin")&& */  dailyRideRevenue &&
             <Col {...topColResponsiveProps}>
               <ChartCard
                 bordered={false}
@@ -1014,7 +1014,7 @@ getRangeEnd(end) {
               size="large"
               tabBarStyle={{ marginBottom: 24 }}
             >
-             { authority.includes("admin") &&  
+             { /*authority.includes("admin")&& */  
              <TabPane
                 tab={
                   <FormattedMessage
@@ -1043,7 +1043,7 @@ getRangeEnd(end) {
                 </Row>
               </TabPane> }
               { 
-                authority.includes("admin") &&  <TabPane
+                /*authority.includes("admin")&& */   <TabPane
                   tab={
                     <FormattedMessage
                       id="app.dashboard.customers"
@@ -1073,7 +1073,7 @@ getRangeEnd(end) {
               }
 
               { 
-                authority.includes("admin") &&  <TabPane
+                /*authority.includes("admin")&& */   <TabPane
                   tab="Stripe Revenue"
                   key="revenue"
                 >
@@ -1092,7 +1092,7 @@ getRangeEnd(end) {
                   </TabPane> 
               }
               { 
-                authority.includes("admin") &&  <TabPane
+                /*authority.includes("admin")&& */   <TabPane
                   tab="Vehicle Connectivity"
                   key="connectivity"
                 >
@@ -1111,7 +1111,7 @@ getRangeEnd(end) {
                   </TabPane> 
               }
               { 
-                authority.includes("admin") &&  
+               /*authority.includes("admin")&& */ 
                 <TabPane
                   tab="Finace Report"
                   key="financeStats"
@@ -1161,7 +1161,7 @@ getRangeEnd(end) {
 
               }
               { 
-              (authority.includes("admin") && this.props.selectedAreaId !== null) && 
+              (/*authority.includes("admin")&& */  this.props.selectedAreaId !== null) && 
               <TabPane
                 tab="Ride Metrics"
                 key="metrics"
