@@ -326,7 +326,6 @@ class BasicLayout extends React.PureComponent {
     const isTop = PropsLayout === "topmenu";
     const routerConfig = this.matchParamsPath(pathname);
     
-    //console.log(currentUser);
 
     if (this.props.isUserFetched && !currentUser.phone && isUpdatePhoneVisible) 
      Modal.warning({

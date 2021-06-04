@@ -994,8 +994,6 @@ class Area extends PureComponent {
 
   render() {
     const { areas, loading } = this.props;
-    console.log('areas');
-    console.log(areas);
     const {
       modalVisible,
       updateModalVisible,

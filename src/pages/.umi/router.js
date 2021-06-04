@@ -42,8 +42,7 @@ let routes = [
     "Routes": [require('../Authorized').default],
     "authority": [
       "area",
-      "admin",
-      "me"
+      "admin"
     ],
     "routes": [
       {
@@ -68,8 +67,7 @@ let routes = [
         "icon": "shop",
         "name": "Shop Management",
         "authority": [
-          "shop",
-          "me"
+          "shop"
         ],
         "routes": [
           {
@@ -95,8 +93,7 @@ let routes = [
         "component": dynamic({ loader: () => import('../Ride/Ride'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
         "icon": "car",
         "authority": [
-          "ride",
-          "me"
+          "ride"
         ],
         "exact": true
       },
@@ -105,8 +102,7 @@ let routes = [
         "icon": "car",
         "name": "Vehicle Management",
         "authority": [
-          "vehicle",
-          "me"
+          "vehicle"
         ],
         "routes": [
           {
@@ -131,8 +127,7 @@ let routes = [
         "icon": "user",
         "name": "Customer Management",
         "authority": [
-          "customer",
-          "me"
+          "customer"
         ],
         "routes": [
           {
@@ -166,8 +161,7 @@ let routes = [
         "icon": "global",
         "name": "Area Management",
         "authority": [
-          "area",
-          "me"
+          "area"
         ],
         "routes": [
           {
@@ -220,8 +214,7 @@ let routes = [
         "name": "Admin Management",
         "icon": "user",
         "authority": [
-          "admin",
-          "me"
+          "admin"
         ],
         "routes": [
           {
@@ -252,8 +245,7 @@ let routes = [
         "name": "technician Management",
         "icon": "user",
         "authority": [
-          "technician",
-          "me"
+          "technician"
         ],
         "routes": [
           {
@@ -289,6 +281,9 @@ let routes = [
         "name": "account",
         "icon": "user",
         "path": "/account",
+        "authority": [
+          "me"
+        ],
         "routes": [
           {
             "path": "/account/settings",
