@@ -31,7 +31,7 @@ export default {
       }
       yield put({
         type: "save",
-        payload: Array.isArray(response) ? response : [1,2]
+        payload: Array.isArray(response) ? response : []
       });
 
       if (typeof onSuccess == "function") {
