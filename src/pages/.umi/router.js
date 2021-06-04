@@ -165,15 +165,9 @@ let routes = [
         ],
         "routes": [
           {
-            "path": "/area/geo-management/",
-            "name": "Geo Management",
-            "component": dynamic({ loader: () => import('../Area/Geo'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
-            "exact": true
-          },
-          {
             "path": "/area/area-management/",
             "name": "Area Management",
-            "component": dynamic({ loader: () => import('../Area/Area'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
+            "component": dynamic({ loader: () => import('../Area/Areas'), loading: require('C:/Users/42929/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
             "exact": true
           },
           {
