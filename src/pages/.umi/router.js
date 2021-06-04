@@ -276,7 +276,7 @@ let routes = [
         "icon": "user",
         "path": "/account",
         "authority": [
-          "sdf"
+          "me"
         ],
         "routes": [
           {

@@ -213,7 +213,7 @@ export default [
         name: "account",
         icon: "user",
         path: "/account",
-        authority: ["sdf"],
+        authority: ["me"],
         routes: [
           {
             path: "/account/settings",
