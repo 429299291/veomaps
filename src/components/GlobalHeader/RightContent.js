@@ -1,6 +1,6 @@
 import React, { PureComponent } from "react";
 import { FormattedMessage, formatMessage } from "umi/locale";
-import { Spin, Tag, Menu, Icon, Dropdown, Avatar, Tooltip } from "antd";
+import { Spin, Tag, Menu, Icon, Dropdown, Avatar, Tooltip  } from "antd";
 import moment from "moment";
 import groupBy from "lodash/groupBy";
 import NoticeIcon from "../NoticeIcon";
@@ -141,11 +141,11 @@ export default class GlobalHeaderRight extends PureComponent {
             {/*emptyImage="https://gw.alipayobjects.com/zos/rmsportal/HsIsxMZiWKrNUavQUXqx.svg"*/}
           {/*/>*/}
         {/*</NoticeIcon>*/}
-        {currentUser.basic ? (
+        {currentUser ? (
           <Dropdown overlay={menu}>
             <span className={`${styles.action} ${styles.account}`}>
-              <Avatar size="small" className={styles.avatar} alt="avatar">
-                U
+              <Avatar size="small" className={styles.avatar} alt="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png">
+                
               </Avatar>
               <span className={styles.name}>{currentUser.name}</span>
             </span>

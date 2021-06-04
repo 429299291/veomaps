@@ -15,12 +15,14 @@ export function getAuthority(str) {
   if (typeof authority === "string") {
     return [authority];
   }
-  return authority || ["guest"];
+  // return authority || ["guest"];
+  return authority;
 }
 
 export function setAuthority(authority) {
-  const proAuthority = typeof authority === "string" ? [authority] : authority;
+  // authority = ['get.customer.detail',"create.customer"]
 
+  const proAuthority = typeof authority === "string" ? [authority] : authority;
   return localStorage.setItem(
     "veoride-authority",
     JSON.stringify(proAuthority)

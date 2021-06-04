@@ -255,7 +255,7 @@ class Technician extends PureComponent {
 
           <Divider type="vertical" />
 
-          {authority.includes("update.technician") && (
+          {authority.includes("technician") && (
             <a onClick={() => this.handleUpdateModalVisible(true, record)}>
               Update
             </a>
@@ -286,7 +286,6 @@ class Technician extends PureComponent {
   handleGetAreas = () => {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
-
     dispatch({
       type: "areas/getAll",
       payload: filterCriteria,

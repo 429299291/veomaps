@@ -239,7 +239,7 @@ const AreaFeatureForm = Form.create()(props => {
 
   const areaFeatureId = record.areaFeature && record.areaFeature.id;
 
-  const isEditable = authority.includes("update.area.feature" ) && authority.includes("create.area.feature");
+  const isEditable = authority.includes("area" );
 
   const okHandle = () => {
     if (form.isFieldsTouched())
@@ -785,15 +785,13 @@ class Area extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          {authority.includes("update.area.detail") && (
             <a onClick={() => this.handleUpdateModalVisible(true, record)}>
               Update
             </a>
-          )}
           <Divider type="vertical" />
-          {authority.includes("get.area.features") && <a onClick={() => this.handleDetailModalVisible(true, record)}>
+          <a onClick={() => this.handleDetailModalVisible(true, record)}>
               Detail
-          </a>}
+          </a>
         </Fragment>
       )
     }
@@ -807,18 +805,18 @@ class Area extends PureComponent {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
 
-    dispatch({
-      type: "areas/get",
-      payload: filterCriteria,
-      // onSuccess: this.handleGetAreaFeatures 
-    });
+    // dispatch({
+    //   type: "areas/get",
+    //   payload: filterCriteria,
+    //   // onSuccess: this.handleGetAreaFeatures 
+    // });
   };
 
   handleGetAreaFeatures = () => {
 
     const { dispatch } = this.props;
 
-    if (!authority.includes("get.area.features")) {
+    if (!authority.includes("area")) {
       return;
     }
 
@@ -1002,7 +1000,6 @@ class Area extends PureComponent {
       detailModalVisible,
       selectedRecord
     } = this.state;
-
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible
@@ -1020,7 +1017,6 @@ class Area extends PureComponent {
               {this.renderSimpleForm()}
             </div>
             <div className={styles.tableListOperator}>
-              {authority.includes("create.area") && (
                 <Button
                   icon="plus"
                   type="primary"
@@ -1028,7 +1024,6 @@ class Area extends PureComponent {
                 >
                   Add
                 </Button>
-              )}
             </div>
             <StandardTable
               loading={loading}

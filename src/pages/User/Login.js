@@ -106,7 +106,7 @@ class LoginPage extends Component {
           > 
           <p> Verification Code has been sent to {phone} </p>
           <div style={{ textAlign: "center"}}>
-            <Input maxLength={4}  style={{ width: "30%"}} onChange={value => 
+            <Input maxLength={4} style={{ width: "30%"}}placeholder="Verification Code" ref={(input) => this.VerificationCode = input}  onPressEnter={this.handlePhoneVerfication} onChange={value => 
              this.setState({ code: value.target.value }) 
             }/>  
           </div>

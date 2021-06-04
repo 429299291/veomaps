@@ -256,16 +256,13 @@ class Deposit extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          {authority.includes("area.deposit") &&
             <a onClick={() => this.handleUpdateModalVisible(true, record)}>
               Update
             </a>
-          }
 
 
           <Divider type="vertical" />
 
-          {authority.includes("area.deposit") &&
             <Popconfirm
               title="Are you sure？"
               icon={<Icon type="question-circle-o" style={{ color: "red" }} />}
@@ -275,7 +272,6 @@ class Deposit extends PureComponent {
                 Delete
               </a>
             </Popconfirm>
-          }
 
         </Fragment>
       )
@@ -427,7 +423,6 @@ class Deposit extends PureComponent {
           <div className={styles.tableList}>
           
             <div className={styles.tableListOperator}>
-              {authority.includes("create.deposit") &&
                 <Button
                   icon="plus"
                   type="primary"
@@ -435,7 +430,6 @@ class Deposit extends PureComponent {
                 >
                   Add
                 </Button>
-              }
 
             </div>
             <StandardTable

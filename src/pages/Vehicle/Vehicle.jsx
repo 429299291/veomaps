@@ -680,7 +680,7 @@ class Vehicle extends PureComponent {
     } else {
       const type = record.lockStatus === 1  ? "vehicles/unlock" : "vehicles/lock";
 
-      if ( (type === "vehicles/unlock"  && authority.includes("unlock.vehicle")) || (type === "vehicles/lock" && authority.includes("lock.vehicle"))){
+      if ( (type === "vehicles/unlock"  && authority.includes("vehicle")) || (type === "vehicles/lock" && authority.includes("vehicle"))){
         dispatch({
           type: type,
           id: record.id,
@@ -840,7 +840,7 @@ class Vehicle extends PureComponent {
                     <Col span={5}> 
 
                      {
-                       authority.includes("unlock.vehicle") ?
+                       authority.includes("vehicle") ?
 
                        <a onClick={() => this.changeLockStatus(vehicle)}>
                         {((!vehicle.locked && vehicle.vehicleType === 1) ?  "Lock" : "Unlock")}
@@ -858,7 +858,7 @@ class Vehicle extends PureComponent {
 
                     <Col span={5} style={{fontSize: "2.5vw"}}> 
 
-                    {authority.includes("update.vehicle.location") ?
+                    {authority.includes("vehicle") ?
                         <a onClick={() => this.updateLocation(vehicle.id)}>
                           Update Location
                       </a> 
@@ -871,7 +871,7 @@ class Vehicle extends PureComponent {
                     </Col>
 
                     <Col span={5}> 
-                      {authority.includes("alert.vehicle") ?
+                      {authority.includes("vehicle") ?
                           <a onClick={() => this.alertVehicle(vehicle.id)}>
                             Beep
                         </a> 
@@ -997,10 +997,14 @@ class Vehicle extends PureComponent {
 
     const { dispatch, form, selectedAreaId } = this.props;
     const { filterCriteria, selectedTab } = this.state;
-
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-
+      if(/[0-9]()/.test(fieldsValue.numberOrImei) &&
+      !fieldsValue.numberOrImei.includes("@")
+      ) {
+        fieldsValue.numberOrImei = fieldsValue.numberOrImei.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
+      }
+    
       let values;
 
       if (selectedTab == 1) {
@@ -1014,7 +1018,6 @@ class Vehicle extends PureComponent {
           },
           areaIds: selectedAreaId ? [selectedAreaId] : null
         });
-  
         if (values.numberOrImei) {
           if (values.numberOrImei.toString().length == 15) {
             values.imei = values.numberOrImei;
@@ -1186,7 +1189,7 @@ class Vehicle extends PureComponent {
   handleApplyingPickUpAction = (vehicleStatus, record) => {
     const { dispatch, isMobile } = this.props;
 
-    if (!authority.includes("apply.action")) {
+    if (!authority.includes("vehicle")) {
       message.error("You don't have permmision to apply action to this vehicle.");
       return;
     }
@@ -1678,7 +1681,7 @@ handleShowingVehicles = val => {
               </Button>
 
 
-            {selectedAreaId >= 1 && authority.includes("update.all.vehicle.location") && 
+            {selectedAreaId >= 1 && authority.includes("vehicle") && 
                 <Button
                 type="primary"
                 onClick={() => this.handleUpdateAllLocations()}
@@ -1862,7 +1865,7 @@ handleShowingVehicles = val => {
                       setClickedMarker={this.setClickedMarker}
                       selectedMarker={selectedMarker}
                     />}
-                    {authority.includes("get.area.start.points")  && !this.props.isMobile &&
+                    {authority.includes("vehicle")  && !this.props.isMobile &&
                       <HeatMapForm 
                         isMobile={this.props.isMobile} 
                         styles={styles} 

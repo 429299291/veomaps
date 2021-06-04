@@ -15,6 +15,11 @@ export async function accountLogin(params) {
   });
 }
 
+// export async function getMe() {
+//   return request("/admins/me", {
+//     method: "GET"
+//   });
+// }
 export async function getMe() {
   return request("/admins/me", {
     method: "GET"

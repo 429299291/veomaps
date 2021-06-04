@@ -41,7 +41,6 @@ import { GoogleMap, Marker, Polygon, Polyline, withGoogleMap, withScriptjs, Info
 const Option = Select.Option;
 
 const {RangePicker} = DatePicker;
-
 const topColResponsiveProps = {
   xs: 24,
   sm: 12,
@@ -61,7 +60,6 @@ import VehicleMap from "@/components/Map/VehicleMap";
 const authority = getAuthority();
 
 const { TabPane } = Tabs;
-
 @connect(({ areas, dashboard, geo, loading, chart }) => ({
   dashboard,
   selectedAreaId: areas.selectedAreaId,
@@ -162,16 +160,14 @@ class Dashboard extends Component {
   }
 
   fetchCoupounSummary() {
-
     const { dispatch, selectedAreaId } = this.props;
 
     const { rangePickerValue} = this.state;
 
-    
 
-    if (!authority.includes("get.promo.summary")) {
-      return;
-    }
+    // if (!authority.includes("get.promo.summary")) {
+    //   return;
+    // }
 
     dispatch({
       type: "dashboard/fetchPromoSummary",
@@ -303,9 +299,9 @@ class Dashboard extends Component {
   loadDailyRideCount() {
       const { dispatch, selectedAreaId } = this.props;
 
-      if (!authority.includes("get.daily.ride.count")) {
-        return;
-      }
+      // if (!authority.includes("get.daily.ride.count")) {
+      //   return;
+      // }
 
 
     dispatch({
@@ -321,9 +317,9 @@ class Dashboard extends Component {
   loadRideDailyRevenue() {
         const { dispatch, selectedAreaId } = this.props;
 
-        if (!authority.includes("get.daily.ride.revenue")) {
-          return;
-        }
+        // if (!authority.includes("get.daily.ride.revenue")) {
+        //   return;
+        // }
 
       dispatch({
         type: "dashboard/fetchDailyRideRevenue",
@@ -339,9 +335,9 @@ class Dashboard extends Component {
 
     const { dispatch, selectedAreaId } = this.props;
 
-    if (!authority.includes("get.stripe.revenue")) {
-      return;
-    }
+    // if (!authority.includes("get.stripe.revenue")) {
+    //   return;
+    // }
 
       dispatch({
         type: "dashboard/fetchStripeDailyRevenue",
@@ -357,9 +353,9 @@ class Dashboard extends Component {
 
     const { dispatch, selectedAreaId } = this.props;
 
-    if (!authority.includes("get.daily.ride.revenue")) {
-      return;
-    }
+    // if (!authority.includes("get.daily.ride.revenue")) {
+    //   return;
+    // }
 
       dispatch({
         type: "dashboard/fetchDailyRideRevenue",
@@ -376,9 +372,9 @@ class Dashboard extends Component {
 
     const { offset } = this.state;
 
-    if (!authority.includes("get.weekly.battery.state")) {
-      return;
-    }
+    // if (!authority.includes("get.weekly.battery.state")) {
+    //   return;
+    // }
 
   dispatch({
     type: "dashboard/fetchWeeklyBatteryState",
@@ -406,9 +402,9 @@ getRangeEnd(end) {
     const {countParams, offset, rangePickerValue} = this.state;
 
 
-     if (!authority.includes("get.ride.count")) {
-       return;
-     }
+    //  if (!authority.includes("get.ride.count")) {
+    //    return;
+    //  }
 
 
 
@@ -431,9 +427,9 @@ getRangeEnd(end) {
 
     const {countParams, offset, rangePickerValue} = this.state;
 
-    if (!authority.includes("get.customer.count")) {
-      return;
-    }
+    // if (!authority.includes("get.customer.count")) {
+    //   return;
+    // }
 
     dispatch({
       type: "dashboard/fetchCustomerCount",
@@ -455,9 +451,9 @@ getRangeEnd(end) {
 
     const {countParams, offset, rangePickerValue} = this.state;
 
-    if (!authority.includes("get.stripe.revenue.by.period")) {
-      return;
-    }
+    // if (!authority.includes("get.stripe.revenue.by.period")) {
+    //   return;
+    // }
 
     dispatch({
       type: "dashboard/fetchStripRevenueByPeriod",
@@ -481,9 +477,9 @@ getRangeEnd(end) {
 
     const {countParams, offset, rangePickerValue} = this.state;
 
-    if (!authority.includes("get.connectivity.by.period")) {
-      return;
-    }
+    // if (!authority.includes("get.connectivity.by.period")) {
+    //   return;
+    // }
 
     dispatch({
       type: "dashboard/fetchConnectivityByPeriod",
@@ -508,9 +504,9 @@ getRangeEnd(end) {
     const { dispatch, selectedAreaId } = this.props;
     const { rangePickerValue } = this.state;
 
-    if (!authority.includes("get.area.minutes")) {
-      return;
-    }
+    // if (!authority.includes("get.area.minutes")) {
+    //   return;
+    // }
 
     dispatch({
       type: "dashboard/fetchAreaMinutes",
@@ -529,9 +525,9 @@ getRangeEnd(end) {
     const { dispatch, selectedAreaId } = this.props;
     const { rangePickerValue } = this.state;
 
-    if (!authority.includes("get.area.distance")) {
-      return;
-    }
+    // if (!authority.includes("get.area.distance")) {
+    //   return;
+    // }
 
 
     dispatch({
@@ -551,9 +547,9 @@ getRangeEnd(end) {
 
     const {rangePickerValue, offset} = this.state;
 
-    if (!authority.includes("get.ride.vehicle.rank")) {
-      return;
-    }
+    // if (!authority.includes("get.ride.vehicle.rank")) {
+    //   return;
+    // }
 
     dispatch({
       type: "dashboard/getRidePerVehicleRank",
@@ -628,39 +624,39 @@ getRangeEnd(end) {
 
     const { dashboard, areaNames } = this.props;
 
-  return authority.includes("get.ride.vehicle.rank") &&
-              <Col xl={8} lg={12} md={12} sm={24} xs={24}>
-                  <div className={styles.salesRank}>
-                    <h4 className={styles.rankingTitle}>
-                      <FormattedMessage
-                        id="app.dashboard.rides-ranking"
-                        defaultMessage="Rides Ranking"
-                      />
-                    </h4>
-                    <ul className={styles.rankingList} style={{height:200, marginBottom: "20px", overflow: "scroll"}}>
-                      {dashboard.ridePerVehicleRank.map((item, i) => (
-                        <li key={item.areaId}>
-                          <span
-                            className={`${styles.rankingItemNumber} ${
-                              i < 3 ? styles.active : ""
-                            }`}
-                          >
-                            {i + 1}
-                          </span>
-                          <span
-                            className={styles.rankingItemTitle}
-                            title={areaNames[item.areaId]}
-                          >
-                            {areaNames[item.areaId]}
-                          </span>
-                          <span className={styles.rankingItemValue}>
-                            {numeral(item.avgRides).format("0,0.00")}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </Col>
+  return <Col xl={8} lg={12} md={12} sm={24} xs={24}>
+  <div className={styles.salesRank}>
+    <h4 className={styles.rankingTitle}>
+      <FormattedMessage
+        id="app.dashboard.rides-ranking"
+        defaultMessage="Rides Ranking"
+      />
+    </h4>
+    <ul className={styles.rankingList} style={{height:200, marginBottom: "20px", overflow: "scroll"}}>
+      {dashboard.ridePerVehicleRank.map((item, i) => (
+        <li key={item.areaId}>
+          <span
+            className={`${styles.rankingItemNumber} ${
+              i < 3 ? styles.active : ""
+            }`}
+          >
+            {i + 1}
+          </span>
+          <span
+            className={styles.rankingItemTitle}
+            title={areaNames[item.areaId]}
+          >
+            {areaNames[item.areaId]}
+          </span>
+          <span className={styles.rankingItemValue}>
+            {numeral(item.avgRides).format("0,0.00")}
+          </span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</Col>
+              
   }
 
 
@@ -678,7 +674,6 @@ getRangeEnd(end) {
       weeklyBatterySwapLoading,
       dailyRideRevenueLoading,
     } = this.props;
-   
 
     const {
       rangePickerValue,
@@ -852,11 +847,10 @@ getRangeEnd(end) {
       .map( group => {
         return {x: moment().dayOfYear(group.dayOfYear).format("MM/DD"), y: group.total};
       });
-
     return (
       <GridContent >
         <Row gutter={24} style={{marginTop: "2em"}}>
-          {authority.includes("get.daily.ride.count") && 
+          {/*authority.includes("admin")&& */ 
             <Col {...topColResponsiveProps}>
               <ChartCard
                 bordered={false}
@@ -894,7 +888,7 @@ getRangeEnd(end) {
               </ChartCard>
             </Col>
           }
-          {authority.includes("get.weekly.battery.state") && weeklyBatterySwap &&
+          {/*authority.includes("admin")&& */  weeklyBatterySwap &&
               <Col {...topColResponsiveProps}>
                 <ChartCard
                   bordered={false}
@@ -929,7 +923,7 @@ getRangeEnd(end) {
 
             }
 
-          {authority.includes("get.stripe.revenue") && stripeRevenue &&
+          {/*authority.includes("admin")&& */  stripeRevenue &&
             <Col {...topColResponsiveProps}>
               <ChartCard
                 bordered={false}
@@ -969,7 +963,7 @@ getRangeEnd(end) {
             </Col>
           }
 
-        {authority.includes("get.daily.ride.revenue") && dailyRideRevenue &&
+        {/*authority.includes("admin")&& */  dailyRideRevenue &&
             <Col {...topColResponsiveProps}>
               <ChartCard
                 bordered={false}
@@ -1012,7 +1006,6 @@ getRangeEnd(end) {
 
 
         { 
-          (authority.includes("get.ride.count") || authority.includes("get.ride.count")) && 
           
           <Card loading={barChartloading} bordered={false} bodyStyle={{ padding: 0 }}>
           <div className={styles.salesCard}>
@@ -1021,7 +1014,8 @@ getRangeEnd(end) {
               size="large"
               tabBarStyle={{ marginBottom: 24 }}
             >
-             { authority.includes("get.ride.count") &&  <TabPane
+             { /*authority.includes("admin")&& */  
+             <TabPane
                 tab={
                   <FormattedMessage
                     id="app.analysis.sales"
@@ -1049,7 +1043,7 @@ getRangeEnd(end) {
                 </Row>
               </TabPane> }
               { 
-                authority.includes("get.ride.count") &&  <TabPane
+                /*authority.includes("admin")&& */   <TabPane
                   tab={
                     <FormattedMessage
                       id="app.dashboard.customers"
@@ -1079,7 +1073,7 @@ getRangeEnd(end) {
               }
 
               { 
-                authority.includes("get.stripe.revenue.by.period") &&  <TabPane
+                /*authority.includes("admin")&& */   <TabPane
                   tab="Stripe Revenue"
                   key="revenue"
                 >
@@ -1098,7 +1092,7 @@ getRangeEnd(end) {
                   </TabPane> 
               }
               { 
-                authority.includes("get.connectivity.by.period") &&  <TabPane
+                /*authority.includes("admin")&& */   <TabPane
                   tab="Vehicle Connectivity"
                   key="connectivity"
                 >
@@ -1117,7 +1111,7 @@ getRangeEnd(end) {
                   </TabPane> 
               }
               { 
-                authority.includes("get.total.refund") && authority.includes("get.total.ride.revenue") &&  
+               /*authority.includes("admin")&& */ 
                 <TabPane
                   tab="Finace Report"
                   key="financeStats"
@@ -1167,7 +1161,7 @@ getRangeEnd(end) {
 
               }
               { 
-              (authority.includes("get.area.minutes") && this.props.selectedAreaId !== null) && 
+              (/*authority.includes("admin")&& */  this.props.selectedAreaId !== null) && 
               <TabPane
                 tab="Ride Metrics"
                 key="metrics"

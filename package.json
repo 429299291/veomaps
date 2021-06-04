@@ -101,14 +101,6 @@
   "optionalDependencies": {
     "puppeteer": "^1.9.0"
   },
-  "lint-staged": {
-    "**/*.{js,jsx,less}": [
-      "prettier --write",
-      "git add"
-    ],
-    "**/*.{js,jsx}": "npm run lint-staged:js",
-    "**/*.less": "stylelint --syntax less"
-  },
   "engines": {
     "node": ">=8.0.0"
   },
@@ -116,10 +108,5 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 10"
-  ],
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint-staged"
-    }
-  }
+  ]
 }

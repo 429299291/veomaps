@@ -154,7 +154,7 @@ class Role extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          {authority.includes("update.role.detail") &&
+          {authority.includes("area") &&
             record.name !== "Super Admin" && (
               <a onClick={() => this.handleUpdateModalVisible(true, record)}>
                 Update

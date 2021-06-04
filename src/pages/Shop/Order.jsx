@@ -100,7 +100,7 @@ const UpdateForm = Form.create()((props) => {
     if (form.isFieldsTouched()) {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
-        fieldsValue.operator = currentUser.basic.email;
+        fieldsValue.operator = currentUser.email;
         form.resetFields();
         handleUpdate(record.id, fieldsValue);
       });
@@ -202,9 +202,9 @@ const UpdateForm = Form.create()((props) => {
             initialValue: record.message,
             })(<TextArea placeholder="Please Input" />)}
         </FormItem>
-        {currentUser && currentUser.basic &&
+        {currentUser &&
             <FormItem labelCol={{ span: 3 }} wrapperCol={{ span: 7 }} label="Reviewer">
-                {currentUser.basic.email}
+                {currentUser.email}
             </FormItem>
         } 
 

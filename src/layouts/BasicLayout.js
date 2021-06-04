@@ -23,7 +23,6 @@ import router from 'umi/router';
 
 
 const { Content } = Layout;
-
 // Conversion router to menu.
 function formatter(data, parentAuthority, parentName) {
   return data
@@ -122,16 +121,20 @@ class BasicLayout extends React.PureComponent {
 }
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch,admins,user } = this.props;
+    setTimeout(() => {
 
-
+      dispatch({
+        type: "areas/get",
+        payload:{
+          areaIds:this.props.user.areaIds
+        }
+      });
+    }, 300);
+    
 
     dispatch({
       type: "user/fetchCurrent"
-    });
-
-    dispatch({
-      type: "areas/get"
     });
 
     dispatch({
@@ -154,7 +157,6 @@ class BasicLayout extends React.PureComponent {
       }
     });
   }
-
   componentDidUpdate(preProps) {
     // After changing to phone mode,
     // if collapsed is true, you need to click twice to display
@@ -302,14 +304,15 @@ class BasicLayout extends React.PureComponent {
       layout: PropsLayout,
       areas,
       children,
+      user,
       location: { pathname },
       match,
       selectedAreaId,
+      dispatch,
       currentUser
     } = this.props;
 
     const pageTitle = this.getPageTitle(pathname);
-
     const tasParams = {
       keys: location.pathname,
       location,
@@ -319,12 +322,10 @@ class BasicLayout extends React.PureComponent {
       component: this.getAuthorizedChildComponent(children, routerConfig)
     }
 
-
     const { isMobile, menuData, shouldShowAreaSelector, selectedAreaName, isUpdatePhoneVisible} = this.state;
     const isTop = PropsLayout === "topmenu";
     const routerConfig = this.matchParamsPath(pathname);
     
-    //console.log(currentUser);
 
     if (this.props.isUserFetched && !currentUser.phone && isUpdatePhoneVisible) 
      Modal.warning({
@@ -452,8 +453,9 @@ export default connect(({ global, setting, user, areas }) => ({
   collapsed: global.collapsed,
   layout: setting.layout,
   isUserFetched: user.isUserFetched,
-  currentUser: user.currentUser.basic,
+  currentUser: user.currentUser,
   areas: areas.data,
+  user: user.currentUser,
   selectedAreaId: areas.selectedAreaId,
   ...setting
 }))(BasicLayout);
