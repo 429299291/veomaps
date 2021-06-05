@@ -761,7 +761,7 @@ const UpdateForm = Form.create()(props => {
   loading: loading.models.areas
 }))
 @Form.create()
-class Area extends PureComponent {
+class Areaaa extends PureComponent {
   state = {
     modalVisible: false,
     updateModalVisible: false,
@@ -1058,4 +1058,4 @@ class Area extends PureComponent {
   }
 }
 
-export default Area;
+export default Areaaa;
