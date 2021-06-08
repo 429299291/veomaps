@@ -2,7 +2,7 @@ import { stringify } from "qs";
 import request from "@/utils/request";
 
 export async function getAdminRoles(params) {
-  return request(`/admins/roles/details`, {
+  return request(`/api/admins/roles`, {
     method: "GET"
   });
 }
