@@ -123,7 +123,7 @@ export default [
             component: "./Area/Area",
           },
           // {
-          //   path: "/area/area-management/",
+          //   path: "/area/areaManagement/",
           //   name: "Area Management",
           //   component: "./Area/Areas",
           // },

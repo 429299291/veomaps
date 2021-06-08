@@ -311,7 +311,6 @@ class BasicLayout extends React.PureComponent {
       dispatch,
       currentUser
     } = this.props;
-
     const pageTitle = this.getPageTitle(pathname);
     const tasParams = {
       keys: location.pathname,
