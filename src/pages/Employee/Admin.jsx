@@ -1002,6 +1002,7 @@ class Admin extends PureComponent {
               selectPagenations = {this.selectPagenations}
               // data={{ list: filteredAdmins, pagination: {
               data={{ list: admins.payload, pagination: {
+                hideOnSinglePage	:true,
                 total: totalSize,
                 current:admins.pagenation?admins.pagenation.page+1:1,
                 defaultCurrent:1,
