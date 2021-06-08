@@ -62,8 +62,6 @@ export default {
 
       // const response = yield call(getMe);
       const newReponse = yield call(getNewMe);
-      console.log('===');
-      console.log(newReponse);
       // role set start
       if (newReponse.role) {
       let  permissions = newReponse.role.permissions
