@@ -21,8 +21,6 @@ export default {
   effects: {
     *get({ payload, onSuccess,saveState }, { call, put }) {
       const response = yield call(getAdmins, payload);
-      console.log('=----');
-      console.log(response);
       yield put({
         type: "newSave",
         payload: response.content,
@@ -98,7 +96,6 @@ export default {
     },
     *getadminsdata({ payload, saveState,savepagenations }, { put, call }) {
       const response = yield call(getAdmins, payload);
-      console.log('===');
       yield put({
         type: "newSave",
         payload: response.content,
@@ -117,7 +114,6 @@ export default {
       { call, put }
     ) {
       const response = yield call(adminSearch, payload);
-      console.log('===');
       yield put({
         type: "newSave",
         payload: response.content,

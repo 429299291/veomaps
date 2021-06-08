@@ -739,6 +739,7 @@ class Admin extends PureComponent {
               placeholder="name, phone or email"
               onSearch={this.handleSearch}
               className={styles.search}
+              defaultValue=''
               enterButton
             />
             {/* <Button
@@ -786,7 +787,7 @@ class Admin extends PureComponent {
     );
   };
 
-  handleSearch = (value) => {
+  handleSearch = (value,pagenation) => {
     const { dispatch, admins } = this.props;
     if(typeof value === 'string'){
       value = value.trim().replace(/\s*/g,"")
