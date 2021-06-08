@@ -84,4 +84,10 @@ export async function getAreaFeature(areaId) {
     method: "GET"
   });
 }
+//new api
+export async function getAreasAll(areaId) {
+  return request(`/api/admins/areas/${areaId.areaId}`, {
+    method: "GET"
+  });
+}
 

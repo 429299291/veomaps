@@ -9,6 +9,7 @@ import {
   getAreaFeature,
   updateAreaFeature,
   createAreaFeature,
+  getAreasAll,
   getHubImageUploadUrl
 } from "@/services/area";
 import { message } from "antd";
@@ -18,12 +19,22 @@ export default {
 
   state: {
     total: 0,
+    newArea:{},
     data: [],
     selectedAreaId: null,
     areaFeatures: []
   },
 
   effects: {
+    //new api
+    *getAreasAll({ payload }, { call, put }) {
+      let response = (yield call(getAreasAll, payload));
+      yield put({
+        type: "newSave",
+        payload: response
+      });
+
+    },
     *get({ payload, onSuccess }, { call, put }) {
       let response = (yield call(getAdminAreas, payload)).content;
       if (Array.isArray(response)) {
@@ -157,6 +168,12 @@ export default {
         total: action.payload.length
       };
     },
+    newSave(state,action){
+      return {
+        ...state,
+        newArea:action.payload
+      };
+    },
     saveAllAreas(state,action){
       return{
         ...state,
@@ -186,14 +203,9 @@ export default {
         if (areaFeatures[area.id]) {
           area.areaFeature = areaFeatures[area.id];
         }
-
-
         return area;
         
       })
-
-
-
       return {
         ...state,
         data: result,

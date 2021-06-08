@@ -9,6 +9,7 @@ export default {
   namespace: "user",
 
   state: {
+    data:[],
     list: [],
     currentUser: {},
     isUserFetched: false
@@ -61,6 +62,8 @@ export default {
 
       // const response = yield call(getMe);
       const newReponse = yield call(getNewMe);
+      console.log('===');
+      console.log(newReponse);
       // role set start
       if (newReponse.role) {
       let  permissions = newReponse.role.permissions
@@ -96,6 +99,7 @@ export default {
       return {
         ...state,
         currentUser: action.payload || {},
+
         isUserFetched: true
       };
     },
