@@ -74,7 +74,7 @@ const EmailRegisterForm = Form.create()(props => {
       <FormItem
         labelCol={{ span: 7 }}
         wrapperCol={{ span: 15 }}
-        label="VeoRide Email"
+        label="Email"
       >
         {form.getFieldDecorator("email", {
           rules: [
@@ -90,7 +90,7 @@ const EmailRegisterForm = Form.create()(props => {
       <FormItem
         labelCol={{ span: 7 }}
         wrapperCol={{ span: 15 }}
-        label="VeoRide Phone"
+        label="Phone"
       >
         {form.getFieldDecorator("phone", {
           rules: [
@@ -106,7 +106,7 @@ const EmailRegisterForm = Form.create()(props => {
       <FormItem
         labelCol={{ span: 7 }}
         wrapperCol={{ span: 15 }}
-        label="VeoRide Name"
+        label="Name"
       >
         {form.getFieldDecorator("name", {
           rules: [
@@ -338,7 +338,9 @@ const UpdateForm = Form.create()(props => {
     handleUpdate,
     handleModalVisible,
     areas,
+    user,
     roles,
+    availableRoles,
     currentArea,
     record
   } = props;
@@ -433,12 +435,13 @@ const UpdateForm = Form.create()(props => {
           })(
             <Select placeholder="select" style={{ width: "100%" }}>
               {roles.map(role => {
+                // if(availableRoles.includes(role.name)){
                   return (
-                    <Option key={role.id} value={role.id}>
-                      {" "}
-                      {role.name}{" "}
+                    <Option key={role.id} value={role.id} disabled={availableRoles?!availableRoles.includes(role.name):false}>
+                      {role.name}
                     </Option>
                   );
+                // }
               })}
             </Select>
           )}
@@ -505,10 +508,11 @@ const UpdateForm = Form.create()(props => {
 });
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ admins, roles, areas, loading }) => ({
+@connect(({ admins, roles, areas, loading,user }) => ({
   admins: admins.data,
   roles: roles.data,
   areas,
+  user:user.currentUser,
   loading: loading.models.admins && loading.models.roles
 }))
 @Form.create()
@@ -943,7 +947,13 @@ class Admin extends PureComponent {
     this.handleUpdatePasswordModalVisible();
   };
   render() {
-    const { admins, loading, roles,areas:{data,allAreas} } = this.props;
+    const { admins, loading, roles,areas:{data,allAreas},user } = this.props;
+    let availableRoles
+    if(user.availableRoles){
+       availableRoles = user.availableRoles.map(role => {
+        return role.name
+      })
+    }
     // const { areas, filteredAdmins } = this.state;
     const totalSize = admins.pagenation? admins.pagenation.totalSize :0
     const {
@@ -1014,6 +1024,7 @@ class Admin extends PureComponent {
           record={selectedRecord}
           admins={admins}
           roles={roles}
+          availableRoles={availableRoles}
           areas={allAreas}
           currentArea={data}
         />

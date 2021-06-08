@@ -19,7 +19,7 @@ export default {
 
   state: {
     total: 0,
-    newArea:{a:11},
+    newArea:{},
     data: [],
     selectedAreaId: null,
     areaFeatures: []
