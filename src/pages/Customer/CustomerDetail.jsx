@@ -840,11 +840,11 @@ class CustomerDetail extends PureComponent {
             icon={<Icon type="question-circle-o" style={{ color: "red" }} />}
             onConfirm={() => this.handleDeleteCoupon(record.id)}
           >
-            {authority.includes("") && (
+            {/* {authority.includes("") && ( */}
               <a href="#" style={{ color: "red" }}>
                 Delete
               </a>
-            )}
+            {/* )} */}
           </Popconfirm>
         </Fragment>
       )
@@ -898,7 +898,7 @@ class CustomerDetail extends PureComponent {
       render: (text, record) => {
         return <Fragment>
           {!record.end &&
-            authority.includes("") && (
+            // authority.includes("") && (
               <Popconfirm
                 title="Are you Sure？"
                 icon={
@@ -908,7 +908,7 @@ class CustomerDetail extends PureComponent {
               >
                 <a>End Ride</a>
               </Popconfirm>
-            )}
+            /* )*/}
         </Fragment>
       }
     }
@@ -965,7 +965,10 @@ class CustomerDetail extends PureComponent {
       title: "Refund",
       render: (text, record) => (
         <Fragment>
-          {authority.includes("") && (
+          {/* {authority.includes("") && (
+            
+          )} */}
+
             <Popconfirm
               title="Are you Sure？"
               icon={
@@ -975,7 +978,6 @@ class CustomerDetail extends PureComponent {
             >
               <a>Refund</a>
             </Popconfirm>
-          )}
         </Fragment>
       )
     },

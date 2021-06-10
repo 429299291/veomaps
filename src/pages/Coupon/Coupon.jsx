@@ -392,7 +392,7 @@ class Coupon extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          {authority.includes("update.coupon.detail") &&
+          {/* {authority.includes("update.coupon.detail") && */
             <a onClick={() => this.handleUpdateModalVisible(true, record)}>
               Update
             </a>
@@ -401,14 +401,14 @@ class Coupon extends PureComponent {
 
           <Divider type="vertical" />
 
-          {authority.includes("generate.code.coupon") &&
+          {/* {authority.includes("generate.code.coupon") && */}
           <a onClick={() => this.handleGenerateCodeCouponModalVisible(true, record)}>
             Generate Coupon with Code
           </a>
           }
           <Divider type="vertical" />
 
-          {authority.includes("delete.coupon.detail") &&
+          {/* {authority.includes("delete.coupon.detail") && */}
             <Popconfirm
               title="Are you sure？"
               icon={<Icon type="question-circle-o" style={{ color: "red" }} />}
@@ -629,7 +629,7 @@ class Coupon extends PureComponent {
               {this.renderSimpleForm()}
             </div>
             <div className={styles.tableListOperator}>
-              {authority.includes("create.coupon") &&
+              {/* {authority.includes("create.coupon") && */}
                 <Button
                   icon="plus"
                   type="primary"

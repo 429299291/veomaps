@@ -251,7 +251,7 @@ const VehicleControlForm = Form.create()(props => {
         icon="plus"
         type="primary"
         onClick={okHandle}
-        disabled={!form.isFieldsTouched() && !authority.includes("vehicle.control.extension")}
+        disabled={!form.isFieldsTouched()}
         style={{ marginRight: "1em", marginTop: "0.5em" }}
       >
         Update Control
@@ -340,7 +340,7 @@ const VehicleControlExtensionForm = Form.create()(props => {
         icon="plus"
         type="primary"
         onClick={okHandle}
-        disabled={!form.isFieldsTouched() && !authority.includes("vehicle.control.extension")}
+        disabled={!form.isFieldsTouched()}
         style={{ marginRight: "1em", marginTop: "0.5em" }}
       >
         Update Control Extension
@@ -508,7 +508,7 @@ const UpdateForm = Form.create()(props => {
             icon="plus"
             type="primary"
             onClick={okHandle}
-            disabled={!form.isFieldsTouched() && !authority.includes("update.vehicle.detail")}
+            // disabled={!form.isFieldsTouched() && !authority.includes("update.vehicle.detail")}
             style={{ marginRight: "1em", marginTop: "0.5em" }}
           >
             Update Vehicle
@@ -517,7 +517,7 @@ const UpdateForm = Form.create()(props => {
             icon="plus"
             type="primary"
             onClick={changeLockStatus}
-            disabled={!authority.includes("unlock.vehicle")}
+            // disabled={!authority.includes("unlock.vehicle") }
             style={{ marginRight: "1em", marginTop: "0.5em" }}
           >
             {(record.lockStatus === 1 ? "Unlock" : "Lock") + " Vehicle"}
@@ -526,7 +526,7 @@ const UpdateForm = Form.create()(props => {
             icon="plus"
             type="primary"
             onClick={alertVehicle}
-            disabled={!authority.includes("alert.vehicle")}
+            // disabled={!authority.includes("alert.vehicle")}
             style={{ marginRight: "1em", marginTop: "0.5em" }}
           >
             Beep Remotely
@@ -535,7 +535,7 @@ const UpdateForm = Form.create()(props => {
             icon="plus"
             type="primary"
             onClick={updateLocation}
-            disabled={!authority.includes("update.vehicle.location")}
+            // disabled={!authority.includes("update.vehicle.location")}
             style={{ marginRight: "1em", marginTop: "0.5em" }}
           >
             Update Location
@@ -548,7 +548,7 @@ const UpdateForm = Form.create()(props => {
             icon="plus"
             type="primary"
             onClick={getVehicleStatus}
-            disabled={!form.isFieldsTouched() && !authority.includes("get.status")}
+            // disabled={!form.isFieldsTouched() && !authority.includes("get.status")}
             style={{ marginRight: "1em", marginTop: "0.5em" }}
           >
             Get Status
@@ -850,7 +850,7 @@ class VehicleDetail extends PureComponent {
   handleGetVehicleOrders = id => {
     const { dispatch } = this.props;
 
-    authority.includes("get.vehicle.orders") &&
+    
       dispatch({
         type: "vehicles/getOrders",
         id: id,
@@ -861,7 +861,6 @@ class VehicleDetail extends PureComponent {
   handleGetVehicleRides = vehicleId => {
     const { dispatch } = this.props;
 
-    authority.includes("get.rides") &&
       dispatch({
         type: "rides/getVehicleRides",
         vehicleId: vehicleId,
@@ -922,18 +921,16 @@ class VehicleDetail extends PureComponent {
 
 
 
-    if ((type === "vehicles/unlock" && authority.includes("unlock.vehicle")) || (type === "vehicles/lock" && authority.includes("lock.vehicle"))) {
-      dispatch({
-        type: type,
-        id: vehicleId,
-        onSuccess: () => {
-          handleGetVehicles && handleGetVehicles();
-          setTimeout(() => {
-            this.handleGetVehicle(vehicleId);
-          }, 1500)
-        }
-      });
-    }
+    dispatch({
+      type: type,
+      id: vehicleId,
+      onSuccess: () => {
+        handleGetVehicles && handleGetVehicles();
+        setTimeout(() => {
+          this.handleGetVehicle(vehicleId);
+        }, 1500)
+      }
+    });
 
   };
 
@@ -1021,7 +1018,7 @@ class VehicleDetail extends PureComponent {
           </Card>}
 
 
-          {authority.includes("get.rides") &&
+          {/* {authority.includes("get.rides") && */
             <Card title="Vehicle Rides" style={{ marginTop: "2em" }}>
               <Table
                 dataSource={vehicleRides}
@@ -1039,7 +1036,7 @@ class VehicleDetail extends PureComponent {
             </Card>
           }
 
-          {authority.includes("get.vehicle.orders") &&
+          {/* {authority.includes("get.vehicle.orders") && */
             <Card title="Vehicle Orders" style={{ marginTop: "2em" }}>
               <Table
                 dataSource={vehicleOrders}
@@ -1050,7 +1047,7 @@ class VehicleDetail extends PureComponent {
               />
             </Card>
           }
-          {authority.includes("vehicle.control") &&
+          {/* {authority.includes("vehicle.control") && */
           <Card title="Control Vehicle">
             {record &&
               <div>

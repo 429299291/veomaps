@@ -9,6 +9,7 @@ export default {
   namespace: "user",
 
   state: {
+    data:[],
     list: [],
     currentUser: {},
     isUserFetched: false
@@ -96,6 +97,7 @@ export default {
       return {
         ...state,
         currentUser: action.payload || {},
+
         isUserFetched: true
       };
     },

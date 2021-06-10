@@ -142,9 +142,9 @@ class Dashboard extends Component {
     const { rangePickerValue} = this.state;
 
 
-     if (!authority.includes("get.total.ride.revenue")) {
-       return;
-     }
+    //  if (!authority.includes("get.total.ride.revenue")) {
+    //    return;
+    //  }
 
 
 
@@ -187,8 +187,9 @@ class Dashboard extends Component {
     const { rangePickerValue} = this.state;
 
 
-    if (authority.includes("get.stripe.net.deposit") ) {
+    // if (authority.includes("get.stripe.net.deposit") ) {
 
+    // }
 
       dispatch({
         type: "dashboard/fetchStripeNetDeposit",
@@ -199,11 +200,11 @@ class Dashboard extends Component {
         }
       });
 
-    }
+ 
 
-    if (authority.includes("get.stripe.net.charge") ) {
+    // if (authority.includes("get.stripe.net.charge") ) {
 
-
+    // }
       dispatch({
         type: "dashboard/fetchStripeNetCharge",
         params: { 
@@ -213,10 +214,11 @@ class Dashboard extends Component {
         }
       });
 
-    }
 
-    if (authority.includes("get.stripe.net.refund") ) {
 
+    // if (authority.includes("get.stripe.net.refund") ) {
+
+    // }
 
       dispatch({
         type: "dashboard/fetchStripeNetRefund",
@@ -227,11 +229,11 @@ class Dashboard extends Component {
         }
       });
 
-    }
+   
 
-    if (authority.includes("get.stripe.net.dispute") ) {
+    // if (authority.includes("get.stripe.net.dispute") ) {
 
-
+    // }
 
       dispatch({
         type: "dashboard/fetchStripeNetDispute",
@@ -242,7 +244,7 @@ class Dashboard extends Component {
         }
       });
 
-    }
+   
 
   }
 
