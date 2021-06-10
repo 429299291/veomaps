@@ -239,7 +239,7 @@ const AreaFeatureForm = Form.create()(props => {
 
   const areaFeatureId = record.areaFeature && record.areaFeature.id;
 
-  const isEditable = authority.includes("area" );
+  const isEditable =  true;//authority.includes("area" );
 
   const okHandle = () => {
     if (form.isFieldsTouched())
@@ -816,9 +816,9 @@ class Area extends PureComponent {
 
     const { dispatch } = this.props;
 
-    if (!authority.includes("area")) {
-      return;
-    }
+    // if (!authority.includes("area")) {
+    //   return;
+    // }
 
     dispatch({
       type: "areas/getAreaFeaturesEffect",

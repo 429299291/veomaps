@@ -53,7 +53,7 @@ const RouteMap = compose(
             }}
           />
   
-          {authority.includes("get.fences") && fences && fences.map(fence => (
+          {fences && fences.map(fence => (
             <Polygon
               path={fence.fenceCoordinates}
               geodesic={true}
@@ -69,7 +69,7 @@ const RouteMap = compose(
             />
           ))}
   
-          {authority.includes("get.fences") && fences && fences.filter(fence => fence.fenceType === 5).map(fence => (
+          {fences && fences.filter(fence => fence.fenceType === 5).map(fence => (
             <Polyline
               path={fence.fenceCoordinates}
               geodesic={true}

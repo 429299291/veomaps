@@ -208,7 +208,7 @@ const MapComponent = compose(
           />
         ))}
   
-      {authority.includes("get.fences") && fences && fences.map(fence => (
+      {fences && fences.map(fence => (
           <Polygon
             path={fence.fenceCoordinates}
             geodesic={true}
@@ -224,7 +224,7 @@ const MapComponent = compose(
           />
         ))}
   
-        {authority.includes("get.fences") && fences && fences.filter(fence => fence.fenceType === 5).map(fence => (
+        {fences && fences.filter(fence => fence.fenceType === 5).map(fence => (
           <Polyline
             path={fence.fenceCoordinates}
             geodesic={true}
@@ -299,9 +299,22 @@ const MapComponent = compose(
 
       handleGetVehicleDetail = vehicleId => {
         const { dispatch } = this.props;
-        if (authority.includes("get.vehicles.detail")) {
+        // if (authority.includes("get.vehicles.detail")) {
 
-            this.setState({isLoading: true});
+        //     this.setState({isLoading: true});
+
+        //     dispatch({
+        //         type: "vehicles/getVehicleDetail",
+        //         vehicleId: vehicleId,
+        //         onSuccess: response =>  {
+        //             this.setState({ vehicleDetail: response, isLoading: false });
+        //             this.getAreaGeoInfo(response.areaId)
+        //             }
+        //     });
+        // } else {
+        //     this.setState({ vehicleDetail: null, isLoading: false });
+        // }
+        this.setState({isLoading: true});
 
             dispatch({
                 type: "vehicles/getVehicleDetail",
@@ -311,9 +324,6 @@ const MapComponent = compose(
                     this.getAreaGeoInfo(response.areaId)
                     }
             });
-        } else {
-            this.setState({ vehicleDetail: null, isLoading: false });
-        }
       };
     
       componentDidMount = () => {
@@ -336,7 +346,7 @@ const MapComponent = compose(
         const { dispatch, geo } = this.props;
     
         if (geo.fences.length == 0 || geo.fences[0].areaId !== vehicleAreaId) {
-            authority.includes("get.fences") && dispatch({
+             dispatch({
                 type: "geo/getFences",
                 areaId: vehicleAreaId
               });
@@ -347,7 +357,7 @@ const MapComponent = compose(
       getRef = vehicleId => {
         const { dispatch, geo } = this.props;
     
-        authority.includes("get.ref") && dispatch({
+        dispatch({
             type: "vehicles/getRef",
             id: vehicleId,
             onSuccess: response => this.setState({vehicleRef: response})
@@ -440,8 +450,7 @@ const MapComponent = compose(
                 <Spin />
             </div>
             :
-                (authority.includes("get.vehicles.detail") 
-                && vehicleDetail 
+                (vehicleDetail 
                 && vehicleDetail.location ?
 
                 <div style={{position: "relative"}}>

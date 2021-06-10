@@ -96,7 +96,7 @@ const MessageAreaSender = Form.create()(props => {
                     <Button 
                         type="primary"
                         onClick={okHandle}
-                        disabled={!authority.includes("send.customer.notification") || !areaId}
+                        disabled={!areaId}
                         style={{marginRight: "1em", marginTop: "0.5em"}}
                     >
                     Send
@@ -312,14 +312,10 @@ class Notifications extends PureComponent {
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>
               
-            {
-                authority.includes("send.customer.notification") &&
-
-                <MessageAreaSender 
+            <MessageAreaSender 
                     areaId={selectedAreaId}
                     handleSendNotifications={this.handleSendNotifications}
                 />
-            }
               
               {this.renderSimpleForm()}
              

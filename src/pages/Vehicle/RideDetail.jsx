@@ -76,6 +76,7 @@ class RideDetail extends PureComponent {
       billingInfo
     } = this.props;
 
+
     return (
       <Modal
         destroyOnClose

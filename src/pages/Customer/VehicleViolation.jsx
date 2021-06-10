@@ -390,23 +390,20 @@ class VehicleViolation extends PureComponent {
         }
       });
 
-      if (authority.includes("area")) {
+      dispatch({
+        type: "rides/getRoute",
+        rideId: record.id,
+        onSuccess: pathInfo =>
+          this.setState({
+            selectedRidePathInfo: pathInfo,
+          })
+      });
+      dispatch({
+        type: "geo/getFences",
+        areaId: record.areaId
+      });
 
-
-        dispatch({
-          type: "rides/getRoute",
-          rideId: record.id,
-          onSuccess: pathInfo =>
-            this.setState({
-              selectedRidePathInfo: pathInfo,
-            })
-        });
-        authority.includes("area") && dispatch({
-          type: "geo/getFences",
-          areaId: record.areaId
-        });
-
-      }
+      
       this.setState({
         rideModalVisible: true,
         selectedRide: record,
