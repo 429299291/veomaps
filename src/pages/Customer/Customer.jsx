@@ -459,11 +459,13 @@ class Customer extends PureComponent {
       title: "operation",
       render: (text, record) => (
         <Fragment>
-          {authority.includes("customer") && (
+          {/* {authority.includes("customer") && (
+           
+          )} */}
+
             <a onClick={() => this.handleDetailModalVisible(true, record)}>
               Detail
             </a>
-          )}
         </Fragment>
       )
     }

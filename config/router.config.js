@@ -17,13 +17,13 @@ export default [
     path: "/",
     component: "../layouts/BasicLayout",
     Routes: ["src/pages/Authorized"],
-    authority: ["area", "admin"],
+    // authority: ["area", "admin"],
     routes: [
       {
         path: "/dashboard",
         name: "dashboard",
         icon: "dashboard",
-        authority: "dashboard",
+        // authority: "dashboard",
         routes: [
           {
             path: "/dashboard/main",
@@ -36,7 +36,7 @@ export default [
         path: "/shop-management",
         icon: "shop",
         name: "Shop Management",
-        authority: ["shop"],
+        // authority: ["shop"],
         routes: [
           {
             path: "/shop-management/order",
@@ -55,13 +55,13 @@ export default [
         name: "Riding Management",
         component: "./Ride/Ride",
         icon: "car",
-        authority: ["ride"],
+        // authority: ["ride"],
       },
       {
         path: "/vehicle-management",
         icon: "car",
         name: "Vehicle Management",
-        authority:[ "vehicle"],
+        // authority:[ "vehicle"],
         routes: [
           {
             path: "/vehicle-management/vehicle",
@@ -86,7 +86,7 @@ export default [
         path: "/customer-management",
         icon: "user",
         name: "Customer Management",
-        authority: ["customer"],
+        // authority: ["customer"],
         routes: [
           {
             path: "/customer-management/customer",
@@ -101,7 +101,7 @@ export default [
           {
             path: "/customer-management/violations",
             name: "Violation",
-            authority: ["customer.violation"],
+            // authority: ["customer.violation"],
             component: "./Customer/VehicleViolation",
           }
         ]
@@ -110,7 +110,7 @@ export default [
         path: "/area",
         icon: "global",
         name: "Area Management",
-        authority:['area'],
+        // authority:['area'],
         routes: [
           {
             path: "/area/geo-management/",
@@ -123,7 +123,7 @@ export default [
             component: "./Area/Area",
           },
           // {
-          //   path: "/area/area-management/",
+          //   path: "/area/areaManagement/",
           //   name: "Area Management",
           //   component: "./Area/Areas",
           // },
@@ -132,20 +132,20 @@ export default [
             name: "Promo Management",
             // icon: "barcode",
             component: "./Area/Promo/Promo",
-            authority: "area.promo"
+            // authority: "area.promo"
           },
           {
             path: "/area/deposit-management/",
             name: "Deposit Management",
             // icon: "dollar",
             component: "./Area/Deposit/Deposit",
-            authority: "area.deposit"
+            // authority: "area.deposit"
           },
           {
             path: "/area/membership-management",
             name: "Membership Management",
             // icon: "wallet",
-            authority: "area.membership",
+            // authority: "area.membership",
             component: "./Area/Membership/Membership",
           },
           {
@@ -162,7 +162,7 @@ export default [
         path: "/employee-management/",
         name: "Admin Management",
         icon: "user",
-        authority: ["admin"],
+        // authority: ["admin"],
         routes: [
           {
             path: "/employee-management/role",
@@ -183,9 +183,9 @@ export default [
       },
       {
         path: "/technician-management/",
-        name: "technician Management",
+        name: "Technician Management",
         icon: "user",
-        authority: ["technician"],
+        // authority: ["technician"],
         routes: [
           {
             path: "/technician-management/main",
@@ -198,14 +198,14 @@ export default [
             name: "Violation Management",
             // icon: "warning",
             component: "./Technician/Violation",
-            authority: ["technician.violation"],
+            // authority: ["technician.violation"],
           },
           {
             path: "/technician-management/techmetrics",
             name: "Tech Metrics",
             // icon: "user",
             component: "./Technician/TechMetrics",
-            authority: ["technician.metric"],
+            // authority: ["technician.metric"],
           }
         ]
       },
@@ -213,7 +213,7 @@ export default [
         name: "account",
         icon: "user",
         path: "/account",
-        authority: ["me"],
+        // authority: ["me"],
         routes: [
           {
             path: "/account/settings",

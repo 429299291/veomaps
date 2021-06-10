@@ -255,11 +255,9 @@ class Technician extends PureComponent {
 
           <Divider type="vertical" />
 
-          {authority.includes("technician") && (
-            <a onClick={() => this.handleUpdateModalVisible(true, record)}>
+          <a onClick={() => this.handleUpdateModalVisible(true, record)}>
               Update
             </a>
-          )}
         </div>
       )
     }

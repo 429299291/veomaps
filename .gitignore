@@ -28,3 +28,4 @@ src/pages/.umi
 dist/*
 dist.zip
 src/pages/.umi/*
+src/pages/.umi/router.js

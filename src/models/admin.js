@@ -21,7 +21,6 @@ export default {
   effects: {
     *get({ payload, onSuccess,saveState }, { call, put }) {
       const response = yield call(getAdmins, payload);
-
       yield put({
         type: "newSave",
         payload: response.content,
@@ -97,10 +96,10 @@ export default {
     },
     *getadminsdata({ payload, saveState,savepagenations }, { put, call }) {
       const response = yield call(getAdmins, payload);
-
       yield put({
         type: "newSave",
         payload: response.content,
+        availableRoles:response.availableRoles,
         pagenation:{
           page:response.page,
           pageSize:response.pageSize,
@@ -137,11 +136,11 @@ export default {
         data: action.payload
       };
     },
-    newSave(state, { payload,pagenation }) {
+    newSave(state, { payload,pagenation,availableRoles }) {
       return {
         ...state,
         // data: payload,
-        data: {payload,pagenation},
+        data: {payload,pagenation,availableRoles},
       };
     }
 
