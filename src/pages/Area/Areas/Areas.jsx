@@ -16,7 +16,7 @@ const Areas = (props) => {
     const [areaAvailabilityIsOpenEnabled, setAreaAvailabilityIsOpenEnabled] = useState(false);
     const [freeRideEnabled, setFreeRideEnabled] = useState(false);
 
-    const [violationFineDatas, setViolationFineDatas] = useState(['0','25']);
+    const [violationFineDatas, setViolationFineDatas] = useState(['0']);
     // const [violationFineIndex, setViolationFineIndex] = useState(0);
     const [form] = Form.useForm();
     const { Panel } = Collapse;
@@ -212,27 +212,27 @@ const tailLayout = {
                 </Form.Item>
             </Col>
             <Col span={12}>
-                <Form.Item  label="member Check" {...tailLayout} name='membershipEnabled' valuePropName="checked">
+                <Form.Item  label="member Check" {...tailLayout} name={['feature', 'membershipEnabled']} valuePropName="checked">
                   <Switch checked={formDatas.feature?formDatas.feature.activated :false} size="small"/>
                 </Form.Item>
             </Col>
             <Col span={12}>
-                <Form.Item  label="Hold Ride" {...tailLayout} name='ridePauseEnabled' valuePropName="checked">
+                <Form.Item  label="Hold Ride" {...tailLayout} name={['feature', 'ridePauseEnabled']} valuePropName="checked">
                   <Switch checked={formDatas.feature?formDatas.feature.activated :false} size="small"/>
                 </Form.Item>
             </Col>
             <Col span={12}>
-                <Form.Item  label="ride photo Check" {...tailLayout} name='ridePhotoEnabled' valuePropName="checked">
+                <Form.Item  label="ride photo Check" {...tailLayout} name={['feature', 'ridePhotoEnabled']} valuePropName="checked">
                   <Switch checked={formDatas.feature?formDatas.feature.activated :false} size="small"/>
                 </Form.Item>
             </Col>
             <Col span={12}>
-                <Form.Item  label="billing Address" {...tailLayout} name='billingAddressEnabled' valuePropName="checked">
+                <Form.Item  label="billing Address" {...tailLayout} name={['feature', 'billingAddressEnabled']} valuePropName="checked">
                   <Switch checked={formDatas.feature?formDatas.feature.activated :false} size="small"/>
                 </Form.Item>
             </Col>
             <Col span={12}>
-                <Form.Item  label="ridePre Auth Fee" {...tailLayout} name='ridePreAuthFee'>
+                <Form.Item  label="ridePre Auth Fee" {...tailLayout} name={['feature', 'ridePreAuthFee']}>
                   <InputNumber min={1} max={245}/>
                 </Form.Item>
             </Col>
@@ -243,12 +243,12 @@ const tailLayout = {
             <Card title="age control" type="inner" size="small">
             <Row>
             <Col span={12}>
-                <Form.Item  label="age verification" {...tailLayout} name='ageVerification' valuePropName="checked">
+                <Form.Item  label="age verification" {...tailLayout} name={['feature', 'ageVerification']} valuePropName="checked">
                   <Switch checked={formDatas.feature?formDatas.feature.activated :false} size="small" onChange={ageOnchange}/>
                 </Form.Item>
             </Col>
             <Col span={12}>
-                <Form.Item  label="age" {...tailLayout} name='ageVerificationAge'>
+                <Form.Item  label="age" {...tailLayout} name={['feature', 'ageVerificationAge']}>
                   <InputNumber min={15} max={45}  disabled={formDatas.feature?!formDatas.feature.activated :true} disabled={!ageEnabled}/>
                 </Form.Item>
             </Col>
@@ -259,20 +259,30 @@ const tailLayout = {
             <Card title="Ride Time control" type="inner" size="small">
             <Row justify="space-between">
             <Col span={12}>
-                <Form.Item  label="Ride Time" {...tailLayout} name={['freeRide','enabled']} valuePropName="checked">
+                <Form.Item  label="Ride Time" {...tailLayout} name={['feature','freeRide','enabled']} valuePropName="checked">
                   <Switch checked={formDatas.feature?formDatas.feature.activated :false} size="small" onChange={freeRideOnchange}/>
                 </Form.Item>
             </Col>
             <Col span={12}>
-                <Form.Item  label="Free Ride" {...tailLayout} name={['freeRide','freeMinutes']}>
+                <Form.Item  label="Free Ride" {...tailLayout} name={['feature','freeRide','freeMinutes']}>
                   <InputNumber min={1} max={245}  disabled={!freeRideEnabled} />
                 </Form.Item>
             </Col>
             </Row>
             </Card>
             </Col>
-
             </Row>
+
+            <Form.Item>
+              {({ getFieldValue }) =>
+                getFieldValue('feature')  (
+                  <Form.Item name="activated" label="Customize Gender" rules={[{ required: true }]}>
+                    <Input />
+                </Form.Item>
+                ) 
+              }
+            </Form.Item>
+
             <Col span={24}>
               <Card title="Violation Fine Configuration" type="inner" size="small">
                 <Row>
@@ -285,7 +295,7 @@ const tailLayout = {
             <Row justify="space-between">
             <Col span={11}>
                 <Form.Item
-                  name={['areaAvailability','isOpen']}
+                  name={['feature','areaAvailability','isOpen']}
                   label="is Open Now"
                   rules={[{ required: true, message: 'Please choose the approver' }]}
                 >
@@ -298,7 +308,7 @@ const tailLayout = {
               </Col>
               <Col span={12}>
                 <Form.Item
-                  name={['areaAvailability','timeZone']}
+                  name={['feature','areaAvailability','timeZone']}
                   label="Time Zone"
                   rules={[{ required: false, message: 'Please choose the approver' }]}
                 >
@@ -314,7 +324,7 @@ const tailLayout = {
               <Row>
               <Col span={11}>
                 <Form.Item
-                  name={['areaAvailability','weekDay']}
+                  name={['feature','areaAvailability','weekDay']}
                   label="Weekday"
                   rules={[{ required: false, message: 'Please choose the dateTime' }]}
                 >
@@ -323,7 +333,7 @@ const tailLayout = {
               </Col>
               <Col span={12} offset={1}>
                 <Form.Item
-                  name={['areaAvailability','weekend']}
+                  name={['feature','areaAvailability','weekend']}
                   label="Weekend"
                   rules={[{ required: false, message: 'Please choose the dateTime' }]}
                 >
@@ -331,7 +341,7 @@ const tailLayout = {
                 </Form.Item>
               </Col>
               <Col span={24}>
-                <FormItem name={['areaAvailability','description']}>
+                <FormItem name={['feature','areaAvailability','description']}>
                   <Input placeholder="Hour Description" allowClear/>
                 </FormItem>
               </Col>
@@ -346,7 +356,7 @@ const tailLayout = {
                         <Form.Item 
                       {...tailLayout}
                             label="Survey Url"
-                            name="surveyUrl"
+                            name={['feature','surveyUrl']}
                             rules={[{ required: false, message: 'Please input your name!' }]}
                           >
                           <Input/>
@@ -356,7 +366,7 @@ const tailLayout = {
                         <Form.Item 
                       {...tailLayout}
                             label="Tax Rate %"
-                            name="taxRate"
+                            name={['feature','taxRate']}
                             rules={[{ required: false, message: 'Please input your name!' }]}
                           >
                           <Input/>
