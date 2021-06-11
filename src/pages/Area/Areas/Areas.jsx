@@ -208,27 +208,27 @@ const tailLayout = {
             <Row>
             <Col span={12}>
                 <Form.Item  label="Market" {...tailLayout} name={['feature', 'activated']} valuePropName="checked">
-                  <Switch checked={formDatas.feature?formDatas.feature.activated :false} size="small"/>
+                  <Switch size="small"/>
                 </Form.Item>
             </Col>
             <Col span={12}>
                 <Form.Item  label="member Check" {...tailLayout} name={['feature', 'membershipEnabled']} valuePropName="checked">
-                  <Switch checked={formDatas.feature?formDatas.feature.activated :false} size="small"/>
+                  <Switch size="small"/>
                 </Form.Item>
             </Col>
             <Col span={12}>
                 <Form.Item  label="Hold Ride" {...tailLayout} name={['feature', 'ridePauseEnabled']} valuePropName="checked">
-                  <Switch checked={formDatas.feature?formDatas.feature.activated :false} size="small"/>
+                  <Switch size="small"/>
                 </Form.Item>
             </Col>
             <Col span={12}>
                 <Form.Item  label="ride photo Check" {...tailLayout} name={['feature', 'ridePhotoEnabled']} valuePropName="checked">
-                  <Switch checked={formDatas.feature?formDatas.feature.activated :false} size="small"/>
+                  <Switch size="small"/>
                 </Form.Item>
             </Col>
             <Col span={12}>
                 <Form.Item  label="billing Address" {...tailLayout} name={['feature', 'billingAddressEnabled']} valuePropName="checked">
-                  <Switch checked={formDatas.feature?formDatas.feature.activated :false} size="small"/>
+                  <Switch size="small"/>
                 </Form.Item>
             </Col>
             <Col span={12}>
@@ -244,7 +244,7 @@ const tailLayout = {
             <Row>
             <Col span={12}>
                 <Form.Item  label="age verification" {...tailLayout} name={['feature', 'ageVerification']} valuePropName="checked">
-                  <Switch checked={formDatas.feature?formDatas.feature.activated :false} size="small" onChange={ageOnchange}/>
+                  <Switch size="small" onChange={ageOnchange}/>
                 </Form.Item>
             </Col>
             <Col span={12}>
@@ -260,7 +260,7 @@ const tailLayout = {
             <Row justify="space-between">
             <Col span={12}>
                 <Form.Item  label="Ride Time" {...tailLayout} name={['feature','freeRide','enabled']} valuePropName="checked">
-                  <Switch checked={formDatas.feature?formDatas.feature.activated :false} size="small" onChange={freeRideOnchange}/>
+                  <Switch size="small" onChange={freeRideOnchange}/>
                 </Form.Item>
             </Col>
             <Col span={12}>
