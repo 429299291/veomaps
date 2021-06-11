@@ -17,7 +17,7 @@ export default [
     path: "/",
     component: "../layouts/BasicLayout",
     Routes: ["src/pages/Authorized"],
-    // authority: ["area", "admin"],
+    authority: ["area", "admin"],
     routes: [
       {
         path: "/dashboard",
@@ -112,21 +112,21 @@ export default [
         name: "Area Management",
         // authority:['area'],
         routes: [
-          {
-            path: "/area/geo-management/",
-            name: "Geo Management",
-            component: "./Area/Geo",
-          },
+          // {
+          //   path: "/area/geo-management/",
+          //   name: "Geo Management",
+          //   component: "./Area/Geo",
+          // },
+          // {
+          //   path: "/area/area-management/",
+          //   name: "Area Management",
+          //   component: "./Area/Area",
+          // },
           {
             path: "/area/area-management/",
             name: "Area Management",
-            component: "./Area/Area",
+            component: "./Area/Areas/Areas",
           },
-          // {
-          //   path: "/area/areaManagement/",
-          //   name: "Area Management",
-          //   component: "./Area/Areas",
-          // },
           {
             path: "/area/promo-management/",
             name: "Promo Management",
