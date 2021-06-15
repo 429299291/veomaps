@@ -492,21 +492,15 @@ class Membership extends PureComponent {
       title: "Operation",
       render: (text, record) => (
         <Fragment>
-          {authority.includes("area.membership") &&
-            <a onClick={() => this.handleUpdateModalVisible(true, record)}>
+          <a onClick={() => this.handleUpdateModalVisible(true, record)}>
               Update
             </a>
-          }
           <Divider type="vertical" />
-          { 
-            authority.includes("area.membership") &&
-              <a onClick={() =>  this.handleDetailModalVisible(true, record)}>
+          <a onClick={() =>  this.handleDetailModalVisible(true, record)}>
                 Detail
               </a>
-          }
           <Divider type="vertical" />
-          {authority.includes("area.membership") &&
-            <Popconfirm
+          <Popconfirm
               title="Are you Sure？"
               icon={<Icon type="question-circle-o" style={{ color: "red" }}/>}
               onConfirm={() => this.handleDelete(record.id)}
@@ -516,7 +510,6 @@ class Membership extends PureComponent {
                 Delete
               </a>
             </Popconfirm>
-          }
         </Fragment>
       )
     }

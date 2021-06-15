@@ -561,7 +561,7 @@ class Promo extends PureComponent {
               {this.renderSimpleForm()}
             </div>
             <div className={styles.tableListOperator}>
-              {authority.includes("create.promo") &&
+              {/* {authority.includes("create.promo") && */
                 <Button
                   icon="plus"
                   type="primary"
