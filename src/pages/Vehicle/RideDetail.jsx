@@ -102,9 +102,8 @@ class RideDetail extends PureComponent {
           </Col>
 
           <Col xs={24} sm={12}>
-            {ridePath &&
-              ridePath.distance > 0 && (
-                <RouteMap pathInfo={ridePath} fences={geo.fences} />
+            {ridePath && (
+                <RouteMap path={ridePath} fences={geo.fences} distance={ride.distance}/>
               )}
 
             {rideImageUrl && (

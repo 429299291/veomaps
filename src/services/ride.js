@@ -24,7 +24,7 @@ export async function refundRide(id, fieldValues) {
 }
 
 export async function getRideRoute(rideId) {
-  return request(`/admins/rides/${rideId}/route`, {
+  return request(`/api/admins/rides/${rideId}/path`, {
     method: "GET"
   });
 }
