@@ -10,6 +10,8 @@ import {
   updateAreaFeature,
   createAreaFeature,
   getAreasAll,
+  addArea,//
+  updateAreaNew,//
   getHubImageUploadUrl
 } from "@/services/area";
 import { message } from "antd";
@@ -35,6 +37,13 @@ export default {
       });
 
     },
+    *addArea({ payload }, { call, put }) {
+      let response = (yield call(addArea, payload));
+    },
+    *updateAreaNew({ payload,areaId }, { call, put }) {
+      let response = (yield call(updateAreaNew,areaId, payload));
+    },
+    //////////////
     *get({ payload, onSuccess }, { call, put }) {
       let response = (yield call(getAdminAreas, payload)).content;
       if (Array.isArray(response)) {

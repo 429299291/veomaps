@@ -127,7 +127,7 @@ class BaseView extends Component {
                 ],
               })(<Input />)}
             </FormItem>
-            {/* <FormItem label="Username">
+            <FormItem label="Username">
               {getFieldDecorator('username', {
                 rules: [
                   {
@@ -156,7 +156,7 @@ class BaseView extends Component {
                   },
                 ],
               })(<Input />)}
-            </FormItem> */}
+            </FormItem>
             <Button type="primary"  onClick={this.handleUpdateMe}>
               <FormattedMessage
                 id="app.settings.basic.update"

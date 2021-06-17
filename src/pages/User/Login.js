@@ -57,9 +57,6 @@ class LoginPage extends Component {
         },
         onSuccess: phone =>
           this.setState({phone: phone})
-          // dispatch({
-          //   type: "user/fetchCurrent"
-          // })
       });
     }
   };

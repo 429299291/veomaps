@@ -49,6 +49,7 @@ let routes = [
         "path": "/dashboard",
         "name": "dashboard",
         "icon": "dashboard",
+        "authority": "dashboard",
         "routes": [
           {
             "path": "/dashboard/main",
@@ -65,6 +66,9 @@ let routes = [
         "path": "/shop-management",
         "icon": "shop",
         "name": "Shop Management",
+        "authority": [
+          "shop"
+        ],
         "routes": [
           {
             "path": "/shop-management/order",
@@ -88,12 +92,18 @@ let routes = [
         "name": "Riding Management",
         "component": dynamic({ loader: () => import('../Ride/Ride'), loading: require('/Users/zhudongdong/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
         "icon": "car",
+        "authority": [
+          "ride"
+        ],
         "exact": true
       },
       {
         "path": "/vehicle-management",
         "icon": "car",
         "name": "Vehicle Management",
+        "authority": [
+          "vehicle"
+        ],
         "routes": [
           {
             "path": "/vehicle-management/vehicle",
@@ -116,6 +126,9 @@ let routes = [
         "path": "/customer-management",
         "icon": "user",
         "name": "Customer Management",
+        "authority": [
+          "customer"
+        ],
         "routes": [
           {
             "path": "/customer-management/customer",
@@ -132,6 +145,9 @@ let routes = [
           {
             "path": "/customer-management/violations",
             "name": "Violation",
+            "authority": [
+              "customer.violation"
+            ],
             "component": dynamic({ loader: () => import('../Customer/VehicleViolation'), loading: require('/Users/zhudongdong/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
             "exact": true
           },
@@ -144,6 +160,9 @@ let routes = [
         "path": "/area",
         "icon": "global",
         "name": "Area Management",
+        "authority": [
+          "area"
+        ],
         "routes": [
           {
             "path": "/area/area-management/",
@@ -155,17 +174,20 @@ let routes = [
             "path": "/area/promo-management/",
             "name": "Promo Management",
             "component": dynamic({ loader: () => import('../Area/Promo/Promo'), loading: require('/Users/zhudongdong/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
+            "authority": "area.promo",
             "exact": true
           },
           {
             "path": "/area/deposit-management/",
             "name": "Deposit Management",
             "component": dynamic({ loader: () => import('../Area/Deposit/Deposit'), loading: require('/Users/zhudongdong/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
+            "authority": "area.deposit",
             "exact": true
           },
           {
             "path": "/area/membership-management",
             "name": "Membership Management",
+            "authority": "area.membership",
             "component": dynamic({ loader: () => import('../Area/Membership/Membership'), loading: require('/Users/zhudongdong/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
             "exact": true
           },
@@ -185,6 +207,9 @@ let routes = [
         "path": "/employee-management/",
         "name": "Admin Management",
         "icon": "user",
+        "authority": [
+          "admin"
+        ],
         "routes": [
           {
             "path": "/employee-management/role",
@@ -213,6 +238,9 @@ let routes = [
         "path": "/technician-management/",
         "name": "Technician Management",
         "icon": "user",
+        "authority": [
+          "technician"
+        ],
         "routes": [
           {
             "path": "/technician-management/main",
@@ -224,12 +252,18 @@ let routes = [
             "path": "/technician-management/violation-management",
             "name": "Violation Management",
             "component": dynamic({ loader: () => import('../Technician/Violation'), loading: require('/Users/zhudongdong/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
+            "authority": [
+              "technician.violation"
+            ],
             "exact": true
           },
           {
             "path": "/technician-management/techmetrics",
             "name": "Tech Metrics",
             "component": dynamic({ loader: () => import('../Technician/TechMetrics'), loading: require('/Users/zhudongdong/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
+            "authority": [
+              "technician.metric"
+            ],
             "exact": true
           },
           {
@@ -241,6 +275,9 @@ let routes = [
         "name": "account",
         "icon": "user",
         "path": "/account",
+        "authority": [
+          "me"
+        ],
         "routes": [
           {
             "path": "/account/settings",

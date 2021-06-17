@@ -64,6 +64,7 @@ const tailLayout = {
     setIsDrawerVisible(false);
   };
   const onFinish = (values) => {
+    console.log(values);
     let formDatas = {      
       name:values.name,
       description:values.description,
@@ -88,40 +89,49 @@ const tailLayout = {
       ],
       activated:values.feature.activated,
       ageVerification:{
-        enabled:values.ageVerification,
-        age: values.ageVerificationAge
+        enabled:values.feature.ageVerification,
+        age: values.feature.ageVerificationAge
       },
       areaAvailability:{
-        isOpen:values.areaAvailability.isOpen == 'null'? null:values.areaAvailability.isOpen,
-        timeZone:values.areaAvailability.isOpen == 'null'?values.areaAvailability.timeZone:null,
+        isOpen:values.feature.areaAvailability.isOpen == 'null'? null:values.feature.areaAvailability.isOpen,
+        timeZone:values.feature.areaAvailability.isOpen == 'null'?values.feature.areaAvailability.timeZone:null,
         weekDay:{
-          start:values.areaAvailability.isOpen == 'null'?`${values.areaAvailability.weekDay[0]._d.getHours()}:${values.areaAvailability.weekDay[0]._d.getMinutes()}`:null,
-          end:values.areaAvailability.isOpen == 'null'?   `${values.areaAvailability.weekDay[1]._d.getHours()}:${values.areaAvailability.weekDay[1]._d.getMinutes()}` :null,
+          start:values.feature.areaAvailability.isOpen == 'null'?`${values.feature.areaAvailability.weekDay[0]._d.getHours()}:${values.feature.areaAvailability.weekDay[0]._d.getMinutes()}`:null,
+          end:values.feature.areaAvailability.isOpen == 'null'?   `${values.feature.areaAvailability.weekDay[1]._d.getHours()}:${values.feature.areaAvailability.weekDay[1]._d.getMinutes()}` :null,
         },
         weekend:{
-          start:values.areaAvailability.isOpen == 'null'?  `${values.areaAvailability.weekend[0]._d.getHours()}:${values.areaAvailability.weekend[0]._d.getMinutes()}`  :null,
-          end:values.areaAvailability.isOpen == 'null'?  `${values.areaAvailability.weekend[1]._d.getHours()}:${values.areaAvailability.weekend[1]._d.getMinutes()}`  :null,
+          start:values.feature.areaAvailability.isOpen == 'null'?  `${values.feature.areaAvailability.weekend[0]._d.getHours()}:${values.feature.areaAvailability.weekend[0]._d.getMinutes()}`  :null,
+          end:values.feature.areaAvailability.isOpen == 'null'?  `${values.feature.areaAvailability.weekend[1]._d.getHours()}:${values.feature.areaAvailability.weekend[1]._d.getMinutes()}`  :null,
         },
-        description:values.areaAvailability.description,
+        description:values.feature.areaAvailability.description,
       },
-      billingAddressEnabled:values.billingAddressEnabled,
+      billingAddressEnabled:values.feature.billingAddressEnabled,
       freeRide:{
-        enabled:values.freeRide.enabled,
-        freeMinutes:values.freeRide.freeMinutes
+        enabled:values.feature.freeRide.enabled,
+        freeMinutes:values.feature.freeRide.freeMinutes
       },
-      membershipEnabled:values.membershipEnabled,
-      ridePauseEnabled:values.ridePauseEnabled,
-      ridePhotoEnabled:values.ridePhotoEnabled,
-      ridePreAuthFee:values.ridePreAuthFee,
-      surveyUrl:values.surveyUrl,
-      taxRate:values.taxRate,
+      membershipEnabled:values.feature.membershipEnabled,
+      ridePauseEnabled:values.feature.ridePauseEnabled,
+      ridePhotoEnabled:values.feature.ridePhotoEnabled,
+      ridePreAuthFee:values.feature.ridePreAuthFee,
+      surveyUrl:values.feature.surveyUrl,
+      taxRate:values.feature.taxRate,
       violationFees:violationFineDatas
     }
     console.log(formDatas);
-    dispatch({
-      type: "areas/addArea",
-      payload: {...formDatas},
-    });
+    console.log(areas.selectedAreaId);
+    if(!areas.selectedAreaId){
+      dispatch({
+        type: "areas/addArea",
+        payload: {...formDatas},
+      });
+    }else{
+      dispatch({
+        type: "areas/updateAreaNew",
+        areaId:areas.selectedAreaId,
+        payload: {...formDatas},
+      });
+    }
   };
   //form action
   const ageOnchange = (value) =>{

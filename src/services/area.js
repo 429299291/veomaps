@@ -90,4 +90,16 @@ export async function getAreasAll(areaId) {
     method: "GET"
   });
 }
+export async function addArea(params) {
+  return request(`/api/admins/areas`, {
+    method: "POST",
+    body:{...params}
+  });
+}
+export async function updateAreaNew(areaId,params) {
+  return request(`/api/admins/areas/${areaId}`, {
+    method: "PATCH",
+    body:{...params}
+  });
+}
 

@@ -42,7 +42,7 @@ class Login extends Component {
 
   getContext = () => {
     const { tabs } = this.state;
-    const { form } = this.props;
+    // const { form } = this.props;
     return {
       tabUtil: {
         addTab: id => {
@@ -56,7 +56,7 @@ class Login extends Component {
           });
         },
       },
-      form,
+      // form,
       updateActive: activeItem => {
         const { type, active } = this.state;
         if (active[type]) {
@@ -130,3 +130,8 @@ Object.keys(LoginItem).forEach(item => {
 });
 
 export default Form.create()(Login);
+// const mapStateToProps = ({}) => {
+//   return {
+//   }
+// }
+// export default connect(mapStateToProps)(Login) 
