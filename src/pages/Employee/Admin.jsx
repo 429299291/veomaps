@@ -427,8 +427,12 @@ const isVeoRideEmail = (rule, value, callback) => {
         this.handleModalVisible();
       };
     
-      handleUpdate = (id, fields) => {
+      handleUpdate = (id, fields,areas) => {
         const { dispatch,admins } = this.props;
+        console.log(fields);
+        if(fields.areaIds.includes('all')){
+          fields.areaIds = areas.map(area => area.id);
+        }
         dispatch({
           type: "admins/update",
           payload: fields,
@@ -826,7 +830,7 @@ const isVeoRideEmail = (rule, value, callback) => {
         onOk={okHandle}
         onCancel={() => handleModalVisible()}
       >
-        <Form onFinish={()=>handleUpdate(record.id, form.getFieldsValue(true))} form={form}
+        <Form onFinish={()=>handleUpdate(record.id, form.getFieldsValue(true),areas)} form={form}
                   initialValues={{
                   }}
         >
