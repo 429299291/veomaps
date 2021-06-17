@@ -202,7 +202,6 @@ const tailLayout = {
                   <Input/>
                 </Form.Item>
               </Col>
-              {/* <Divider plain>area  control</Divider> */}
             <Col span={24}>
             <Card title="area  control" type="inner" size="small">
             <Row>
