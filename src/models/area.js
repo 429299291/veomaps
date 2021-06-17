@@ -29,8 +29,9 @@ export default {
 
   effects: {
     //new api
-    *getAreasAll({ payload }, { call, put }) {
-      let response = (yield call(getAreasAll, payload));
+    *getAreasAll({ payload }, { call, put }) {//get singel area
+      console.log(payload);
+      const response = yield call(getAreasAll, payload);
       yield put({
         type: "newSave",
         payload: response
@@ -38,10 +39,25 @@ export default {
 
     },
     *addArea({ payload }, { call, put }) {
-      let response = (yield call(addArea, payload));
+      const response = yield call(addArea, payload);
+      yield put({
+        type: "get"
+      });
+      // yield put({
+      //   type: "getAreasAll"
+      // });
     },
     *updateAreaNew({ payload,areaId }, { call, put }) {
-      let response = (yield call(updateAreaNew,areaId, payload));
+      const response = yield call(updateAreaNew,areaId, payload);
+      yield put({
+        type: "get"
+      });
+      yield put({
+        type: "getAreasAll",
+        payload:{
+          areaId
+        }
+      });
     },
     //////////////
     *get({ payload, onSuccess }, { call, put }) {

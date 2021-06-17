@@ -38,13 +38,13 @@ const Areas = (props) => {
     setFormDatas(areas.newArea)
  }, [areas.newArea])
 //////  Modal  update feature
-const layout = {
-  labelCol: { span: 8 },
-  wrapperCol: { span: 16 },
-};
-const tailLayout = {
-  wrapperCol: { offset:1, span: 14},
-};
+  const layout = {
+    labelCol: { span: 8 },
+    wrapperCol: { span: 16 },
+  };
+  const tailLayout = {
+    wrapperCol: { offset:1, span: 14},
+  };
   const showDrawer =  () => {
     console.log(formDatas);
     if(formDatas.name){
@@ -64,7 +64,6 @@ const tailLayout = {
     setIsDrawerVisible(false);
   };
   const onFinish = (values) => {
-    console.log(values);
     let formDatas = {      
       name:values.name,
       description:values.description,
@@ -118,8 +117,6 @@ const tailLayout = {
       taxRate:values.feature.taxRate,
       violationFees:violationFineDatas
     }
-    console.log(formDatas);
-    console.log(areas.selectedAreaId);
     if(!areas.selectedAreaId){
       dispatch({
         type: "areas/addArea",
@@ -132,6 +129,7 @@ const tailLayout = {
         payload: {...formDatas},
       });
     }
+    setIsDrawerVisible(false);
   };
   //form action
   const ageOnchange = (value) =>{
@@ -188,7 +186,6 @@ const tailLayout = {
           <Form  hideRequiredMark onFinish={onFinish} form={form} 
           initialValues={{
             name:'',
-            description:'',
           }}
           >
             <Row>
@@ -281,16 +278,6 @@ const tailLayout = {
             </Card>
             </Col>
             </Row>
-
-            <Form.Item>
-              {({ getFieldValue }) =>
-                getFieldValue('feature')  (
-                  <Form.Item name="activated" label="Customize Gender" rules={[{ required: true }]}>
-                    <Input />
-                </Form.Item>
-                ) 
-              }
-            </Form.Item>
 
             <Col span={24}>
               <Card title="Violation Fine Configuration" type="inner" size="small">
