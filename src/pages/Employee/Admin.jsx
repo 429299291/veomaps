@@ -248,11 +248,6 @@ const isVeoRideEmail = (rule, value, callback) => {
       };
     
       renderSimpleForm() {
-        //   console.log(form);
-        // const {
-        //   form: { getFieldDecorator }
-        // } = this.props;
-    
         return (
           <Form layout="inline">
             <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -787,8 +782,6 @@ const isVeoRideEmail = (rule, value, callback) => {
     );
   });
   const UpdateForm = (props => {
-      console.log('updateform');
-      console.log(props);
     const {
       modalVisible,
       handleUpdate,
