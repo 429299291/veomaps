@@ -30,7 +30,6 @@ export default {
   effects: {
     //new api
     *getAreasAll({ payload }, { call, put }) {//get singel area
-      console.log(payload);
       const response = yield call(getAreasAll, payload);
       yield put({
         type: "newSave",

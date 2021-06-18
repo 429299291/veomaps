@@ -6,6 +6,7 @@ import styles from "./Areas.less";
 import FormItem from "antd/lib/form/FormItem";
 //components
 import ViolationFine from './components/violationFine'
+import Regulation from './components/regulation'
 
 const Areas = (props) => {
     const { dispatch,selectedAreaId,areas } = props;
@@ -17,6 +18,7 @@ const Areas = (props) => {
     const [freeRideEnabled, setFreeRideEnabled] = useState(false);
 
     const [violationFineDatas, setViolationFineDatas] = useState(['0']);
+    const [regulationDatas, setRegulationDatas] = useState([{title:'test1',content:'test for regulations',position:1}]);
     // const [violationFineIndex, setViolationFineIndex] = useState(0);
     const [form] = Form.useForm();
     const { Panel } = Collapse;
@@ -64,6 +66,7 @@ const Areas = (props) => {
     setIsDrawerVisible(false);
   };
   const onFinish = (values) => {
+    console.log(values);
     let formDatas = {      
       name:values.name,
       description:values.description,
@@ -74,13 +77,7 @@ const Areas = (props) => {
         },
         regulation: {
           displayDuringOnBoarding: true,
-          regulations: [
-            {
-              title: "string",
-              content: "string",
-              position: 0,//排序
-            }
-          ]
+          regulations: regulationDatas
         },
       },
       prompts: [
@@ -149,6 +146,9 @@ const Areas = (props) => {
   //components functions
   const getViolationFineDatas=(msg)=>{
     setViolationFineDatas(msg)
+  }
+  const getRegulationDatas=(msg)=>{
+    setRegulationDatas(msg)
   }
     return (
       <>
@@ -369,6 +369,14 @@ const Areas = (props) => {
                         </Form.Item>
                       </Col>
                     </Row>
+                    <Col span={24}>
+                    <Card title="Violation Fine Configuration" type="inner" size="small">
+                      <Row>
+                        <Regulation tags={regulationDatas} getRegulationDatas={getRegulationDatas.bind(this)}></Regulation>
+                      </Row>
+                    </Card>
+                  </Col>
+
                   </Panel>
                 </Collapse>
               </Col>
