@@ -48,8 +48,10 @@ const Areas = (props) => {
     wrapperCol: { offset:1, span: 14},
   };
   const showDrawer =  () => {
-    console.log(formDatas);
+    // console.log('formDatas');
+    // console.log(formDatas);
     if(formDatas.name){
+      // setRegulationDatas(formDatas.feature.regulation.regulations)
       form.setFieldsValue(formDatas)
     }else{
       form.resetFields()
@@ -60,14 +62,14 @@ const Areas = (props) => {
     console.log(value);
   }
   const PanelCallback = (key)=> {
-    console.log(key);
+    // console.log(key);
   }
   const onClose = () => {
     setIsDrawerVisible(false);
   };
   const onFinish = (values) => {
     console.log(values);
-    let formDatas = {      
+    let formDatas = {
       name:values.name,
       description:values.description,
       feature:{
@@ -75,44 +77,44 @@ const Areas = (props) => {
           lat:22,
           lng:66,
         },
+        activated:values.feature.activated,
+        membershipEnabled:values.feature.membershipEnabled,
+        ridePauseEnabled:values.feature.ridePauseEnabled,
+        ridePhotoEnabled:values.feature.ridePhotoEnabled,
+        billingAddressEnabled:values.feature.billingAddressEnabled,
+        areaAvailability:{
+          isOpen:values.feature.areaAvailability.isOpen == 'null'? null:values.feature.areaAvailability.isOpen,
+          timeZone:values.feature.areaAvailability.isOpen == 'null'?values.feature.areaAvailability.timeZone:null,
+          weekDay:{
+            start:values.feature.areaAvailability.isOpen == 'null'?`${values.feature.areaAvailability.weekDay[0]._d.getHours()}:${values.feature.areaAvailability.weekDay[0]._d.getMinutes()}`:null,
+            end:values.feature.areaAvailability.isOpen == 'null'?   `${values.feature.areaAvailability.weekDay[1]._d.getHours()}:${values.feature.areaAvailability.weekDay[1]._d.getMinutes()}` :null,
+          },
+          weekend:{
+            start:values.feature.areaAvailability.isOpen == 'null'?  `${values.feature.areaAvailability.weekend[0]._d.getHours()}:${values.feature.areaAvailability.weekend[0]._d.getMinutes()}`  :null,
+            end:values.feature.areaAvailability.isOpen == 'null'?  `${values.feature.areaAvailability.weekend[1]._d.getHours()}:${values.feature.areaAvailability.weekend[1]._d.getMinutes()}`  :null,
+          },
+          description:values.feature.areaAvailability.description,
+        },
+        ageVerification:{
+          enabled:values.feature.ageVerification.enabled,
+          age: values.feature.ageVerification.age
+        },
+        freeRide:{
+          enabled:values.feature.freeRide.enabled,
+          freeMinutes:values.feature.freeRide.freeMinutes
+        },
         regulation: {
           displayDuringOnBoarding: true,
           regulations: regulationDatas
         },
+        prompts: [
+          "string"
+        ],
+        ridePreAuthFee:values.feature.ridePreAuthFee,
+        surveyUrl:values.feature.surveyUrl,
+        violationFees:violationFineDatas
       },
-      prompts: [
-        "string"
-      ],
-      activated:values.feature.activated,
-      ageVerification:{
-        enabled:values.feature.ageVerification,
-        age: values.feature.ageVerificationAge
-      },
-      areaAvailability:{
-        isOpen:values.feature.areaAvailability.isOpen == 'null'? null:values.feature.areaAvailability.isOpen,
-        timeZone:values.feature.areaAvailability.isOpen == 'null'?values.feature.areaAvailability.timeZone:null,
-        weekDay:{
-          start:values.feature.areaAvailability.isOpen == 'null'?`${values.feature.areaAvailability.weekDay[0]._d.getHours()}:${values.feature.areaAvailability.weekDay[0]._d.getMinutes()}`:null,
-          end:values.feature.areaAvailability.isOpen == 'null'?   `${values.feature.areaAvailability.weekDay[1]._d.getHours()}:${values.feature.areaAvailability.weekDay[1]._d.getMinutes()}` :null,
-        },
-        weekend:{
-          start:values.feature.areaAvailability.isOpen == 'null'?  `${values.feature.areaAvailability.weekend[0]._d.getHours()}:${values.feature.areaAvailability.weekend[0]._d.getMinutes()}`  :null,
-          end:values.feature.areaAvailability.isOpen == 'null'?  `${values.feature.areaAvailability.weekend[1]._d.getHours()}:${values.feature.areaAvailability.weekend[1]._d.getMinutes()}`  :null,
-        },
-        description:values.feature.areaAvailability.description,
-      },
-      billingAddressEnabled:values.feature.billingAddressEnabled,
-      freeRide:{
-        enabled:values.feature.freeRide.enabled,
-        freeMinutes:values.feature.freeRide.freeMinutes
-      },
-      membershipEnabled:values.feature.membershipEnabled,
-      ridePauseEnabled:values.feature.ridePauseEnabled,
-      ridePhotoEnabled:values.feature.ridePhotoEnabled,
-      ridePreAuthFee:values.feature.ridePreAuthFee,
-      surveyUrl:values.feature.surveyUrl,
       taxRate:values.feature.taxRate,
-      violationFees:violationFineDatas
     }
     if(!areas.selectedAreaId){
       dispatch({
@@ -249,12 +251,12 @@ const Areas = (props) => {
             <Card title="age control" type="inner" size="small">
             <Row>
             <Col span={12}>
-                <Form.Item  label="age verification" {...tailLayout} name={['feature', 'ageVerification']} valuePropName="checked">
+                <Form.Item  label="age verification" {...tailLayout} name={['feature', 'ageVerification','enabled']} valuePropName="checked">
                   <Switch size="small" onChange={ageOnchange}/>
                 </Form.Item>
             </Col>
             <Col span={12}>
-                <Form.Item  label="age" {...tailLayout} name={['feature', 'ageVerificationAge']}>
+                <Form.Item  label="age" {...tailLayout} name={['feature', 'ageVerification','age']}>
                   <InputNumber min={15} max={45}  disabled={formDatas.feature?!formDatas.feature.activated :true} disabled={!ageEnabled}/>
                 </Form.Item>
             </Col>
@@ -324,7 +326,7 @@ const Areas = (props) => {
                   label="Weekday"
                   rules={[{ required: false, message: 'Please choose the dateTime' }]}
                 >
-                  <TimePicker.RangePicker disabled={!areaAvailabilityIsOpenEnabled} format={format}/>
+                  <TimePicker.RangePicker  disabled={!areaAvailabilityIsOpenEnabled} format={format}/>
                 </Form.Item>
               </Col>
               <Col span={12} offset={1}>
@@ -360,7 +362,7 @@ const Areas = (props) => {
                       </Col>
                       <Col span={12} >
                         <Form.Item 
-                      {...tailLayout}
+                            {...tailLayout}
                             label="Tax Rate %"
                             name={['feature','taxRate']}
                             rules={[{ required: false, message: 'Please input your name!' }]}
@@ -369,13 +371,14 @@ const Areas = (props) => {
                         </Form.Item>
                       </Col>
                     </Row>
-                    <Col span={24}>
-                    <Card title="Violation Fine Configuration" type="inner" size="small">
+                    {/* <Col span={24}>
+                    <Card title="regulationDatas Configuration" type="inner" size="small">
                       <Row>
-                        <Regulation tags={regulationDatas} getRegulationDatas={getRegulationDatas.bind(this)}></Regulation>
+                      <Regulation tags={regulationDatas} getRegulationDatas={getRegulationDatas.bind(this)}></Regulation>
+                      <Regulation tags={formDatas.feature?formDatas.feature.regulation.regulations:[]} getRegulationDatas={getRegulationDatas.bind(this)}></Regulation>
                       </Row>
                     </Card>
-                  </Col>
+                  </Col> */}
 
                   </Panel>
                 </Collapse>

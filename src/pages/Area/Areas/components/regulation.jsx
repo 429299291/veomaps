@@ -1,19 +1,9 @@
 import { Tag, Input, Tooltip,Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+
 class regulation extends React.Component {
   state = {
-    tags:this.props.tags || [
-      {
-        title:'1',
-        content:'2',
-        position:0
-      },
-      {
-        title:'3',
-        content:'4',
-        position:1
-      },
-    ],
+    tags:this.props.tags,
     inputVisible: false,
     // inputValue: '',
     inputValue: {
@@ -24,7 +14,6 @@ class regulation extends React.Component {
     // editContentValue: '',
     
   };
-
   handleClose = removedTag => {
     const tags = this.state.tags.filter(tag => tag !== removedTag);
     this.setState({ tags });
@@ -99,7 +88,6 @@ class regulation extends React.Component {
   savePositionRef = input => {
     this.input = input;
   };
-
   saveEditInputRef = input => {
     this.editInput = input;
   };

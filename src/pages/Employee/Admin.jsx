@@ -251,7 +251,7 @@ const isVeoRideEmail = (rule, value, callback) => {
         return (
           <Form layout="inline">
             <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-              <Col span={6}>
+              <Col span={9}>
                 <Search
                   placeholder="name, phone or email"
                   onSearch={this.handleSearch}
@@ -260,7 +260,7 @@ const isVeoRideEmail = (rule, value, callback) => {
                   enterButton
                 />
               </Col>
-              <Col span={10}>
+              <Col span={15}>
                 <FormItem>
                   {authority.includes("admin") && (
                     <Button
@@ -268,7 +268,7 @@ const isVeoRideEmail = (rule, value, callback) => {
                       type="primary"
                       className = {styles.buttonStyle}
                       onClick={() => this.handleEmailRegisterModalVisible(true)}
-                      style={{ marginLeft: "0.5em" }}
+                      style={{ marginLeft: "3em" }}
                     >
                       Register By Email
                     </Button>
