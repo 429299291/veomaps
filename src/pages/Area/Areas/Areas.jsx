@@ -84,6 +84,7 @@ const Areas = (props) => {
         ridePauseEnabled:values.feature.ridePauseEnabled,
         ridePhotoEnabled:values.feature.ridePhotoEnabled,
         billingAddressEnabled:values.feature.billingAddressEnabled,
+        taxRate:values.feature.taxRate,
         areaAvailability:{
           isOpen:values.feature.areaAvailability.isOpen == 'null'? null:values.feature.areaAvailability.isOpen,
           timeZone:values.feature.areaAvailability.isOpen == 'null'?values.feature.areaAvailability.timeZone:null,
@@ -116,7 +117,6 @@ const Areas = (props) => {
         surveyUrl:values.feature.surveyUrl,
         violationFees:violationFineDatas
       },
-      taxRate:values.feature.taxRate,
     }
     if(!areas.selectedAreaId){
       dispatch({
