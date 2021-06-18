@@ -4,6 +4,8 @@ import { Form, Input, Button, Checkbox,Drawer,Switch,Rate,Row,Col,Select,Card,In
 import { RadiusUprightOutlined,BorderInnerOutlined,BorderOuterOutlined,ExpandOutlined } from '@ant-design/icons';
 import styles from "./Areas.less";
 import FormItem from "antd/lib/form/FormItem";
+import moment from 'moment';
+
 //components
 import ViolationFine from './components/violationFine'
 import Regulation from './components/regulation'
@@ -326,7 +328,7 @@ const Areas = (props) => {
                   label="Weekday"
                   rules={[{ required: false, message: 'Please choose the dateTime' }]}
                 >
-                  <TimePicker.RangePicker  disabled={!areaAvailabilityIsOpenEnabled} format={format}/>
+                  <TimePicker.RangePicker bordered={false} size="small"  disabled={!areaAvailabilityIsOpenEnabled} format={format}/>
                 </Form.Item>
               </Col>
               <Col span={12} offset={1}>
@@ -335,7 +337,7 @@ const Areas = (props) => {
                   label="Weekend"
                   rules={[{ required: false, message: 'Please choose the dateTime' }]}
                 >
-                  <TimePicker.RangePicker disabled={!areaAvailabilityIsOpenEnabled} format={format}/>
+                  <TimePicker.RangePicker size="small" bordered={false} disabled={!areaAvailabilityIsOpenEnabled} format={format}/>
                 </Form.Item>
               </Col>
               <Col span={24}>
