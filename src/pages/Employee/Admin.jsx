@@ -809,18 +809,6 @@ const isVeoRideEmail = (rule, value, callback) => {
     }
     const okHandle = () => {
         form.submit()
-    //   if (form.isFieldsTouched())
-    //     form.validateFields((err, fieldsValue) => {
-    //       if (err) return;
-    //       form.resetFields();
-  
-    //       if (fieldsValue.areaIds.includes("all")) {
-    //         fieldsValue.areaIds = areas.map(area => area.id);
-    //       }
-  
-    //       handleUpdate(record.id, fieldsValue);
-    //     });
-    //   else handleModalVisible();
     };
     return (
       <Modal

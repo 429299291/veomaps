@@ -37,92 +37,8 @@ const getValue = obj =>
 
 const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "COSMO"];
 
-const CreateForm = Form.create()(props => {
-  const {
-    modalVisible,
-    form,
-    handleAdd,
-    handleModalVisible,
-    promos,
-    areas
-  } = props;
-  const okHandle = () => {
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
 
-      handleAdd(fieldsValue);
-    });
-  };
-  return (
-    <Modal
-      destroyOnClose
-      title="Add"
-      visible={modalVisible}
-      onOk={okHandle}
-      onCancel={() => handleModalVisible()}
-    >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="NAME">
-        {form.getFieldDecorator("name", {
-          rules: [
-            {
-              required: true,
-              message: "name is required",
-              min: 1
-            }
-          ]
-        })(<Input placeholder="Please Input" />)}
-      </FormItem>
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Valid Days"
-      >
-        {form.getFieldDecorator("days", {
-          rules: [
-            {
-              required: true
-            }
-          ]
-        })(<InputNumber placeholder="Please Input" />)}
-      </FormItem>
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Ride Credits"
-      >
-        {form.getFieldDecorator("amount", {
-          rules: [
-            {
-              required: true
-            }
-          ]
-        })(<InputNumber placeholder="Please Input" />)}
-      </FormItem>
-      {areas && (
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area">
-          {form.getFieldDecorator("areaId", {
-            rules: [
-              {
-                required: true
-              }
-            ]
-          })(
-            <Select placeholder="select" style={{ width: "100%" }}>
-              {areas.map(area => (
-                <Option key={area.id} value={area.id}>
-                  {area.name}
-                </Option>
-              ))}
-            </Select>
-          )}
-        </FormItem>
-      )}
-    </Modal>
-  );
-});
-
-const UpdateForm = Form.create()(props => {
+const UpdateForm = (props => {
   const {
     form,
     modalVisible,
@@ -215,7 +131,7 @@ const UpdateForm = Form.create()(props => {
 });
 
 
-const GeneratePromoWithCodeForm = Form.create()(props => {
+const GeneratePromoWithCodeForm = (props => {
   const {
     form,
     modalVisible,
@@ -307,13 +223,6 @@ const GeneratePromoWithCodeForm = Form.create()(props => {
 
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ promos, areas, loading }) => ({
-  promos,
-  areas,
-  selectedAreaId: areas.selectedAreaId,
-  loading: loading.models.promos
-}))
-@Form.create()
 class Promo extends PureComponent {
   state = {
     createModalVisible: false,
@@ -403,17 +312,6 @@ class Promo extends PureComponent {
     this.setState({ filterCriteria: params }, () => this.handleGetPromos());
   };
 
-  handleFormReset = () => {
-    const { form } = this.props;
-    form.resetFields();
-
-    this.setState(
-      {
-        filterCriteria: {}
-      },
-      () => this.handleGetPromos()
-    );
-  };
 
   handleSearch = e => {
     e.preventDefault();
@@ -501,34 +399,6 @@ class Promo extends PureComponent {
     this.handleUpdateModalVisible();
   };
 
-  renderSimpleForm() {
-    const {
-      form: { getFieldDecorator }
-    } = this.props;
-
-    const areas = this.props.areas.data;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="Keywords">
-              {getFieldDecorator("name")(<Input placeholder="name" />)}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
-                Search
-              </Button>
-              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-                Reset
-              </Button>
-            </span>
-          </Col>
-        </Row>
-      </Form>
-    );
-  }
 
   render() {
     const { promos, loading, areas } = this.props;
@@ -552,13 +422,160 @@ class Promo extends PureComponent {
       handleModalVisible: this.handleGenerateCodePromoModalVisible,
       handleGeneratePromoWithCode: this.handleGeneratePromoWithCode
     };
+    const RenderSimpleForm=()=> {
+      // const {
+      //   form: { getFieldDecorator }
+      // } = this.props;
+      const [form] = Form.useForm();
 
+      const handleSearch = e => {
+        e.preventDefault();
+        form.submit()
+    
+      };
+      const handleFormReset = () => {
+        form.resetFields();
+    
+        this.setState(
+          {
+            filterCriteria: {}
+          },
+          () => this.handleGetPromos()
+        );
+      };
+      const onFinish=(value)=>{
+        const { filterCriteria } = this.state;
+        const values = Object.assign({}, filterCriteria, value);
+        this.setState(
+          {
+            filterCriteria: values
+          },
+          () => this.handleGetPromos()
+        );
+
+      }
+      const areas = this.props.areas.data;
+      return (
+        <Form onSubmit={handleSearch} layout="inline" form={form} onFinish={onFinish}>
+          <Row gutter={{ md: 8, lg: 24, xl: 18 }}>
+            <Col md={16} sm={24}>
+              <FormItem label="Keywords" name='name'>
+                <Input placeholder="name"/>
+              </FormItem>
+            </Col>
+            <Col md={8} sm={24}>
+              <span className={styles.submitButtons}>
+                <Button type="primary" htmlType="submit">
+                  Search
+                </Button>
+                <Button style={{ marginLeft: 8 }} onClick={handleFormReset}>
+                  Reset
+                </Button>
+              </span>
+            </Col>
+          </Row>
+        </Form>
+      );
+    }
+    const CreateForm = (props => {
+      const {
+        modalVisible,
+        // form,
+        handleAdd,
+        handleModalVisible,
+        promos,
+        areas
+      } = props;
+      const [form] = Form.useForm();
+      const okHandle = () => {
+        form.submit()
+      };
+      return (
+        <Modal
+          destroyOnClose
+          title="Add"
+          visible={modalVisible}
+          onOk={okHandle}
+          onCancel={() => handleModalVisible()}
+        >
+          <Form onFinish={()=>handleAdd(form.getFieldsValue(true))} form={form}>
+          <FormItem labelCol={{ span: 5 }} 
+            name='name'
+            rules={
+              [
+                {
+                  required: true,
+                  message: "name is required",
+                  min: 1
+                }
+              ]
+            }
+            wrapperCol={{ span: 15 }} label="NAME">
+            <Input placeholder="Please Input" />
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            name='days'
+            rules={
+              [
+                {
+                  required: true
+                }
+              ]
+            }
+            label="Valid Days"
+          >
+            <InputNumber placeholder="Please Input" />
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            name='amount'
+            rules={
+              [
+                {
+                  required: true
+                }
+              ]
+            }
+            label="Ride Credits"
+          >
+           <InputNumber placeholder="Please Input" />
+          </FormItem>
+          {areas && (
+            <FormItem labelCol={{ span: 5 }} 
+              name='areaId'
+              rules={
+                [
+                  {
+                    required: true
+                  }
+                ]
+              }
+              wrapperCol={{ span: 15 }} label="Area">
+
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  {areas.map(area => (
+                    <Option key={area.id} value={area.id}>
+                      {area.name}
+                    </Option>
+                  ))}
+                </Select>
+            </FormItem>
+          )}
+          </Form>
+        </Modal>
+      );
+    });
     return (
       <PageHeaderWrapper title="Promo List">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>
-              {this.renderSimpleForm()}
+              <RenderSimpleForm
+              
+              />
             </div>
             <div className={styles.tableListOperator}>
               {/* {authority.includes("create.promo") && */
@@ -587,22 +604,29 @@ class Promo extends PureComponent {
           areas={areas.data}
         />
 
-        <UpdateForm
+        {/* <UpdateForm
           {...updateMethods}
           modalVisible={updateModalVisible}
           record={selectedRecord}
           promos={promos.data}
           areas={areas.data}
-        />
+        /> */}
 
-        <GeneratePromoWithCodeForm
+        {/* <GeneratePromoWithCodeForm
           {...codePromoMethods}
           modalVisible={generateCodePromoVisible}
           record={selectedRecord}
-        />
+        /> */}
       </PageHeaderWrapper>
     );
   }
 }
-
-export default Promo;
+const mapStateToProps = ({ promos, areas, loading }) => {
+  return {
+    promos,
+    areas,
+    selectedAreaId: areas.selectedAreaId,
+    loading: loading.models.promos
+  }
+}
+export default connect(mapStateToProps)(Promo) 
