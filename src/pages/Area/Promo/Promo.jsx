@@ -37,191 +37,6 @@ const getValue = obj =>
 
 const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "COSMO"];
 
-
-const UpdateForm = (props => {
-  const {
-    form,
-    modalVisible,
-    handleUpdate,
-    handleModalVisible,
-    record,
-    areas
-  } = props;
-  const okHandle = () => {
-    if (form.isFieldsTouched())
-      form.validateFields((err, fieldsValue) => {
-        if (err) return;
-        form.resetFields();
-
-        handleUpdate(record.id, fieldsValue);
-      });
-    else handleModalVisible();
-  };
-
-  return (
-    <Modal
-      destroyOnClose
-      title="Update"
-      visible={modalVisible}
-      onOk={okHandle}
-      onCancel={() => handleModalVisible()}
-    >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="NAME">
-        {form.getFieldDecorator("name", {
-          rules: [
-            {
-              required: true,
-              message: "name is required",
-              min: 1
-            }
-          ],
-          initialValue: record.name
-        })(<Input placeholder="Please Input" />)}
-      </FormItem>
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Valid Days"
-      >
-        {form.getFieldDecorator("days", {
-          rules: [
-            {
-              required: true
-            }
-          ],
-          initialValue: record.days
-        })(<InputNumber placeholder="Please Input" />)}
-      </FormItem>
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Ride Credits"
-      >
-        {form.getFieldDecorator("amount", {
-          rules: [
-            {
-              required: true
-            }
-          ],
-          initialValue: record.amount
-        })(<InputNumber placeholder="Please Input" />)}
-      </FormItem>
-      {areas && (
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area">
-          {form.getFieldDecorator("areaId", {
-            rules: [
-              {
-                required: true
-              }
-            ],
-            initialValue: record.areaId
-          })(
-            <Select placeholder="select" style={{ width: "100%" }}>
-              {areas.map(area => (
-                <Option key={area.id} value={area.id}>
-                  {area.name}
-                </Option>
-              ))}
-            </Select>
-          )}
-        </FormItem>
-      )}
-    </Modal>
-  );
-});
-
-
-const GeneratePromoWithCodeForm = (props => {
-  const {
-    form,
-    modalVisible,
-    handleGeneratePromoWithCode,
-    handleModalVisible,
-    record
-  } = props;
-  const okHandle = () => {
-    if (form.isFieldsTouched())
-      form.validateFields((err, fieldsValue) => {
-        if (err) return;
-        form.resetFields();
-
-        handleGeneratePromoWithCode(record.id, fieldsValue);
-      });
-    else handleModalVisible();
-  };
-
-  const checkAmount = (rule, value, callback) => {
-    if (value > 0) {
-      callback();
-      return;
-    }
-
-    callback("Amount must be larger than zero.");
-  };
-
-  return (
-    <Modal
-      destroyOnClose
-      title="Generate Promo with Code"
-      visible={modalVisible}
-      onOk={okHandle}
-      onCancel={() => handleModalVisible()}
-    >
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Start Time"
-      >
-        {form.getFieldDecorator("start", {
-          rules: [
-            {
-              required: true,
-              message: "You have to pick a time to start!"
-            }
-          ]
-        })(
-          <DatePicker
-            showTime
-            format="YYYY-MM-DD HH:mm:ss"
-            placeholder="Select Start Time"
-          />
-        )}
-      </FormItem>
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Amount"
-      >
-        {form.getFieldDecorator("amount", {
-          rules: [
-            {
-              required: true
-            },
-            {
-              validator: checkAmount
-            }
-          ]
-        })(<InputNumber placeholder="Please Input" />)}
-      </FormItem>
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Code"
-      >
-        {form.getFieldDecorator("code", {
-          rules: [
-            {
-              required: true
-            }
-          ]
-        })(<Input placeholder="Please Input" />)}
-      </FormItem>
-    </Modal>
-  );
-});
-
-
-
 /* eslint react/no-multi-comp:0 */
 class Promo extends PureComponent {
   state = {
@@ -456,7 +271,7 @@ class Promo extends PureComponent {
       }
       const areas = this.props.areas.data;
       return (
-        <Form onSubmit={handleSearch} layout="inline" form={form} onFinish={onFinish}>
+        <Form onSubmit={handleSearch} layout="inline" form={form} onFinish={onFinish} >
           <Row gutter={{ md: 8, lg: 24, xl: 18 }}>
             <Col md={16} sm={24}>
               <FormItem label="Keywords" name='name'>
@@ -493,6 +308,7 @@ class Promo extends PureComponent {
       return (
         <Modal
           destroyOnClose
+          forceRender
           title="Add"
           visible={modalVisible}
           onOk={okHandle}
@@ -568,6 +384,203 @@ class Promo extends PureComponent {
         </Modal>
       );
     });
+    const UpdateForm = (props => {
+      const {
+        modalVisible,
+        handleUpdate,
+        handleModalVisible,
+        record,
+        areas
+      } = props;
+      const [form] = Form.useForm();
+      form.setFieldsValue(record)
+      const okHandle = () => {
+        form.submit()
+        // if (form.isFieldsTouched())
+        //   form.validateFields((err, fieldsValue) => {
+        //     if (err) return;
+        //     form.resetFields();
+    
+        //     handleUpdate(record.id, fieldsValue);
+        //   });
+        // else handleModalVisible();
+      };
+    
+      return (
+        <Modal
+          destroyOnClose
+          forceRender
+          title="Update"
+          visible={modalVisible}
+          onOk={okHandle}
+          onCancel={() => handleModalVisible()}
+        >
+          <Form form={form} onFinish={()=>{handleUpdate(record.id, form.getFieldsValue(true))}}>
+          <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="NAME"
+            name='name' 
+            rules={
+              [
+                {
+                  required: true,
+                  message: "name is required",
+                  min: 1
+                }
+              ]
+            }
+            >
+           <Input placeholder="Please Input" />
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            name='days'
+            rules={
+              [
+                {
+                  required: true
+                }
+              ]
+            }
+            label="Valid Days"
+          >
+            <InputNumber placeholder="Please Input" />
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            name='amount'
+            rules={
+              [
+                {
+                  required: true
+                }
+              ]
+            }
+            label="Ride Credits"
+          >
+            <InputNumber placeholder="Please Input" />
+          </FormItem>
+          {areas && (
+            <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area"
+              name='areaId'
+              rules={
+                [
+                  {
+                    required: true
+                  }
+                ]
+              }
+              >
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  {areas.map(area => (
+                    <Option key={area.id} value={area.id}>
+                      {area.name}
+                    </Option>
+                  ))}
+                </Select>
+            </FormItem>
+          )}
+          </Form>
+        </Modal>
+      );
+    });
+    const GeneratePromoWithCodeForm = (props => {
+      const {
+        modalVisible,
+        handleGeneratePromoWithCode,
+        handleModalVisible,
+        record
+      } = props;
+      const [form] = Form.useForm()
+      form.setFieldsValue(record)
+      const okHandle = () => {
+        form.submit()
+        // if (form.isFieldsTouched())
+        //   form.validateFields((err, fieldsValue) => {
+        //     if (err) return;
+        //     form.resetFields();
+    
+        //     handleGeneratePromoWithCode(record.id, fieldsValue);
+        //   });
+        // else handleModalVisible();
+      };
+    
+      // const checkAmount = (rule, value, callback) => {
+      //   if (value > 0) {
+      //     callback();
+      //     return;
+      //   }
+    
+      //   callback("Amount must be larger than zero.");
+      // };
+    
+      return (
+        <Modal
+          destroyOnClose
+          title="Generate Promo with Code"
+          visible={modalVisible}
+          forceRender
+          onOk={okHandle}
+          onCancel={() => handleModalVisible()}
+        >
+          <Form form={form} onFinish={()=>{handleGeneratePromoWithCode(record.id, form.getFieldsValue(true));}}>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            name='start'
+            rules={
+              [
+                {
+                  required: true,
+                  message: "You have to pick a time to start!"
+                }
+              ]
+            }
+            label="Start Time"
+          >
+              <DatePicker
+                showTime
+                format="YYYY-MM-DD HH:mm:ss"
+                placeholder="Select Start Time"
+              />
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="Amount"
+            name='amount'
+            rules={
+              [
+                {
+                  required: true
+                },
+                // {
+                //   validator: checkAmount
+                // }
+              ]
+            }
+          >
+            <InputNumber placeholder="Please Input" />
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="Code"
+            name='code'
+            rules={
+              [
+                {
+                  required: true
+                }
+              ]
+            }
+          >
+         <Input placeholder="Please Input" />
+          </FormItem>
+          </Form>
+        </Modal>
+      );
+    });
     return (
       <PageHeaderWrapper title="Promo List">
         <Card bordered={false}>
@@ -604,19 +617,19 @@ class Promo extends PureComponent {
           areas={areas.data}
         />
 
-        {/* <UpdateForm
+        <UpdateForm
           {...updateMethods}
           modalVisible={updateModalVisible}
           record={selectedRecord}
           promos={promos.data}
           areas={areas.data}
-        /> */}
+        />
 
-        {/* <GeneratePromoWithCodeForm
+        <GeneratePromoWithCodeForm
           {...codePromoMethods}
           modalVisible={generateCodePromoVisible}
           record={selectedRecord}
-        /> */}
+        />
       </PageHeaderWrapper>
     );
   }
