@@ -37,192 +37,8 @@ const getValue = obj =>
 
 const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "COSMO"];
 
-const CreateForm = Form.create()(props => {
-  const {
-    modalVisible,
-    form,
-    handleAdd,
-    handleModalVisible,
-    deposits,
-    areas
-  } = props;
-  const okHandle = () => {
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-
-      handleAdd(fieldsValue);
-    });
-  };
-  return (
-    <Modal
-      destroyOnClose
-      title="Add"
-      visible={modalVisible}
-      onOk={okHandle}
-      onCancel={() => handleModalVisible()}
-    >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Description">
-        {form.getFieldDecorator("description", {
-          rules: [
-            {
-              required: true,
-              message: "name is required",
-              min: 1
-            }
-          ]
-        })(<Input placeholder="Please Input" />)}
-      </FormItem>
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Deposit"
-      >
-        {form.getFieldDecorator("deposit", {
-          rules: [
-            {
-              required: true
-            }
-          ]
-        })(<InputNumber placeholder="Please Input" />)}
-      </FormItem>
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Ride Credits"
-      >
-        {form.getFieldDecorator("rideCredit", {
-          rules: [
-            {
-              required: true
-            }
-          ]
-        })(<InputNumber placeholder="Please Input" />)}
-      </FormItem>
-      {areas && (
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area">
-          {form.getFieldDecorator("areaId", {
-            rules: [
-              {
-                required: true
-              }
-            ]
-          })(
-            <Select placeholder="select" style={{ width: "100%" }}>
-              {areas.map(area => (
-                <Option key={area.id} value={area.id}>
-                  {area.name}
-                </Option>
-              ))}
-            </Select>
-          )}
-        </FormItem>
-      )}
-    </Modal>
-  );
-});
-
-const UpdateForm = Form.create()(props => {
-  const {
-    form,
-    modalVisible,
-    handleUpdate,
-    handleModalVisible,
-    record,
-    areas
-  } = props;
-  const okHandle = () => {
-    if (form.isFieldsTouched())
-      form.validateFields((err, fieldsValue) => {
-        if (err) return;
-        form.resetFields();
-
-        handleUpdate(record.id, fieldsValue);
-      });
-    else handleModalVisible();
-  };
-
-  return (
-    <Modal
-      destroyOnClose
-      title="Update"
-      visible={modalVisible}
-      onOk={okHandle}
-      onCancel={() => handleModalVisible()}
-    >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Description">
-        {form.getFieldDecorator("description", {
-          rules: [
-            {
-              required: true,
-              message: "name is required",
-              min: 1
-            }
-          ],
-          initialValue: record.description
-        })(<Input placeholder="Please Input" />)}
-      </FormItem>
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Deposit"
-      >
-        {form.getFieldDecorator("deposit", {
-          rules: [
-            {
-              required: true
-            }
-          ],
-          initialValue: record.deposit
-        })(<InputNumber placeholder="Please Input" />)}
-      </FormItem>
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Ride Credits"
-      >
-        {form.getFieldDecorator("rideCredit", {
-          rules: [
-            {
-              required: true
-            }
-          ],
-          initialValue: record.rideCredit
-        })(<InputNumber placeholder="Please Input" />)}
-      </FormItem>
-      {areas && (
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area">
-          {form.getFieldDecorator("areaId", {
-            rules: [
-              {
-                required: true
-              }
-            ],
-            initialValue: record.areaId
-          })(
-            <Select placeholder="select" style={{ width: "100%" }}>
-              {areas.map(area => (
-                <Option key={area.id} value={area.id}>
-                  {area.name}
-                </Option>
-              ))}
-            </Select>
-          )}
-        </FormItem>
-      )}
-    </Modal>
-  );
-});
-
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ deposits, areas, loading }) => ({
-  deposits,
-  areas,
-  selectedAreaId: areas.selectedAreaId,
-  loading: loading.models.deposits
-}))
-@Form.create()
 class Deposit extends PureComponent {
   state = {
     createModalVisible: false,
@@ -416,6 +232,202 @@ class Deposit extends PureComponent {
       handleModalVisible: this.handleGenerateCodeDepositModalVisible,
       handleGenerateDepositWithCode: this.handleGenerateDepositWithCode
     };
+    const CreateForm = (props => {
+      const {
+        modalVisible,
+        handleAdd,
+        handleModalVisible,
+        deposits,
+        areas
+      } = props;
+      const [form] = Form.useForm()
+      const okHandle = () => {
+        form.submit()
+        // form.validateFields((err, fieldsValue) => {
+        //   if (err) return;
+        //   form.resetFields();
+    
+        //   handleAdd(fieldsValue);
+        // });
+      };
+      return (
+        <Modal
+          destroyOnClose
+          title="Add"
+          visible={modalVisible}
+          onOk={okHandle}
+          onCancel={() => handleModalVisible()}
+        >
+          <Form onFinish ={()=>{handleAdd(form.getFieldsValue(true))}} form={form}>
+          <FormItem labelCol={{ span: 5 }} 
+            name='description'
+            rules={
+              [
+                {
+                  required: true,
+                  message: "name is required",
+                  min: 1
+                }
+              ]
+            }
+            wrapperCol={{ span: 15 }} label="Description">
+              <Input placeholder="Please Input" />
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            name='deposit'
+            rules={
+              [
+                {
+                  required: true
+                }
+              ]
+            }
+            label="Deposit"
+          >
+            <InputNumber placeholder="Please Input" />
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            name='rideCredit'
+            rules={
+              [
+                {
+                  required: true
+                }
+              ]
+            }
+            label="Ride Credits"
+          >
+            <InputNumber placeholder="Please Input" />
+          </FormItem>
+          {areas && (
+            <FormItem labelCol={{ span: 5 }} 
+              name='areaId'
+              rules={
+                [
+                  {
+                    required: true
+                  }
+                ]
+              }
+              wrapperCol={{ span: 15 }} label="Area">
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  {areas.map(area => (
+                    <Option key={area.id} value={area.id}>
+                      {area.name}
+                    </Option>
+                  ))}
+                </Select>
+            </FormItem>
+          )}
+          </Form>
+        </Modal>
+      );
+    });
+    
+    const UpdateForm = (props => {
+      const {
+        modalVisible,
+        handleUpdate,
+        handleModalVisible,
+        record,
+        areas
+      } = props;
+      const [form] = Form.useForm()
+      form.setFieldsValue(record)
+      const okHandle = () => {
+        form.submit()
+        // if (form.isFieldsTouched())
+        //   form.validateFields((err, fieldsValue) => {
+        //     if (err) return;
+        //     form.resetFields();
+    
+        //     handleUpdate(record.id, fieldsValue);
+        //   });
+        // else handleModalVisible();
+      };
+    
+      return (
+        <Modal
+          destroyOnClose
+          title="Update"
+          visible={modalVisible}
+          onOk={okHandle}
+          onCancel={() => handleModalVisible()}
+        >
+          <Form form={form} onFinish={()=>{handleUpdate(record.id, form.getFieldsValue(true))}}>
+          <FormItem labelCol={{ span: 5 }} 
+            name='description'
+            rules={
+              [
+                {
+                  required: true,
+                  message: "name is required",
+                  min: 1
+                }
+              ]
+            }
+            wrapperCol={{ span: 15 }} label="Description">
+            <Input placeholder="Please Input" />
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="Deposit"
+            name='deposit'
+            rules={
+              [
+                {
+                  required: true
+                }
+              ]
+            }
+          >
+           <InputNumber placeholder="Please Input" />
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            name='rideCredit'
+            label="Ride Credits"
+            rules={
+              [
+                {
+                  required: true
+                }
+              ]
+            }
+          >
+           <InputNumber placeholder="Please Input" />
+          </FormItem>
+          {areas && (
+            <FormItem labelCol={{ span: 5 }} 
+              name='areaId'
+              rules={
+                [
+                  {
+                    required: true
+                  }
+                ]
+              }
+              wrapperCol={{ span: 15 }} label="Area">
+              
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  {areas.map(area => (
+                    <Option key={area.id} value={area.id}>
+                      {area.name}
+                    </Option>
+                  ))}
+                </Select>
+            </FormItem>
+          )}
+          </Form>
+        </Modal>
+      );
+    });
 
     return (
       <PageHeaderWrapper title="Deposit List">
@@ -460,5 +472,12 @@ class Deposit extends PureComponent {
     );
   }
 }
-
-export default Deposit;
+const mapStateToProps = ({ deposits, areas, loading }) => {
+  return {
+    deposits,
+    areas,
+    selectedAreaId: areas.selectedAreaId,
+    loading: loading.models.deposits
+    }
+}
+export default connect(mapStateToProps)(Deposit) 
