@@ -324,6 +324,7 @@ class Price extends PureComponent {
       return (
         <Modal
           destroyOnClose
+          forceRender
           title="Add"
           visible={modalVisible}
           onOk={okHandle}
@@ -434,6 +435,7 @@ class Price extends PureComponent {
           destroyOnClose
           title="Update"
           visible={modalVisible}
+          forceRender
           onOk={okHandle}
           onCancel={() => handleModalVisible()}
         >
