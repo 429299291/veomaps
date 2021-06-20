@@ -507,6 +507,7 @@ const isVeoRideEmail = (rule, value, callback) => {
                 destroyOnClose
                 title="Register by Email"
                 visible={modalVisible}
+                forceRender
                 onOk={okHandle}
                 onCancel={() => handleModalVisible()}
               >
@@ -741,6 +742,7 @@ const isVeoRideEmail = (rule, value, callback) => {
         destroyOnClose
         title="Update Password"
         visible={updatePasswordModalVisible}
+        forceRender
         onOk={okHandle}
         onCancel={() => handleUpdatePasswordModalVisible()}
         width="700px"
@@ -816,6 +818,7 @@ const isVeoRideEmail = (rule, value, callback) => {
         title="update admins"
         visible={modalVisible}
         onOk={okHandle}
+        forceRender
         onCancel={() => handleModalVisible()}
       >
         <Form onFinish={()=>handleUpdate(record.id, form.getFieldsValue(true),areas)} form={form}
