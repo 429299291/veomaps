@@ -3,7 +3,7 @@ import { PlusOutlined } from '@ant-design/icons';
 
 class regulation extends React.Component {
   state = {
-    tags:this.props.tags,
+    tags:[],
     inputVisible: false,
     // inputValue: '',
     inputValue: {
@@ -14,6 +14,9 @@ class regulation extends React.Component {
     // editContentValue: '',
     
   };
+  componentDidUpdate(){
+    this.state.tags = this.props.tags
+  }
   handleClose = removedTag => {
     const tags = this.state.tags.filter(tag => tag !== removedTag);
     this.setState({ tags });
@@ -36,6 +39,7 @@ class regulation extends React.Component {
     this.setState({ inputValue: {...this.state.inputValue,position:parseInt(e.target.value) } });
   };
   handleInputConfirm = () => {
+    console.log('-');
     const { inputValue } = this.state;
     let { tags } = this.state;
     // if(inputValue.title== '' ||inputValue.content == ''){
@@ -53,6 +57,10 @@ class regulation extends React.Component {
         position:null
       },
     });
+    console.log('confirm');
+    console.log(this.state.tags);
+        this.props.getRegulationDatas(this.state.tags)
+
   };
 
   handleEditInputChange = e => {
@@ -63,6 +71,7 @@ class regulation extends React.Component {
   };
 
   handleEditInputConfirm = () => {
+    console.log('===');
     this.setState(({ tags, editInputIndex, editInputValue,editContentValue }) => {
       const newTags = [...tags];
       newTags[editInputIndex] = editInputValue;
@@ -77,6 +86,7 @@ class regulation extends React.Component {
         editContentValue:''
       };
     });
+    // this.props.getRegulationDatas(this.state.tags)
   };
 
   saveInputRef = input => {
@@ -94,8 +104,9 @@ class regulation extends React.Component {
 
   render() {
     const {tags, inputVisible, inputValue, editInputIndex, editInputValue ,content,editContentValue} = this.state;
-    this.props.getRegulationDatas(tags)
-    console.log(tags);
+    // const {tags} = this.props
+    // this.props.getRegulationDatas(tags)
+    console.log(this.props.tags);
     return (
       <>
         {tags.map((tag, index) => {

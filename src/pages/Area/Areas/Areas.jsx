@@ -20,7 +20,7 @@ const Areas = (props) => {
     const [freeRideEnabled, setFreeRideEnabled] = useState(false);
 
     const [violationFineDatas, setViolationFineDatas] = useState(['0']);
-    const [regulationDatas, setRegulationDatas] = useState([{title:'test1',content:'test for regulations',position:1}]);
+    const [regulationDatas, setRegulationDatas] = useState([]);
     // const [violationFineIndex, setViolationFineIndex] = useState(0);
     const [form] = Form.useForm();
     const { Panel } = Collapse;
@@ -51,11 +51,15 @@ const Areas = (props) => {
   };
   const showDrawer =  () => {
     // console.log('formDatas');
-    // console.log(formDatas);
-    if(formDatas.name){
-      // setRegulationDatas(formDatas.feature.regulation.regulations)
+    console.log(formDatas);
+    if(formDatas.feature){
+      console.log('true');
+      console.log(formDatas.feature.regulation.regulations);
+      setRegulationDatas(formDatas.feature.regulation.regulations)
       form.setFieldsValue(formDatas)
     }else{
+      console.log('false');
+      setRegulationDatas([])
       form.resetFields()
     }
     setIsDrawerVisible(true);
@@ -377,7 +381,6 @@ const Areas = (props) => {
                     <Card title="regulationDatas Configuration" type="inner" size="small">
                       <Row>
                       <Regulation tags={regulationDatas} getRegulationDatas={getRegulationDatas.bind(this)}></Regulation>
-                      <Regulation tags={formDatas.feature?formDatas.feature.regulation.regulations:[]} getRegulationDatas={getRegulationDatas.bind(this)}></Regulation>
                       </Row>
                     </Card>
                   </Col> */}

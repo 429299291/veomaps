@@ -253,6 +253,7 @@ class Deposit extends PureComponent {
       return (
         <Modal
           destroyOnClose
+          forceRender
           title="Add"
           visible={modalVisible}
           onOk={okHandle}
@@ -356,6 +357,7 @@ class Deposit extends PureComponent {
           title="Update"
           visible={modalVisible}
           onOk={okHandle}
+          forceRender
           onCancel={() => handleModalVisible()}
         >
           <Form form={form} onFinish={()=>{handleUpdate(record.id, form.getFieldsValue(true))}}>
