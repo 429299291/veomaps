@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent, Fragment,useState } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 import {
@@ -28,15 +28,8 @@ import styles from './Order.less';
 const FormItem = Form.Item;
 const { TextArea } = Input;
 const { Option } = Select;
+// const [isNotAbleToUpdate, setIsNotAbleToUpdate] = useState();
 
-const OrderStatus = {
-    "PENDING": ["APPROVED", "DENIED", "CANCEL", "PENDING"],
-    "APPROVED": ["SHIPPING", "CANCEL", "APPROVED"],
-    "SHIPPING": ["SHIPPED", "SHIPPING"],
-    "RETURNED": null,
-    "CANCEL": null,
-    "DENIED": null,
-}
 
 const orderItemColumn =  [
     {
@@ -86,178 +79,12 @@ const orderItemColumn =  [
         render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
     },
   ]
-
-const UpdateForm = Form.create()((props) => {
-  const {
-    form,
-    modalVisible,
-    handleUpdate,
-    handleModalVisible,
-    currentUser,
-    record,
-  } = props;
-  const okHandle = () => {
-    if (form.isFieldsTouched()) {
-      form.validateFields((err, fieldsValue) => {
-        if (err) return;
-        fieldsValue.operator = currentUser.email;
-        form.resetFields();
-        handleUpdate(record.id, fieldsValue);
-      });
-    } else handleModalVisible();
-  };
-
-
-  const isNotAbleToUpdate = !form.getFieldValue("status") || form.getFieldValue("status") === record.orderStatus;
-
-  return (
-    <Modal
-      destroyOnClose
-      title="Detail"
-      visible={modalVisible}
-      onOk={() => handleModalVisible()}
-      width={"95%"}
-      onCancel={() => handleModalVisible()}
-    >
-
-    <Card title="Order" style={{ marginTop: "2em" }}>
-        <Row>
-            <Col span={8}>
-                    <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Order Number">
-                    <div> {record.orderNumber} </div>
-                </FormItem>
-
-                <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Name">
-                    <div> {record.firstName + " " + record.lastName} </div>
-                </FormItem>
-                <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Address">
-                    <div> {record.streetAddress + " " + record.unit + "," + record.city + "," + record.state + "," + record.zipCode} </div>
-                </FormItem>
-                <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Email">
-                    <div> {record.email} </div>
-                </FormItem>
-                <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Phone">
-                    <div> {record.phoneNumber} </div>
-                </FormItem>
-                <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Tax Rate">
-                    <div> {record.taxRate} </div>
-                </FormItem>
-                <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="estimated Tax">
-                    <div> {record.estimatedTax} </div>
-                </FormItem>
-                <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Total Price">
-                    <div> {record.totalPrice} </div>
-                </FormItem>
-            </Col>
-            <Col span={16}>
-                <div style={{ marginBottom: "2em" }} > Order Items: </div>
-                <Table
-                dataSource={record.orderItems}
-                columns={orderItemColumn}
-                size="small"
-                scroll={{ x: 500 }}
-                pagination={false}
-              />
-              <div style={{ marginBottom: "2em",  }} > Update Events: </div>
-                <Table
-                dataSource={record.orderUpdateEvents}
-                columns={orderUpdateEventColumn}
-                size="small"
-                scroll={{ x: 500 }}
-                pagination={false}
-              />
-              
-            </Col>
-        </Row>
-
-        
-
-    </Card> 
-
-
-
-
-    <Card title="Review" style={{ marginTop: "2em" }}>
-
-        <FormItem labelCol={{ span: 3 }} wrapperCol={{ span: 7 }} label="Status">
-            {!OrderStatus[record.orderStatus] ?
-            <div> {record.orderStatus} </div>
-            :
-            form.getFieldDecorator('status', {
-           
-            initialValue: record.orderStatus,
-            })(<Select placeholder="select" style={{ width: "100%" }}>
-            {
-               OrderStatus[record.orderStatus].map((option,key)=>
-                <Option key={key} value={option}>
-                    {option}
-                </Option>
-                )
-            }
-
-          </Select>)}
-        </FormItem>
-        <FormItem labelCol={{ span: 3 }} wrapperCol={{ span: 7 }} label="Note">
-            {form.getFieldDecorator('note', {
-            initialValue: record.message,
-            })(<TextArea placeholder="Please Input" />)}
-        </FormItem>
-        {currentUser &&
-            <FormItem labelCol={{ span: 3 }} wrapperCol={{ span: 7 }} label="Reviewer">
-                {currentUser.email}
-            </FormItem>
-        } 
-
-        <FormItem labelCol={{ span: 3 }} wrapperCol={{ span: 7 }}>
-
-        <Row>
-            <Col span={4}>
-                <Button 
-                    onClick={okHandle}
-                    type="primary"
-                    disabled={isNotAbleToUpdate}
-                > 
-                    Update 
-                </Button>
-            
-            </Col>
-            <Col span={4}>
-            {/* <Button 
-                    onClick={okHandle}
-                    type="primary"
-                    disabled={isNotAbleToUpdate}
-                > 
-                    Cancel 
-                </Button> */}
-            
-            </Col>
-        </Row>
-
-        
-        </FormItem>
-
-    </Card> 
-
-     
-    </Modal>
-  );
-});
-
 /* eslint react/no-multi-comp:0 */
-@connect(({
-  order,
-  loading,
-  user
-}) => ({
-    order,
-    currentUser: user.currentUser,
-    loading: loading.models.order
-}))
-@Form.create()
 class Order extends PureComponent {
   state = {
     updateModalVisible: false,
     filterCriteria: {},
+    isNotAbleToUpdate:false,
     selectedRecord: {},
   };
 
@@ -309,7 +136,9 @@ class Order extends PureComponent {
         this.getOrders();
     }
 
-
+   orderStatusHandleChange =(value)=>{
+      // value == 'PENDING' ? this.setState({isNotAbleToUpdate:true}):this.setState({isNotAbleToUpdate:false})
+    }
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.selectedAreaId !== this.props.selectedAreaId) {
       this.getOrders();
@@ -337,6 +166,11 @@ class Order extends PureComponent {
 
   handleUpdate = (id, fields) => {
     const { dispatch } = this.props;
+    fields = {
+      status:fields.orderStatus,
+      operator:this.props.currentUser.email,
+      note:fields.note
+    }
     dispatch({
       type: 'order/update',
       payload: fields,
@@ -346,139 +180,6 @@ class Order extends PureComponent {
 
     this.handleUpdateModalVisible();
   };
-
-  handleSearch = e => {
-    e && e.preventDefault();
-
-    const { form } = this.props;
-    const { filterCriteria } = this.state;
-
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-
-      if (fieldsValue.created) {
-        fieldsValue.start = moment(fieldsValue.created[0])
-          .utcOffset(0)
-          .format("YYYY-MM-DD HH:mm:ss");
-        fieldsValue.end = moment(fieldsValue.created[1])
-          .utcOffset(0)
-          .format("YYYY-MM-DD-YYYY HH:mm:ss");
-        fieldsValue.created = undefined;
-      }
-
-      if (fieldsValue.name) {
-        const splited = fieldsValue.name.split(" ");
-
-        if (splited.length == 2) {
-
-          fieldsValue.firstName = splited[0];
-          fieldsValue.lastName = splited[1];
-
-        } else {
-          fieldsValue.firstName = fieldsValue.name;
-        }
-      }
-
-      const values = Object.assign({}, filterCriteria, fieldsValue, {
-        pageNumber: 1,
-        pageSize: 10
-      });
-
-      this.setState(
-        {
-          filterCriteria: values
-        },
-        () => this.getOrders()
-      );
-    });
-  }
-
-  handleFormReset = () => {
-    const { form, dispatch } = this.props;
-    const { filterCriteria } = this.state;
-    form.resetFields();
-
-    const params = {
-      currentPage: 1,
-      pageSize: filterCriteria.pageSize
-    };
-
-    this.setState(
-      {
-        filterCriteria: params
-      },
-      () => this.handleSearch()
-    );
-  };
-
-  renderSimpleForm() {
-    const {
-      form: { getFieldDecorator },
-      order
-    } = this.props;
-
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          
-            <Col md={8} sm={24}>
-             
-                <FormItem 
-                  label="Order Number"
-                  labelCol={{ span:9 }}
-                  wrapperCol={{ span: 15 }}
-                >
-                  {getFieldDecorator("orderNumber")(
-                    <Input placeholder="Order Number" />
-                  )}
-                </FormItem>
-              
-            </Col>
-
-            
-          <Col md={8} sm={12}>
-            <FormItem label="Name">
-              {getFieldDecorator("name")(<Input placeholder="Name" />)}
-            </FormItem>
-          </Col>
-
-          {/* <Col md={8} sm={24}>
-            <FormItem label="Created">
-              {getFieldDecorator("created")(<RangePicker />)}
-            </FormItem>
-          </Col> */}
-          
-          </Row>
-
-          <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-
-              <Col md={8} sm={24}>
-                <span className={styles.submitButtons}>
-                  <Button type="primary" htmlType="submit">
-                    Search
-                  </Button>
-                  <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-                    Reset
-                  </Button>
-                </span>
-              </Col>
-          
-          </Row>
-
-          <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-
-              <Col md={8} sm={24}>
-                <span>
-                  Total: {order.total}
-                </span>
-              </Col>
-          
-          </Row>
-
-
-      </Form>
-    );
-  }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
@@ -527,12 +228,269 @@ class Order extends PureComponent {
       handleUpdate: this.handleUpdate,
     };
 
+    const RenderSimpleForm=()=> {
+      const [form] = Form.useForm()
+      const handleSearch = (value) => {
+        form.submit()
+      }
+      const onFinish = (fieldsValue)=>{
+        console.log(fieldsValue);
+        if (fieldsValue.name) {
+          const splited = fieldsValue.name.split(" ");
+  
+          if (splited.length == 2) {
+  
+            fieldsValue.firstName = splited[0];
+            fieldsValue.lastName = splited[1];
+  
+          } else {
+            fieldsValue.firstName = fieldsValue.name;
+          }
+        }
+        const { filterCriteria } = this.state;
+
+        const values = Object.assign({}, filterCriteria, fieldsValue, {
+          pageNumber: 1,
+          pageSize: 10
+        });
+        console.log(values);
+        this.setState(
+          {
+            filterCriteria: values
+          },
+          () => this.getOrders()
+        );
+      }
+      const handleFormReset = () => {
+        const { form, dispatch } = this.props;
+        const { filterCriteria } = this.state;
+    
+        const params = {
+          currentPage: 1,
+          pageSize: filterCriteria.pageSize
+        };
+    
+        this.setState(
+          {
+            filterCriteria: params
+          },
+          () => handleSearch()
+        );
+      };
+      return (
+        <Form onFinish={onFinish} layout="inline" form={form} >
+          <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+            
+              <Col md={8} sm={24}>
+               
+                  <FormItem 
+                    label="Order Number"
+                    labelCol={{ span:9 }}
+                    name='orderNumber'
+                    wrapperCol={{ span: 15 }}
+                  >
+                      <Input placeholder="Order Number" />
+                  </FormItem>
+                
+              </Col>
+  
+              
+            <Col md={8} sm={12}>
+              <FormItem label="Name" name='name'>
+                <Input placeholder="Name" />
+              </FormItem>
+            </Col>
+            
+            </Row>
+  
+            <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+  
+                <Col md={8} sm={24}>
+                  <span className={styles.submitButtons}>
+                    <Button type="primary" htmlType="submit" onClick={handleSearch}>
+                      Search
+                    </Button>
+                    <Button style={{ marginLeft: 8 }} onClick={handleFormReset}>
+                      Reset
+                    </Button>
+                  </span>
+                </Col>
+            
+            </Row>
+  
+            <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+  
+                <Col md={8} sm={24}>
+                  <span>
+                    Total: {order.total}
+                  </span>
+                </Col>
+            
+            </Row>
+  
+  
+        </Form>
+      );
+    }
+    const UpdateForm = ((props) => {
+      const {
+        modalVisible,
+        handleUpdate,
+        handleModalVisible,
+        currentUser,
+        record,
+      } = props;
+      const [form] = Form.useForm()
+      form.setFieldsValue(record)
+      const okHandle = () => {
+        form.submit()
+        // if (form.isFieldsTouched()) {
+        //   form.validateFields((err, fieldsValue) => {
+        //     if (err) return;
+        //     fieldsValue.operator = currentUser.email;
+        //     form.resetFields();
+        //     handleUpdate(record.id, fieldsValue);
+        //   });
+        // } else handleModalVisible();
+      };  
+      return (
+        <Modal
+          destroyOnClose
+          title="Detail"
+          visible={modalVisible}
+          onOk={() => handleModalVisible()}
+          forceRender
+          width={"95%"}
+          onCancel={() => handleModalVisible()}
+        >
+    
+        <Card title="Order" style={{ marginTop: "2em" }}>
+          <Form>
+            <Row>
+                <Col span={8}>
+                    <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Order Number">
+                        <div> {record.orderNumber} </div>
+                    </FormItem>
+    
+                    <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Name">
+                        <div> {record.firstName + " " + record.lastName} </div>
+                    </FormItem>
+                    <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Address">
+                        <div> {record.streetAddress + " " + record.unit + "," + record.city + "," + record.state + "," + record.zipCode} </div>
+                    </FormItem>
+                    <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Email">
+                        <div> {record.email} </div>
+                    </FormItem>
+                    <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Phone">
+                        <div> {record.phoneNumber} </div>
+                    </FormItem>
+                    <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Tax Rate">
+                        <div> {record.taxRate} </div>
+                    </FormItem>
+                    <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="estimated Tax">
+                        <div> {record.estimatedTax} </div>
+                    </FormItem>
+                    <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Total Price">
+                        <div> {record.totalPrice} </div>
+                    </FormItem>
+                </Col>
+                <Col span={16}>
+                    <div style={{ marginBottom: "2em" }} > Order Items: </div>
+                    <Table
+                    dataSource={record.orderItems}
+                    columns={orderItemColumn}
+                    size="small"
+                    scroll={{ x: 500 }}
+                    pagination={false}
+                  />
+                  <div style={{ marginBottom: "2em",  }} > Update Events: </div>
+                    <Table
+                    dataSource={record.orderUpdateEvents}
+                    columns={orderUpdateEventColumn}
+                    size="small"
+                    scroll={{ x: 500 }}
+                    pagination={false}
+                  />
+                  
+                </Col>
+            </Row>
+            </Form>
+        </Card> 
+    
+    
+    
+    
+        <Card title="Review" style={{ marginTop: "2em" }}>
+        <Form form={form} onFinish={()=>{handleUpdate(record.id, form.getFieldsValue(true))}}>
+            <FormItem labelCol={{ span: 3 }} 
+              name='orderStatus'
+              wrapperCol={{ span: 7 }} label="Status">
+
+              <Select placeholder="select" style={{ width: "100%" }} onChange={this.orderStatusHandleChange}>
+                <Option value="APPROVED">APPROVED</Option>
+                <Option value="PENDING">PENDING</Option>
+                <Option value='SHIPPING'>SHIPPING</Option>
+                <Option value='DENIED'>DENIED</Option>
+                <Option value='CANCEL'>CANCEL</Option>
+    
+              </Select>
+              {/* } */}
+            </FormItem>
+            <FormItem labelCol={{ span: 3 }} 
+              name='note'
+              wrapperCol={{ span: 7 }} label="Note">
+                <TextArea placeholder="Please Input" />
+            </FormItem>
+            {currentUser &&
+                <FormItem labelCol={{ span: 3 }} wrapperCol={{ span: 7 }} label="Reviewer">
+                    {currentUser.email}
+                </FormItem>
+            } 
+    
+            <FormItem labelCol={{ span: 3 }} wrapperCol={{ span: 7 }}>
+    
+            <Row>
+                <Col span={4}>
+                    <Button 
+                        onClick={okHandle}
+                        type="primary"
+                        disabled={this.state.isNotAbleToUpdate}
+                    > 
+                        Update 
+                    </Button>
+                
+                </Col>
+                <Col span={4}>
+                {/* <Button 
+                        onClick={okHandle}
+                        type="primary"
+                        disabled={isNotAbleToUpdate}
+                    > 
+                        Cancel 
+                    </Button> */}
+                
+                </Col>
+            </Row>
+    
+            
+            </FormItem>
+            </Form>
+        </Card> 
+    
+         
+        </Modal>
+      );
+    });
+    
 
     return (
       <PageHeaderWrapper title="Order List">
         <Card bordered={false}>
           <div className={styles.tableList}>
-          <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
+          <div className={styles.tableListForm}>
+
+            <RenderSimpleForm/>
+          </div>
             <div className={styles.tableListOperator}>
             </div>
             <StandardTable
@@ -554,5 +512,11 @@ class Order extends PureComponent {
     );
   }
 }
-
-export default Order;
+const mapStateToProps = ({ order, user, loading }) => {
+  return {
+    order,
+    currentUser: user.currentUser,
+    loading: loading.models.order
+  }
+}
+export default connect(mapStateToProps)(Order) 

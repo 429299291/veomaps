@@ -112,7 +112,7 @@ export default function request(url, options) {
         // localStorage.removeItem(ACCESS_TOKEN);
         // localStorage.removeItem(TOKEN_CREATE_DATE);
         // localStorage.removeItem("veoride-authority");
-        router.push("/user/login");
+        // router.push("/user/login");
         return;
       }
       // environment should not be used
