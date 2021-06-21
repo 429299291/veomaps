@@ -434,7 +434,6 @@ class Order extends PureComponent {
                 <Option value='CANCEL'>CANCEL</Option>
     
               </Select>
-              {/* } */}
             </FormItem>
             <FormItem labelCol={{ span: 3 }} 
               name='note'
