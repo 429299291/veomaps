@@ -60,735 +60,7 @@ const REFUND_REASON = ["first timer forgot to lock", "first timer locked outside
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-const EndRideForm = Form.create()(props => {
-  const {
-    isEndRideVisible,
-    form,
-    handleEndRide,
-    handleEndRideVisible,
-    ride
-  } = props;
-  const okHandle = () => {
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      handleEndRide(ride.id, fieldsValue);
-    });
-  };
 
-  const minutes = Math.round((new Date() - new Date(ride.start)) / 60000); // This will give difference in milliseconds
-
-  return (
-    <Modal
-      destroyOnClose
-      title="End Ride"
-      visible={isEndRideVisible}
-      onOk={okHandle}
-      onCancel={() => handleEndRideVisible(false)}
-    >
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Minutes"
-      >
-        {form.getFieldDecorator("minutes", {
-          initialValue: minutes
-        })(<InputNumber placeholder="Please Input" />)}
-      </FormItem>
-    </Modal>
-  );
-});
-
-const UpdateForm = Form.create()(props => {
-  const { form, handleUpdate, areas, record, customerActiveDays, customerApprovedViolationCount } = props;
-  const okHandle = () => {
-    if (form.isFieldsTouched())
-      form.validateFields((err, fieldsValue) => {
-        if (err) return;
-        form.resetFields();
-
-        handleUpdate(record.id, fieldsValue);
-      });
-  };
-
-  const checkMoneyFormat = (rule, value, callback) => {
-    if (isNumberRegex.test(value)) {
-      callback();
-      return;
-    }
-    callback("Credit Must be Number!");
-  };
-
-  const checkEmailFormat = (rule, value, callback) => {
-    if (value === null || value === "" || isEmailRegex.test(value)) {
-      callback();
-      return;
-    }
-    callback("Please input correct email format");
-  };
-
-
-  return (
-    <div>
-
-      <FormItem labelCol={{ span: 10}} wrapperCol={{ span: 10 }} label="Balance (Deposit + Ride Credit)">
-        <span> {record.deposit + record.rideCredit} </span>
-      </FormItem>
-      
-
-    
-      <FormItem
-        labelCol={{ span: 10 }}
-        wrapperCol={{ span: 10 }}
-        label="Ride Credit Amount"
-      >
-        {form.getFieldDecorator("rideCredit", {
-          rules: [{ validator: checkMoneyFormat }],
-          initialValue: record.rideCredit
-        })(<Input placeholder="Please Input" />)}
-      </FormItem>
-
-      <FormItem
-        labelCol={{ span: 10 }}
-        wrapperCol={{ span: 10 }}
-        label="Deposit Amount"
-      >
-        {form.getFieldDecorator("deposit", {
-          rules: [{ validator: checkMoneyFormat }],
-          initialValue: record.deposit
-        })(<Input placeholder="Please Input" />)}
-      </FormItem>
-
-
-
-      
-      <FormItem
-        labelCol={{ span: 10}}
-        wrapperCol={{ span: 10 }}
-        label="FULL NAME"
-      >
-        {form.getFieldDecorator("fullName", {
-          initialValue: record.fullName
-        })(<Input placeholder="Please Input" />)}
-      </FormItem>
-      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Email">
-        {form.getFieldDecorator("email", {
-          rules: [{ validator: checkEmailFormat }],
-          initialValue: record.email
-        })(<Input placeholder="Please Input" />)}
-      </FormItem>
-      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Email Status">
-        {form.getFieldDecorator("emailStatus", {
-          initialValue: record.emailStatus
-        })(<Select placeholder="select" style={{ width: "100%" }}>
-          <Option key={2} value={2}>
-            Educational
-          </Option>
-          <Option key={1} value={1}>
-            Normal
-          </Option>
-          <Option key={0} value={0}>
-            Unverified
-          </Option>
-        </Select>)}
-      </FormItem>
-      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Migrated">
-        {form.getFieldDecorator("migrated", {
-          initialValue: record.migrated
-        })(<Select placeholder="select" style={{ width: "100%" }}>
-          <Option key={1} value={true}>
-            Yes
-          </Option>
-          <Option key={0} value={false}>
-            No
-          </Option>
-        </Select>)}
-      </FormItem>
-
-      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Low Income">
-        {form.getFieldDecorator("lowIncome", {
-          initialValue: record.lowIncome
-        })(<Select placeholder="select" style={{ width: "100%" }}>
-          <Option key={1} value={true}>
-            Yes
-          </Option>
-          <Option key={0} value={false}>
-            No
-          </Option>
-        </Select>)}
-      </FormItem>
-
-      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Auto Reload">
-        {form.getFieldDecorator("autoReloaded", {
-          initialValue: record.autoReloaded
-        })(<Select placeholder="select" style={{ width: "100%" }}>
-          <Option key={1} value={true}>
-            Yes
-          </Option>
-          <Option key={0} value={false}>
-            No
-          </Option>
-        </Select>)}
-      </FormItem>
-
-      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Education Mode Activated">
-        {form.getFieldDecorator("isEducationModeActivated", {
-          initialValue: record.isEducationModeActivated
-        })(<Select placeholder="select" style={{ width: "100%" }}>
-          <Option key={1} value={true}>
-            Yes
-          </Option>
-          <Option key={0} value={false}>
-            No
-          </Option>
-        </Select>)}
-      </FormItem>
-
-      {customerStatus && (
-        <FormItem
-          labelCol={{ span: 10 }}
-          wrapperCol={{ span: 10 }}
-          label="Status"
-        >
-          {form.getFieldDecorator("status", {
-            rules: [
-              {
-                required: true,
-                message: "You have pick a status"
-              }
-            ],
-            initialValue: record.status
-          })(
-            <Select placeholder="select" style={{ width: "100%" }}>
-              {customerStatus.map((status, index) => (
-                <Option key={index} value={index}>
-                  {customerStatus[index]}
-                </Option>
-              ))}
-            </Select>
-          )}
-        </FormItem>
-      )}
-
-      {areas && (
-        <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Area">
-          {form.getFieldDecorator("areaId", {
-            rules: [
-              {
-                required: true,
-                message: "You have pick a area"
-              }
-            ],
-            initialValue: record.areaId
-          })(
-            <Select placeholder="select" style={{ width: "100%" }}>
-              {areas.map(area => (
-                <Option key={area.id} value={area.id}>
-                  {area.name}
-                </Option>
-              ))}
-            </Select>
-          )}
-        </FormItem>
-      )}
-
-      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Notes">
-        {form.getFieldDecorator("notes", {
-          initialValue: record.notes
-        })(<TextArea placeholder="Please Input" />)}
-      </FormItem>
-
-      <FormItem
-        labelCol={{ span: 10 }}
-        wrapperCol={{ span: 10 }}
-        label="Is Driver License Verified"
-      >
-        {form.getFieldDecorator("licenseStatus", {
-          initialValue: record.licenseStatus 
-        })(<Select>
-            <Option value={1}>Verified</Option>
-            <Option value={0}>Not Verified</Option>
-           </Select>)}
-      </FormItem>
-
-      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10}} label="Phone Model">
-        <span> {record.phoneModel} </span>
-      </FormItem>
-      <FormItem labelCol={{ span: 10}} wrapperCol={{ span: 10 }} label="App Version">
-        <span> {record.appVersion} </span>
-      </FormItem>
-
-      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Register Date">
-        <span> { moment(record.created).format("YYYY/MM/DD hh:mm:ss")} </span>
-      </FormItem>
-
-        <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Active Days">
-          <span> {customerActiveDays} </span>
-        </FormItem> 
-
-
-
-          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Customer Approved Violation Count">
-            <span> {customerApprovedViolationCount} </span>
-          </FormItem> 
-      
-
-      <Row>
-        <Col>
-          <Button
-            icon="plus"
-            type="primary"
-            onClick={okHandle}
-            disabled={!form.isFieldsTouched()}
-          >
-            Update Customer
-          </Button>
-        </Col>
-      </Row>
-    </div>
-  );
-});
-
-const MembershipForm = Form.create()(props => {
-  const { form, memberships, handleBuyMembership } = props;
-  const okHandle = () => {
-    if (form.isFieldsTouched())
-      form.validateFields((err, fieldsValue) => {
-        if (err) return;
-
-        if (fieldsValue.free) {
-          fieldsValue.autoRenew = false;
-          fieldsValue.paidWithBalance = true;
-        }
-
-        form.resetFields();
-
-
-        handleBuyMembership(fieldsValue);
-      });
-  };
-
-  return (
-    <div>
-
-      {memberships && (
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="Membership"
-        >
-          {form.getFieldDecorator("membershipId", {
-            rules: [
-              {
-                required: true,
-                message: "You have to pick a membership"
-              }
-            ]
-          })(
-            <Select placeholder="select" style={{ width: "100%" }}>
-              {memberships.map((membership, index) => (
-                <Option key={index} value={membership.id}>
-                  {"Title: " + membership.title + ", Free Minutes: " + membership.freeMinutes}
-                </Option>
-              ))}
-            </Select>
-          )}
-        </FormItem>
-      )}
-
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Free">
-        {form.getFieldDecorator("free")(
-          <Checkbox />
-        )}
-      </FormItem>
-
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is AutoRenew">
-        {form.getFieldDecorator("autoRenew")(
-          <Checkbox />
-        )}
-      </FormItem>
-
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Paid By Balance">
-        {form.getFieldDecorator("paidWithBalance")(
-          <Checkbox />
-        )}
-      </FormItem>
-
-      <Row>
-        <Col>
-          <Button
-            icon="plus"
-            type="primary"
-            onClick={okHandle}
-            disabled={!form.isFieldsTouched()}
-          >
-            Update Customer
-          </Button>
-        </Col>
-      </Row>
-    </div>
-  );
-});
-
-const AddCouponForm = Form.create()(props => {
-  const { form, coupons, handleAddCustomerCoupon } = props;
-
-  return (
-    <div>
-      {coupons && (
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="Coupon"
-        >
-          {form.getFieldDecorator("couponId", {
-            rules: [
-              {
-                required: true,
-                message: "You have pick a coupon to add"
-              }
-            ]
-          })(
-            <Select placeholder="select" style={{ width: "100%" }}>
-              {coupons.map(coupon => (
-                <Option key={coupon.id} value={coupon.id}>
-                  Name: <b> {coupon.name} </b> free minutes:{" "}
-                  {coupon.freeMinutes} Valid days: <b> {coupon.days} </b>
-                </Option>
-              ))}
-            </Select>
-          )}
-        </FormItem>
-      )}
-
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Start Time"
-      >
-        {form.getFieldDecorator("start", {
-          rules: [
-            {
-              required: true,
-              message: "You have to pick a time to start!"
-            }
-          ]
-        })(
-          <DatePicker
-            showTime
-            format="YYYY-MM-DD HH:mm:ss"
-            placeholder="Select Start Time"
-          />
-        )}
-      </FormItem>
-
-      <Row>
-        <Col>
-          <Button
-            icon="plus"
-            type="primary"
-            onClick={() => handleAddCustomerCoupon(form)}
-            disabled={!form.isFieldsTouched()}
-          >
-            Add Coupon
-          </Button>
-        </Col>
-      </Row>
-    </div>
-  );
-});
-
-const RefundForm = Form.create()(props => {
-  const {
-    isRefundFormVisible,
-    handleRefundFormVisible,
-    form,
-    handleRefund,
-    customer,
-    needPickupFee,
-    handleNeedPickupFee,
-    selectedCharge,
-    handleRefundTypeChange,
-    handleRefundReasonChange,
-    refundType,
-    refundReason
-  } = props;
-
-  const okHandle = () => {
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-
-      const params = {}
-
-      params.stripeChargeId = selectedCharge.stripeChargeId;
-      params.pickupFee = fieldsValue.pickupFee;
-      params.refundNote = (refundReason ?  refundReason : "") + "|"  + fieldsValue.refundNote;
-      switch (refundType) {
-        case REFUND_TYPE.FULL:
-          params.refundAmount = selectedCharge.amount - (selectedCharge.refundAmount ? selectedCharge.refundAmount : 0);
-          break;
-        case REFUND_TYPE.CUSTOMER_FAULT:
-          const amount = selectedCharge.amount;
-          params.refundAmount = amount - 0.3 - amount*0.029 - 1;
-          break;
-        case REFUND_TYPE.OTHER:
-          params.refundAmount = fieldsValue.refundAmount;
-          break;
-
-      }
-
-      handleRefund(customer.id, params);
-      handleRefundFormVisible(false);
-
-    });
-  };
-
-  const handleNote = val => {
-    const len = val.length;
-
-    const splitNote = val.split("|");
-
-    if (val) {
-      if (splitNote.length == 2) {
-        return "Note: " + splitNote[1] + ". " + "Reason: " + REFUND_REASON[parseInt(splitNote[0], 10)];
-      } else {
-        return val;
-      }
-    } else {
-      return "";
-    }
-  }
-
-  const refundNoteColumns = [{
-    title: 'Note',
-    dataIndex: 'note',
-    render: val => <span>{handleNote(val)}</span>
-  }, {
-    title: 'Amount',
-    dataIndex: 'amount',
-  }, {
-    title: 'Created',
-    dataIndex: "created",
-    render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
-  }, {
-    title: 'Operator',
-    dataIndex: 'operator'
-  }];
-
-  const checkMoneyFormat = (rule, value, callback) => {
-
-
-
-    if (isNaN(value)) {
-      callback("Please input a correct number.");
-      return;
-    }
-
-
-    if (value < 0) {
-      callback("Amount must be larger than 0.");
-      return;
-    }
-
-    const refundAmount =  selectedCharge.refundAmount === null ? 0 : selectedCharge.refundAmount;
-    if (value + refundAmount > selectedCharge.amount) {
-      callback("Amount exceeds limit.");
-      return;
-    }
-
-    callback();
-
-    return;
-  };
-
-  return (
-    <Modal
-      destroyOnClose
-      title="Refund"
-      visible={isRefundFormVisible}
-      width={800}
-      onOk={okHandle}
-      onCancel={() => handleRefundFormVisible(false)}
-    >
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Charge Amount"
-      >
-        <span>{selectedCharge.amount + " usd"}</span>
-      </FormItem>
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Stripe Charge Token"
-      >
-        <span>{selectedCharge.stripeChargeId}</span>
-      </FormItem>
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Stripe Customer Token"
-      >
-        <span>{selectedCharge.stripeCustomerId}</span>
-      </FormItem>
-
-
-      {
-        selectedCharge.refundAmount &&
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="Refunded Amount"
-        >
-          <span>{selectedCharge.refundAmount}</span>
-        </FormItem>
-      }
-
-      {
-        selectedCharge.refundNote &&
-          <Card title="Refund History">
-            <Table
-                columns={refundNoteColumns}
-                dataSource={JSON.parse(selectedCharge.refundNote)}
-                scroll={{ x: 800 }}
-            />
-          </Card>
-      }
-
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Refund Type"
-      >
-        <Select
-          placeholder="select"
-          onSelect={value => handleRefundTypeChange(value)}
-          value={refundType}
-          style={{ width: "100%" }}>
-          <Option key={1} value={REFUND_TYPE.FULL}>
-            Full Amount
-          </Option>
-          <Option key={0} value={REFUND_TYPE.CUSTOMER_FAULT}>
-            Customer Fault
-          </Option>
-          <Option key={0} value={REFUND_TYPE.OTHER}>
-            Other
-          </Option>
-        </Select>
-
-      </FormItem>
-
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Refund Reason"
-      >
-        <Select
-          placeholder="select"
-          onSelect={value => handleRefundReasonChange(value)}
-          value={refundReason}
-          style={{ width: "100%" }}>
-          {
-            REFUND_REASON.map((item,key) => 
-            <Option key={key} value={key}>
-            {item}
-          </Option>)
-          }
-        </Select>
-
-      </FormItem>
-
-      {refundType == REFUND_TYPE.OTHER &&
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="Refund Amount"
-        >
-          {form.getFieldDecorator("refundAmount", {
-            rules: [
-              {
-                validator: checkMoneyFormat
-              },
-            ],
-            initialValue: 0
-          })(<InputNumber
-            formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-            parser={value => value.replace(/\$\s?|(,*)/g, '')}
-          />)}
-        </FormItem>
-      }
-
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Note"
-      >
-        {form.getFieldDecorator("refundNote", {
-          rules: [
-            {
-              required: true,
-              message: "note can't be empty"
-            }
-          ]
-        })(<Input.TextArea
-          rows={4}
-        />)}
-      </FormItem>
-
-
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Need Pickup Fee?"
-      >
-        <Checkbox
-          onChange={e =>
-            handleNeedPickupFee(e.target.checked)
-          }
-          checked={needPickupFee}
-        />
-      </FormItem>
-
-
-      {needPickupFee &&
-
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Pick Up Fee"
-      >
-        {form.getFieldDecorator("pickupFee", {
-          rules: [
-            {
-              validator: (rule, value, callback) => {
-                if (value < 100 && value > 0) {
-                  callback();
-                  return
-                }
-                callback("pick up fee too large, please contact your supervisor to refund this.");
-              }
-            }
-          ],
-          initialValue: 0
-        })(<InputNumber
-            formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-            parser={value => value.replace(/\$\s?|(,*)/g, '')}
-        />)}
-
-      </FormItem>
-      }
-
-    </Modal>
-  );
-});
-
-@connect(({ coupons, areas, loading, customers }) => ({
-  areas,
-  coupons,
-  customers,
-  loading: loading.models.customers && loading.models.coupons && loading.models.areas
-}))
 class CustomerDetail extends PureComponent {
   state = {
     customerCoupons: null,
@@ -1267,7 +539,728 @@ class CustomerDetail extends PureComponent {
       handleRefundReasonChange: this.handleRefundReasonChange,
       handleNeedPickupFee: this.handleNeedPickupFee
     };
-
+    const EndRideForm = (props => {
+      const {
+        isEndRideVisible,
+        form,
+        handleEndRide,
+        handleEndRideVisible,
+        ride
+      } = props;
+      const okHandle = () => {
+        form.validateFields((err, fieldsValue) => {
+          if (err) return;
+          form.resetFields();
+          handleEndRide(ride.id, fieldsValue);
+        });
+      };
+    
+      const minutes = Math.round((new Date() - new Date(ride.start)) / 60000); // This will give difference in milliseconds
+    
+      return (
+        <Modal
+          destroyOnClose
+          title="End Ride"
+          visible={isEndRideVisible}
+          onOk={okHandle}
+          onCancel={() => handleEndRideVisible(false)}
+        >
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="Minutes"
+          >
+            {form.getFieldDecorator("minutes", {
+              initialValue: minutes
+            })(<InputNumber placeholder="Please Input" />)}
+          </FormItem>
+        </Modal>
+      );
+    });
+    
+    const UpdateForm = (props => {
+      const { form, handleUpdate, areas, record, customerActiveDays, customerApprovedViolationCount } = props;
+      const okHandle = () => {
+        if (form.isFieldsTouched())
+          form.validateFields((err, fieldsValue) => {
+            if (err) return;
+            form.resetFields();
+    
+            handleUpdate(record.id, fieldsValue);
+          });
+      };
+    
+      const checkMoneyFormat = (rule, value, callback) => {
+        if (isNumberRegex.test(value)) {
+          callback();
+          return;
+        }
+        callback("Credit Must be Number!");
+      };
+    
+      const checkEmailFormat = (rule, value, callback) => {
+        if (value === null || value === "" || isEmailRegex.test(value)) {
+          callback();
+          return;
+        }
+        callback("Please input correct email format");
+      };
+    
+    
+      return (
+        <div>
+    
+          <FormItem labelCol={{ span: 10}} wrapperCol={{ span: 10 }} label="Balance (Deposit + Ride Credit)">
+            <span> {record.deposit + record.rideCredit} </span>
+          </FormItem>
+          
+    
+        
+          <FormItem
+            labelCol={{ span: 10 }}
+            wrapperCol={{ span: 10 }}
+            label="Ride Credit Amount"
+          >
+            {form.getFieldDecorator("rideCredit", {
+              rules: [{ validator: checkMoneyFormat }],
+              initialValue: record.rideCredit
+            })(<Input placeholder="Please Input" />)}
+          </FormItem>
+    
+          <FormItem
+            labelCol={{ span: 10 }}
+            wrapperCol={{ span: 10 }}
+            label="Deposit Amount"
+          >
+            {form.getFieldDecorator("deposit", {
+              rules: [{ validator: checkMoneyFormat }],
+              initialValue: record.deposit
+            })(<Input placeholder="Please Input" />)}
+          </FormItem>
+    
+    
+    
+          
+          <FormItem
+            labelCol={{ span: 10}}
+            wrapperCol={{ span: 10 }}
+            label="FULL NAME"
+          >
+            {form.getFieldDecorator("fullName", {
+              initialValue: record.fullName
+            })(<Input placeholder="Please Input" />)}
+          </FormItem>
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Email">
+            {form.getFieldDecorator("email", {
+              rules: [{ validator: checkEmailFormat }],
+              initialValue: record.email
+            })(<Input placeholder="Please Input" />)}
+          </FormItem>
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Email Status">
+            {form.getFieldDecorator("emailStatus", {
+              initialValue: record.emailStatus
+            })(<Select placeholder="select" style={{ width: "100%" }}>
+              <Option key={2} value={2}>
+                Educational
+              </Option>
+              <Option key={1} value={1}>
+                Normal
+              </Option>
+              <Option key={0} value={0}>
+                Unverified
+              </Option>
+            </Select>)}
+          </FormItem>
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Migrated">
+            {form.getFieldDecorator("migrated", {
+              initialValue: record.migrated
+            })(<Select placeholder="select" style={{ width: "100%" }}>
+              <Option key={1} value={true}>
+                Yes
+              </Option>
+              <Option key={0} value={false}>
+                No
+              </Option>
+            </Select>)}
+          </FormItem>
+    
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Low Income">
+            {form.getFieldDecorator("lowIncome", {
+              initialValue: record.lowIncome
+            })(<Select placeholder="select" style={{ width: "100%" }}>
+              <Option key={1} value={true}>
+                Yes
+              </Option>
+              <Option key={0} value={false}>
+                No
+              </Option>
+            </Select>)}
+          </FormItem>
+    
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Auto Reload">
+            {form.getFieldDecorator("autoReloaded", {
+              initialValue: record.autoReloaded
+            })(<Select placeholder="select" style={{ width: "100%" }}>
+              <Option key={1} value={true}>
+                Yes
+              </Option>
+              <Option key={0} value={false}>
+                No
+              </Option>
+            </Select>)}
+          </FormItem>
+    
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Education Mode Activated">
+            {form.getFieldDecorator("isEducationModeActivated", {
+              initialValue: record.isEducationModeActivated
+            })(<Select placeholder="select" style={{ width: "100%" }}>
+              <Option key={1} value={true}>
+                Yes
+              </Option>
+              <Option key={0} value={false}>
+                No
+              </Option>
+            </Select>)}
+          </FormItem>
+    
+          {customerStatus && (
+            <FormItem
+              labelCol={{ span: 10 }}
+              wrapperCol={{ span: 10 }}
+              label="Status"
+            >
+              {form.getFieldDecorator("status", {
+                rules: [
+                  {
+                    required: true,
+                    message: "You have pick a status"
+                  }
+                ],
+                initialValue: record.status
+              })(
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  {customerStatus.map((status, index) => (
+                    <Option key={index} value={index}>
+                      {customerStatus[index]}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </FormItem>
+          )}
+    
+          {areas && (
+            <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Area">
+              {form.getFieldDecorator("areaId", {
+                rules: [
+                  {
+                    required: true,
+                    message: "You have pick a area"
+                  }
+                ],
+                initialValue: record.areaId
+              })(
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  {areas.map(area => (
+                    <Option key={area.id} value={area.id}>
+                      {area.name}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </FormItem>
+          )}
+    
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Notes">
+            {form.getFieldDecorator("notes", {
+              initialValue: record.notes
+            })(<TextArea placeholder="Please Input" />)}
+          </FormItem>
+    
+          <FormItem
+            labelCol={{ span: 10 }}
+            wrapperCol={{ span: 10 }}
+            label="Is Driver License Verified"
+          >
+            {form.getFieldDecorator("licenseStatus", {
+              initialValue: record.licenseStatus 
+            })(<Select>
+                <Option value={1}>Verified</Option>
+                <Option value={0}>Not Verified</Option>
+               </Select>)}
+          </FormItem>
+    
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10}} label="Phone Model">
+            <span> {record.phoneModel} </span>
+          </FormItem>
+          <FormItem labelCol={{ span: 10}} wrapperCol={{ span: 10 }} label="App Version">
+            <span> {record.appVersion} </span>
+          </FormItem>
+    
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Register Date">
+            <span> { moment(record.created).format("YYYY/MM/DD hh:mm:ss")} </span>
+          </FormItem>
+    
+            <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Active Days">
+              <span> {customerActiveDays} </span>
+            </FormItem> 
+    
+    
+    
+              <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Customer Approved Violation Count">
+                <span> {customerApprovedViolationCount} </span>
+              </FormItem> 
+          
+    
+          <Row>
+            <Col>
+              <Button
+                icon="plus"
+                type="primary"
+                onClick={okHandle}
+                disabled={!form.isFieldsTouched()}
+              >
+                Update Customer
+              </Button>
+            </Col>
+          </Row>
+        </div>
+      );
+    });
+    
+    const MembershipForm = (props => {
+      const { form, memberships, handleBuyMembership } = props;
+      const okHandle = () => {
+        if (form.isFieldsTouched())
+          form.validateFields((err, fieldsValue) => {
+            if (err) return;
+    
+            if (fieldsValue.free) {
+              fieldsValue.autoRenew = false;
+              fieldsValue.paidWithBalance = true;
+            }
+    
+            form.resetFields();
+    
+    
+            handleBuyMembership(fieldsValue);
+          });
+      };
+    
+      return (
+        <div>
+    
+          {memberships && (
+            <FormItem
+              labelCol={{ span: 5 }}
+              wrapperCol={{ span: 15 }}
+              label="Membership"
+            >
+              {form.getFieldDecorator("membershipId", {
+                rules: [
+                  {
+                    required: true,
+                    message: "You have to pick a membership"
+                  }
+                ]
+              })(
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  {memberships.map((membership, index) => (
+                    <Option key={index} value={membership.id}>
+                      {"Title: " + membership.title + ", Free Minutes: " + membership.freeMinutes}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </FormItem>
+          )}
+    
+          <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Free">
+            {form.getFieldDecorator("free")(
+              <Checkbox />
+            )}
+          </FormItem>
+    
+          <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is AutoRenew">
+            {form.getFieldDecorator("autoRenew")(
+              <Checkbox />
+            )}
+          </FormItem>
+    
+          <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Paid By Balance">
+            {form.getFieldDecorator("paidWithBalance")(
+              <Checkbox />
+            )}
+          </FormItem>
+    
+          <Row>
+            <Col>
+              <Button
+                icon="plus"
+                type="primary"
+                onClick={okHandle}
+                disabled={!form.isFieldsTouched()}
+              >
+                Update Customer
+              </Button>
+            </Col>
+          </Row>
+        </div>
+      );
+    });
+    
+    const AddCouponForm = (props => {
+      const { form, coupons, handleAddCustomerCoupon } = props;
+    
+      return (
+        <div>
+          {coupons && (
+            <FormItem
+              labelCol={{ span: 5 }}
+              wrapperCol={{ span: 15 }}
+              label="Coupon"
+            >
+              {form.getFieldDecorator("couponId", {
+                rules: [
+                  {
+                    required: true,
+                    message: "You have pick a coupon to add"
+                  }
+                ]
+              })(
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  {coupons.map(coupon => (
+                    <Option key={coupon.id} value={coupon.id}>
+                      Name: <b> {coupon.name} </b> free minutes:{" "}
+                      {coupon.freeMinutes} Valid days: <b> {coupon.days} </b>
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </FormItem>
+          )}
+    
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="Start Time"
+          >
+            {form.getFieldDecorator("start", {
+              rules: [
+                {
+                  required: true,
+                  message: "You have to pick a time to start!"
+                }
+              ]
+            })(
+              <DatePicker
+                showTime
+                format="YYYY-MM-DD HH:mm:ss"
+                placeholder="Select Start Time"
+              />
+            )}
+          </FormItem>
+    
+          <Row>
+            <Col>
+              <Button
+                icon="plus"
+                type="primary"
+                onClick={() => handleAddCustomerCoupon(form)}
+                disabled={!form.isFieldsTouched()}
+              >
+                Add Coupon
+              </Button>
+            </Col>
+          </Row>
+        </div>
+      );
+    });
+    
+    const RefundForm = (props => {
+      const {
+        isRefundFormVisible,
+        handleRefundFormVisible,
+        form,
+        handleRefund,
+        customer,
+        needPickupFee,
+        handleNeedPickupFee,
+        selectedCharge,
+        handleRefundTypeChange,
+        handleRefundReasonChange,
+        refundType,
+        refundReason
+      } = props;
+    
+      const okHandle = () => {
+        form.validateFields((err, fieldsValue) => {
+          if (err) return;
+          form.resetFields();
+    
+          const params = {}
+    
+          params.stripeChargeId = selectedCharge.stripeChargeId;
+          params.pickupFee = fieldsValue.pickupFee;
+          params.refundNote = (refundReason ?  refundReason : "") + "|"  + fieldsValue.refundNote;
+          switch (refundType) {
+            case REFUND_TYPE.FULL:
+              params.refundAmount = selectedCharge.amount - (selectedCharge.refundAmount ? selectedCharge.refundAmount : 0);
+              break;
+            case REFUND_TYPE.CUSTOMER_FAULT:
+              const amount = selectedCharge.amount;
+              params.refundAmount = amount - 0.3 - amount*0.029 - 1;
+              break;
+            case REFUND_TYPE.OTHER:
+              params.refundAmount = fieldsValue.refundAmount;
+              break;
+    
+          }
+    
+          handleRefund(customer.id, params);
+          handleRefundFormVisible(false);
+    
+        });
+      };
+    
+      const handleNote = val => {
+        const len = val.length;
+    
+        const splitNote = val.split("|");
+    
+        if (val) {
+          if (splitNote.length == 2) {
+            return "Note: " + splitNote[1] + ". " + "Reason: " + REFUND_REASON[parseInt(splitNote[0], 10)];
+          } else {
+            return val;
+          }
+        } else {
+          return "";
+        }
+      }
+    
+      const refundNoteColumns = [{
+        title: 'Note',
+        dataIndex: 'note',
+        render: val => <span>{handleNote(val)}</span>
+      }, {
+        title: 'Amount',
+        dataIndex: 'amount',
+      }, {
+        title: 'Created',
+        dataIndex: "created",
+        render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
+      }, {
+        title: 'Operator',
+        dataIndex: 'operator'
+      }];
+    
+      const checkMoneyFormat = (rule, value, callback) => {
+    
+    
+    
+        if (isNaN(value)) {
+          callback("Please input a correct number.");
+          return;
+        }
+    
+    
+        if (value < 0) {
+          callback("Amount must be larger than 0.");
+          return;
+        }
+    
+        const refundAmount =  selectedCharge.refundAmount === null ? 0 : selectedCharge.refundAmount;
+        if (value + refundAmount > selectedCharge.amount) {
+          callback("Amount exceeds limit.");
+          return;
+        }
+    
+        callback();
+    
+        return;
+      };
+    
+      return (
+        <Modal
+          destroyOnClose
+          title="Refund"
+          visible={isRefundFormVisible}
+          width={800}
+          onOk={okHandle}
+          onCancel={() => handleRefundFormVisible(false)}
+        >
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="Charge Amount"
+          >
+            <span>{selectedCharge.amount + " usd"}</span>
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="Stripe Charge Token"
+          >
+            <span>{selectedCharge.stripeChargeId}</span>
+          </FormItem>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="Stripe Customer Token"
+          >
+            <span>{selectedCharge.stripeCustomerId}</span>
+          </FormItem>
+    
+    
+          {
+            selectedCharge.refundAmount &&
+            <FormItem
+              labelCol={{ span: 5 }}
+              wrapperCol={{ span: 15 }}
+              label="Refunded Amount"
+            >
+              <span>{selectedCharge.refundAmount}</span>
+            </FormItem>
+          }
+    
+          {
+            selectedCharge.refundNote &&
+              <Card title="Refund History">
+                <Table
+                    columns={refundNoteColumns}
+                    dataSource={JSON.parse(selectedCharge.refundNote)}
+                    scroll={{ x: 800 }}
+                />
+              </Card>
+          }
+    
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="Refund Type"
+          >
+            <Select
+              placeholder="select"
+              onSelect={value => handleRefundTypeChange(value)}
+              value={refundType}
+              style={{ width: "100%" }}>
+              <Option key={1} value={REFUND_TYPE.FULL}>
+                Full Amount
+              </Option>
+              <Option key={0} value={REFUND_TYPE.CUSTOMER_FAULT}>
+                Customer Fault
+              </Option>
+              <Option key={0} value={REFUND_TYPE.OTHER}>
+                Other
+              </Option>
+            </Select>
+    
+          </FormItem>
+    
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="Refund Reason"
+          >
+            <Select
+              placeholder="select"
+              onSelect={value => handleRefundReasonChange(value)}
+              value={refundReason}
+              style={{ width: "100%" }}>
+              {
+                REFUND_REASON.map((item,key) => 
+                <Option key={key} value={key}>
+                {item}
+              </Option>)
+              }
+            </Select>
+    
+          </FormItem>
+    
+          {refundType == REFUND_TYPE.OTHER &&
+            <FormItem
+              labelCol={{ span: 5 }}
+              wrapperCol={{ span: 15 }}
+              label="Refund Amount"
+            >
+              {form.getFieldDecorator("refundAmount", {
+                rules: [
+                  {
+                    validator: checkMoneyFormat
+                  },
+                ],
+                initialValue: 0
+              })(<InputNumber
+                formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                parser={value => value.replace(/\$\s?|(,*)/g, '')}
+              />)}
+            </FormItem>
+          }
+    
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="Note"
+          >
+            {form.getFieldDecorator("refundNote", {
+              rules: [
+                {
+                  required: true,
+                  message: "note can't be empty"
+                }
+              ]
+            })(<Input.TextArea
+              rows={4}
+            />)}
+          </FormItem>
+    
+    
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="Need Pickup Fee?"
+          >
+            <Checkbox
+              onChange={e =>
+                handleNeedPickupFee(e.target.checked)
+              }
+              checked={needPickupFee}
+            />
+          </FormItem>
+    
+    
+          {needPickupFee &&
+    
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="Pick Up Fee"
+          >
+            {form.getFieldDecorator("pickupFee", {
+              rules: [
+                {
+                  validator: (rule, value, callback) => {
+                    if (value < 100 && value > 0) {
+                      callback();
+                      return
+                    }
+                    callback("pick up fee too large, please contact your supervisor to refund this.");
+                  }
+                }
+              ],
+              initialValue: 0
+            })(<InputNumber
+                formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                parser={value => value.replace(/\$\s?|(,*)/g, '')}
+            />)}
+    
+          </FormItem>
+          }
+    
+        </Modal>
+      );
+    });
     return (
       <Modal
         destroyOnClose
@@ -1390,5 +1383,12 @@ class CustomerDetail extends PureComponent {
     );
   }
 }
-
-export default CustomerDetail;
+const mapStateToProps = ({ coupons, areas, loading, customers }) => {
+  return {
+    areas,
+    coupons,
+    customers,
+    loading: loading.models.customers && loading.models.coupons && loading.models.areas
+      }
+}
+export default connect(mapStateToProps)(CustomerDetail) 
