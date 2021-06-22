@@ -222,13 +222,8 @@ class Technician extends PureComponent {
     },
     {
       title: "Area",
-      render: (text, record,areas) => (
+      render: (text, record) => (
         <Fragment>{this.getNameByAreaId(record.areaId)}</Fragment>
-        // areas.filter(area=>{
-        //   if(area.id==record.areaId){
-        //     return <p>1</p>
-        //   }
-        // })
       )
     },
     {
