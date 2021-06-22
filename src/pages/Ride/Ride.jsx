@@ -328,7 +328,7 @@ class Ride extends PureComponent {
   handleFormReset = () => {
     const { form, dispatch } = this.props;
     const { filterCriteria } = this.state;
-    form.resetFields();
+    // form.resetFields();
 
     const params = {
       currentPage: 1,
@@ -347,6 +347,7 @@ class Ride extends PureComponent {
     const { selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
     if (fieldsValue) {
+      if(fieldsValue.timeRange){
       fieldsValue.rideStart = moment(fieldsValue.timeRange[0])
         .utcOffset(0)
         .format("MM-DD-YYYY HH:mm:ss");
@@ -355,6 +356,7 @@ class Ride extends PureComponent {
         .format("MM-DD-YYYY HH:mm:ss");
       fieldsValue.timeRange = undefined;
     }
+  }
 
       const values = Object.assign({}, filterCriteria, fieldsValue, {
         currentPage: 1,
