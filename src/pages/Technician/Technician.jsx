@@ -222,8 +222,13 @@ class Technician extends PureComponent {
     },
     {
       title: "Area",
-      render: (text, record) => (
+      render: (text, record,areas) => (
         <Fragment>{this.getNameByAreaId(record.areaId)}</Fragment>
+        // areas.filter(area=>{
+        //   if(area.id==record.areaId){
+        //     return <p>1</p>
+        //   }
+        // })
       )
     },
     {
@@ -305,8 +310,7 @@ class Technician extends PureComponent {
   };
 
   getNameByAreaId = areaId => {
-    const { areas } = this.state;
-
+    const  areas = this.props.areas.allAreas;
     if (areas.length === 0) return "";
     else return areas.find(area => area.id === areaId).name;
   };
