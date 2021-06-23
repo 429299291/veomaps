@@ -360,15 +360,19 @@ class VehicleDetail extends PureComponent {
 
   handleUpdate = (id, fields) => {
     const { dispatch, vehicleId, handleGetVehicles } = this.props;
-    dispatch({
-      type: "vehicles/update",
-      payload: fields,
-      id: id,
-      onSuccess: () => {
-        handleGetVehicles && handleGetVehicles();
-        this.handleGetVehicle(vehicleId);
-      }
-    });
+    console.log('fields');
+    console.log(fields);
+    if(fields.errorStatus){
+      dispatch({
+        type: "vehicles/update",
+        payload: fields,
+        id: id,
+        onSuccess: () => {
+          handleGetVehicles && handleGetVehicles();
+          this.handleGetVehicle(vehicleId);
+        }
+      });
+    }
   };
 
   redefineProperties = (object) => {
@@ -735,7 +739,9 @@ class VehicleDetail extends PureComponent {
     const UpdateForm = (props => {
       const { handleUpdate, areas, record, changeLockStatus, updateLocation, alertVehicle, getVehicleStatus, restartVehicle } = props;
       const [form] = Form.useForm()
+      form.setFieldsValue(record)
       const okHandle = () => {
+        console.log(form.getFieldsValue(true));
         form.submit()
       };
     
@@ -752,7 +758,6 @@ class VehicleDetail extends PureComponent {
             </div>
           </FormItem>
     
-          {errorStatus && (
             <FormItem
               labelCol={{ span: 5 }}
               wrapperCol={{ span: 15 }}
@@ -788,7 +793,6 @@ class VehicleDetail extends PureComponent {
     
               </div>
             </FormItem>
-          )}
     
           <FormItem
             labelCol={{ span: 5 }}
