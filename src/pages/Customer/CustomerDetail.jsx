@@ -563,6 +563,7 @@ class CustomerDetail extends PureComponent {
           title="End Ride"
           visible={isEndRideVisible}
           onOk={okHandle}
+          forceRender
           onCancel={() => handleEndRideVisible(false)}
         >
           <FormItem
@@ -1084,12 +1085,14 @@ class CustomerDetail extends PureComponent {
       return (
         <Modal
           destroyOnClose
+          forceRender
           title="Refund"
           visible={isRefundFormVisible}
           width={800}
           onOk={okHandle}
           onCancel={() => handleRefundFormVisible(false)}
         >
+          <Form>
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
@@ -1257,7 +1260,7 @@ class CustomerDetail extends PureComponent {
     
           </FormItem>
           }
-    
+    </Form>
         </Modal>
       );
     });
