@@ -41,13 +41,13 @@ const RenderSimpleForm=(props)=> {
   const [form] = Form.useForm()
   return (
     <Form form={form} layout="inline">
-      <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-        <Col md={6} sm={24}>
+      <Row>
+        <Col span={9}>
           <FormItem label="Keywords" name='email'>
               <Input placeholder="Email" />
           </FormItem>
         </Col>
-        <Col md={6} sm={24}>
+        <Col span={12}>
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
@@ -64,7 +64,7 @@ const RenderSimpleForm=(props)=> {
               </Select>
           </FormItem>
         </Col>
-        <Col md={8} sm={24}>
+        <Col span={3}>
           <span className={styles.submitButtons}>
             <Button onClick={()=>{props.handleSearch(form.getFieldsValue(true))}}>
               Search
