@@ -7,11 +7,6 @@ import styles from "./Login.less";
 
 
 const { UserName, Password, Submit } = Login;
-
-@connect(({ login, loading }) => ({
-  login,
-  submitting: loading.effects["login/login"]
-}))
 class LoginPage extends Component {
   state = {
     type: "account",
@@ -108,20 +103,20 @@ class LoginPage extends Component {
             }/>  
           </div>
          </Modal> 
-        <Login
+        {/* <Login
           defaultActiveKey={type}
           onSubmit={this.handleSubmit}
-          ref={form => {
-            this.loginForm = form;
-          }}
+          // ref={form => {
+          //   this.loginForm = form;
+          // }}
         >
           <UserName name="userName" placeholder="your veo email address" />
           <Password
             name="password"
             placeholder="password"
-            onPressEnter={() =>
-              this.loginForm.validateFields(this.handleSubmit)
-            }
+            // onPressEnter={() =>
+            //   this.loginForm.validateFields(this.handleSubmit)
+            // }
           />
           <div>
             <Checkbox checked={autoLogin} onChange={this.changeAutoLogin}>
@@ -134,10 +129,16 @@ class LoginPage extends Component {
           <Submit loading={submitting}>
             <FormattedMessage id="app.login.login" />
           </Submit>
-        </Login>
+        </Login> */}
       </div>
     );
   }
 }
-
-export default LoginPage;
+const mapStateToProps = ({ login, loading }) => {
+  return {
+    login,
+    submitting: loading.effects["login/login"]
+  
+  }
+}
+export default connect(mapStateToProps)(LoginPage) 

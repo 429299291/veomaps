@@ -327,24 +327,20 @@ class CustomerDetail extends PureComponent {
     this.handleEndRideVisible();
   };
 
-  handleAddCustomerCoupon = form => {
+  handleAddCustomerCoupon = fieldsValue => {
     const { dispatch, customerId } = this.props;
-
-    if (form.isFieldsTouched())
-      form.validateFields((err, fieldsValue) => {
-        if (err) return;
-        form.resetFields();
-
-        const start = fieldsValue.start.toDate();
-
-        dispatch({
-          type: "coupons/addCouponToCustomer",
-          couponId: fieldsValue.couponId,
-          customerId: customerId,
-          onSuccess: this.handleGetCustomerCoupons,
-          start: start
-        });
+    if(fieldsValue.start&&fieldsValue.couponId){
+      const start = fieldsValue.start.toDate();
+      dispatch({
+        type: "coupons/addCouponToCustomer",
+        couponId: fieldsValue.couponId,
+        customerId: customerId,
+        onSuccess: this.handleGetCustomerCoupons,
+        start: start
       });
+    }else{
+      return false
+    }
   };
 
   handleGetCustomerCoupons = customerId => {
@@ -542,17 +538,14 @@ class CustomerDetail extends PureComponent {
     const EndRideForm = (props => {
       const {
         isEndRideVisible,
-        form,
         handleEndRide,
         handleEndRideVisible,
         ride
       } = props;
+      const [form] = Form.useForm()
       const okHandle = () => {
-        form.validateFields((err, fieldsValue) => {
-          if (err) return;
-          form.resetFields();
-          handleEndRide(ride.id, fieldsValue);
-        });
+
+          handleEndRide(ride.id, form.getFieldsValue(true));
       };
     
       const minutes = Math.round((new Date() - new Date(ride.start)) / 60000); // This will give difference in milliseconds
@@ -566,29 +559,26 @@ class CustomerDetail extends PureComponent {
           forceRender
           onCancel={() => handleEndRideVisible(false)}
         >
+          <Form>
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
             label="Minutes"
+            name='minutes'
           >
-            {form.getFieldDecorator("minutes", {
-              initialValue: minutes
-            })(<InputNumber placeholder="Please Input" />)}
+            <InputNumber placeholder="Please Input" />
           </FormItem>
+          </Form>
         </Modal>
       );
     });
     
     const UpdateForm = (props => {
-      const { form, handleUpdate, areas, record, customerActiveDays, customerApprovedViolationCount } = props;
+      const { handleUpdate, areas, record, customerActiveDays, customerApprovedViolationCount } = props;
+      const [form] = Form.useForm()
+      form.setFieldsValue(record)
       const okHandle = () => {
-        if (form.isFieldsTouched())
-          form.validateFields((err, fieldsValue) => {
-            if (err) return;
-            form.resetFields();
-    
-            handleUpdate(record.id, fieldsValue);
-          });
+            handleUpdate(record.id, form.getFieldsValue(true));
       };
     
       const checkMoneyFormat = (rule, value, callback) => {
@@ -610,7 +600,7 @@ class CustomerDetail extends PureComponent {
     
       return (
         <div>
-    
+          <Form form={form}>
           <FormItem labelCol={{ span: 10}} wrapperCol={{ span: 10 }} label="Balance (Deposit + Ride Credit)">
             <span> {record.deposit + record.rideCredit} </span>
           </FormItem>
@@ -621,22 +611,20 @@ class CustomerDetail extends PureComponent {
             labelCol={{ span: 10 }}
             wrapperCol={{ span: 10 }}
             label="Ride Credit Amount"
+            name='rideCredit'
+            rules={[{ validator: checkMoneyFormat }]}
           >
-            {form.getFieldDecorator("rideCredit", {
-              rules: [{ validator: checkMoneyFormat }],
-              initialValue: record.rideCredit
-            })(<Input placeholder="Please Input" />)}
+            <Input placeholder="Please Input" />
           </FormItem>
     
           <FormItem
             labelCol={{ span: 10 }}
             wrapperCol={{ span: 10 }}
             label="Deposit Amount"
+            name='deposit'
+            rules={[{ validator: checkMoneyFormat }]}
           >
-            {form.getFieldDecorator("deposit", {
-              rules: [{ validator: checkMoneyFormat }],
-              initialValue: record.deposit
-            })(<Input placeholder="Please Input" />)}
+            <Input placeholder="Please Input" />
           </FormItem>
     
     
@@ -646,21 +634,15 @@ class CustomerDetail extends PureComponent {
             labelCol={{ span: 10}}
             wrapperCol={{ span: 10 }}
             label="FULL NAME"
+            name='fullName'
           >
-            {form.getFieldDecorator("fullName", {
-              initialValue: record.fullName
-            })(<Input placeholder="Please Input" />)}
+           <Input placeholder="Please Input" />
           </FormItem>
-          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Email">
-            {form.getFieldDecorator("email", {
-              rules: [{ validator: checkEmailFormat }],
-              initialValue: record.email
-            })(<Input placeholder="Please Input" />)}
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Email" name='email' rules={[{ validator: checkEmailFormat }]}>
+            <Input placeholder="Please Input" />
           </FormItem>
-          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Email Status">
-            {form.getFieldDecorator("emailStatus", {
-              initialValue: record.emailStatus
-            })(<Select placeholder="select" style={{ width: "100%" }}>
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Email Status" name='emailStatus' >
+            <Select placeholder="select" style={{ width: "100%" }}>
               <Option key={2} value={2}>
                 Educational
               </Option>
@@ -670,58 +652,50 @@ class CustomerDetail extends PureComponent {
               <Option key={0} value={0}>
                 Unverified
               </Option>
-            </Select>)}
+            </Select>
           </FormItem>
-          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Migrated">
-            {form.getFieldDecorator("migrated", {
-              initialValue: record.migrated
-            })(<Select placeholder="select" style={{ width: "100%" }}>
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Migrated" name='migrated'>
+            <Select placeholder="select" style={{ width: "100%" }}>
               <Option key={1} value={true}>
                 Yes
               </Option>
               <Option key={0} value={false}>
                 No
               </Option>
-            </Select>)}
+            </Select>
           </FormItem>
     
-          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Low Income">
-            {form.getFieldDecorator("lowIncome", {
-              initialValue: record.lowIncome
-            })(<Select placeholder="select" style={{ width: "100%" }}>
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Low Income" name='lowIncome'>
+            <Select placeholder="select" style={{ width: "100%" }}>
               <Option key={1} value={true}>
                 Yes
               </Option>
               <Option key={0} value={false}>
                 No
               </Option>
-            </Select>)}
+            </Select>
           </FormItem>
     
-          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Auto Reload">
-            {form.getFieldDecorator("autoReloaded", {
-              initialValue: record.autoReloaded
-            })(<Select placeholder="select" style={{ width: "100%" }}>
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Auto Reload" name='autoReloaded'>
+            <Select placeholder="select" style={{ width: "100%" }}>
               <Option key={1} value={true}>
                 Yes
               </Option>
               <Option key={0} value={false}>
                 No
               </Option>
-            </Select>)}
+            </Select>
           </FormItem>
     
-          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Education Mode Activated">
-            {form.getFieldDecorator("isEducationModeActivated", {
-              initialValue: record.isEducationModeActivated
-            })(<Select placeholder="select" style={{ width: "100%" }}>
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Education Mode Activated" name='isEducationModeActivated'>
+            <Select placeholder="select" style={{ width: "100%" }}>
               <Option key={1} value={true}>
                 Yes
               </Option>
               <Option key={0} value={false}>
                 No
               </Option>
-            </Select>)}
+            </Select>
           </FormItem>
     
           {customerStatus && (
@@ -729,16 +703,16 @@ class CustomerDetail extends PureComponent {
               labelCol={{ span: 10 }}
               wrapperCol={{ span: 10 }}
               label="Status"
-            >
-              {form.getFieldDecorator("status", {
-                rules: [
+              name='status'
+              rules={
+                [
                   {
                     required: true,
                     message: "You have pick a status"
                   }
-                ],
-                initialValue: record.status
-              })(
+                ]
+              }
+            >
                 <Select placeholder="select" style={{ width: "100%" }}>
                   {customerStatus.map((status, index) => (
                     <Option key={index} value={index}>
@@ -746,21 +720,21 @@ class CustomerDetail extends PureComponent {
                     </Option>
                   ))}
                 </Select>
-              )}
             </FormItem>
           )}
     
           {areas && (
-            <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Area">
-              {form.getFieldDecorator("areaId", {
-                rules: [
+            <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Area" name='areaId' 
+              rules={
+                [
                   {
                     required: true,
                     message: "You have pick a area"
                   }
-                ],
-                initialValue: record.areaId
-              })(
+                ]
+              }
+            >
+            
                 <Select placeholder="select" style={{ width: "100%" }}>
                   {areas.map(area => (
                     <Option key={area.id} value={area.id}>
@@ -768,27 +742,23 @@ class CustomerDetail extends PureComponent {
                     </Option>
                   ))}
                 </Select>
-              )}
             </FormItem>
           )}
     
-          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Notes">
-            {form.getFieldDecorator("notes", {
-              initialValue: record.notes
-            })(<TextArea placeholder="Please Input" />)}
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Notes" name='notes'>
+            <TextArea placeholder="Please Input" />
           </FormItem>
     
           <FormItem
             labelCol={{ span: 10 }}
             wrapperCol={{ span: 10 }}
             label="Is Driver License Verified"
+            name='licenseStatus'
           >
-            {form.getFieldDecorator("licenseStatus", {
-              initialValue: record.licenseStatus 
-            })(<Select>
+            <Select>
                 <Option value={1}>Verified</Option>
                 <Option value={0}>Not Verified</Option>
-               </Select>)}
+               </Select>
           </FormItem>
     
           <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10}} label="Phone Model">
@@ -816,55 +786,50 @@ class CustomerDetail extends PureComponent {
           <Row>
             <Col>
               <Button
-                icon="plus"
                 type="primary"
                 onClick={okHandle}
-                disabled={!form.isFieldsTouched()}
               >
                 Update Customer
               </Button>
             </Col>
           </Row>
+          </Form>
         </div>
       );
     });
     
     const MembershipForm = (props => {
-      const { form, memberships, handleBuyMembership } = props;
+      const { memberships, handleBuyMembership } = props;
+      const [form] = Form.useForm()
       const okHandle = () => {
-        if (form.isFieldsTouched())
-          form.validateFields((err, fieldsValue) => {
-            if (err) return;
-    
+          let fieldsValue = form.getFieldsValue(true)
+          if(!fieldsValue.membershipId) return false
             if (fieldsValue.free) {
               fieldsValue.autoRenew = false;
               fieldsValue.paidWithBalance = true;
-            }
-    
-            form.resetFields();
-    
+            }    
     
             handleBuyMembership(fieldsValue);
-          });
       };
     
       return (
         <div>
-    
+        <Form form={form}>
           {memberships && (
             <FormItem
               labelCol={{ span: 5 }}
               wrapperCol={{ span: 15 }}
               label="Membership"
-            >
-              {form.getFieldDecorator("membershipId", {
-                rules: [
+              name='membershipId'
+              rules={
+                [
                   {
                     required: true,
                     message: "You have to pick a membership"
                   }
                 ]
-              })(
+              }
+            >
                 <Select placeholder="select" style={{ width: "100%" }}>
                   {memberships.map((membership, index) => (
                     <Option key={index} value={membership.id}>
@@ -872,63 +837,58 @@ class CustomerDetail extends PureComponent {
                     </Option>
                   ))}
                 </Select>
-              )}
             </FormItem>
           )}
     
-          <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Free">
-            {form.getFieldDecorator("free")(
+          <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Free" name='free'>
               <Checkbox />
-            )}
           </FormItem>
     
-          <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is AutoRenew">
-            {form.getFieldDecorator("autoRenew")(
-              <Checkbox />
-            )}
+          <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is AutoRenew" name='autoRenew'>
+              <Checkbox value={true}/>
           </FormItem>
     
-          <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Paid By Balance">
-            {form.getFieldDecorator("paidWithBalance")(
+          <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Paid By Balance" name='paidWithBalance'>
               <Checkbox />
-            )}
           </FormItem>
     
           <Row>
             <Col>
               <Button
-                icon="plus"
                 type="primary"
                 onClick={okHandle}
-                disabled={!form.isFieldsTouched()}
               >
                 Update Customer
               </Button>
             </Col>
           </Row>
+          </Form>
         </div>
       );
     });
     
     const AddCouponForm = (props => {
-      const { form, coupons, handleAddCustomerCoupon } = props;
-    
+      const { coupons, handleAddCustomerCoupon } = props;
+      const [form]= Form.useForm()    
+      console.log(coupons);
       return (
         <div>
+          <Form form={form}>
           {coupons && (
             <FormItem
               labelCol={{ span: 5 }}
               wrapperCol={{ span: 15 }}
               label="Coupon"
-            >
-              {form.getFieldDecorator("couponId", {
-                rules: [
+              name='couponId'
+              rules={
+                [
                   {
                     required: true,
                     message: "You have pick a coupon to add"
                   }
                 ]
-              })(
+              }
+            >
                 <Select placeholder="select" style={{ width: "100%" }}>
                   {coupons.map(coupon => (
                     <Option key={coupon.id} value={coupon.id}>
@@ -937,7 +897,6 @@ class CustomerDetail extends PureComponent {
                     </Option>
                   ))}
                 </Select>
-              )}
             </FormItem>
           )}
     
@@ -945,35 +904,35 @@ class CustomerDetail extends PureComponent {
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
             label="Start Time"
-          >
-            {form.getFieldDecorator("start", {
-              rules: [
+            name='start'
+            rules={
+              [
                 {
                   required: true,
                   message: "You have to pick a time to start!"
                 }
               ]
-            })(
+            }
+          >
               <DatePicker
                 showTime
                 format="YYYY-MM-DD HH:mm:ss"
                 placeholder="Select Start Time"
               />
-            )}
           </FormItem>
     
           <Row>
             <Col>
               <Button
-                icon="plus"
                 type="primary"
-                onClick={() => handleAddCustomerCoupon(form)}
-                disabled={!form.isFieldsTouched()}
+                onClick={() => handleAddCustomerCoupon(form.getFieldsValue(true))}
+                // disabled={!form.isFieldsTouched()}
               >
                 Add Coupon
               </Button>
             </Col>
           </Row>
+          </Form>
         </div>
       );
     });
@@ -982,7 +941,6 @@ class CustomerDetail extends PureComponent {
       const {
         isRefundFormVisible,
         handleRefundFormVisible,
-        form,
         handleRefund,
         customer,
         needPickupFee,
@@ -993,12 +951,10 @@ class CustomerDetail extends PureComponent {
         refundType,
         refundReason
       } = props;
+      const [form] = Form.useForm()
     
       const okHandle = () => {
-        form.validateFields((err, fieldsValue) => {
-          if (err) return;
-          form.resetFields();
-    
+          let fieldsValue = form.getFieldsValue(true)
           const params = {}
     
           params.stripeChargeId = selectedCharge.stripeChargeId;
@@ -1021,7 +977,6 @@ class CustomerDetail extends PureComponent {
           handleRefund(customer.id, params);
           handleRefundFormVisible(false);
     
-        });
       };
     
       const handleNote = val => {
@@ -1057,9 +1012,6 @@ class CustomerDetail extends PureComponent {
       }];
     
       const checkMoneyFormat = (rule, value, callback) => {
-    
-    
-    
         if (isNaN(value)) {
           callback("Please input a correct number.");
           return;
@@ -1092,7 +1044,7 @@ class CustomerDetail extends PureComponent {
           onOk={okHandle}
           onCancel={() => handleRefundFormVisible(false)}
         >
-          <Form>
+          <Form form={form}>
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
@@ -1267,6 +1219,7 @@ class CustomerDetail extends PureComponent {
     return (
       <Modal
         destroyOnClose
+        forceRender
         title="Customer Detail"
         visible={isVisible}
         onOk={() => handleDetailVisible(false)}
