@@ -604,8 +604,6 @@ class CustomerDetail extends PureComponent {
           <FormItem labelCol={{ span: 10}} wrapperCol={{ span: 10 }} label="Balance (Deposit + Ride Credit)">
             <span> {record.deposit + record.rideCredit} </span>
           </FormItem>
-          
-    
         
           <FormItem
             labelCol={{ span: 10 }}
