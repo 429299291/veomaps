@@ -52,7 +52,71 @@ const isVeoRideEmail = (rule, value, callback) => {
   }
   callback("Credit Must be Number!");
 };
-
+export const UpdatePasswordForm = (props => {
+  const [form] = Form.useForm();
+  const {
+    updatePasswordModalVisible,
+    handleUpdatePassword,
+    handleUpdatePasswordModalVisible,
+    record
+  } = props;
+  const okHandle = () => {
+      if(form.getFieldValue('password')!==form.getFieldValue('confirmPassword')){
+          form.resetFields()
+          return false
+      }
+      form.submit()
+  };
+  return (
+    <Modal
+      destroyOnClose
+      title="Update Password"
+      visible={updatePasswordModalVisible}
+      forceRender
+      onOk={okHandle}
+      onCancel={() => handleUpdatePasswordModalVisible()}
+      width="700px"
+    >
+      <Form onFinish={()=>handleUpdatePassword(record? record.id:null,form.getFieldValue('password'))} form={form} 
+         >
+      <FormItem
+        labelCol={{ span: 7 }}
+        wrapperCol={{ span: 15 }}
+        label="New Password"
+        name='password'
+        rules={
+          [
+              {
+                required: true,
+                message: "password is required, at least 5 chars",
+                min: 5
+              }
+            ]
+        }
+      >
+        <Input placeholder="Please Input" type="password" />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 7 }}
+        wrapperCol={{ span: 15 }}
+        name='confirmPassword'
+        rules={
+          [
+              {
+                required: true,
+                message: "confirm password is required, at least 5 chars",
+                min: 5
+              }
+            ]
+        }
+        label="Confirm New Password"
+      >
+        <Input placeholder="Please Input" type="password" />
+      </FormItem>
+      </Form>
+    </Modal>
+  );
+});
  class Admin extends React.Component {
     state = {
         modalVisible: false,
@@ -264,7 +328,6 @@ const isVeoRideEmail = (rule, value, callback) => {
                 <FormItem>
                   {authority.includes("admin") && (
                     <Button
-                      icon="plus"
                       type="primary"
                       className = {styles.buttonStyle}
                       onClick={() => this.handleEmailRegisterModalVisible(true)}
@@ -722,71 +785,6 @@ const isVeoRideEmail = (rule, value, callback) => {
             );
           });
           
- const UpdatePasswordForm = (props => {
-    const [form] = Form.useForm();
-    const {
-      updatePasswordModalVisible,
-      handleUpdatePassword,
-      handleUpdatePasswordModalVisible,
-      record
-    } = props;
-    const okHandle = () => {
-        if(form.getFieldValue('password')!==form.getFieldValue('confirmPassword')){
-            form.resetFields()
-            return false
-        }
-        form.submit()
-    };
-    return (
-      <Modal
-        destroyOnClose
-        title="Update Password"
-        visible={updatePasswordModalVisible}
-        forceRender
-        onOk={okHandle}
-        onCancel={() => handleUpdatePasswordModalVisible()}
-        width="700px"
-      >
-        <Form onFinish={()=>handleUpdatePassword(record.id,form.getFieldValue('password'))} form={form} 
-           >
-        <FormItem
-          labelCol={{ span: 7 }}
-          wrapperCol={{ span: 15 }}
-          label="New Password"
-          name='password'
-          rules={
-            [
-                {
-                  required: true,
-                  message: "password is required, at least 5 chars",
-                  min: 5
-                }
-              ]
-          }
-        >
-          <Input placeholder="Please Input" type="password" />
-        </FormItem>
-        <FormItem
-          labelCol={{ span: 7 }}
-          wrapperCol={{ span: 15 }}
-          name='confirmPassword'
-          rules={
-            [
-                {
-                  required: true,
-                  message: "confirm password is required, at least 5 chars",
-                  min: 5
-                }
-              ]
-          }
-          label="Confirm New Password"
-        >
-          <Input placeholder="Please Input" type="password" />
-        </FormItem>
-        </Form>
-      </Modal>
-    );
-  });
   const UpdateForm = (props => {
     const {
       modalVisible,
@@ -1032,4 +1030,4 @@ const mapStateToProps = ({ admins, roles, areas, loading,user }) => {
         loading: loading.models.admins && loading.models.roles
     }
   }
-  export default connect(mapStateToProps)(Admin) 
+  export default connect(mapStateToProps)(Admin)

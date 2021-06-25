@@ -93,6 +93,7 @@ const UpdateForm = (props => {
     const fieldsValue = form.getFieldsValue(true)
     if(fieldsValue.name){
       handleUpdate(record.id, fieldsValue);
+      form.resetFields()
     }else{
       handleModalVisible();
     }

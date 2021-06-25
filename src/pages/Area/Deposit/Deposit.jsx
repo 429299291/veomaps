@@ -438,7 +438,6 @@ class Deposit extends PureComponent {
           
             <div className={styles.tableListOperator}>
                 <Button
-                  icon="plus"
                   type="primary"
                   onClick={() => this.handleCreateModalVisible(true)}
                 >

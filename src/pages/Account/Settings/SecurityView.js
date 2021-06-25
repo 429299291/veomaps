@@ -1,8 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import { formatMessage, FormattedMessage } from 'umi/locale';
 import {UpdatePasswordForm} from "../../Employee/Admin";
-import { List } from 'antd';
+import { List,Form,Modal,Input } from 'antd';
 import { connect } from "dva";
+import FormItem from "antd/lib/form/FormItem";
+
 // import { getTimeDistance } from '@/utils/utils';
 
 const passwordStrength = {
@@ -23,9 +25,6 @@ const passwordStrength = {
     </font>
   ),
 };
-@connect(({ user }) => ({
-  currentUser: user.currentUser,
-}))
 class SecurityView extends Component {
   state = {
     updatePasswordModalVisible: false,
@@ -75,7 +74,6 @@ class SecurityView extends Component {
       handleUpdatePasswordModalVisible: this.handleUpdatePasswordModalVisible,
       handleUpdatePassword: this.handleUpdatePassword
     };
-
     return (
       <Fragment>
         <List
@@ -96,5 +94,9 @@ class SecurityView extends Component {
     );
   }
 }
-
-export default SecurityView;
+const mapStateToProps = ({user}) => {
+  return {
+    currentUser: user.currentUser,
+  }
+}
+export default connect(mapStateToProps)(SecurityView) 

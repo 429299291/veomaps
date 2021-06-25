@@ -593,7 +593,6 @@ class Promo extends PureComponent {
             <div className={styles.tableListOperator}>
               {/* {authority.includes("create.promo") && */
                 <Button
-                  icon="plus"
                   type="primary"
                   onClick={() => this.handleCreateModalVisible(true)}
                 >

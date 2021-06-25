@@ -34,7 +34,7 @@ const RenderSimpleForm=(props)=> {
   return (
     <Form onSubmit={()=>{props.handleSearch(form.getFieldsValue(true))}} layout="inline" form={form}>
     <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-      <Col span={10}>
+      <Col span={14}>
         <FormItem label="Name" name='name'>
           <Input placeholder="Name" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
         </FormItem>
@@ -56,7 +56,9 @@ const PhoneRegisterForm = (props => {
   const { modalVisible, handleSubmit, handleModalVisible, areas } = props;
   const [form] = Form.useForm()
   const okHandle = () => {
+      
       handleSubmit(form.getFieldsValue(true));
+      form.resetFields()
   };
 
   return (
@@ -73,7 +75,7 @@ const PhoneRegisterForm = (props => {
       <FormItem
         labelCol={{ span: 7 }}
         wrapperCol={{ span: 15 }}
-        label="First Name"
+        label="First Name1"
         name='firstName'
         rules={
           [
@@ -171,6 +173,7 @@ const UpdateForm = (props => {
     }else{
        handleModalVisible();
     }
+    form.resetFields()
   };
 
   return (

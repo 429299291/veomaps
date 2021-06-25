@@ -731,7 +731,6 @@ class Membership extends PureComponent {
             </div>
             <div className={styles.tableListOperator}>
                 <Button
-                  icon="plus"
                   type="primary"
                   onClick={() => this.handleCreateModalVisible(true)}
                 >
