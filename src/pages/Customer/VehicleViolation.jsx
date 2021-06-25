@@ -75,31 +75,94 @@ const ViolationLocation = compose(
     </GoogleMap>
   );
 });
+const RenderSimpleForm=(props)=> {
+  const [form] = Form.useForm()
 
-const UpdateForm = Form.create()((props) => {
+  // const areas = this.props.areas.data;
+  return (
+    // <Form onSubmit={e => {typeof e === 'object' && e.preventDefault(); this.getViolations();}} layout="inline">
+    <Form form={form} layout="inline">
+      <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={8} sm={24}>
+            <FormItem
+              labelCol={{ span: 12 }}
+              wrapperCol={{ span: 12 }}
+              label="Customer Phone"
+              name='phone'
+              rules={
+                [
+                  {
+                      //test phone number format
+                  validator: (rule, value, callback) => {
+                      if (value === null ||  /^\d{10}$/.test(value) || value === "") {
+                        callback();
+                        return;
+                      }
+                  
+                      callback("Must be a valid phone number");
+                    }
+                  }
+              ]
+              }
+            >
+                  
+                <InputNumber placeholder="Please Phone Number" style={{width: "100%"}}/>
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem
+              labelCol={{ span: 12 }}
+              wrapperCol={{ span: 12 }}
+              label="Status"
+              name='status'
+            >
+              <Select placeholder="select" style={{ width: "100%" }}>
+                <Option key="0" value="0">Waiting For Review</Option>
+                <Option key="1" value="1">Rejected</Option>
+                <Option key="2" value="2">Approved</Option>
+                <Option key="3" value="3">Reverted</Option>
+                <Option value={null}>All</Option>
+              </Select>
+            </FormItem>
+          </Col>
+          <Col  md={8} sm={24}>
+            <FormItem label="Time" labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} name='timeRange'>
+                <RangePicker style={{width: "90%"}} format="YYYY-MM-DD HH:mm:ss" showTime />
+            </FormItem>
+          </Col>
+          </Row>
+          <Row>
+          <Col md={8} sm={24}>
+            <span className={styles.submitButtons}>
+              <Button onClick={()=>{props.getViolations(form.getFieldsValue(true))}}>
+                Search
+              </Button>
+              <Button style={{ marginLeft: 8 }} onClick={props.handleFormReset}>
+                Reset
+              </Button>
+            </span>
+          </Col>
+      </Row>
+    </Form>
+  );
+}
+
+const UpdateForm = ((props) => {
   const {
-    form,
     modalVisible,
     handleUpdate,
     handleModalVisible,
     record,
     recordDetail
   } = props;
+  const [form] = Form.useForm()
   
   const validateFormAndUpdate = newState => {
-    form.validateFields((err, fieldsValue) => {
-        if (err) return;
-
+      const fieldsValue = form.getFieldsValue(true)
         fieldsValue.type = newState;
-        
         handleUpdate(record.id, fieldsValue);
-        
         form.resetFields();
-
         handleModalVisible();
-    });
-
-  
   };
 
   const cancelUpdate = () => {
@@ -151,7 +214,8 @@ const UpdateForm = Form.create()((props) => {
   }
 
 
-  const isAdmidNoteUpdated = form.isFieldTouched("adminNote") && form.getFieldValue("adminNote") !== "" ;
+  // const isAdmidNoteUpdated = form.isFieldTouched("adminNote") && form.getFieldValue("adminNote") !== "" ;
+  const isAdmidNoteUpdated = form.getFieldValue("adminNote") !== "" ;
 
   //wait for review
   if (record.status === violationStatusIndex.WAITING) {
@@ -186,8 +250,10 @@ const UpdateForm = Form.create()((props) => {
       visible={modalVisible}
       onCancel={cancelUpdate}
       width={960}
+      forceRender
       footer={footer}
     >
+      <Form form={form}>
       <Row>
         <Col xs={24} sm={12} style={{height: "90%"}}> 
 
@@ -259,8 +325,8 @@ const UpdateForm = Form.create()((props) => {
             {<span>{record.adminNote}</span>}
         </FormItem>
       }
-      { isReviewEditable && <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12 }} style={{marginTop: "160px"}} label="Reject/Revert Note">
-        {form.getFieldDecorator('adminNote')(<TextArea placeholder="Please Input" />)}
+      { isReviewEditable && <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12 }} style={{marginTop: "160px"}} label="Reject/Revert Note" name='adminNote'>
+        <TextArea placeholder="Please Input" />
       </FormItem> }
         
         
@@ -287,25 +353,12 @@ const UpdateForm = Form.create()((props) => {
         
         </Col>
       </Row>
-    
-
-      
-     
+      </Form>
     </Modal>
   );
 });
 
 /* eslint react/no-multi-comp:0 */
-@connect(({
-  areas, loading, vehicleViolations,
-}) => ({
-  areas,
-  violations: vehicleViolations.data,
-  loading: loading.models.vehicleViolations,
-  total: vehicleViolations.total,
-  selectedAreaId: areas.selectedAreaId,
-}))
-@Form.create()
 class VehicleViolation extends PureComponent {
   state = {
     selectedCustomerId: undefined,
@@ -433,42 +486,37 @@ class VehicleViolation extends PureComponent {
     }
   }
 
-    getViolations = () => {
-      const { dispatch, form, selectedAreaId } = this.props;
+    getViolations = (fieldsValue) => {
+      const { dispatch, selectedAreaId } = this.props;
       const { filterCriteria } = this.state;
+      console.log(fieldsValue);
 
-      form.validateFields((err, fieldsValue) => {
-
-        if (err) return;
-
+      if(fieldsValue){
         if (filterCriteria.phone === "") {
-            filterCriteria.phone = null;
-        }
+          filterCriteria.phone = null;
+      }
+      if (fieldsValue.timeRange) {
+      
+        fieldsValue.start = moment(fieldsValue.timeRange[0]).utcOffset(0).format(
+          "MM-DD-YYYY HH:mm:ss"
+        );
+        fieldsValue.end = moment(fieldsValue.timeRange[1]).utcOffset(0).format(
+          "MM-DD-YYYY HH:mm:ss"
+        );
+        fieldsValue.timeRange = undefined;
+      }
+      }
+      const values = Object.assign({}, {
+        currentPage: 1,
+        pageSize: 10,
+        areaId: selectedAreaId
+      }, 
+      filterCriteria, 
+      fieldsValue);
 
-        if (fieldsValue.timeRange) {
-        
-          fieldsValue.start = moment(fieldsValue.timeRange[0]).utcOffset(0).format(
-            "MM-DD-YYYY HH:mm:ss"
-          );
-          fieldsValue.end = moment(fieldsValue.timeRange[1]).utcOffset(0).format(
-            "MM-DD-YYYY HH:mm:ss"
-          );
-          fieldsValue.timeRange = undefined;
-        }
-
-        const values = Object.assign({}, {
-            currentPage: 1,
-            pageSize: 10,
-            areaId: selectedAreaId
-          }, 
-          filterCriteria, 
-          fieldsValue);
-
-        dispatch({
-            type: 'vehicleViolations/get',
-            payload: values,
-          });
-
+    dispatch({
+        type: 'vehicleViolations/get',
+        payload: values,
       });
      
     }
@@ -517,83 +565,6 @@ class VehicleViolation extends PureComponent {
     this.handleUpdateModalVisible();
   };
 
-  renderSimpleForm() {
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
-
-    const areas = this.props.areas.data;
-    return (
-      <Form onSubmit={e => {typeof e === 'object' && e.preventDefault(); this.getViolations();}} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-            <Col md={8} sm={24}>
-              <FormItem
-                labelCol={{ span: 12 }}
-                wrapperCol={{ span: 12 }}
-                label="Customer Phone"
-              >
-                {getFieldDecorator('phone', {
-                    rules: [
-                        {
-                            //test phone number format
-                        validator: (rule, value, callback) => {
-                            if (value === null ||  /^\d{10}$/.test(value) || value === "") {
-                              callback();
-                              return;
-                            }
-                        
-                            callback("Must be a valid phone number");
-                          }
-                        }
-                    ],
-                    initialValue: null
-                })(
-                    
-                  <InputNumber placeholder="Please Phone Number" style={{width: "100%"}}/>
-                )}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <FormItem
-                labelCol={{ span: 12 }}
-                wrapperCol={{ span: 12 }}
-                label="Status"
-              >
-               {getFieldDecorator("status")(
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  <Option key="0" value="0">Waiting For Review</Option>
-                  <Option key="1" value="1">Rejected</Option>
-                  <Option key="2" value="2">Approved</Option>
-                  <Option key="3" value="3">Reverted</Option>
-                  <Option value={null}>All</Option>
-                </Select>
-              )}
-              </FormItem>
-            </Col>
-            <Col  md={8} sm={24}>
-              <FormItem label="Time" labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} >
-                {getFieldDecorator("timeRange")(
-                  <RangePicker style={{width: "90%"}} format="YYYY-MM-DD HH:mm:ss" showTime />
-                )}
-              </FormItem>
-            </Col>
-            </Row>
-            <Row>
-            <Col md={8} sm={24}>
-              <span className={styles.submitButtons}>
-                <Button type="primary" htmlType="submit">
-                  Search
-                </Button>
-                <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-                  Reset
-                </Button>
-              </span>
-            </Col>
-        </Row>
-      </Form>
-    );
-  }
-
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
@@ -615,9 +586,8 @@ class VehicleViolation extends PureComponent {
   };
 
   handleFormReset = () => {
-    const { form, dispatch } = this.props;
+    const { dispatch } = this.props;
     const { filterCriteria } = this.state;
-    form.resetFields();
 
     const params = {
       currentPage: 1,
@@ -670,7 +640,7 @@ class VehicleViolation extends PureComponent {
       <PageHeaderWrapper title="Violation List">
         <Card bordered={false}>
           <div className={styles.tableList}>
-            <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
+            <div className={styles.tableListForm}><RenderSimpleForm getViolations={this.getViolations} handleFormReset={this.handleFormReset} /></div> 
             <div>Count: {total}</div>
             <StandardTable
               loading={loading}
@@ -718,5 +688,13 @@ class VehicleViolation extends PureComponent {
     );
   }
 }
-
-export default VehicleViolation;
+const mapStateToProps = ({ areas, loading, vehicleViolations }) => {
+  return {
+    areas,
+    violations: vehicleViolations.data,
+    loading: loading.models.vehicleViolations,
+    total: vehicleViolations.total,
+    selectedAreaId: areas.selectedAreaId,
+      }
+}
+export default connect(mapStateToProps)(VehicleViolation) 
