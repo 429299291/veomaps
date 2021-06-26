@@ -6,7 +6,7 @@ import Login from "@/components/Login";
 import styles from "./Login.less";
 
 
-const { UserName, Password, Submit } = Login;
+// const { UserName, Password, Submit } = Login;
 class LoginPage extends Component {
   state = {
     type: "account",
@@ -103,33 +103,30 @@ class LoginPage extends Component {
             }/>  
           </div>
          </Modal> 
-        {/* <Login
+        <Login
           defaultActiveKey={type}
           onSubmit={this.handleSubmit}
           // ref={form => {
           //   this.loginForm = form;
           // }}
         >
-          <UserName name="userName" placeholder="your veo email address" />
-          <Password
+          {/* <UserName name="userName" placeholder="your veo email address" /> */}
+          {/* <Password
             name="password"
             placeholder="password"
-            // onPressEnter={() =>
-            //   this.loginForm.validateFields(this.handleSubmit)
-            // }
-          />
+          /> */}
           <div>
-            <Checkbox checked={autoLogin} onChange={this.changeAutoLogin}>
+            {/* <Checkbox checked={autoLogin} onChange={this.changeAutoLogin}>
               <FormattedMessage id="app.login.remember-me" />
-            </Checkbox>
+            </Checkbox> */}
             <a style={{ float: "right" }} href="">
               <FormattedMessage id="app.login.forgot-password" />
             </a>
           </div>
-          <Submit loading={submitting}>
+          {/* <Submit loading={submitting}>
             <FormattedMessage id="app.login.login" />
-          </Submit>
-        </Login> */}
+          </Submit> */}
+        </Login>
       </div>
     );
   }
