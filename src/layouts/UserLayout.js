@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { formatMessage } from "umi/locale";
 import { connect } from "dva";
 import Link from "umi/link";
-import { Icon,Form, Input, Button, Checkbox } from "antd";
+import { Icon,Form, Input, Button, Checkbox,message } from "antd";
 import GlobalFooter from "@/components/GlobalFooter";
 import SelectLang from "@/components/SelectLang";
 import styles from "./UserLayout.less";
@@ -58,6 +58,7 @@ class UserLayout extends React.PureComponent {
             onSuccess: (phone) =>{
               this.setState({phone: phone})
               this.setState({PhoneVerficationEnabled: true})
+              message.success('Phone Verification sent to'+phone);
             }
           })
       }else{
