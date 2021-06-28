@@ -337,19 +337,16 @@ const MyMapComponent = compose(
 const CreateFenceForm = (props => {
   const {
     modalVisible,
-    form,
     handleNext,
     handleModalVisible,
     editingFence,
     selectedExistedFence
   } = props;
+  const [form] = Form.useForm()
   const okHandle = () => {
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
 
       
-
+      const fieldsValue = form.getFieldsValue(true)
       if (Array.isArray(fieldsValue.vehicleTypes) && fieldsValue.vehicleTypes.length === 0 ) {
         fieldsValue.vehicleTypes = undefined;
       }
@@ -361,7 +358,6 @@ const CreateFenceForm = (props => {
       console.log(fieldsValue);
 
       handleNext(fieldsValue);
-    });
   };
 
   const fence = selectedExistedFence ? selectedExistedFence : editingFence;
@@ -381,55 +377,54 @@ const CreateFenceForm = (props => {
       width={700}
       onCancel={() => handleModalVisible(false)}
     >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Name">
-        {form.getFieldDecorator("name", {
-          initialValue: fence ? fence.name : undefined,
-          rules: [
+      <Form form={form}>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Name"
+        name='name'
+        rules={
+          [
             {
               required: true,
               message: "At least 1 character!",
               min: 1
             }
           ]
-        })(<Input placeholder="Please Input" />)}
+        }
+      >
+        <Input placeholder="Please Input" />
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Activated">
-        {form.getFieldDecorator("turnedOn", {
-          initialValue: fence ? (fence.turnedOn === true) : true         
-        })(<Select placeholder="select" style={{ width: "100%" }}>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Activated"
+        name='turnedOn'
+      >
+        <Select placeholder="select" style={{ width: "100%" }}>
            <Select.Option key={true} value={true}>
               True
             </Select.Option>
             <Select.Option key={false} value={false}>
               False
             </Select.Option>
-      </Select>)}
+      </Select>
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Active Time">
-        {form.getFieldDecorator("activeTimeRange", {
-          initialValue: (fence && fence.activeTimeRange) ? fence.activeTimeRange : {weekDayDTO: {start: null, end: null}, weekendDTO: {start: null, end: null}, timeZone: null}        
-        })(<DynamicFenceConfigForm />)}
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Active Time" name='activeTimeRange'>
+        <DynamicFenceConfigForm />
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Note">
-        {form.getFieldDecorator("note", {
-          initialValue: fence ? fence.note : undefined
-        })(<Input placeholder="Please Input" />)}
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Note" name='note'>
+        <Input placeholder="Please Input" />
       </FormItem>
       {fenceType && (
         <FormItem
           labelCol={{ span: 5 }}
           wrapperCol={{ span: 15 }}
           label="Fence Type"
-        >
-          {form.getFieldDecorator("fenceType", {
-            initialValue: fence ? fence.fenceType : undefined,
-            rules: [
+          name='fenceType'
+          rules={
+            [
               {
                 required: true,
                 message: "You have pick a fence type"
               }
             ]
-          })(
+          }
+        >
             <Select placeholder="select" style={{ width: "100%" }}>
               {fenceType.map((fence, index) => (
                 <Select.Option key={index} value={index}>
@@ -437,7 +432,6 @@ const CreateFenceForm = (props => {
                 </Select.Option>
               ))}
             </Select>
-          )}
         </FormItem>
       )}
       
@@ -446,16 +440,16 @@ const CreateFenceForm = (props => {
           labelCol={{ span: 10 }}
           wrapperCol={{ span: 10 }}
           label="Has Forced Parking"
-        >
-          {form.getFieldDecorator("hasForce", {
-            initialValue: fence ? (fence.hasForce ? 1 : 0) : undefined,
-            rules: [
+          name='hasForce'
+          rules={
+            [
               {
                 required: true,
                 message: "You have to define if have forced parking area"
               }
             ]
-          })(
+          }
+        >
             <Select placeholder="select" style={{ width: "100%" }}>
               <Select.Option key={1} value={1}>
                 Yes
@@ -464,27 +458,24 @@ const CreateFenceForm = (props => {
                 No
               </Select.Option>
             </Select>
-          )}
         </FormItem>
       )}
       {
         <FormItem
           labelCol={{ span: 10 }}
           wrapperCol={{ span: 10 }}
+          name={isGeoFence ? "forceVehicleTypes" : "vehicleTypes"}
           label={(isGeoFence? "Force " : "") + "Vehicle Type"}
         >
-          {form.getFieldDecorator(isGeoFence ? "forceVehicleTypes" : "vehicleTypes", {
-            initialValue: fence ? (isGeoFence ? nullToUndefined(fence.forceVehicleTypes) : nullToUndefined(fence.vehicleTypes)) : undefined,
-          })(
             <Select placeholder="select" style={{ width: "100%" }} mode="multiple">
               <Option value={0}>Bike</Option>
               <Option value={1}>Scooter</Option>
               <Option value={2}>E-Bike</Option>
               <Option value={3}>COSMO</Option>
             </Select>
-          )}
         </FormItem>
       }
+      </Form>
     </Modal>
   );
 });
@@ -981,6 +972,91 @@ class geo extends PureComponent {
 
     return (
       <div>
+                <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
+          {isEditing ? (
+            <Col md={24} sm={24}>
+              <Button
+                type="primary"
+                onClick={() => this.cancelEditing(true)}
+                className={styles.editButton}
+              >
+                Cancel Editing
+              </Button>
+              <Button
+                type="primary"
+                onClick={() => this.handleSave()}
+                disabled={!isAbleToSave}
+                className={styles.editButton}
+              >
+                Save
+              </Button>
+              
+                {selectedExistedPrimeLocation  && (
+                  <Button
+                    type="danger"
+                    onClick={() =>
+                      this.setState({ isDeleteModalVisible: true })
+                    }
+                    className={styles.editButton}
+                  >
+                    DELETE
+                  </Button>
+                )}
+
+              {isAbleToEncloseEditingFence && (
+                <Button
+                  type="primary"
+                  onClick={() => this.handleEncloseEditingFence()}
+                  disabled={isEditingFenceClosed}
+                  className={styles.editButton}
+                >
+                  Close Fence
+                </Button>
+              )}
+              {isEditingFence && (
+                <Button
+                  type="primary"
+                  onClick={() => this.handleUndoFenceEditing()}
+                  className={styles.editButton}
+                >
+                  Undo
+                </Button>
+              )}
+            </Col>
+          ) : (
+            <Col md={24} sm={24}>
+                <Button
+                  type="primary"
+                  onClick={() => this.handleEditCenter(true)}
+                  disabled={isEditing}
+                  className={styles.editButton}
+                >
+                  Edit Center
+                </Button>
+                <Button
+                  type="primary"
+                  onClick={() => this.handleCreateFence(true)}
+                  disabled={isEditing}
+                  className={styles.editButton}
+                >
+                  Add Fence
+                </Button>
+
+
+              {/* </Col>{authority.includes("create.primeLocation") && ( */}
+                {true && (
+                <Button
+                  type="primary"
+                  onClick={() => this.handleCreatePrimeLocation(true)}
+                  disabled={isEditing}
+                  className={styles.editButton}
+                >
+                  Add Vehicle Hub
+                </Button>
+              )}
+            </Col>
+          )}
+        </Row>
         {selectedExistedPrimeLocation && 
           <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
           
@@ -1158,6 +1234,7 @@ class geo extends PureComponent {
       areas: { data: areas },
       loading,
       selectedAreaId,
+      handleEditCenterData
     } = this.props;
     const {
       addFenceModalVisible,
@@ -1177,10 +1254,9 @@ class geo extends PureComponent {
     const isEditing = isEditingCenter || isEditingFence || isEditingPrimeLocation;
 
 
-
     return (
       <PageHeaderWrapper title="Geo Management">
-        {selectedAreaId && <Card bordered={false}>
+        {selectedAreaId && <Card bordered={true}>
           <div>
             {!isEditing && selectedExistedFence ? (
               <Row
