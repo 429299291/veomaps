@@ -9,6 +9,7 @@ import moment from 'moment';
 //components
 import ViolationFine from './components/violationFine'
 import Regulation from './components/regulation'
+import Geo from './components/geo'
 
 const Areas = (props) => {
     const { dispatch,selectedAreaId,areas } = props;
@@ -53,12 +54,10 @@ const Areas = (props) => {
     // console.log('formDatas');
     console.log(formDatas);
     if(formDatas.feature){
-      console.log('true');
       console.log(formDatas.feature.regulation.regulations);
       setRegulationDatas(formDatas.feature.regulation.regulations)
       form.setFieldsValue(formDatas)
     }else{
-      console.log('false');
       setRegulationDatas([])
       form.resetFields()
     }
@@ -74,7 +73,6 @@ const Areas = (props) => {
     setIsDrawerVisible(false);
   };
   const onFinish = (values) => {
-    console.log(values);
     let formDatas = {
       name:values.name,
       description:values.description,
@@ -173,17 +171,25 @@ const Areas = (props) => {
           type="primary"
           style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}
         >
-        <BorderOuterOutlined />Add Vehicle Hub
+        <BorderOuterOutlined />Edit Center
         </Button>
         <Button
           type="primary"
           style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}
         >
-        <ExpandOutlined /> Add Fence
+        <BorderOuterOutlined />Add Fence
+        </Button>
+        <Button
+          type="primary"
+          style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}
+        >
+        <ExpandOutlined /> Add Vehicle Hub
         </Button>
         </Space>
         </Row>
         </Card>
+        <Geo></Geo>
+
         <Drawer
           title="Update Area Feature"
           width={'30vw'}
@@ -261,11 +267,14 @@ const Areas = (props) => {
                   <Switch size="small" onChange={ageOnchange}/>
                 </Form.Item>
             </Col>
-            <Col span={12}>
+              {
+                formDatas&&
+                <Col span={12}>
                 <Form.Item  label="age" {...tailLayout} name={['feature', 'ageVerification','age']}>
                   <InputNumber min={15} max={45}  disabled={formDatas.feature?!formDatas.feature.activated :true} disabled={!ageEnabled}/>
                 </Form.Item>
             </Col>
+              }
             </Row>
             </Card>
             </Col>
