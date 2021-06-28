@@ -1,3 +1,5 @@
+import Icon from '@ant-design/icons';
+
 export default [
   // user
   {
@@ -22,6 +24,7 @@ export default [
       {
         path: "/dashboard",
         name: "dashboard",
+        // icon: "dashboard",
         icon: "dashboard",
         authority: "dashboard",
         routes: [
@@ -34,7 +37,7 @@ export default [
       },
       {
         path: "/shop-management",
-        icon: "shop",
+        // icon: "shop",
         name: "Shop Management",
         authority: ["shop"],
         routes: [
@@ -54,12 +57,13 @@ export default [
         path: "/ride/",
         name: "Riding Management",
         component: "./Ride/Ride",
+        // icon: "car",
         icon: "car",
         authority: ["ride"],
       },
       {
         path: "/vehicle-management",
-        icon: "car",
+        // icon: "car",
         name: "Vehicle Management",
         authority:[ "vehicle"],
         routes: [
@@ -84,7 +88,7 @@ export default [
       },
       {
         path: "/customer-management",
-        icon: "user",
+        // icon: "user",
         name: "Customer Management",
         authority: ["customer"],
         routes: [
@@ -108,25 +112,25 @@ export default [
       },
       {
         path: "/area",
-        icon: "global",
+        // icon: "global",
         name: "Area Management",
         authority:['area'],
         routes: [
-          {
-            path: "/area/geo-management/",
-            name: "Geo Management",
-            component: "./Area/Geo",
-          },
+          // {
+          //   path: "/area/geo-management/",
+          //   name: "Geo Management",
+          //   component: "./Area/Geo",
+          // },
+          // {
+          //   path: "/area/area-management/",
+          //   name: "Area Management",
+          //   component: "./Area/Area",
+          // },
           {
             path: "/area/area-management/",
             name: "Area Management",
-            component: "./Area/Area",
+            component: "./Area/Areas/Areas",
           },
-          // {
-          //   path: "/area/areaManagement/",
-          //   name: "Area Management",
-          //   component: "./Area/Areas",
-          // },
           {
             path: "/area/promo-management/",
             name: "Promo Management",
@@ -161,6 +165,7 @@ export default [
       {
         path: "/employee-management/",
         name: "Admin Management",
+        // icon: "user",
         icon: "user",
         authority: ["admin"],
         routes: [
@@ -184,6 +189,7 @@ export default [
       {
         path: "/technician-management/",
         name: "Technician Management",
+        // icon: "user",
         icon: "user",
         authority: ["technician"],
         routes: [
@@ -211,7 +217,7 @@ export default [
       },
         {
         name: "account",
-        icon: "user",
+        // icon: "user",
         path: "/account",
         authority: ["me"],
         routes: [

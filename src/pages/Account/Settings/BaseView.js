@@ -28,7 +28,71 @@ const AvatarView = ({ avatar }) => (
     </Upload>
   </Fragment>
 );
-
+const Content = (props) =>{
+  const [form] = Form.useForm()
+  form.setFieldsValue(props.currentUser)
+  return(
+    <Form layout="vertical" onSubmit={props.handleSubmit} hideRequiredMark form={form}>
+    <FormItem label="Phone Number"
+      name='phone'
+      rules={
+        [
+          {
+            required: true                    
+          },
+        ]
+      }
+    >
+        <Input />
+      </FormItem>
+      {/* <FormItem label="Username"
+        name='username'
+        rules={
+          [
+            {
+              required: true,
+              message: formatMessage({ id: 'app.settings.basic.nickname-message' }, {}),
+            },
+          ]
+        }
+      >
+        <Input />
+      </FormItem>
+      <FormItem label="Last Name"
+        name='lastName'
+        rules={
+          [
+            {
+              required: true,
+              message: formatMessage({ id: 'app.settings.basic.nickname-message' }, {}),
+            },
+          ]
+        }
+      >
+        <Input />
+      </FormItem>
+      <FormItem label="First Name"
+        name='firstName'
+        rules={
+          [
+            {
+              required: true,
+              message: formatMessage({ id: 'app.settings.basic.nickname-message' }, {}),
+            },
+          ]
+        }
+      >
+        <Input />
+      </FormItem> */}
+      <Button type="primary"  onClick={()=>{props.handleUpdateMe(form.getFieldsValue(true))}}>
+        <FormattedMessage
+          id="app.settings.basic.update"
+          defaultMessage="Update Information"
+        />
+      </Button>
+    </Form>
+  )
+}
 const validatorGeographic = (rule, value, callback) => {
   const { province, city } = value;
   if (!province.key) {
@@ -50,24 +114,19 @@ const validatorPhone = (rule, value, callback) => {
   }
   callback();
 };
-
-@connect(({ user }) => ({
-  currentUser: user.currentUser,
-}))
-@Form.create()
 class BaseView extends Component {
   componentDidMount() {
     this.setBaseInfo();
   }
 
   setBaseInfo = () => {
-    const { currentUser, form } = this.props;
+    const { currentUser } = this.props;
 
-    Object.keys(form.getFieldsValue()).forEach(key => {
-      const obj = {};
-      obj[key] = currentUser[key] || null;
-      form.setFieldsValue(obj);
-    });
+    // Object.keys(form.getFieldsValue()).forEach(key => {
+    //   const obj = {};
+    //   obj[key] = currentUser[key] || null;
+    //   form.setFieldsValue(obj);
+    // });
   };
 
   getAvatarURL() {
@@ -84,20 +143,8 @@ class BaseView extends Component {
   };
 
 
-  handleUpdateMe = () => {
-    const {form, dispatch, currentUser} = this.props;
-
-
-    if (form.isFieldsTouched())
-      form.validateFields((err, fieldsValue) => {
-        if (err) return;
-
-        form.resetFields();
-        
-        //fieldsValue.password = currentUser.basic.password;
-
-        //console.log(currentUser);
-
+  handleUpdateMe = (fieldsValue) => {
+    const { dispatch, currentUser} = this.props;
         dispatch({
           type: "user/updateMe",
           payload: fieldsValue,
@@ -106,65 +153,17 @@ class BaseView extends Component {
             onSuccess: this.setBaseInfo
           })
         });
+        // form.resetFields();
 
-      });
   }
 
   render() {
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
     return (
       <div className={styles.baseView} ref={this.getViewDom}>
         <div className={styles.left}>
-          <Form layout="vertical" onSubmit={this.handleSubmit} hideRequiredMark>
-          <FormItem label="Phone Number">
-              {getFieldDecorator('phone', {
-                rules: [
-                  {
-                    required: true                    
-                  },
-                ],
-              })(<Input />)}
-            </FormItem>
-            {/* <FormItem label="Username">
-              {getFieldDecorator('username', {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage({ id: 'app.settings.basic.nickname-message' }, {}),
-                  },
-                ],
-              })(<Input />)}
-            </FormItem>
-            <FormItem label="Last Name">
-              {getFieldDecorator('lastName', {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage({ id: 'app.settings.basic.nickname-message' }, {}),
-                  },
-                ],
-              })(<Input />)}
-            </FormItem>
-            <FormItem label="First Name">
-              {getFieldDecorator('firstName', {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage({ id: 'app.settings.basic.nickname-message' }, {}),
-                  },
-                ],
-              })(<Input />)}
-            </FormItem> */}
-            <Button type="primary"  onClick={this.handleUpdateMe}>
-              <FormattedMessage
-                id="app.settings.basic.update"
-                defaultMessage="Update Information"
-              />
-            </Button>
-          </Form>
+        
         </div>
+        <Content handleSubmit={this.handleSubmit} handleUpdateMe={this.handleUpdateMe} currentUser={this.props.currentUser} />
         {/*<div className={styles.right}>*/}
           {/*<AvatarView avatar={this.getAvatarURL()} />*/}
         {/*</div>*/}
@@ -172,5 +171,9 @@ class BaseView extends Component {
     );
   }
 }
-
-export default BaseView;
+const mapStateToProps = ({user}) => {
+  return {
+    currentUser: user.currentUser,
+  }
+}
+export default connect(mapStateToProps)(BaseView) 

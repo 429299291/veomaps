@@ -37,40 +37,82 @@ const FormItem = Form.Item;
 const TextArea = Input.TextArea;
 
 const messageTypes = ["push notification", "sms message"];
+const RenderSimpleForm=(props)=> {
+  const [form] = Form.useForm()
+  return (
+    <Form form={form} layout="inline">
+      <Row>
+        <Col span={9}>
+          <FormItem label="Keywords" name='email'>
+              <Input placeholder="Email" />
+          </FormItem>
+        </Col>
+        <Col span={12}>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="Type"
+            name='type'
+          >
+              <Select placeholder="select" style={{ width: "100%" }}>
+                {messageTypes.map((type,index) => (
+                  <Option key={index} value={index}>
+                    {type}
+                  </Option>
+                ))}
+                <Option value={null}>All</Option>
+              </Select>
+          </FormItem>
+        </Col>
+        <Col span={3}>
+          <span className={styles.submitButtons}>
+            <Button onClick={()=>{props.handleSearch(form.getFieldsValue(true))}}>
+              Search
+            </Button>
+            <Button style={{ marginLeft: 8 }} onClick={props.handleFormReset}>
+              Reset
+            </Button>
+          </span>
+        </Col>
+      </Row>
 
-const MessageAreaSender = Form.create()(props => {
+    </Form>
+  );
+}
+
+const MessageAreaSender = (props => {
     const {
-      form,
       areaId,
       handleSendNotifications
     } = props;
+    const [form] = Form.useForm()
     const okHandle = () => {
-      if (form.isFieldsTouched())
-        form.validateFields((err, fieldsValue) => {
-          
-          if (err) return;
-          
-          form.resetFields();
-  
-          handleSendNotifications(fieldsValue.message, fieldsValue.type);
-
-        });
+          const fieldsValue = form.getFieldsValue(true)
+          if(fieldsValue.message&&fieldsValue.type){
+            handleSendNotifications(fieldsValue.message, fieldsValue.type);
+            form.resetFields()
+          }
     };
   
     return (
         <div style={{marginBottom: "10em"}}>
+          <Form form={form}>
             <Row gutter={{ md: 8, lg: 24, xl: 48 }} style={{marginBottom: "2em"}}>
                     <Col md={8} sm={24}>
                         Message: 
-                        {form.getFieldDecorator("message", {
-                            rules: [
-                                {
-                                required: true,
-                                message: "Message cant be null",
-                                min: 1
-                                }
-                        ]
-                        })(<TextArea autosize={{minRows: 20, maxRows: 23}} />)}
+                        <FormItem name='message'
+                          rules={
+                            [
+                              {
+                              required: true,
+                              message: "Message cant be null",
+                              min: 1
+                              }
+                            ]
+                          }
+                        >
+                        <TextArea autosize={{minRows: 20, maxRows: 23}} />
+                        </FormItem>
                     </Col>
             </Row>
 
@@ -78,19 +120,22 @@ const MessageAreaSender = Form.create()(props => {
             <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
 
                 <Col md={4} sm={24}>
-                {form.getFieldDecorator("type", {
-                    rules: [
+                  <FormItem rules='type'
+                  name='type'
+                    rules={
+                      [
                         {
                         required: true,
                         message: "You have pick a type"
                         }
                     ]
-                    })(
+                    }
+                  >
                     <Select placeholder="select" style={{ width: "100%" }}>
                         <Option value="0">Push Notification</Option>
                         {/* <Option value="1">SMS Message</Option> */}
                     </Select>
-                    )}
+                    </FormItem>
                 </Col>
                 <Col md={4} sm={24}>
                     <Button 
@@ -104,6 +149,7 @@ const MessageAreaSender = Form.create()(props => {
                 </Col>
 
             </Row>
+            </Form>
         </div  >
     );
   });
@@ -111,12 +157,6 @@ const MessageAreaSender = Form.create()(props => {
 
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ notifications , loading, areas }) => ({
-  notifications: notifications.customer,
-  selectedAreaId: areas.selectedAreaId,
-  loading: loading.models.notifications
-}))
-@Form.create()
 class Notifications extends PureComponent {
   state = {
     updateModalVisible: false,
@@ -181,9 +221,6 @@ class Notifications extends PureComponent {
   };
 
   handleFormReset = () => {
-    const { form } = this.props;
-    form.resetFields();
-
     this.setState(
       {
         filterCriteria: {}
@@ -192,25 +229,17 @@ class Notifications extends PureComponent {
     );
   };
 
-  handleSearch = e => {
-    e.preventDefault();
+  handleSearch = fieldsValue => {
 
-    const { dispatch, form } = this.props;
+    const { dispatch } = this.props;
     const { filterCriteria } = this.state;
-
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-
       const values = Object.assign({}, filterCriteria, fieldsValue);
-
-
       this.setState(
         {
           filterCriteria: values
         },
         () => this.handleGetSentNotifications()
       );
-    });
   };
 
 
@@ -233,58 +262,6 @@ class Notifications extends PureComponent {
         onSuccess: this.handleGetSentNotifications 
       });
   }
-
-
-  renderSimpleForm() {
-    const {
-      form: { getFieldDecorator }
-    } = this.props;
-
-    const areas = this.props.areas;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={6} sm={24}>
-            <FormItem label="Keywords">
-              {getFieldDecorator("email")(
-                <Input placeholder="Email" />
-              )}
-            </FormItem>
-          </Col>
-          <Col md={6} sm={24}>
-            <FormItem
-              labelCol={{ span: 5 }}
-              wrapperCol={{ span: 15 }}
-              label="Type"
-            >
-              {getFieldDecorator("type")(
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  {messageTypes.map((type,index) => (
-                    <Option key={index} value={index}>
-                      {type}
-                    </Option>
-                  ))}
-                  <Option value={null}>All</Option>
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
-                Search
-              </Button>
-              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-                Reset
-              </Button>
-            </span>
-          </Col>
-        </Row>
-
-      </Form>
-    );
-  }
-
   render() {
     const { notifications, loading, selectedAreaId } = this.props;
     const {
@@ -317,7 +294,7 @@ class Notifications extends PureComponent {
                     handleSendNotifications={this.handleSendNotifications}
                 />
               
-              {this.renderSimpleForm()}
+              <RenderSimpleForm handleFormReset={this.handleFormReset} handleSearch={this.handleSearch} />
              
             </div>
           
@@ -336,5 +313,11 @@ class Notifications extends PureComponent {
     );
   }
 }
-
-export default Notifications;
+const mapStateToProps = ({ notifications , loading, areas }) => {
+  return {
+    notifications: notifications.customer,
+    selectedAreaId: areas.selectedAreaId,
+    loading: loading.models.notifications
+    }
+}
+export default connect(mapStateToProps)(Notifications) 

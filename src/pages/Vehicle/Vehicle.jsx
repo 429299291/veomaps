@@ -115,6 +115,59 @@ const weekdays = ["Mon", "Tue", "Weds", "Thu", "Fri", "Sat", "Sun"];
 
 const hours = ["12AM", "1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "9AM", "10AM","11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM", "10PM", "11PM"];
 
+const RenderSimpleForm=(props)=> {
+  const [form] = Form.useForm()
+  const handleSearch=()=>{
+    form.submit()
+  }
+  return (
+    <Form onSubmit={handleSearch} layout="inline" form={form} onFinish={()=>{props.handleSearch(form.getFieldsValue(true))}}>
+      <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+        <Col md={8} sm={24}>
+          <FormItem label="Keywords" name='numberOrImei'>
+              <Input placeholder="number or imei" />
+          </FormItem>
+        </Col>
+        <Col md={8} sm={24}>
+          <FormItem label="Battery Status" name='lockPower'>
+              <Select placeholder="select" style={{ width: "100%" }}>
+                <Option value="0">Low Battery</Option>
+                <Option value="1">Full Battery</Option>
+                <Option value={null}>All</Option>
+              </Select>
+          </FormItem>
+        </Col>
+        <Col md={8} sm={24}>
+          <FormItem label="Connection Status" name='connected'>
+              <Select placeholder="select" style={{ width: "100%" }}>
+                <Option value={false}>offline</Option>
+                <Option value={true}>online</Option>
+                <Option value={null}>All</Option>
+              </Select>
+          </FormItem>
+        </Col>
+        
+        </Row>
+
+
+
+      <div style={{ overflow: "hidden" }}>
+        <div style={{ float: "right", marginBottom: 24 }}>
+              <Button type="primary" htmlType="submit">
+                Search
+              </Button>
+              <Button style={{ marginLeft: 8 }} onClick={props.handleFormReset}>
+                Reset
+              </Button>
+              <a style={{ marginLeft: 8 }} onClick={props.toggleForm}>
+                more <Icon type="down" />
+              </a>
+              </div>
+      </div>
+    </Form>
+  );
+}
+
 const getPowerPercent = power => {
   if (power >= 420) return 100;
   else if (power < 420 && power >= 411) return 95 + ((power - 411) * 5) / 9;
@@ -131,13 +184,14 @@ const getPowerPercent = power => {
   return 0;
 };
 
-const HeatMapForm = Form.create()(props => { 
-  const { form, getheatmapData, isMobile, styles, selectedAreaId, shouldShowHeatMap, clearHeatMap, getAreaCustomerSessionLocation } = props;
+const HeatMapForm = (props => { 
+  const { getheatmapData, isMobile, styles, selectedAreaId, shouldShowHeatMap, clearHeatMap, getAreaCustomerSessionLocation } = props;
+  const [form] = Form.useForm()
 
   const handleSubmit = () => {
-
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
+    let fieldsValue = form.getFieldsValue(true)
+    // form.validateFields((err, fieldsValue) => {
+      // if (err) return;
 
      
 
@@ -190,7 +244,7 @@ const HeatMapForm = Form.create()(props => {
 
       getheatmapData(fieldsValue);
 
-    });
+    // });
 
   }
 
@@ -207,29 +261,26 @@ const HeatMapForm = Form.create()(props => {
   const isRideHeatMap = form.getFieldValue("isStart") !== 'customer';
  
   return ( <div style={{fontSize: fontSize, marginTop: "1em"}}>
-
+    <Form form={form}>
       <span className={style}>
-
-          {form.getFieldDecorator("isStart", {initialValue: true})(
-            //<Switch checkedChildren="start" unCheckedChildren="end" defaultChecked />
+          <FormItem name='isStart'>
             <Select defaultValue={true}>
               <Option value={true}>Start of Ride</Option>
               <Option value={false}>End of Ride</Option>
               <Option value={null}> Path of Ride </Option>
               <Option value="customer"> Customer </Option>
             </Select>
-          )}
-
+          </FormItem>
           <span> Time: </span> 
-          {form.getFieldDecorator("timeRange")(
+          <FormItem name='timeRange'>
             <RangePicker style={{width: "20%"}} format="YYYY-MM-DD HH:mm:ss" showTime/>
-          )}
+          </FormItem>
       </span> 
 
         {isMobile && <br />} 
       {isRideHeatMap && <span className={style} >
             <span > Weekday : </span> 
-            {form.getFieldDecorator("weekday")(
+            <FormItem name='weekday'>
               <Select placeholder="select" style={{ width: width, opacity: isRideHeatMap ? 1 : 0 }} 
                 showSearch
                 filterOption={filterOption}
@@ -241,14 +292,14 @@ const HeatMapForm = Form.create()(props => {
                   )
                 }
             </Select>
-            )}
+            </FormItem>
       </span> }
 
       {isMobile && <br />} 
 
       {isRideHeatMap && <span className={style} style={{opacity: isRideHeatMap ? 1 : 0}}>
         <span> Hours : </span> 
-          {form.getFieldDecorator("startHour")(
+          <FormItem name='startHour'>
               <Select 
                 placeholder="select" style={{ width: width, opacity: isRideHeatMap ? 1 : 0 }} 
                 showSearch
@@ -260,11 +311,9 @@ const HeatMapForm = Form.create()(props => {
                   )
                 }
             </Select>
-            )}
-
+            </FormItem>
             ~
-
-            {form.getFieldDecorator("endHour")(
+            <FormItem name='endHour'>
               <Select 
                 placeholder="select" style={{ width: width, opacity: isRideHeatMap ? 1 : 0 }} 
                 showSearch
@@ -276,12 +325,12 @@ const HeatMapForm = Form.create()(props => {
                   )
                 }
             </Select>
-            )}
+            </FormItem>
       </span> }
 
       {isRideHeatMap &&   <span className={style} style={{opacity: isRideHeatMap ? 1 : 0}}>
         <span> Type : </span> 
-          {form.getFieldDecorator("vehicleType")(
+        <FormItem name='vehicleType'>
               <Select 
                 placeholder="select" style={{ width: width }} 
                 filterOption={filterOption}
@@ -291,7 +340,7 @@ const HeatMapForm = Form.create()(props => {
                 <Option value={2} >E-Bike</Option>
                 <Option value={3} >COSMO</Option>
             </Select>
-            )}
+          </FormItem>
       </span>  }
 
       {isMobile && <br />} 
@@ -304,21 +353,22 @@ const HeatMapForm = Form.create()(props => {
             {shouldShowHeatMap ? <Button type="primary" htmlType="submit" onClick={handleSubmit} > Get HeatMap </Button> : <Spin size="middle" style={{ marginRight: "0.5vw" }} /> }
             
       </div> 
+
+      </Form>
   </div>  );
 });
 
 
-const CreateForm = Form.create()(props => {
-  const { modalVisible, form, handleAdd, handleModalVisible, areas } = props;
+const CreateForm = (props => {
+  const { modalVisible, handleAdd, handleModalVisible, areas } = props;
+  const [form] = Form.useForm()
   const okHandle = () => {
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
 
+      let fieldsValue = form.getFieldsValue(true)
       fieldsValue.vehicleNumber = parseInt(fieldsValue.vehicleNumber, 10);
 
       handleAdd(fieldsValue);
-    });
+    // });
   };
   return (
     <Modal
@@ -329,66 +379,79 @@ const CreateForm = Form.create()(props => {
       onCancel={() => handleModalVisible()}
       width="700px"
     >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="ID">
-        {form.getFieldDecorator("vehicleNumber", {
-          rules: [
+      <Form form={form} >
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="ID" 
+        name='vehicleNumber'
+        rules={
+          [
             {
               required: true,
               message: "At least 8 Digits!",
               min: 1
             }
           ]
-        })(<Input placeholder="Please Input" />)}
+        }
+      >
+       <Input placeholder="Please Input" />
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="IMEI">
-        {form.getFieldDecorator("imei", {
-          rules: [
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="IMEI"
+        name='imei'
+        rules={
+          [
             {
               required: true,
               message: "At least 15 Digits!",
               min: 1
             }
           ]
-        })(<Input placeholder="Please Input" />)}
+        }
+      >
+        <Input placeholder="Please Input" />
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Mac Address">
-        {form.getFieldDecorator("mac", {
-          rules: [
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Mac Address"
+        name='mac'
+        rules={
+          [
             {
               required: true,
               message: "At least 8 Digits!",
               min: 1
             }
           ]
-        })(<Input placeholder="Please Input" />)}
+        }
+      >
+      <Input placeholder="Please Input" />
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Type">
-        {form.getFieldDecorator("vehicleType", {
-          rules: [
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Type"
+        name='vehicleType'
+        rules={
+          [
             {
               required: true,
               message: "You have pick a type"
             }
           ]
-        })(
+        }
+      >
           <Select placeholder="select" style={{ width: "100%" }}>
             <Option value="0">Bike</Option>
             <Option value="1">Scooter</Option>
             <Option value="2">E-Bike</Option>
             <Option value="3">COSMO</Option>
           </Select>
-        )}
       </FormItem>
       {areas && (
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area">
-          {form.getFieldDecorator("areaId", {
-            rules: [
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area"
+          name='areaId'
+          rules={
+            [
               {
                 required: true,
                 message: "You have pick a area"
               }
             ]
-          })(
+          }
+        >
             <Select placeholder="select" style={{ width: "100%" }}>
               {areas.map(area => (
                 <Option key={area.id} value={area.id}>
@@ -396,40 +459,43 @@ const CreateForm = Form.create()(props => {
                 </Option>
               ))}
             </Select>
-          )}
         </FormItem>
       )}
+      </Form>
     </Modal>
   );
 });
 
 
-const UpdateForm = Form.create()(props => {
+const UpdateForm = (props => {
   const {
-    form,
     modalVisible,
     handleUpdate,
     handleModalVisible,
     areas,
     record
   } = props;
+  const [form] = Form.useForm()
+  form.setFieldsValue(record)
   const okHandle = () => {
-    if (form.isFieldsTouched())
-      form.validateFields((err, fieldsValue) => {
-        if (err) return;
-        form.resetFields();
+    let fieldsValue = form.getFieldsValue(true)
+    if (fieldsValue){
 
-        fieldsValue.vehicleNumber = parseInt(fieldsValue.vehicleNumber, 10);
+      fieldsValue.vehicleNumber = parseInt(fieldsValue.vehicleNumber, 10);
 
-        //filter out unchanged value
-        Object.keys(fieldsValue).map(key => {
-          if (record[key] === fieldsValue[key] && key !== "areaId") {
-            fieldsValue[key] = null;
-          }
-        });
-
-        handleUpdate(record.id, fieldsValue, record);
+      //filter out unchanged value
+      Object.keys(fieldsValue).map(key => {
+        if (record[key] === fieldsValue[key] && key !== "areaId") {
+          fieldsValue[key] = null;
+        }
       });
+
+      handleUpdate(record.id, fieldsValue, record);
+
+    }
+      // form.validateFields((err, fieldsValue) => {
+        
+      // });
     else handleModalVisible();
 };
   return (
@@ -440,29 +506,25 @@ const UpdateForm = Form.create()(props => {
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-     
+     <Form form={form}>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="Lock Status"
+        name='lockStatus'
       >
-        {form.getFieldDecorator("lockStatus", {
-          initialValue: record.lockStatus
-        })(
+
           <Select placeholder="select" style={{ width: "100%" }}>
             <Option value={0}>Unlock</Option>
             <Option value={1}>Lock</Option>
           </Select>
-        )}
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="Error Status"
+        name='errorStatus'
       >
-        {form.getFieldDecorator("errorStatus", {
-          initialValue: record.errorStatus + ""
-        })(
           <Select placeholder="select" style={{ width: "100%" }}>
             {errorStatus.map((status) => (
               <Option key={status} value={status} disabled={status >= 5}>
@@ -470,38 +532,38 @@ const UpdateForm = Form.create()(props => {
               </Option>
             ))}
           </Select>
-        )}
       </FormItem>
 
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Type">
-        {form.getFieldDecorator("vehicleType", {
-          rules: [
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Type"
+        name='vehicleType'
+        rules={
+          [
             {
               required: true,
               message: "You have pick a type"
             }
-          ],
-          initialValue: record.vehicleType
-        })(
+          ]
+        }
+        >
           <Select placeholder="select" style={{ width: "100%" }}>
             <Option value={0}>Bike</Option>
             <Option value={1}>Scooter</Option>
             <Option value={2}>E-Bike</Option>
             <Option value={3}>COSMO</Option>
           </Select>
-        )}
       </FormItem>
       {areas && (
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area">
-          {form.getFieldDecorator("areaId", {
-            rules: [
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area"
+          name='areaId'
+          rules={
+            [
               {
                 required: true,
                 message: "You have pick a area"
               }
-            ],
-            initialValue: record.areaId
-          })(
+            ]
+          }
+        >
             <Select placeholder="select" style={{ width: "100%" }}>
               {areas.map(area => (
                 <Option key={area.id} value={area.id}>
@@ -509,24 +571,14 @@ const UpdateForm = Form.create()(props => {
                 </Option>
               ))}
             </Select>
-          )}
         </FormItem>
       )}
+      </Form>
     </Modal>
   );
 });
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ vehicles, areas, loading, geo, global }) => ({
-  vehicles,
-  areas: areas.data,
-  selectedAreaId : areas.selectedAreaId,
-  loading: loading.models.vehicles,
-  areaNames: areas.areaNames,
-  isMobile: global.isMobile,
-  geo
-}))
-@Form.create()
 class Vehicle extends PureComponent {
   state = {
     modalVisible: false,
@@ -971,10 +1023,8 @@ class Vehicle extends PureComponent {
   handleFormReset = () => {
     const { form, dispatch } = this.props;
     const { filterCriteria } = this.state;
-    form.resetFields();
 
     this.handleSearch();
-
   };
 
   toggleForm = () => {
@@ -992,18 +1042,18 @@ class Vehicle extends PureComponent {
     }
   }
 
-  handleSearch = e => {
-    typeof e === 'object' && e.preventDefault();
-
-    const { dispatch, form, selectedAreaId } = this.props;
+  handleSearch = fieldsValue => {
+    const { dispatch,  selectedAreaId } = this.props;
     const { filterCriteria, selectedTab } = this.state;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
+    // form.validateFields((err, fieldsValue) => {
+      // if (err) return;
+      if(fieldsValue){
       if(/[0-9]()/.test(fieldsValue.numberOrImei) &&
       !fieldsValue.numberOrImei.includes("@")
       ) {
         fieldsValue.numberOrImei = fieldsValue.numberOrImei.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
       }
+    }
     
       let values;
 
@@ -1038,10 +1088,11 @@ class Vehicle extends PureComponent {
         } else {
           values.idleQuery = null;
         }
-        
-        if (fieldsValue.vehiclePowerCustom) {
-          values.vehicleBattery =  fieldsValue.vehiclePowerCustom;
-        }    
+        if(fieldsValue){
+          if (fieldsValue.vehiclePowerCustom) {
+            values.vehicleBattery =  fieldsValue.vehiclePowerCustom;
+          }    
+        }
         
       } else {
 
@@ -1101,7 +1152,7 @@ class Vehicle extends PureComponent {
         }
         
       );
-    });
+    // });
   };
 
   handleUpdateAllLocations = e => {
@@ -1254,68 +1305,9 @@ class Vehicle extends PureComponent {
     this.handleUpdateModalVisible();
   };
 
-  renderSimpleForm() {
-    const {
-      form: { getFieldDecorator }
-    } = this.props;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="Keywords">
-              {getFieldDecorator("numberOrImei")(
-                <Input placeholder="number or imei" />
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="Battery Status">
-              {getFieldDecorator("lockPower")(
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  <Option value="0">Low Battery</Option>
-                  <Option value="1">Full Battery</Option>
-                  <Option value={null}>All</Option>
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="Connection Status">
-              {getFieldDecorator("connected")(
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  <Option value={false}>offline</Option>
-                  <Option value={true}>online</Option>
-                  <Option value={null}>All</Option>
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-          
-          </Row>
-
-
-
-        <div style={{ overflow: "hidden" }}>
-          <div style={{ float: "right", marginBottom: 24 }}>
-                <Button type="primary" htmlType="submit">
-                  Search
-                </Button>
-                <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-                  Reset
-                </Button>
-                <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
-                  more <Icon type="down" />
-                </a>
-                </div>
-        </div>
-      </Form>
-    );
-  }
 
   renderAdvancedForm() {
-    const {
-      form: { getFieldDecorator }
-    } = this.props;
+
 
     const { areas }= this.props;
 
@@ -1333,33 +1325,27 @@ class Vehicle extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="Keywords">
-              {getFieldDecorator("numberOrImei")(
+            <FormItem label="Keywords" name='numberOrImei'>
                 <Input className="number_or_imei_input"  placeholder="number or imei" />
-              )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="Lock Battery Status">
-              {getFieldDecorator("iotBattery")(
+            <FormItem label="Lock Battery Status" name='iotBattery'>
                 <Select placeholder="select" style={{ width: "100%" }}>
                   <Option value={40}>Low Battery</Option>
                   <Option value={100}>Full Battery</Option>
                   <Option value={null}>All</Option>
                 </Select>
-              )}
             </FormItem>
           </Col>
 
           <Col md={8} sm={24}>
-            <FormItem label="Connection Status">
-              {getFieldDecorator("connected")(
+            <FormItem label="Connection Status" name='connected'>
                 <Select placeholder="select" style={{ width: "100%" }}>
                   <Option value={false}>offline</Option>
                   <Option value={true}>online</Option>
                   <Option value={null}>All</Option>
                 </Select>
-              )}
             </FormItem>
           </Col>
           
@@ -1367,19 +1353,16 @@ class Vehicle extends PureComponent {
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
 
           <Col md={8} sm={24}>
-            <FormItem label="Lock Status">
-              {getFieldDecorator("locked")(
+            <FormItem label="Lock Status" name='locked'>
                 <Select placeholder="select" style={{ width: "100%" }}>
                   <Option value={false}>Unlock</Option>
                   <Option value={true}>Lock</Option>
                   <Option value={null}>All</Option>
                 </Select>
-              )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="Vehicle Type">
-              {getFieldDecorator("vehicleType")(
+            <FormItem label="Vehicle Type" name='vehicleType'>
                 <Select placeholder="select" style={{ width: "100%" }}>
                   <Option value="0">Bike</Option>
                   <Option value="1">Scooter</Option>
@@ -1387,12 +1370,10 @@ class Vehicle extends PureComponent {
                   <Option value="3">COSMO</Option>
                   <Option value={null}>All</Option>
                 </Select>
-              )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="Error Status">
-              {getFieldDecorator("statuses", {initialValue: ["0", "1",  "5", "6", "7"]})(
+            <FormItem label="Error Status" name='statuses'>
                 <Select
                   mode="multiple"
                   placeholder="select"
@@ -1405,73 +1386,60 @@ class Vehicle extends PureComponent {
                   })
                 }
                 </Select>
-              )}
             </FormItem>
             </Col>
         </Row>
 
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
         <Col md={8} sm={24}>
-            <FormItem label="Is Using">
-              {getFieldDecorator("isUsing")(
+            <FormItem label="Is Using" name='isUsing'>
                 <Select placeholder="select" style={{ width: "100%" }}>
                   <Option value={true}>Yes</Option>
                   <Option value={false}>No</Option>
                   <Option value={null}>All</Option>
                 </Select>
-              )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="Vehicle Power Status">
-              {getFieldDecorator("vehicleBattery")(
+            <FormItem label="Vehicle Power Status" name='vehicleBattery'>
                 <Select placeholder="select" style={{ width: "100%" }}>
                 <Option value={40}>Low Battery</Option>
                 <Option value={100}>Full Battery</Option>
                 <Option value={null}>All</Option>
               </Select>
-              )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-              <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Idle Days">
-                {/* {getFieldDecorator("idleType",  {initialValue: null})(
-
-                  <Select placeholder="select" style={{ width: "50%" }}>
-                      <Option value={1}>Last Ride Time</Option>
-                      <Option value={2}>Last Drop Off Time</Option>
-                      <Option value={null}>Both</Option>
-                  </Select>
-                )} */}
-
-                {getFieldDecorator("idleDays", {
-                  rules: [
+              <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Idle Days"
+                name='idleDays'
+                rules={
+                  [
                     {
                       validator: checkIdleDays
                     }
                   ]
-                })(<InputNumber placeholder="Please Input" style={{ marginLeft: "1em" }} />)}
+                }
+                >
+
+               <InputNumber placeholder="Please Input" style={{ marginLeft: "1em" }} />
           </FormItem>
           </Col>
         </Row>
 
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
         <Col md={8} sm={24}>
-            <FormItem label="Is Reported">
-              {getFieldDecorator("isReported")(
+            <FormItem label="Is Reported" name='isReported'>
                 <Select placeholder="select" style={{ width: "100%" }}>
                   <Option value={true}>Yes</Option>
                   <Option value={false}>No</Option>
                   <Option value={null}>All</Option>
                 </Select>
-              )}
             </FormItem>
           </Col>
           <Col md={12} sm={24}>
-            <FormItem label="Custom Vehicle Power Search:">
-              {getFieldDecorator("vehiclePowerCustom")(
+            <FormItem label="Custom Vehicle Power Search:" name='vehiclePowerCustom'>
                 <InputNumber placeholder="power" />
-              )} %
+               %
             </FormItem>
           </Col>
         </Row>
@@ -1498,11 +1466,8 @@ class Vehicle extends PureComponent {
 
   renderForm() {
     const { expandForm } = this.state;
-    return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
+    return expandForm ? this.renderAdvancedForm() : <RenderSimpleForm toggleForm={this.toggleForm} handleSearch={this.handleSearch} handleFormReset={this.handleFormReset}/>;
   }
-
-
-
 
 
   //map vehicle list data
@@ -1622,7 +1587,6 @@ handleShowingVehicles = val => {
 
 }
 
-
   render() {
     const { vehicles, areas, loading, selectedAreaId, geo, areaNames, dispatch } = this.props;
 
@@ -1665,7 +1629,7 @@ handleShowingVehicles = val => {
       pageSize: filterCriteria.pagination.pageSize,
       total: vehicles.total
     };
-
+  
     return (
       <PageHeaderWrapper title="Vehicle List">
         <Card bordered={false}>
@@ -1673,7 +1637,6 @@ handleShowingVehicles = val => {
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
               <Button
-                icon="plus"
                 type="primary"
                 onClick={() => this.handleModalVisible(true)}
               >
@@ -1941,5 +1904,15 @@ handleShowingVehicles = val => {
     );
   }
 }
-
-export default Vehicle;
+const mapStateToProps = ({ vehicles, areas, loading, geo, global }) => {
+  return {
+    vehicles,
+    areas: areas.data,
+    selectedAreaId : areas.selectedAreaId,
+    loading: loading.models.vehicles,
+    areaNames: areas.areaNames,
+    isMobile: global.isMobile,
+    geo
+    }
+}
+export default connect(mapStateToProps)(Vehicle) 

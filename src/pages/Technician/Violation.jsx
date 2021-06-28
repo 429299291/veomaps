@@ -25,38 +25,39 @@ const FormItem = Form.Item;
 const { TextArea } = Input;
 const { Option } = Select;
 
-const CreateForm = Form.create()((props) => {
+const CreateForm = ((props) => {
   const {
     modalVisible,
-    form,
     handleAdd,
     handleModalVisible,
     areas,
   } = props;
+  const [form] = Form.useForm()
   const okHandle = () => {
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      handleAdd(fieldsValue);
-    });
+    handleAdd(form.getFieldsValue(true));
+    form.resetFields();
   };
   return (
     <Modal
       destroyOnClose
       title="Add"
       visible={modalVisible}
+      forceRender
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
+      <Form form={form}>
       {areas && (
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area">
-          {form.getFieldDecorator('areaId', {
-            rules: [
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area"
+          name='areaId'
+          rules={
+            [
               {
                 required: true,
               },
-            ],
-          })(
+            ]
+          }
+        >
             <Select placeholder="select" style={{ width: '100%' }}>
               {areas.map(area => (
                 <Option key={area.id} value={area.id}>
@@ -64,39 +65,37 @@ const CreateForm = Form.create()((props) => {
                 </Option>
               ))}
             </Select>,
-          )}
         </FormItem>
       )}
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Violation Type">
-        {form.getFieldDecorator('messageType', {
-        })(<Input placeholder="Please Input" />)}
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Violation Type" name='messageType'>
+        <Input placeholder="Please Input" />
       </FormItem>
 
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Message">
-        {form.getFieldDecorator('message', {
-          initialValue: '',
-        })(<TextArea placeholder="Please Input" />)}
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Message" name='message'>
+        <TextArea placeholder="Please Input" />
       </FormItem>
+      </Form>
     </Modal>
   );
 });
 
-const UpdateForm = Form.create()((props) => {
+const UpdateForm = ((props) => {
   const {
-    form,
     modalVisible,
     handleUpdate,
     handleModalVisible,
     record,
   } = props;
+  const [form] = Form.useForm()
+  form.setFieldsValue(record)
   const okHandle = () => {
-    if (form.isFieldsTouched()) {
-      form.validateFields((err, fieldsValue) => {
-        if (err) return;
-        form.resetFields();
-        handleUpdate(record.id, fieldsValue);
-      });
-    } else handleModalVisible();
+    const fieldsValue = form.getFieldsValue(true)
+    if(fieldsValue){
+      form.resetFields();
+      handleUpdate(record.id, fieldsValue);
+    }else{
+      handleModalVisible();
+    }
   };
 
   return (
@@ -105,45 +104,41 @@ const UpdateForm = Form.create()((props) => {
       title="Update"
       visible={modalVisible}
       onOk={okHandle}
+      forceRender
       onCancel={() => handleModalVisible()}
     >
-      <FormItem labelCol={{ span: 6 }} wrapperCol={{ span: 14 }} label="Message Type">
-        {form.getFieldDecorator('messageType', {
-          rules: [
+      <Form form={form}>
+      <FormItem labelCol={{ span: 6 }} wrapperCol={{ span: 14 }} label="Message Type" 
+        rules={
+          [
             {
               required: true,
               message: 'message type is required',
             },
-          ],
-          initialValue: record.messageType,
-        })(<Input placeholder="Please Input" />)}
+          ]
+        }
+      name='messageType'>
+        <Input placeholder="Please Input" />
       </FormItem>
-      <FormItem labelCol={{ span: 6 }} wrapperCol={{ span: 14 }} label="Message">
-        {form.getFieldDecorator('message', {
-          rules: [
+      <FormItem labelCol={{ span: 6 }} wrapperCol={{ span: 14 }} label="Message"
+        name='message'
+        rules={
+          [
             {
               required: true,
               message: 'message is required',
             },
-          ],
-          initialValue: record.message,
-        })(<TextArea placeholder="Please Input" />)}
+          ]
+        }
+      >
+        <TextArea placeholder="Please Input" />
       </FormItem>
+      </Form>
     </Modal>
   );
 });
 
 /* eslint react/no-multi-comp:0 */
-@connect(({
-  areas, price, loading, violation,
-}) => ({
-  areas,
-  price,
-  selectedAreaId: areas.selectedAreaId,
-  loading: loading.models.price,
-  messages: violation.data,
-}))
-@Form.create()
 class Violation extends PureComponent {
   state = {
     modalVisible: false,
@@ -265,49 +260,6 @@ class Violation extends PureComponent {
     this.handleUpdateModalVisible();
   };
 
-  renderSimpleForm() {
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
-
-    const areas = this.props.areas.data;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          {areas && (
-            <Col md={8} sm={24}>
-              <FormItem
-                labelCol={{ span: 5 }}
-                wrapperCol={{ span: 15 }}
-                label="Area"
-              >
-                {getFieldDecorator('areaId')(
-                  <Select placeholder="select" style={{ width: '100%' }}>
-                    {areas.map(area => (
-                      <Option key={area.id} value={area.id}>
-                        {area.name}
-                      </Option>
-                    ))}
-                  </Select>,
-                )}
-              </FormItem>
-            </Col>
-          )}
-          <Col md={8} sm={24}>
-            <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
-                Search
-              </Button>
-              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-                Reset
-              </Button>
-            </span>
-          </Col>
-        </Row>
-      </Form>
-    );
-  }
-
   filterAreaPrice(prices, areas) {
     if (Array.isArray(prices) && Array.isArray(areas)) {
       const areaIds = {};
@@ -348,7 +300,6 @@ class Violation extends PureComponent {
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
               <Button
-                icon="plus"
                 type="primary"
                 onClick={() => this.handleCreateModalVisible(true)}
               >
@@ -381,5 +332,13 @@ class Violation extends PureComponent {
     );
   }
 }
-
-export default Violation;
+const mapStateToProps = ({ areas, price, loading, violation }) => {
+  return {
+    areas,
+    price,
+    selectedAreaId: areas.selectedAreaId,
+    loading: loading.models.price,
+    messages: violation.data,
+      }
+}
+export default connect(mapStateToProps)(Violation) 
