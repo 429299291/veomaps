@@ -19,6 +19,9 @@ const Areas = (props) => {
     const [ageEnabled, setAgeEnabled] = useState(false);
     const [areaAvailabilityIsOpenEnabled, setAreaAvailabilityIsOpenEnabled] = useState(false);
     const [freeRideEnabled, setFreeRideEnabled] = useState(false);
+    //geo
+    const [handleEditCenterData, setHandleEditCenterData] = useState(false);
+
 
     const [violationFineDatas, setViolationFineDatas] = useState(['0']);
     const [regulationDatas, setRegulationDatas] = useState([]);
@@ -156,6 +159,11 @@ const Areas = (props) => {
   const getRegulationDatas=(msg)=>{
     setRegulationDatas(msg)
   }
+  ///geo
+  const handleEditCenter=(data)=>{
+    setHandleEditCenterData(data)
+    console.log(handleEditCenterData);
+  }
     return (
       <>
         <Card bordered={false} size="small">
@@ -167,28 +175,29 @@ const Areas = (props) => {
         >
         <BorderInnerOutlined style={areas.selectedAreaId?{display:'none'}:{display:'inline-block'}}/><RadiusUprightOutlined style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}/> {formStatus}
         </Button>
-        <Button
+        {/* <Button
           type="primary"
           style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}
         >
-        <BorderOuterOutlined />Edit Center
+        <BorderOuterOutlined/>Edit Center
         </Button>
         <Button
           type="primary"
+          onClick={()=>{handleEditCenter(true)}}
           style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}
         >
-        <BorderOuterOutlined />Add Fence
+        <BorderOuterOutlined/>Add Fence
         </Button>
         <Button
           type="primary"
           style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}
         >
         <ExpandOutlined /> Add Vehicle Hub
-        </Button>
+        </Button> */}
         </Space>
         </Row>
         </Card>
-        <Geo></Geo>
+        <Geo handleEditCenterData ={handleEditCenterData}></Geo>
 
         <Drawer
           title="Update Area Feature"
