@@ -48,6 +48,7 @@ let routes = [
       {
         "path": "/dashboard",
         "name": "dashboard",
+        "icon": "dashboard",
         "authority": "dashboard",
         "routes": [
           {
@@ -89,6 +90,7 @@ let routes = [
         "path": "/ride/",
         "name": "Riding Management",
         "component": dynamic({ loader: () => import('../Ride/Ride'), loading: require('/Users/zhudongdong/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
+        "icon": "car",
         "authority": [
           "ride"
         ],
@@ -200,6 +202,7 @@ let routes = [
       {
         "path": "/employee-management/",
         "name": "Admin Management",
+        "icon": "user",
         "authority": [
           "admin"
         ],
@@ -230,6 +233,7 @@ let routes = [
       {
         "path": "/technician-management/",
         "name": "Technician Management",
+        "icon": "user",
         "authority": [
           "technician"
         ],

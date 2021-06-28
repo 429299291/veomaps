@@ -25,6 +25,7 @@ export default [
         path: "/dashboard",
         name: "dashboard",
         // icon: "dashboard",
+        icon: "dashboard",
         authority: "dashboard",
         routes: [
           {
@@ -57,6 +58,7 @@ export default [
         name: "Riding Management",
         component: "./Ride/Ride",
         // icon: "car",
+        icon: "car",
         authority: ["ride"],
       },
       {
@@ -164,6 +166,7 @@ export default [
         path: "/employee-management/",
         name: "Admin Management",
         // icon: "user",
+        icon: "user",
         authority: ["admin"],
         routes: [
           {
@@ -187,6 +190,7 @@ export default [
         path: "/technician-management/",
         name: "Technician Management",
         // icon: "user",
+        icon: "user",
         authority: ["technician"],
         routes: [
           {

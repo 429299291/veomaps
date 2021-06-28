@@ -330,8 +330,7 @@ class Technician extends PureComponent {
   };
 
   getNameByAreaId = areaId => {
-    const { areas } = this.state;
-
+    const  areas = this.props.areas.allAreas;
     if (areas.length === 0) return "";
     else return areas.find(area => area.id === areaId).name;
   };

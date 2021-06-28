@@ -22,11 +22,8 @@ const RouteMap = compose(
     withScriptjs,
     withGoogleMap
   )(props => {
-    const { pathInfo, fences } = props;
+    const { path, fences, distance} = props;
   
-    const path = pathInfo.path;
-  
-    const distance = pathInfo.distance;
   
     const center = path[Math.round(path.length / 2)];
   

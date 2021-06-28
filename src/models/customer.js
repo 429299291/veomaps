@@ -45,7 +45,7 @@ export default {
       if (data) {
         onSuccess && onSuccess(data);
       } else {
-        message.error("Fail to Get Verification Code");
+        message.error("Password Incorrect.");
       }
     },
     *getAll({ payload, onSuccess }, { call, put }) {
