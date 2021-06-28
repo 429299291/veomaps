@@ -92,8 +92,9 @@ class DynamicFenceConfigForm extends PureComponent {
   getTimePicker = (field, subField) => {
       const {value} = this.props;
 
+
       return <TimePicker  
-                defaultValue={value[field][subField] ?  moment(value[field][subField], "HH:mm") : undefined}
+                // defaultValue={value[field][subField] ?  moment(value[field][subField], "HH:mm") : undefined}
                 placeholder={subField}
                 onChange={
                  
@@ -102,9 +103,9 @@ class DynamicFenceConfigForm extends PureComponent {
                     const newFeildVal = {};
                     
                     newFeildVal[field] = value[field];
-
+                        console.log('---'+value[field]);
                     newFeildVal[field][subField] = val ? val.format("HH:mm") : null;
-
+                        console.log('newFeildVal'+newFeildVal);
                     this.triggerChange(newFeildVal);
                   }
                 }
@@ -116,7 +117,8 @@ class DynamicFenceConfigForm extends PureComponent {
   render = () => {
 
     const {value, onChange} = this.props;
-    
+    console.log('value');
+    console.log(value);
     return <div>
 
               <Row> 
@@ -154,7 +156,9 @@ class DynamicFenceConfigForm extends PureComponent {
               <Row> 
               <Col span={6}> Time Zone: </Col>
               <Col span={12}> 
-                  <Select defaultValue={value.timeZone ? value.timeZone : undefined} onChange={val => this.triggerChange({timeZone: val})} style={{width: "100%"}}>
+                  <Select 
+                  // defaultValue={value.timeZone ? value.timeZone : undefined} 
+                  onChange={val => this.triggerChange({timeZone: val})} style={{width: "100%"}}>
                     <Select.Option key={1} value="US/Pacific"> Pacific Standard Time </Select.Option>
                     <Select.Option key={2}  value="US/Mountain"> Mountain Standard Time </Select.Option>
                     <Select.Option key={3} value="US/Central"> Central Standard Time </Select.Option>
@@ -355,7 +359,7 @@ const CreateFenceForm = (props => {
         fieldsValue.forceVehicleTypes = undefined;
       }
 
-      console.log(fieldsValue);
+      console.log('fieldsValue'+fieldsValue);
 
       handleNext(fieldsValue);
   };
@@ -404,7 +408,9 @@ const CreateFenceForm = (props => {
             </Select.Option>
       </Select>
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Active Time" name='activeTimeRange'>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Active Time" name='activeTimeRange'
+      initialValue= {(fence && fence.activeTimeRange) ? fence.activeTimeRange : {weekDayDTO: {start: null, end: null}, weekendDTO: {start: null, end: null}, timeZone: null}}
+      >
         <DynamicFenceConfigForm />
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Note" name='note'>
@@ -468,10 +474,14 @@ const CreateFenceForm = (props => {
           label={(isGeoFence? "Force " : "") + "Vehicle Type"}
         >
             <Select placeholder="select" style={{ width: "100%" }} mode="multiple">
-              <Option value={0}>Bike</Option>
+            <Select.Option key={0} value={0}>Bike</Select.Option>
+            <Select.Option key={1} value={1}>Scooter</Select.Option>
+            <Select.Option key={2} value={2}>E-Bike</Select.Option>
+            <Select.Option key={3} value={3}>COSMO</Select.Option>
+              {/* <Option value={0}>Bike</Option>
               <Option value={1}>Scooter</Option>
               <Option value={2}>E-Bike</Option>
-              <Option value={3}>COSMO</Option>
+              <Option value={3}>COSMO</Option> */}
             </Select>
         </FormItem>
       }
@@ -665,6 +675,8 @@ class geo extends PureComponent {
   setCircleRef = ref => this.cricelRef = ref;
 
   handleCreateFenceNextStep = values => {
+    console.log('222');
+    console.log(values);
     const { selectedAreaId } = this.props;
     values.fenceCoordinates = [];
     values.areaId = selectedAreaId;
@@ -1167,6 +1179,7 @@ class geo extends PureComponent {
   };
 
   handleEditFenceSubmit = values => {
+    console.log('111'+values);
     const { selectedExistedFence } = this.state;
 
     this.handleUpdateFence(Object.assign({}, selectedExistedFence, values));
@@ -1332,7 +1345,7 @@ class geo extends PureComponent {
             </Col>
           </Row>
         </Card> }
-        {/* <CreateFenceForm
+        <CreateFenceForm
           handleNext={
             selectedExistedFence
               ? this.handleEditFenceSubmit
@@ -1342,7 +1355,7 @@ class geo extends PureComponent {
           modalVisible={isEditingFenceModalVisible}
           editingFence={editingFence}
           selectedExistedFence={selectedExistedFence}
-        /> */}
+        />
         <Modal
           title="Delete"
           visible={isDeleteModalVisible}
