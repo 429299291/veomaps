@@ -3,14 +3,14 @@ import { PlusOutlined } from '@ant-design/icons';
 
 class regulation extends React.Component {
   state = {
-    tags:[],
+    tags:this.props.tags,
     inputVisible: false,
     // inputValue: '',
     inputValue: {
     },
     // content:'11',
     editInputIndex: -1,
-    editInputValue: '',
+    editInputValue: {},
     // editContentValue: '',
     
   };
@@ -27,7 +27,11 @@ class regulation extends React.Component {
       // , () => this.input.focus()
       );
   };
-
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+     tags: nextProps.tags
+    });
+   }
   handleInputChange = e => {
     this.setState({ inputValue: {...this.state.inputValue,title:e.target.value }});
   };
@@ -36,10 +40,10 @@ class regulation extends React.Component {
     this.setState({ inputValue: {...this.state.inputValue,content:e.target.value } });
   };
   handlePositionChange = e => {
-    this.setState({ inputValue: {...this.state.inputValue,position:parseInt(e.target.value) } });
+    this.setState({ inputValue: {...this.state.inputValue,position:e.target.value?parseInt(e.target.value):'' } });
+
   };
   handleInputConfirm = () => {
-    console.log('-');
     const { inputValue } = this.state;
     let { tags } = this.state;
     // if(inputValue.title== '' ||inputValue.content == ''){
@@ -57,21 +61,20 @@ class regulation extends React.Component {
         position:null
       },
     });
-    console.log('confirm');
-    console.log(this.state.tags);
-        this.props.getRegulationDatas(this.state.tags)
 
   };
 
   handleEditInputChange = e => {
-    this.setState({ editInputValue: e.target.value });
+    this.setState({ editInputValue:{...this.state.editInputValue,title:e.target.value }});
   };
   handleEditContentChange = e => {
-    this.setState({ editContentValue: e.target.value });
+    this.setState({ editInputValue: {...this.state.editInputValue,content:e.target.value } });
+  };
+  handleEditPositionChange = e => {
+    this.setState({ editInputValue: {...this.state.editInputValue,position:e.target.value } });
   };
 
   handleEditInputConfirm = () => {
-    console.log('===');
     this.setState(({ tags, editInputIndex, editInputValue,editContentValue }) => {
       const newTags = [...tags];
       newTags[editInputIndex] = editInputValue;
@@ -81,7 +84,8 @@ class regulation extends React.Component {
         editInputIndex: -1,
         editInputValue: {
           title:'',
-          content:''
+          content:'',
+          position:''
         },
         editContentValue:''
       };
@@ -104,9 +108,7 @@ class regulation extends React.Component {
 
   render() {
     const {tags, inputVisible, inputValue, editInputIndex, editInputValue ,content,editContentValue} = this.state;
-    // const {tags} = this.props
-    // this.props.getRegulationDatas(tags)
-    console.log(this.props.tags);
+    this.props.getRegulationDatas(this.state.tags)
     return (
       <>
         {tags.map((tag, index) => {

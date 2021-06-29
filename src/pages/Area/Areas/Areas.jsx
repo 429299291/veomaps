@@ -61,8 +61,8 @@ const Areas = (props) => {
       console.log(formDatas.feature.regulation.regulations);
       if(formDatas){
         setViolationFineDatas(formDatas.feature.violationFees)
+        setRegulationDatas(formDatas.feature.regulation.regulations)
       }
-      setRegulationDatas(formDatas.feature.regulation.regulations)
       form.setFieldsValue(formDatas)
     }else{
       setRegulationDatas([])
@@ -167,7 +167,6 @@ const Areas = (props) => {
   ///geo
   const handleEditCenter=(data)=>{
     setHandleEditCenterData(data)
-    console.log(handleEditCenterData);
   }
     return (
       <>
@@ -400,13 +399,13 @@ const Areas = (props) => {
                         </Form.Item>
                       </Col>
                     </Row>
-                    {/* <Col span={24}>
+                    <Col span={24}>
                     <Card title="regulationDatas Configuration" type="inner" size="small">
                       <Row>
                       <Regulation tags={regulationDatas} getRegulationDatas={getRegulationDatas.bind(this)}></Regulation>
                       </Row>
                     </Card>
-                  </Col> */}
+                  </Col>
 
                   </Panel>
                 </Collapse>
