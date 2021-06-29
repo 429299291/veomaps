@@ -55,13 +55,18 @@ const Areas = (props) => {
   };
   const showDrawer =  () => {
     // console.log('formDatas');
+    
     console.log(formDatas);
     if(formDatas.feature){
       console.log(formDatas.feature.regulation.regulations);
+      if(formDatas){
+        setViolationFineDatas(formDatas.feature.violationFees)
+      }
       setRegulationDatas(formDatas.feature.regulation.regulations)
       form.setFieldsValue(formDatas)
     }else{
       setRegulationDatas([])
+      setViolationFineDatas([])
       form.resetFields()
     }
     setIsDrawerVisible(true);
@@ -197,7 +202,7 @@ const Areas = (props) => {
         </Space>
         </Row>
         </Card>
-        <Geo handleEditCenterData ={handleEditCenterData}></Geo>
+        {/* <Geo handleEditCenterData ={handleEditCenterData}></Geo> */}
 
         <Drawer
           title="Update Area Feature"

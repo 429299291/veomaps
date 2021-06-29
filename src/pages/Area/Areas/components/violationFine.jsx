@@ -2,7 +2,7 @@ import { Tag, Input, Tooltip,Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 class violationFine extends React.Component {
   state = {
-    tags:this.props.tags || ['0', '25'],
+    tags:this.props.tags,
     inputVisible: false,
     inputValue: '',
     editInputIndex: -1,
@@ -22,14 +22,17 @@ class violationFine extends React.Component {
   handleInputChange = e => {
     this.setState({ inputValue: e.target.value });
   };
-
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+     tags: nextProps.tags
+    });
+   }
   handleInputConfirm = () => {
     const { inputValue } = this.state;
     let { tags } = this.state;
     if (inputValue && tags.indexOf(inputValue) === -1) {
       tags = [...tags, inputValue];
     }
-    console.log(this.props);
     this.setState({
       tags,
       inputVisible: false,
@@ -65,7 +68,6 @@ class violationFine extends React.Component {
   render() {
     const {tags, inputVisible, inputValue, editInputIndex, editInputValue } = this.state;
     this.props.getViolationFineDatas(tags)
-    console.log(this.props.tags);
     return (
       <>
         {tags.map((tag, index) => {
