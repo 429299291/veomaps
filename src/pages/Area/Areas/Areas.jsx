@@ -197,7 +197,7 @@ const Areas = (props) => {
         </Space>
         </Row>
         </Card>
-        {/* <Geo handleEditCenterData ={handleEditCenterData}></Geo> */}
+        <Geo handleEditCenterData ={handleEditCenterData}></Geo>
 
         <Drawer
           title="Update Area Feature"
