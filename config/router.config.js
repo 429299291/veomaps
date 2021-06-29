@@ -58,7 +58,6 @@ export default [
         name: "Riding Management",
         component: "./Ride/Ride",
         // icon: "car",
-        icon: "car",
         authority: ["ride"],
       },
       {

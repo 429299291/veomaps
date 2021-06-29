@@ -299,11 +299,7 @@ class Order extends PureComponent {
               <FormItem label="Name" name='name'>
                 <Input placeholder="Name" />
               </FormItem>
-            </Col>
-            
-            </Row>
-  
-            <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+            </Col>  
   
                 <Col md={8} sm={24}>
                   <span className={styles.submitButtons}>
@@ -316,19 +312,14 @@ class Order extends PureComponent {
                   </span>
                 </Col>
             
-            </Row>
   
-            <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
   
                 <Col md={8} sm={24}>
                   <span>
                     Total: {order.total}
                   </span>
                 </Col>
-            
-            </Row>
-  
-  
+                </Row>
         </Form>
       );
     }

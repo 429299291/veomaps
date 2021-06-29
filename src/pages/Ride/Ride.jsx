@@ -619,12 +619,12 @@ class Ride extends PureComponent {
     return (
       <Form onSubmit={handleSearchFirst} layout="inline" onFinish={()=>{this.handleSearch(form.getFieldsValue(true))}} form={form}>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={6} sm={24}>
+          <Col span={6}>
             <FormItem label="Keywords" name='numberOrPhone'>
                 <Input placeholder="NUMBER PHONE" />
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col span={4}>
             <FormItem label="Type" name='type'>
                 <Select placeholder="select" style={{ width: "100%" }}>
                   {rideType.map((status, index) => (
@@ -636,7 +636,7 @@ class Ride extends PureComponent {
                 </Select>
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col span={5}>
             <FormItem label="Lock Way" name='lockWay'>
                 <Select placeholder="select" style={{ width: "100%" }}>
                   {lockOperationWay.map((status, index) => (
@@ -648,7 +648,7 @@ class Ride extends PureComponent {
                 </Select>
             </FormItem>
           </Col>
-          <Col md={6} sm={24}>
+          <Col span={5}>
             <FormItem label="Unlock Way" name='unlockWay'>
                 <Select placeholder="select" style={{ width: "100%" }}>
                   {lockOperationWay.map((status, index) => (
@@ -660,31 +660,25 @@ class Ride extends PureComponent {
                 </Select>
             </FormItem>
           </Col>
-        </Row>
-
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col lg={7} md={12} sm={24}>
+        {/* <Row gutter={{ md: 8, lg: 24, xl: 48 }}> */}
+          <Col span={6}>
             <FormItem
               label="Time"
-              labelCol={{ span: 5 }}
-              wrapperCol={{ span: 15 }}
               name='timeRange'
             >
                 <RangePicker
-                  style={{ width: "90%" }}
+                  // style={{ width: "90%" }}
                   format="YYYY-MM-DD HH:mm:ss"
                   showTime
                 />
             </FormItem>
           </Col>
-          <Col lg={7} md={12} sm={24}>
+          <Col span={4}>
             <FormItem
               label="Vehicle Type"
-              labelCol={{ span: 5 }}
-              wrapperCol={{ span: 15 }}
               name='vehicleType'
             >
-                <Select placeholder="select" style={{ width: "100%" }}>
+                <Select placeholder="select">
                   {vehicleType.map((status, index) => (
                     <Option key={index} value={index}>
                       {vehicleType[index]}
@@ -694,14 +688,15 @@ class Ride extends PureComponent {
                 </Select>
             </FormItem>
           </Col>
+        {/* </Row> */}
         </Row>
 
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
+          <Col span={10}>
             {`count: ${this.props.rides.total}`}
           </Col>
-          <Col md={{ span: 8, offset: 12 }} sm={24}>
-            <span className={styles.submitButtons} style={{ float: "right" }}>
+          <Col span={10}>
+            <span className={styles.submitButtons} >
               <Button type="primary" htmlType="submit">
                 Search
               </Button>

@@ -377,6 +377,7 @@ const CreateFenceForm = (props => {
       destroyOnClose
       title={`${fence ? "Edit" : "Add"} Fence`}
       visible={modalVisible}
+      forceRender
       onOk={okHandle}
       width={700}
       onCancel={() => handleModalVisible(false)}

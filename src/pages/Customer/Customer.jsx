@@ -77,13 +77,13 @@ const RenderSimpleForm=(props)=> {
   const [form] = Form.useForm()
   return (
     <Form layout="inline" form={form}>
-      <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-        <Col md={8} sm={24}>
-          <FormItem label="Keywords" name='nameOrPhoneOrEmail'>
+      {/* <Row gutter={{ md: 8, lg: 24, xl: 48 }}> */}
+        <Col span={5} style={{padding: '0 18px 0 0'}}>
+          <FormItem label="Keywords" name='nameOrPhoneOrEmail'> 
               <Input placeholder="PHONE NAME EMAIL" />
           </FormItem>
         </Col>
-        <Col md={8} sm={24}>
+        <Col span={5} style={{padding: '0 18px'}}>
           <FormItem label="Status" name='queryStatus'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 {queryStatus.map((status, index) => (
@@ -94,18 +94,18 @@ const RenderSimpleForm=(props)=> {
               </Select>
           </FormItem>
         </Col>
-        <Col md={8} sm={24}>
+        <Col span={6}>
           <FormItem label="Registered" name='created'>
             <RangePicker />
           </FormItem>
         </Col>
-      </Row>
+      {/* </Row> */}
 
-      <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-        <Col md={4} sm={24}>
+      {/* <Row span={16}> */}
+        <Col span={3}>
           {`count: ${props.customerTotal}`}
         </Col>
-        <Col md={{ span: 8, offset: 12}} sm={24}>
+        <Col span={6}>
           <span className={styles.submitButtons} style={{ float: "right" }}>
 
           {<Button type="primary" onClick={() => props.handleGenTempCodeModalVisible(true)}>
@@ -121,7 +121,7 @@ const RenderSimpleForm=(props)=> {
             </Button>
           </span>
         </Col>
-      </Row>
+      {/* </Row> */}
     </Form>
   );
 }
