@@ -65,6 +65,7 @@ class violationFine extends React.Component {
   render() {
     const {tags, inputVisible, inputValue, editInputIndex, editInputValue } = this.state;
     this.props.getViolationFineDatas(tags)
+    console.log(this.props.tags);
     return (
       <>
         {tags.map((tag, index) => {
