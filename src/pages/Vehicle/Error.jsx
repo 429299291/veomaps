@@ -134,12 +134,12 @@ const UpdateForm = (props => {
   return (
     <Form onSubmit={()=>{props.handleSearch('00')}} layout="inline" form={form}>
       <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-        <Col md={6} sm={24}>
+        <Col span={10}>
           <FormItem label="Keywords" name='numberOrPhone'>
               <Input placeholder="NUMBER Or PHONE" />
           </FormItem>
         </Col>
-        <Col md={6} sm={24}>
+        <Col span={10}>
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
@@ -156,10 +156,10 @@ const UpdateForm = (props => {
               </Select>
           </FormItem>
         </Col>
-        <Col md={6} sm={24}>
+        <Col span={10}>
           <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
+            // labelCol={{ span: 5 }}
+            // wrapperCol={{ span: 15 }}
             label="Review Status"
             name='reviewStatus'
           >
@@ -188,7 +188,7 @@ const UpdateForm = (props => {
             </Select>)}
         </FormItem>
           </Col> */}
-        <Col lg={18} md={16} sm={24}>
+        <Col span={20}>
           <FormItem label="time" name='time'>
               <RangePicker format="YYYY-MM-DD HH:mm:ss" />
           </FormItem>

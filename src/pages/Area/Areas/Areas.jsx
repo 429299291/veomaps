@@ -23,7 +23,7 @@ const Areas = (props) => {
     const [handleEditCenterData, setHandleEditCenterData] = useState(false);
 
 
-    const [violationFineDatas, setViolationFineDatas] = useState(['0']);
+    const [violationFineDatas, setViolationFineDatas] = useState([]);
     const [regulationDatas, setRegulationDatas] = useState([]);
     // const [violationFineIndex, setViolationFineIndex] = useState(0);
     const [form] = Form.useForm();
@@ -197,7 +197,7 @@ const Areas = (props) => {
         </Space>
         </Row>
         </Card>
-        <Geo handleEditCenterData ={handleEditCenterData}></Geo>
+        {/* <Geo handleEditCenterData ={handleEditCenterData}></Geo> */}
 
         <Drawer
           title="Update Area Feature"
