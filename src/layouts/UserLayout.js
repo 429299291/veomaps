@@ -42,6 +42,10 @@ class UserLayout extends React.PureComponent {
   };
   render() {
     const { children } = this.props;
+    console.log(this.codeCursor);
+    // this.codeCursor.focus({
+    //   cursor: '',
+    // })
     const onFinish = (values) => {
       const { dispatch } = this.props;
       if(!values.code){
@@ -75,7 +79,6 @@ class UserLayout extends React.PureComponent {
     const onFinishFailed = (errorInfo) => {
       console.log('Failed:', errorInfo);
     };
-    console.log(this.codeCursor);
     return (
       // @TODO <DocumentTitle title={this.getPageTitle()}>
       <div className={styles.container}>

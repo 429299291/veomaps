@@ -48,8 +48,8 @@ let routes = [
       {
         "path": "/dashboard",
         "name": "dashboard",
-        "icon": "dashboard",
         "authority": "dashboard",
+        "key": "/dashboard",
         "routes": [
           {
             "path": "/dashboard/main",
