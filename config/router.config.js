@@ -1,4 +1,5 @@
 import Icon from '@ant-design/icons';
+import { StepForwardOutlined } from '@ant-design/icons';
 
 export default [
   // user
@@ -24,9 +25,8 @@ export default [
       {
         path: "/dashboard",
         name: "dashboard",
-        // icon: "dashboard",
-        icon: "dashboard",
         authority: "dashboard",
+        key:'/dashboard',
         routes: [
           {
             path: "/dashboard/main",

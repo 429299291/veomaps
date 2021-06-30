@@ -80,7 +80,7 @@ const RenderSimpleForm=(props)=> {
       {/* <Row gutter={{ md: 8, lg: 24, xl: 48 }}> */}
         <Col span={5} style={{padding: '0 18px 0 0'}}>
           <FormItem label="Keywords" name='nameOrPhoneOrEmail'> 
-              <Input placeholder="PHONE NAME EMAIL" />
+              <Input placeholder="PHONE NAME EMAIL" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
           </FormItem>
         </Col>
         <Col span={5} style={{padding: '0 18px'}}>
@@ -594,8 +594,6 @@ class Customer extends PureComponent {
   handleSearch = fieldsValue => {
 
     const { filterCriteria } = this.state;
-    console.log('--');
-
       if (fieldsValue.created) {
         fieldsValue.registerStart = moment(fieldsValue.created[0])
           .utcOffset(0)

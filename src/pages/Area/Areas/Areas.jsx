@@ -382,7 +382,7 @@ const Areas = (props) => {
                   <Col span={12} >
                         <Form.Item 
                       {...tailLayout}
-                            label="lat"
+                            label="position lat"
                             name={['feature','center','lat']}
                             rules={[{ required: false, message: 'Please input your lat!' }]}
                           >
@@ -392,7 +392,7 @@ const Areas = (props) => {
                       <Col span={12} >
                         <Form.Item 
                       {...tailLayout}
-                            label="lng"
+                            label="position lng"
                             name={['feature','center','lng']}
                             rules={[{ required: false, message: 'Please input your lng!' }]}
                           >
