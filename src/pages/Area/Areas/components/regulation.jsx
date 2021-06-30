@@ -145,7 +145,7 @@ class regulation extends React.Component {
             <Tag
               className="edit-tag"
               key={tag.title}
-              closable={index !== 0}
+              closable={index !== -1}
               color="processing"
               onClose={() => this.handleClose(tag)}
             >
