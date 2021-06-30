@@ -42,10 +42,9 @@ class UserLayout extends React.PureComponent {
   };
   render() {
     const { children } = this.props;
-    console.log(this.codeCursor);
-    // this.codeCursor.focus({
-    //   cursor: '',
-    // })
+    // if(this.codeCursor){
+    //   this.codeCursor.focus()
+    // }
     const onFinish = (values) => {
       const { dispatch } = this.props;
       if(!values.code){
