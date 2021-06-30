@@ -38,13 +38,12 @@ class UserLayout extends React.PureComponent {
     autoLogin: true,
     phone: null,
     code:null,
-    PhoneVerficationEnabled:false
+    PhoneVerficationEnabled:false,
   };
   render() {
     const { children } = this.props;
     const onFinish = (values) => {
       const { dispatch } = this.props;
-
       if(!values.code){
         const payload = {
           email: values.email,
@@ -76,6 +75,7 @@ class UserLayout extends React.PureComponent {
     const onFinishFailed = (errorInfo) => {
       console.log('Failed:', errorInfo);
     };
+    console.log(this.codeCursor);
     return (
       // @TODO <DocumentTitle title={this.getPageTitle()}>
       <div className={styles.container}>
@@ -142,7 +142,7 @@ class UserLayout extends React.PureComponent {
           },
         ]}
       >
-        <Input placeholder='Please input your Phone Verification!' />
+        <Input placeholder='Please input your Phone Verification!' ref={c=>this.codeCursor=c}/>
       </Form.Item>
       }
       {/* <Form.Item
