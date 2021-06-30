@@ -81,14 +81,15 @@ const Areas = (props) => {
     setIsDrawerVisible(false);
   };
   const onFinish = (values) => {
+    console.log(values);
     let formDatas = {
       name:values.name,
       description:values.description,
       feature:{
-        center:{
-          lat:22,
-          lng:66,
-        },
+        center:values.feature.center?{
+          lat:values.feature.center.lat,
+          lng:values.feature.center.lng,
+        }:null,
         activated:values.feature.activated,
         membershipEnabled:values.feature.membershipEnabled,
         ridePauseEnabled:values.feature.ridePauseEnabled,
@@ -378,7 +379,27 @@ const Areas = (props) => {
                 <Collapse defaultActiveKey={['0']} onChange={PanelCallback}>
                   <Panel header="show more control" key="1">
                   <Row>
-                    <Col span={12} >
+                  <Col span={12} >
+                        <Form.Item 
+                      {...tailLayout}
+                            label="lat"
+                            name={['feature','center','lat']}
+                            rules={[{ required: false, message: 'Please input your lat!' }]}
+                          >
+                          <Input/>
+                        </Form.Item>
+                      </Col>
+                      <Col span={12} >
+                        <Form.Item 
+                      {...tailLayout}
+                            label="lng"
+                            name={['feature','center','lng']}
+                            rules={[{ required: false, message: 'Please input your lng!' }]}
+                          >
+                          <Input/>
+                        </Form.Item>
+                      </Col>
+                      <Col span={12} >
                         <Form.Item 
                       {...tailLayout}
                             label="Survey Url"
