@@ -65,8 +65,433 @@ const lockOperationWay = ["GPRS", "BLUETOOTH"];
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const vehicleOrders = ["", "sign in", "heart", "unlock", "lock", "location", "info", "find", "version", "ip", "error", "alert", "heart period", "iccid", "shut down", "ok", "mac info", "connect", "disconnect", "version update", "Report", "External Device"];
+const VehicleControlForm = (props => {
+  const okHandle = () => {
+    form.submit()
+  };
+
+  const {
+    record,
+    handleControl,
+  } = props;
+  const [form] = Form.useForm()
+
+  const marks = {
+    0: 'Not Set',
+    6: '6',
+    7: '7',
+    8: '8',
+    9: '9',
+    10: '10',
+    11: '11',
+    12: '12',
+    13: '13',
+    14: '14',
+    15: '15',
+    16: '16',
+    17: '17',
+    18: '18',
+    19: '19',
+    20: '20',
+    21: '21',
+    22: '22',
+    23: '23',
+    24: '24',
+    25: '25',
+  }
+
+  return (
+    <div>
+      <Form form={form} onFinish={()=>{handleControl(record.id, form.getFieldsValue(true))}}>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Light"
+        name='changeLight'
+      >
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Not Set</Option>
+            <Option value={1}>Off</Option>
+            <Option value={2}>On</Option>
+          </Select>
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Mode"
+        name='changeMode'
+      >
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Not Set</Option>
+            <Option value={1}>Off</Option>
+            <Option value={2}>On</Option>
+          </Select>
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Cruise Control"
+        name='cruiseControl'
+      >
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Not Set</Option>
+            <Option value={1}>Off</Option>
+            <Option value={2}>On</Option>
+          </Select>
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Inch Status"
+        name='inchStatus'
+      >
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Not Set</Option>
+            <Option value={1}>Off</Option>
+            <Option value={2}>On</Option>
+          </Select>
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Start Type"
+        name='startType'
+      >
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Not Set</Option>
+            <Option value={1}>Non-Zero Start</Option>
+            <Option value={2}>Zero Start</Option>
+          </Select>
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="High Speed Limit"
+        name='highSpeedLimit'
+      >
+
+          <Slider  max={25} step={null} marks={marks} />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Med Speed Limit"
+        name='midSpeedLimit'
+      >
+
+          <Slider  max={25} step={null} marks={marks} />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Low Speed Limit"
+        name='lowSpeedLimit'
+      >
+          <Slider  max={25} step={null} marks={marks} />
+      </FormItem>
+      <Button
+        icon="plus"
+        type="primary"
+        onClick={okHandle}
+        disabled={!form.isFieldsTouched()}
+        style={{ marginRight: "1em", marginTop: "0.5em" }}
+      >
+        Update Control
+      </Button>
+      </Form>
+    </div>
+  );
+});
+
+const VehicleControlExtensionForm = (props => {
+  const okHandle = () => {
+    form.submit()
+  };
+
+  const {
+    record,
+    handleControlExtension,
+  } = props;
+  const [form] = Form.useForm()
+
+  return (
+    <div>
+      <Form form={form} onFinish={()=>{handleControlExtension(record.id, form.getFieldsValue(true))}}>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Headlight"
+        name='headLight'
+      >
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Not Set</Option>
+            <Option value={1}>Off</Option>
+            <Option value={2}>On</Option>
+          </Select>
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Taillight"
+        name='tailLight'
+      >
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Not Set</Option>
+            <Option value={1}>Off</Option>
+            <Option value={2}>On</Option>
+          </Select>
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Speed Mode"
+        name='speedMode'
+      >
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Not Set</Option>
+            <Option value={1}>Low Speed</Option>
+            <Option value={2}>Medium Speed</Option>
+            <Option value={3}>High Speed</Option>
+          </Select>
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Throttle"
+        name='throttleStatus'
+      >
+          <Select placeholder="select" style={{ width: "100%" }}>
+            <Option value={0}>Not Set</Option>
+            <Option value={1}>Off</Option>
+            <Option value={2}>On</Option>
+          </Select>
+      </FormItem>
+      <Button
+        icon="plus"
+        type="primary"
+        onClick={okHandle}
+        disabled={!form.isFieldsTouched()}
+        style={{ marginRight: "1em", marginTop: "0.5em" }}
+      >
+        Update Control Extension
+      </Button>
+      </Form>
+    </div>
+  )
+});
+const UpdateForm = (props => {
+  const { handleUpdate, areas, record, changeLockStatus, updateLocation, alertVehicle, getVehicleStatus, restartVehicle } = props;
+  const [form] = Form.useForm()
+  form.setFieldsValue(record)
+  const okHandle = () => {
+    console.log(form.getFieldsValue(true));
+    form.submit()
+  };
+
+  return (
+    <div>
+      <Form form={form} onFinish={()=>{handleUpdate(record.id, form.getFieldsValue(true))}}>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Vehicle Id"
+      >
+        <div>
+          {record.id}
+        </div>
+      </FormItem>
+
+        <FormItem
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 15 }}
+          label="Status"
+          name='errorStatus'
+          rules={
+            [
+              {
+                required: true,
+                message: "You have pick a area"
+              }
+            ]
+          }
+        >
+          <div>
+
+              <Select placeholder="select" style={{ width: "100%" }}>
+
+                <Option value={0} >Normal</Option>
+
+                <Option value={1} >Error</Option>
+
+                <Option disabled={true} value={3} >Deativated</Option>
+
+                <Option disabled={true} value={5} >Rebalance</Option>
+
+                <Option disabled={true} value={6} >Maintain</Option>
+
+                <Option disabled={true} value={7} >Out of Service</Option>
 
 
+              </Select>
+
+          </div>
+        </FormItem>
+
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Lock Status"
+      >
+        <div>
+          {record.lockStatus === 0 ? "Unlock" : "Lock"}
+        </div>
+      </FormItem>
+
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Imei"
+      >
+        <div>
+          {record.imei}
+        </div>
+      </FormItem>
+
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="iccid"
+      >
+        <div>
+          {record.iccid}
+        </div>
+      </FormItem>
+
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Firmware"
+      >
+        <div>
+          {record.firmware}
+        </div>
+      </FormItem>
+
+
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Is Connected"
+      >
+        <div>
+          {record.connectStatus === 1 ? "true" : "false"}
+        </div>
+      </FormItem>
+
+      {areas && (
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} 
+          name='areaId'
+          rules={
+            [
+              {
+                required: true,
+                message: "You have pick a area"
+              }
+            ]
+          }
+          label="Area">
+            <Select placeholder="select" style={{ width: "100%" }}>
+              {areas.map(area => (
+                <Option key={area.id} value={area.id}>
+                  {area.name}
+                </Option>
+              ))}
+            </Select>
+        </FormItem>
+      )}
+
+    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} 
+      name='provider'
+      label="Provider">
+                <Select placeholder="select" style={{ width: "100%" }}>
+                   <Option key={0} value={0}>
+                      Omni
+                    </Option>
+                    <Option key={0} value={1}>
+                      Meige
+                    </Option>
+                </Select>
+            </FormItem>
+
+      <Row>
+        <Col>
+          <Button
+            icon="plus"
+            type="primary"
+            onClick={okHandle}
+            // disabled={!form.isFieldsTouched() && !authority.includes("update.vehicle.detail")}
+            style={{ marginRight: "1em", marginTop: "0.5em" }}
+          >
+            Update Vehicle
+          </Button>
+          <Button
+            icon="plus"
+            type="primary"
+            onClick={changeLockStatus}
+            // disabled={!authority.includes("unlock.vehicle") }
+            style={{ marginRight: "1em", marginTop: "0.5em" }}
+          >
+            {(record.lockStatus === 1 ? "Unlock" : "Lock") + " Vehicle"}
+          </Button>
+          <Button
+            icon="plus"
+            type="primary"
+            onClick={alertVehicle}
+            // disabled={!authority.includes("alert.vehicle")}
+            style={{ marginRight: "1em", marginTop: "0.5em" }}
+          >
+            Beep Remotely
+          </Button>
+          <Button
+            icon="plus"
+            type="primary"
+            onClick={updateLocation}
+            // disabled={!authority.includes("update.vehicle.location")}
+            style={{ marginRight: "1em", marginTop: "0.5em" }}
+          >
+            Update Location
+          </Button>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <Button
+            icon="plus"
+            type="primary"
+            onClick={getVehicleStatus}
+            // disabled={!form.isFieldsTouched() && !authority.includes("get.status")}
+            style={{ marginRight: "1em", marginTop: "0.5em" }}
+          >
+            Get Status
+          </Button>
+
+          {/* <Button
+            icon="plus"
+            type="primary"
+            onClick={restartVehicle}
+            disabled={!form.isFieldsTouched() && !authority.includes("restart.vehicle")}
+            style={{marginRight: "1em", marginTop: "0.5em"}}
+          >
+            Restart
+          </Button> */}
+
+        </Col>
+
+      </Row>
+      </Form>
+    </div>
+  );
+});
 class VehicleDetail extends PureComponent {
   state = {
     vehicleRides: null,
@@ -520,435 +945,8 @@ class VehicleDetail extends PureComponent {
       );
     });
     
-    const VehicleControlForm = (props => {
-      const okHandle = () => {
-        form.submit()
-      };
     
-      const {
-        record,
-        handleControl,
-      } = props;
-      const [form] = Form.useForm()
-    
-      const marks = {
-        0: 'Not Set',
-        6: '6',
-        7: '7',
-        8: '8',
-        9: '9',
-        10: '10',
-        11: '11',
-        12: '12',
-        13: '13',
-        14: '14',
-        15: '15',
-        16: '16',
-        17: '17',
-        18: '18',
-        19: '19',
-        20: '20',
-        21: '21',
-        22: '22',
-        23: '23',
-        24: '24',
-        25: '25',
-      }
-    
-      return (
-        <div>
-          <Form form={form} onFinish={handleControl(record.id, form.getFieldsValue(true))}>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Light"
-            name='changeLight'
-          >
-              <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value={0}>Not Set</Option>
-                <Option value={1}>Off</Option>
-                <Option value={2}>On</Option>
-              </Select>
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Mode"
-            name='changeMode'
-          >
-              <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value={0}>Not Set</Option>
-                <Option value={1}>Off</Option>
-                <Option value={2}>On</Option>
-              </Select>
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Cruise Control"
-            name='cruiseControl'
-          >
-              <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value={0}>Not Set</Option>
-                <Option value={1}>Off</Option>
-                <Option value={2}>On</Option>
-              </Select>
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Inch Status"
-            name='inchStatus'
-          >
-              <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value={0}>Not Set</Option>
-                <Option value={1}>Off</Option>
-                <Option value={2}>On</Option>
-              </Select>
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Start Type"
-            name='startType'
-          >
-              <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value={0}>Not Set</Option>
-                <Option value={1}>Non-Zero Start</Option>
-                <Option value={2}>Zero Start</Option>
-              </Select>
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="High Speed Limit"
-            name='highSpeedLimit'
-          >
 
-              <Slider defaultValue={0} max={25} step={null} marks={marks} />
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Med Speed Limit"
-            name='midSpeedLimit'
-          >
-
-              <Slider defaultValue={0} max={25} step={null} marks={marks} />
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Low Speed Limit"
-            name='lowSpeedLimit'
-          >
-              <Slider defaultValue={0} max={25} step={null} marks={marks} />
-          </FormItem>
-          <Button
-            icon="plus"
-            type="primary"
-            onClick={okHandle}
-            disabled={!form.isFieldsTouched()}
-            style={{ marginRight: "1em", marginTop: "0.5em" }}
-          >
-            Update Control
-          </Button>
-          </Form>
-        </div>
-      );
-    });
-    
-    const VehicleControlExtensionForm = (props => {
-      const okHandle = () => {
-        form.submit()
-      };
-    
-      const {
-        record,
-        handleControlExtension,
-      } = props;
-      const [form] = Form.useForm()
-    
-      return (
-        <div>
-          <Form form={form} onFinish={handleControlExtension(record.id, form.getFieldsValue(true))}>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Headlight"
-            name='headLight'
-          >
-              <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value={0}>Not Set</Option>
-                <Option value={1}>Off</Option>
-                <Option value={2}>On</Option>
-              </Select>
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Taillight"
-            name='tailLight'
-          >
-              <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value={0}>Not Set</Option>
-                <Option value={1}>Off</Option>
-                <Option value={2}>On</Option>
-              </Select>
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Speed Mode"
-            name='speedMode'
-          >
-              <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value={0}>Not Set</Option>
-                <Option value={1}>Low Speed</Option>
-                <Option value={2}>Medium Speed</Option>
-                <Option value={3}>High Speed</Option>
-              </Select>
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Throttle"
-            name='throttleStatus'
-          >
-              <Select defaultValue='Not Set' placeholder="select" style={{ width: "100%" }}>
-                <Option value={0}>Not Set</Option>
-                <Option value={1}>Off</Option>
-                <Option value={2}>On</Option>
-              </Select>
-          </FormItem>
-          <Button
-            icon="plus"
-            type="primary"
-            onClick={okHandle}
-            disabled={!form.isFieldsTouched()}
-            style={{ marginRight: "1em", marginTop: "0.5em" }}
-          >
-            Update Control Extension
-          </Button>
-          </Form>
-        </div>
-      )
-    });
-    
-    
-    const UpdateForm = (props => {
-      const { handleUpdate, areas, record, changeLockStatus, updateLocation, alertVehicle, getVehicleStatus, restartVehicle } = props;
-      const [form] = Form.useForm()
-      form.setFieldsValue(record)
-      const okHandle = () => {
-        console.log(form.getFieldsValue(true));
-        form.submit()
-      };
-    
-      return (
-        <div>
-          <Form form={form} onFinish={handleUpdate(record.id, form.getFieldsValue(true))}>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Vehicle Id"
-          >
-            <div>
-              {record.id}
-            </div>
-          </FormItem>
-    
-            <FormItem
-              labelCol={{ span: 5 }}
-              wrapperCol={{ span: 15 }}
-              label="Status"
-              name='errorStatus'
-              rules={
-                [
-                  {
-                    required: true,
-                    message: "You have pick a area"
-                  }
-                ]
-              }
-            >
-              <div>
-    
-                  <Select placeholder="select" style={{ width: "100%" }}>
-    
-                    <Option value={0} >Normal</Option>
-    
-                    <Option value={1} >Error</Option>
-    
-                    <Option disabled={true} value={3} >Deativated</Option>
-    
-                    <Option disabled={true} value={5} >Rebalance</Option>
-    
-                    <Option disabled={true} value={6} >Maintain</Option>
-    
-                    <Option disabled={true} value={7} >Out of Service</Option>
-    
-    
-                  </Select>
-    
-              </div>
-            </FormItem>
-    
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Lock Status"
-          >
-            <div>
-              {record.lockStatus === 0 ? "Unlock" : "Lock"}
-            </div>
-          </FormItem>
-    
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Imei"
-          >
-            <div>
-              {record.imei}
-            </div>
-          </FormItem>
-    
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="iccid"
-          >
-            <div>
-              {record.iccid}
-            </div>
-          </FormItem>
-    
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Firmware"
-          >
-            <div>
-              {record.firmware}
-            </div>
-          </FormItem>
-    
-    
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Is Connected"
-          >
-            <div>
-              {record.connectStatus === 1 ? "true" : "false"}
-            </div>
-          </FormItem>
-    
-          {areas && (
-            <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} 
-              name='areaId'
-              rules={
-                [
-                  {
-                    required: true,
-                    message: "You have pick a area"
-                  }
-                ]
-              }
-              label="Area">
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  {areas.map(area => (
-                    <Option key={area.id} value={area.id}>
-                      {area.name}
-                    </Option>
-                  ))}
-                </Select>
-            </FormItem>
-          )}
-    
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} 
-          name='provider'
-          label="Provider">
-                    <Select placeholder="select" style={{ width: "100%" }}>
-                       <Option key={0} value={0}>
-                          Omni
-                        </Option>
-                        <Option key={0} value={1}>
-                          Meige
-                        </Option>
-                    </Select>
-                </FormItem>
-    
-          <Row>
-            <Col>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={okHandle}
-                // disabled={!form.isFieldsTouched() && !authority.includes("update.vehicle.detail")}
-                style={{ marginRight: "1em", marginTop: "0.5em" }}
-              >
-                Update Vehicle
-              </Button>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={changeLockStatus}
-                // disabled={!authority.includes("unlock.vehicle") }
-                style={{ marginRight: "1em", marginTop: "0.5em" }}
-              >
-                {(record.lockStatus === 1 ? "Unlock" : "Lock") + " Vehicle"}
-              </Button>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={alertVehicle}
-                // disabled={!authority.includes("alert.vehicle")}
-                style={{ marginRight: "1em", marginTop: "0.5em" }}
-              >
-                Beep Remotely
-              </Button>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={updateLocation}
-                // disabled={!authority.includes("update.vehicle.location")}
-                style={{ marginRight: "1em", marginTop: "0.5em" }}
-              >
-                Update Location
-              </Button>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <Button
-                icon="plus"
-                type="primary"
-                onClick={getVehicleStatus}
-                // disabled={!form.isFieldsTouched() && !authority.includes("get.status")}
-                style={{ marginRight: "1em", marginTop: "0.5em" }}
-              >
-                Get Status
-              </Button>
-    
-              {/* <Button
-                icon="plus"
-                type="primary"
-                onClick={restartVehicle}
-                disabled={!form.isFieldsTouched() && !authority.includes("restart.vehicle")}
-                style={{marginRight: "1em", marginTop: "0.5em"}}
-              >
-                Restart
-              </Button> */}
-    
-            </Col>
-    
-          </Row>
-          </Form>
-        </div>
-      );
-    });
     
     return (
       <Modal

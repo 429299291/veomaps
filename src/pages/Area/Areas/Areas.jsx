@@ -389,6 +389,7 @@ const Areas = (props) => {
                 <Collapse defaultActiveKey={['0']} onChange={PanelCallback}>
                   <Panel header="show more control" key="1">
                   <Row>
+                  <Divider>GoogleMap Configuration</Divider>
                   <Col span={12} >
                         <Form.Item 
                       {...tailLayout}
@@ -409,6 +410,7 @@ const Areas = (props) => {
                           <Input/>
                         </Form.Item>
                       </Col>
+                      <Divider>other Configuration</Divider>
                       <Col span={12} >
                         <Form.Item 
                       {...tailLayout}
@@ -431,11 +433,10 @@ const Areas = (props) => {
                       </Col>
                     </Row>
                     <Col span={24}>
-                    <Card title="regulationDatas Configuration" type="inner" size="small">
+                    <Divider>regulationDatas Configuration</Divider>
                       <Row>
                       <Regulation tags={regulationDatas} getRegulationDatas={getRegulationDatas.bind(this)}></Regulation>
                       </Row>
-                    </Card>
                   </Col>
 
                   </Panel>
