@@ -165,7 +165,7 @@ export const UpdatePasswordForm = (props => {
         {
           title: "Operation",
           render: (text, record) =>(
-          record.role ?  record.role.name === 'Super Admin'? (<span>Super administrator cannot modify</span>) :
+          record.role ?  record.role.name === 'Super Admin11'? (<span>Super administrator cannot modify</span>) :
           (
             //other permissions
               <Fragment>
@@ -315,18 +315,15 @@ export const UpdatePasswordForm = (props => {
         return (
           <Form layout="inline">
             <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-              <Col span={9}>
+              <Col span={16}>
                 <Search
                   placeholder="name, phone or email"
                   onSearch={this.handleSearch}
-                  className={styles.search}
-                  defaultValue=''
                   enterButton
                 />
               </Col>
-              <Col span={15}>
+              <Col span={8}>
                 <FormItem>
-                  {authority.includes("admin") && (
                     <Button
                       type="primary"
                       className = {styles.buttonStyle}
@@ -335,7 +332,6 @@ export const UpdatePasswordForm = (props => {
                     >
                       Register By Email
                     </Button>
-                  )}
                 </FormItem>
               </Col>
             </Row>

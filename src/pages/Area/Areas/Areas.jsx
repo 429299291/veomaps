@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {connect} from 'dva'
-import { Form, Input, Button, Checkbox,Drawer,Switch,Rate,Row,Col,Select,Card,InputNumber,TimePicker,Divider,Collapse,Space,Tag  }  from "antd";
+import { Form, Input, Button, Checkbox,Drawer,Switch,Rate,Row,Col,Select,Card,InputNumber,TimePicker,Divider,Collapse,Space,Tag,message  }  from "antd";
 import { RadiusUprightOutlined,BorderInnerOutlined,BorderOuterOutlined,ExpandOutlined } from '@ant-design/icons';
 import styles from "./Areas.less";
 import FormItem from "antd/lib/form/FormItem";
@@ -56,7 +56,10 @@ const Areas = (props) => {
   const showDrawer =  () => {
     // console.log('formDatas');
     
-    console.log(formDatas);
+    if(!formDatas){
+      message.error("You don't have permission to configure");
+      return false
+    }
     if(formDatas.feature){
       console.log(formDatas.feature.regulation.regulations);
       if(formDatas){
@@ -86,10 +89,17 @@ const Areas = (props) => {
       name:values.name,
       description:values.description,
       feature:{
+        // center:values.feature.center?{
+        //   lat:values.feature.center.lat,
+        //   lng:values.feature.center.lng,
+        // }:null,
         center:values.feature.center?{
           lat:values.feature.center.lat,
           lng:values.feature.center.lng,
-        }:null,
+        }:{
+          lat:'0',
+          lng:'0'
+        },
         activated:values.feature.activated,
         membershipEnabled:values.feature.membershipEnabled,
         ridePauseEnabled:values.feature.ridePauseEnabled,
@@ -118,7 +128,7 @@ const Areas = (props) => {
           freeMinutes:values.feature.freeRide.freeMinutes
         },
         regulation: {
-          displayDuringOnBoarding: true,
+          displayDuringOnBoarding: false,
           regulations: regulationDatas
         },
         prompts: [
