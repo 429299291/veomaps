@@ -1,6 +1,6 @@
 import { Tag, Input, Tooltip,Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-
+import styles from "./regulation.less";
 class regulation extends React.Component {
   state = {
     tags:this.props.tags,
@@ -145,12 +145,13 @@ class regulation extends React.Component {
             <Tag
               className="edit-tag"
               key={tag.title}
+              style={{width:'100%'}}
               closable={index !== -1}
               color="processing"
               onClose={() => this.handleClose(tag)}
             >
               <span
-              style={{padding:'0 2px'}}
+              className={styles.regulationSpan}
                 // onDoubleClick={e => {
                 //   if (index !== 0) {
                 //     this.setState({ editInputIndex: index, editInputValue: tag.title }, () => {
