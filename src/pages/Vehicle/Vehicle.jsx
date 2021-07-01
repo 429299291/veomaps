@@ -264,7 +264,7 @@ const HeatMapForm = (props => {
     <Form form={form}>
       <span className={style}>
           <FormItem name='isStart'>
-            <Select defaultValue={true}>
+            <Select>
               <Option value={true}>Start of Ride</Option>
               <Option value={false}>End of Ride</Option>
               <Option value={null}> Path of Ride </Option>
@@ -376,6 +376,7 @@ const CreateForm = (props => {
       title="Add"
       visible={modalVisible}
       onOk={okHandle}
+      forceRender
       onCancel={() => handleModalVisible()}
       width="700px"
     >
@@ -504,6 +505,7 @@ const UpdateForm = (props => {
       title="Update"
       visible={modalVisible}
       onOk={okHandle}
+      forceRender
       onCancel={() => handleModalVisible()}
     >
      <Form form={form}>
@@ -1682,7 +1684,8 @@ handleShowingVehicles = val => {
               }
 
                   { <Row>
-                      <Col span={6}> <DatePicker defaultValue={moment()} onChange={e => {
+                    {/* <Col span={6}> <DatePicker defaultValue={moment()} onChange={e => { */}
+                      <Col span={6}> <DatePicker onChange={e => {
 
                           this.setState({todayRange: {start: e.startOf('day').format("MM-DD-YYYY HH:mm:ss"),end: e.endOf('day').format("MM-DD-YYYY HH:mm:ss")}});
                       }} /> 

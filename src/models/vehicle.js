@@ -255,7 +255,7 @@ export default {
       const response = yield call(controlVehicle, id, payload);
   
       if (response) {
-        message.success(`Successfully Sent Control Command`);
+        message.success(`Successfully Sent Control Command1`);
         // onSuccess();
       } else {
         message.error(`Failure Sending Control Command.`);
@@ -266,7 +266,7 @@ export default {
       const response = yield call(controlVehicleExtension, id, payload);
   
       if (response) {
-        message.success(`Successfully Sent Control Command`);
+        message.success(`Successfully Sent Control Command2`);
         // onSuccess();
       } else {
         message.error(`Failure Sending Control Command.`);
