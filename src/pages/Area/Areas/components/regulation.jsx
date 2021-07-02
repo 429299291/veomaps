@@ -125,6 +125,21 @@ class regulation extends React.Component {
       displayDuringOnBoarding:value
     })
   }
+  tagsPositionSt=(index)=>{
+    let newIndex = ''
+    if(index == 1){
+      newIndex = '1st:'
+    }else if(index == 2){
+      newIndex = '2nd:'
+    }else if(index == 3){
+      newIndex = '3rd:'
+    }else if(index == 4){
+      newIndex = '4th:'
+    }else{
+      newIndex = index+':'
+    }
+    return newIndex
+  }
   render() {
     const {tags, inputVisible, inputValue, editInputIndex, editInputValue ,content,editContentValue} = this.state;
     // this.props.getRegulationDatas({
@@ -163,7 +178,7 @@ class regulation extends React.Component {
           const tagElem = (
             
             <Col span={24} key={tag.content}>
-            {tag.position}st:
+            {this.tagsPositionSt(tag.position)}
             <Tag
               className="edit-tag"
               key={tag.title}
