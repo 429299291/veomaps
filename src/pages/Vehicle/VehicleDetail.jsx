@@ -190,7 +190,6 @@ const VehicleControlForm = (props => {
           <Slider  max={25} step={null} marks={marks} />
       </FormItem>
       <Button
-        icon="plus"
         type="primary"
         onClick={okHandle}
         disabled={!form.isFieldsTouched()}
@@ -267,7 +266,6 @@ const VehicleControlExtensionForm = (props => {
           </Select>
       </FormItem>
       <Button
-        icon="plus"
         type="primary"
         onClick={okHandle}
         disabled={!form.isFieldsTouched()}
@@ -424,7 +422,6 @@ const UpdateForm = (props => {
       <Row>
         <Col>
           <Button
-            icon="plus"
             type="primary"
             onClick={okHandle}
             // disabled={!form.isFieldsTouched() && !authority.includes("update.vehicle.detail")}
@@ -433,7 +430,6 @@ const UpdateForm = (props => {
             Update Vehicle
           </Button>
           <Button
-            icon="plus"
             type="primary"
             onClick={changeLockStatus}
             // disabled={!authority.includes("unlock.vehicle") }
@@ -442,7 +438,6 @@ const UpdateForm = (props => {
             {(record.lockStatus === 1 ? "Unlock" : "Lock") + " Vehicle"}
           </Button>
           <Button
-            icon="plus"
             type="primary"
             onClick={alertVehicle}
             // disabled={!authority.includes("alert.vehicle")}
@@ -451,7 +446,6 @@ const UpdateForm = (props => {
             Beep Remotely
           </Button>
           <Button
-            icon="plus"
             type="primary"
             onClick={updateLocation}
             // disabled={!authority.includes("update.vehicle.location")}
@@ -464,7 +458,6 @@ const UpdateForm = (props => {
       <Row>
         <Col>
           <Button
-            icon="plus"
             type="primary"
             onClick={getVehicleStatus}
             // disabled={!form.isFieldsTouched() && !authority.includes("get.status")}
