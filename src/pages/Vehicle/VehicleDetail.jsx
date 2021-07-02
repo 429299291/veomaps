@@ -315,7 +315,6 @@ const UpdateForm = (props => {
             ]
           }
         >
-          <div>
 
               <Select placeholder="select" style={{ width: "100%" }}>
 
@@ -334,7 +333,6 @@ const UpdateForm = (props => {
 
               </Select>
 
-          </div>
         </FormItem>
 
       <FormItem
