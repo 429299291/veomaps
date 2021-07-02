@@ -130,10 +130,8 @@ class DynamicFenceConfigForm extends PureComponent {
                     </Col>  
                     <Col span={1}> ~ </Col> 
                     <Col span={8}> 
-                    <Col span={8}> 
                       {this.getTimePicker("weekDayDTO", "end")}
                     </Col>  
-                    </Col> 
                     
               </Row>
 
@@ -346,7 +344,12 @@ const CreateFenceForm = (props => {
     editingFence,
     selectedExistedFence
   } = props;
+  console.log('props');
+  console.log(props);
   const [form] = Form.useForm()
+  if(!props.editingFence||props.editingFence == false){
+    form.resetFields()
+  }
   const okHandle = () => {
 
       
