@@ -344,8 +344,6 @@ const CreateFenceForm = (props => {
     editingFence,
     selectedExistedFence
   } = props;
-  console.log('props');
-  console.log(props);
   const [form] = Form.useForm()
   if(!props.editingFence||props.editingFence == false){
     form.resetFields()
@@ -361,8 +359,6 @@ const CreateFenceForm = (props => {
       if (Array.isArray(fieldsValue.forceVehicleTypes) && fieldsValue.forceVehicleTypes.length === 0) {
         fieldsValue.forceVehicleTypes = undefined;
       }
-
-      console.log('fieldsValue'+fieldsValue);
 
       handleNext(fieldsValue);
   };
