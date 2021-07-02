@@ -246,11 +246,11 @@ class Ride extends PureComponent {
       title: "operation",
       render: (text, record) => (
         <Fragment>
-          {!record.end && (
+          {!record.end && ( 
             <a onClick={() => this.handleEndRideVisible(true, record)}>
               End Ride
             </a>
-          )}
+           )}
 
           <Divider type="vertical" />
 
@@ -954,9 +954,10 @@ class Ride extends PureComponent {
         isEndRideVisible,
         handleEndRide,
         handleEndRideVisible,
-        ride
+        ride,
       } = props;
       const [form] = Form.useForm()
+      form.setFieldsValue(ride)
       const okHandle = () => {
         form.submit()
         // form.validateFields((err, fieldsValue) => {
@@ -984,7 +985,6 @@ class Ride extends PureComponent {
             label="Minutes"
             name='minutes'
           >
-              initialValue: minutes
             <InputNumber placeholder="Please Input" />
           </FormItem>
           </Form>
