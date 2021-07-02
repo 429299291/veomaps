@@ -24,7 +24,10 @@ const Areas = (props) => {
 
 
     const [violationFineDatas, setViolationFineDatas] = useState([]);
-    const [regulationDatas, setRegulationDatas] = useState([]);
+    const [regulationDatas, setRegulationDatas] = useState({
+      regulations:[],
+      displayDuringOnBoarding:false
+    });
     // const [violationFineIndex, setViolationFineIndex] = useState(0);
     const [form] = Form.useForm();
     const { Panel } = Collapse;
@@ -64,11 +67,17 @@ const Areas = (props) => {
       console.log(formDatas.feature.regulation.regulations);
       if(formDatas){
         setViolationFineDatas(formDatas.feature.violationFees)
-        setRegulationDatas(formDatas.feature.regulation.regulations)
+        setRegulationDatas({
+          regulations:formDatas.feature.regulation.regulations,
+          displayDuringOnBoarding:formDatas.feature.regulation.displayDuringOnBoarding
+        })
       }
       form.setFieldsValue(formDatas)
     }else{
-      setRegulationDatas([])
+      setRegulationDatas({
+        regulations:[],
+        displayDuringOnBoarding:false
+      })
       setViolationFineDatas([])
       form.resetFields()
     }
@@ -84,7 +93,6 @@ const Areas = (props) => {
     setIsDrawerVisible(false);
   };
   const onFinish = (values) => {
-    console.log(values);
     let formDatas = {
       name:values.name,
       description:values.description,
@@ -127,10 +135,7 @@ const Areas = (props) => {
           enabled:values.feature.freeRide.enabled,
           freeMinutes:values.feature.freeRide.freeMinutes
         },
-        regulation: {
-          displayDuringOnBoarding: false,
-          regulations: regulationDatas
-        },
+        regulation:  regulationDatas,
         prompts: [
           "string"
         ],
@@ -435,7 +440,7 @@ const Areas = (props) => {
                     <Col span={24}>
                     <Divider>regulationDatas Configuration</Divider>
                       <Row>
-                      <Regulation tags={regulationDatas} getRegulationDatas={getRegulationDatas.bind(this)}></Regulation>
+                      <Regulation data={regulationDatas} getRegulationDatas={getRegulationDatas.bind(this)}></Regulation>
                       </Row>
                   </Col>
 

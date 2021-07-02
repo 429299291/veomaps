@@ -344,8 +344,6 @@ const CreateFenceForm = (props => {
     editingFence,
     selectedExistedFence
   } = props;
-  console.log('props');
-  console.log(props);
   const [form] = Form.useForm()
   if(!props.editingFence||props.editingFence == false){
     form.resetFields()

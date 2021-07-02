@@ -1,9 +1,10 @@
-import { Tag, Input, Tooltip,Col } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Tag, Input, Tooltip,Col, Row,Switch } from 'antd';
+import { LogoutOutlined, PlusOutlined } from '@ant-design/icons';
 import styles from "./regulation.less";
 class regulation extends React.Component {
   state = {
-    tags:this.props.tags,
+    tags:this.props.data.regulations,
+    displayDuringOnBoarding:this.props.data.displayDuringOnBoarding,
     inputVisible: false,
     // inputValue: '',
     inputValue: {
@@ -14,12 +15,16 @@ class regulation extends React.Component {
     // editContentValue: '',
     
   };
-  componentDidUpdate(){
-    this.state.tags = this.props.tags
-  }
-  handleClose = removedTag => {
+  // componentDidUpdate(){
+  //   this.state.tags = this.props.tags
+  // }
+  handleClose = async removedTag  => {
     const tags = this.state.tags.filter(tag => tag !== removedTag);
-    this.setState({ tags });
+    await this.setState({ tags });
+    await this.props.getRegulationDatas({
+      regulations:this.state.tags,
+      displayDuringOnBoarding:this.state.displayDuringOnBoarding
+    })
   };
 
   showInput = () => {
@@ -28,8 +33,11 @@ class regulation extends React.Component {
       );
   };
   componentWillReceiveProps(nextProps) {
+
+    // const newTags = nextProps.data.regulations
     this.setState({
-     tags: nextProps.tags
+     tags: nextProps.data.regulations,
+     displayDuringOnBoarding:nextProps.data.displayDuringOnBoarding
     });
    }
   handleInputChange = e => {
@@ -43,7 +51,7 @@ class regulation extends React.Component {
     this.setState({ inputValue: {...this.state.inputValue,position:e.target.value?parseInt(e.target.value):'' } });
 
   };
-  handleInputConfirm = () => {
+  handleInputConfirm = async() => {
     const { inputValue } = this.state;
     let { tags } = this.state;
     // if(inputValue.title== '' ||inputValue.content == ''){
@@ -52,7 +60,7 @@ class regulation extends React.Component {
     if (inputValue && tags.indexOf(inputValue) === -1) {
       tags = [...tags, inputValue];
     }
-    this.setState({
+    await this.setState({
       tags,
       inputVisible: false,
       inputValue: {
@@ -61,7 +69,10 @@ class regulation extends React.Component {
         position:null
       },
     });
-
+    await this.props.getRegulationDatas({
+      regulations:this.state.tags,
+      displayDuringOnBoarding:this.state.displayDuringOnBoarding
+    })
   };
 
   handleEditInputChange = e => {
@@ -74,8 +85,8 @@ class regulation extends React.Component {
     this.setState({ editInputValue: {...this.state.editInputValue,position:e.target.value } });
   };
 
-  handleEditInputConfirm = () => {
-    this.setState(({ tags, editInputIndex, editInputValue,editContentValue }) => {
+  handleEditInputConfirm = async() => {
+    await this.setState(({ tags, editInputIndex, editInputValue,editContentValue }) => {
       const newTags = [...tags];
       newTags[editInputIndex] = editInputValue;
 
@@ -91,6 +102,10 @@ class regulation extends React.Component {
       };
     });
     // this.props.getRegulationDatas(this.state.tags)
+    await this.props.getRegulationDatas({
+      regulations:this.state.tags,
+      displayDuringOnBoarding:this.state.displayDuringOnBoarding
+    })
   };
 
   saveInputRef = input => {
@@ -105,10 +120,17 @@ class regulation extends React.Component {
   saveEditInputRef = input => {
     this.editInput = input;
   };
-
+  onChangeSwitch = (value)=>{
+    this.setState({
+      displayDuringOnBoarding:value
+    })
+  }
   render() {
     const {tags, inputVisible, inputValue, editInputIndex, editInputValue ,content,editContentValue} = this.state;
-    this.props.getRegulationDatas(this.state.tags)
+    // this.props.getRegulationDatas({
+    //   regulations:this.state.tags,
+    //   displayDuringOnBoarding:this.state.displayDuringOnBoarding
+    // })
     return (
       <>
         {tags.map((tag, index) => {
@@ -211,10 +233,20 @@ class regulation extends React.Component {
           </>
         )}
         {!inputVisible && (
-          <Tag className="site-tag-plus" onClick={this.showInput}>
-            {/* New Tag */}
-            <PlusOutlined />
-          </Tag>
+          // <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} span={24}>
+          <>
+            <Col span={12}>
+              <Tag className="site-tag-plus" onClick={this.showInput}>
+                {/* New Tag */}
+                <PlusOutlined />
+              </Tag>
+            </Col>
+            <Col span={12}>
+            regulation switch:
+              <Switch size="small" defaultChecked={this.state.displayDuringOnBoarding} onChange={this.onChangeSwitch}/>
+            </Col>
+            </>
+          // </Row>
         )}
       </>
     );
