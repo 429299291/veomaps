@@ -300,7 +300,7 @@ const Areas = (props) => {
                 formDatas&&
                 <Col span={12}>
                 <Form.Item  label="age" {...tailLayout} name={['feature', 'ageVerification','age']}>
-                  <InputNumber min={15} max={45}  disabled={formDatas.feature?!formDatas.feature.activated :true} disabled={!ageEnabled}/>
+                  <InputNumber min={5}  disabled={formDatas.feature?!formDatas.feature.activated :true} disabled={!ageEnabled}/>
                 </Form.Item>
             </Col>
               }
@@ -317,7 +317,7 @@ const Areas = (props) => {
             </Col>
             <Col span={12}>
                 <Form.Item  label="Free Ride" {...tailLayout} name={['feature','freeRide','freeMinutes']}>
-                  <InputNumber min={1} max={245}  disabled={!freeRideEnabled} />
+                  <InputNumber min={1}  disabled={!freeRideEnabled} />
                 </Form.Item>
             </Col>
             </Row>
