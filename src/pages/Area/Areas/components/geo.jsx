@@ -360,8 +360,6 @@ const CreateFenceForm = (props => {
         fieldsValue.forceVehicleTypes = undefined;
       }
 
-      console.log('fieldsValue'+fieldsValue);
-
       handleNext(fieldsValue);
   };
 
