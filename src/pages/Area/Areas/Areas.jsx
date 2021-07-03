@@ -93,6 +93,7 @@ const Areas = (props) => {
     setIsDrawerVisible(false);
   };
   const onFinish = (values) => {
+    console.log(values);
     let formDatas = {
       name:values.name,
       description:values.description,
@@ -101,7 +102,7 @@ const Areas = (props) => {
         //   lat:values.feature.center.lat,
         //   lng:values.feature.center.lng,
         // }:null,
-        center:values.feature.center?{
+        center:values.feature.center.lat?{
           lat:values.feature.center.lat,
           lng:values.feature.center.lng,
         }:{
@@ -118,12 +119,12 @@ const Areas = (props) => {
           isOpen:values.feature.areaAvailability.isOpen == 'null'? null:values.feature.areaAvailability.isOpen,
           timeZone:values.feature.areaAvailability.isOpen == 'null'?values.feature.areaAvailability.timeZone:null,
           weekDay:{
-            start:values.feature.areaAvailability.isOpen == 'null'?`${values.feature.areaAvailability.weekDay[0]._d.getHours()}:${values.feature.areaAvailability.weekDay[0]._d.getMinutes()}`:null,
-            end:values.feature.areaAvailability.isOpen == 'null'?   `${values.feature.areaAvailability.weekDay[1]._d.getHours()}:${values.feature.areaAvailability.weekDay[1]._d.getMinutes()}` :null,
+            start:values.feature.areaAvailability.isOpen == 'null' ? values.feature.areaAvailability.weekDay ? `${values.feature.areaAvailability.weekDay[0]._d.getHours()}:${values.feature.areaAvailability.weekDay[0]._d.getMinutes()}`:null:null,
+            end:values.feature.areaAvailability.isOpen == 'null' ? values.feature.areaAvailability.weekDay ?   `${values.feature.areaAvailability.weekDay[1]._d.getHours()}:${values.feature.areaAvailability.weekDay[1]._d.getMinutes()}` :null :null,
           },
           weekend:{
-            start:values.feature.areaAvailability.isOpen == 'null'?  `${values.feature.areaAvailability.weekend[0]._d.getHours()}:${values.feature.areaAvailability.weekend[0]._d.getMinutes()}`  :null,
-            end:values.feature.areaAvailability.isOpen == 'null'?  `${values.feature.areaAvailability.weekend[1]._d.getHours()}:${values.feature.areaAvailability.weekend[1]._d.getMinutes()}`  :null,
+            start:values.feature.areaAvailability.isOpen == 'null' ? values.feature.areaAvailability.weekend ?  `${values.feature.areaAvailability.weekend[0]._d.getHours()}:${values.feature.areaAvailability.weekend[0]._d.getMinutes()}` :null :null,
+            end:values.feature.areaAvailability.isOpen == 'null'? values.feature.areaAvailability.weekend ?  `${values.feature.areaAvailability.weekend[1]._d.getHours()}:${values.feature.areaAvailability.weekend[1]._d.getMinutes()}` :null :null,
           },
           description:values.feature.areaAvailability.description,
         },
@@ -144,6 +145,7 @@ const Areas = (props) => {
         violationFees:violationFineDatas
       },
     }
+    console.log(formDatas);
     if(!areas.selectedAreaId){
       dispatch({
         type: "areas/addArea",
@@ -229,6 +231,30 @@ const Areas = (props) => {
           <Form  hideRequiredMark onFinish={onFinish} form={form} 
           initialValues={{
             name:'',
+            description:null,
+            feature:{
+              "membershipEnabled": false,
+              billingAddressEnabled:false,
+              "ridePhotoEnabled": false,
+              "ageVerification": {
+                age:null,
+                enabled:null
+              },
+              "freeRide": {
+
+              },
+              "areaAvailability": {
+                  "isOpen": null,
+                  "timeZone": null,
+                  "weekDay": null
+              },
+              "center": {
+                lat:'0',
+                lng:'0'
+              },
+              "surveyUrl": "",
+              "taxRate": ""
+          }
           }}
           >
             <Row>
