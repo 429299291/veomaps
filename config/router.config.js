@@ -40,6 +40,8 @@ export default [
         // icon: "shop",
         name: "Shop Management",
         authority: ["shop"],
+        icon:<StepForwardOutlined/>,
+
         routes: [
           {
             path: "/shop-management/order",
