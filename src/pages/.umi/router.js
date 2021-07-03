@@ -68,14 +68,6 @@ let routes = [
         "authority": [
           "shop"
         ],
-        "icon": {
-          "type": {},
-          "key": null,
-          "ref": null,
-          "props": {},
-          "_owner": null,
-          "_store": {}
-        },
         "routes": [
           {
             "path": "/shop-management/order",
