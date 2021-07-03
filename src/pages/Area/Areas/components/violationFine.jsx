@@ -93,7 +93,7 @@ class violationFine extends React.Component {
             <Tag
               className="edit-tag"
               key={tag}
-              closable={index !== 0}
+              closable={index !== -1}
               color="processing"
               onClose={() => this.handleClose(tag)}
             >
@@ -108,7 +108,7 @@ class violationFine extends React.Component {
                   }
                 }}
               >
-                {isLongTag ? `${tag.slice(0, 20)}...` : tag}
+                ${isLongTag ? `${tag.slice(0, 20)}...` : tag}
               </span>
             </Tag>
             </Col>
