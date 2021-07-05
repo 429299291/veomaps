@@ -61,7 +61,7 @@ const Areas = (props) => {
       message.error("You don't have permission to configure");
       return false
     }
-    if(formDatas.feature && formDatas.feature.areaAvailability.weekDay&& formDatas.feature.areaAvailability.weekDay.start){
+    if(formDatas.feature &&( formDatas.feature.areaAvailability.weekDay || formDatas.feature.areaAvailability.weekDay)&& (formDatas.feature.areaAvailability.weekDay.start || formDatas.feature.areaAvailability.weekend.start)){
       formDatas.feature.areaAvailability.weekDay = [moment(formDatas.feature.areaAvailability.weekDay.start, format), moment(formDatas.feature.areaAvailability.weekDay.end, format)]
       formDatas.feature.areaAvailability.weekend = [moment(formDatas.feature.areaAvailability.weekend.start, format), moment(formDatas.feature.areaAvailability.weekend.end, format)]
     }
@@ -99,11 +99,7 @@ const Areas = (props) => {
       name:values.name,
       description:values.description,
       feature:{
-        // center:values.feature.center?{
-        //   lat:values.feature.center.lat,
-        //   lng:values.feature.center.lng,
-        // }:null,
-        center:values.feature.center.lat?{
+        center:values.feature.center?{
           lat:values.feature.center.lat,
           lng:values.feature.center.lng,
         }:{
@@ -120,12 +116,12 @@ const Areas = (props) => {
           isOpen:values.feature.areaAvailability.isOpen == 'null'? null:values.feature.areaAvailability.isOpen,
           timeZone:values.feature.areaAvailability.isOpen == 'null'?values.feature.areaAvailability.timeZone:null,
           weekDay:{
-            start:values.feature.areaAvailability.isOpen == 'null' ? values.feature.areaAvailability.weekDay ? `${values.feature.areaAvailability.weekDay[0]._d.getHours()}:${values.feature.areaAvailability.weekDay[0]._d.getMinutes()}`:null:null,
-            end:values.feature.areaAvailability.isOpen == 'null' ? values.feature.areaAvailability.weekDay ?   `${values.feature.areaAvailability.weekDay[1]._d.getHours()}:${values.feature.areaAvailability.weekDay[1]._d.getMinutes()}` :null :null,
+            start:values.feature.areaAvailability.isOpen == 'null' ? values.feature.areaAvailability.weekDay ? `${values.feature.areaAvailability.weekDay[0]._d.getHours()}:${values.feature.areaAvailability.weekDay[0]._d.getMinutes()}`:'0:0':'0:0',
+            end:values.feature.areaAvailability.isOpen == 'null' ? values.feature.areaAvailability.weekDay ?   `${values.feature.areaAvailability.weekDay[1]._d.getHours()}:${values.feature.areaAvailability.weekDay[1]._d.getMinutes()}` :'0:0' :'0:0',
           },
           weekend:{
-            start:values.feature.areaAvailability.isOpen == 'null' ? values.feature.areaAvailability.weekend ?  `${values.feature.areaAvailability.weekend[0]._d.getHours()}:${values.feature.areaAvailability.weekend[0]._d.getMinutes()}` :null :null,
-            end:values.feature.areaAvailability.isOpen == 'null'? values.feature.areaAvailability.weekend ?  `${values.feature.areaAvailability.weekend[1]._d.getHours()}:${values.feature.areaAvailability.weekend[1]._d.getMinutes()}` :null :null,
+            start:values.feature.areaAvailability.isOpen == 'null' ? values.feature.areaAvailability.weekend ?  `${values.feature.areaAvailability.weekend[0]._d.getHours()}:${values.feature.areaAvailability.weekend[0]._d.getMinutes()}` :'0:0' :'0:0',
+            end:values.feature.areaAvailability.isOpen == 'null'? values.feature.areaAvailability.weekend ?  `${values.feature.areaAvailability.weekend[1]._d.getHours()}:${values.feature.areaAvailability.weekend[1]._d.getMinutes()}` :'0:0' :'0:0',
           },
           description:values.feature.areaAvailability.description,
         },
@@ -146,7 +142,6 @@ const Areas = (props) => {
         violationFees:violationFineDatas
       },
     }
-    console.log(formDatas);
     if(!areas.selectedAreaId){
       dispatch({
         type: "areas/addArea",
@@ -249,7 +244,7 @@ const Areas = (props) => {
               "areaAvailability": {
                   "isOpen": null,
                   "timeZone": null,
-                  weekDay: [moment('0:0', format),moment('0:0', format)],
+                  weekDay: null,
                   weekend:null,
               },
               "center": {
