@@ -258,7 +258,7 @@ class regulation extends React.Component {
             </Col>
             <Col span={12}>
             regulation switch:
-              <Switch size="small" defaultChecked={this.state.displayDuringOnBoarding} onChange={this.onChangeSwitch}/>
+              <Switch size="small" checked	={this.state.displayDuringOnBoarding} onChange={this.onChangeSwitch}/>
             </Col>
             </>
           // </Row>
