@@ -72,6 +72,7 @@ const Areas = (props) => {
           regulations:formDatas.feature.regulation.regulations,
           displayDuringOnBoarding:formDatas.feature.regulation.displayDuringOnBoarding
         })
+        setAgeEnabled(formDatas.feature.ageVerification.enabled)
       }
       form.setFieldsValue(formDatas)
     }else{
@@ -325,7 +326,7 @@ const Areas = (props) => {
                 formDatas&&
                 <Col span={12}>
                 <Form.Item  label="age" {...tailLayout} name={['feature', 'ageVerification','age']}>
-                  <InputNumber min={5}  disabled={formDatas.feature?!formDatas.feature.activated :true} disabled={!ageEnabled}/>
+                  <InputNumber min={5} disabled={!ageEnabled}/>
                 </Form.Item>
             </Col>
               }
