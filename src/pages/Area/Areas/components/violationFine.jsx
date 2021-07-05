@@ -63,6 +63,21 @@ class violationFine extends React.Component {
   saveEditInputRef = input => {
     this.editInput = input;
   };
+  tagsPositionSt=(index)=>{
+    let newIndex = ''
+    if(index == 1){
+      newIndex = '1st'
+    }else if(index == 2){
+      newIndex = '2nd'
+    }else if(index == 3){
+      newIndex = '3rd'
+    }else if(index == 4){
+      newIndex = '4th'
+    }else{
+      newIndex = index+''
+    }
+    return newIndex
+  }
 
   render() {
     const {tags, inputVisible, inputValue, editInputIndex, editInputValue } = this.state;
@@ -89,7 +104,7 @@ class violationFine extends React.Component {
           const tagElem = (
             
             <Col span={8} key={tag}>
-            {index+1}st time:
+            {this.tagsPositionSt(index+1)} time:
             <Tag
               className="edit-tag"
               key={tag}

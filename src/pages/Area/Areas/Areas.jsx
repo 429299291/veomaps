@@ -57,14 +57,15 @@ const Areas = (props) => {
     wrapperCol: { offset:1, span: 14},
   };
   const showDrawer =  () => {
-    // console.log('formDatas');
-    
     if(!formDatas){
       message.error("You don't have permission to configure");
       return false
     }
+    if(formDatas.feature && formDatas.feature.areaAvailability.weekDay&& formDatas.feature.areaAvailability.weekDay.start){
+      formDatas.feature.areaAvailability.weekDay = [moment(formDatas.feature.areaAvailability.weekDay.start, format), moment(formDatas.feature.areaAvailability.weekDay.end, format)]
+      formDatas.feature.areaAvailability.weekend = [moment(formDatas.feature.areaAvailability.weekend.start, format), moment(formDatas.feature.areaAvailability.weekend.end, format)]
+    }
     if(formDatas.feature){
-      console.log(formDatas.feature.regulation.regulations);
       if(formDatas){
         setViolationFineDatas(formDatas.feature.violationFees)
         setRegulationDatas({
@@ -189,38 +190,40 @@ const Areas = (props) => {
     return (
       <>
         <Card bordered={false} size="small">
-        <Row>
-        <Space size='middle'>
-        <Button
-          type="primary"
-          onClick={showDrawer}
-        >
-        <BorderInnerOutlined style={areas.selectedAreaId?{display:'none'}:{display:'inline-block'}}/><RadiusUprightOutlined style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}/> {formStatus}
-        </Button>
-        {/* <Button
-          type="primary"
-          style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}
-        >
-        <BorderOuterOutlined/>Edit Center
-        </Button>
-        <Button
-          type="primary"
-          onClick={()=>{handleEditCenter(true)}}
-          style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}
-        >
-        <BorderOuterOutlined/>Add Fence
-        </Button>
-        <Button
-          type="primary"
-          style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}
-        >
-        <ExpandOutlined /> Add Vehicle Hub
-        </Button> */}
-        </Space>
-        </Row>
+          <Row>
+            <Space size='middle'>
+              <Button
+                type="primary"
+                onClick={showDrawer}
+              >
+              <BorderInnerOutlined style={areas.selectedAreaId?{display:'none'}:{display:'inline-block'}}/><RadiusUprightOutlined style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}/> {formStatus}
+              </Button>
+              {/* <Button
+                type="primary"
+                style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}
+              >
+              <BorderOuterOutlined/>Edit Center
+              </Button>
+              <Button
+                type="primary"
+                onClick={()=>{handleEditCenter(true)}}
+                style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}
+              >
+              <BorderOuterOutlined/>Add Fence
+              </Button>
+              <Button
+                type="primary"
+                style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}
+              >
+              <ExpandOutlined /> Add Vehicle Hub
+              </Button> */}
+            </Space>
+          </Row>
+          <Card style={areas.selectedAreaId?{display:'none'}:{display:'inline-block'}}>
+            <img src="https://www.veoride.com/wp-content/uploads/2020/03/veo-world-website.png" alt="" style={{width:'100%',opacity:'0.4'}}/>
+          </Card>
         </Card>
         <Geo handleEditCenterData ={handleEditCenterData}></Geo>
-
         <Drawer
           title="Update Area Feature"
           width={'30vw'}
@@ -246,13 +249,14 @@ const Areas = (props) => {
               "areaAvailability": {
                   "isOpen": null,
                   "timeZone": null,
-                  "weekDay": null
+                  weekDay: [moment('0:0', format),moment('0:0', format)],
+                  weekend:null,
               },
               "center": {
                 lat:'0',
                 lng:'0'
               },
-              "surveyUrl": "",
+              "surveyUrl":'',
               "taxRate": ""
           }
           }}
@@ -396,7 +400,7 @@ const Areas = (props) => {
                   label="Weekday"
                   rules={[{ required: false, message: 'Please choose the dateTime' }]}
                 >
-                  <TimePicker.RangePicker bordered={false} size="small"  disabled={!areaAvailabilityIsOpenEnabled} format={format}/>
+                  <TimePicker.RangePicker  bordered={false} size="small"  disabled={!areaAvailabilityIsOpenEnabled} format={format}/>
                 </Form.Item>
               </Col>
               <Col span={12} offset={1}>
