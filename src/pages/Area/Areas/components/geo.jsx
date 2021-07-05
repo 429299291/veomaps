@@ -115,10 +115,7 @@ class DynamicFenceConfigForm extends PureComponent {
 
 
   render = () => {
-
     const {value, onChange} = this.props;
-    console.log('value');
-    console.log(value);
     return <div>
 
               <Row> 
