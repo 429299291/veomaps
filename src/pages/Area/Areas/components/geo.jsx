@@ -345,6 +345,8 @@ const CreateFenceForm = (props => {
   if(!props.editingFence||props.editingFence == false){
     form.resetFields()
   }
+  selectedExistedFence ?  form.setFieldsValue(selectedExistedFence):null
+
   const okHandle = () => {
 
       
@@ -672,8 +674,6 @@ class geo extends PureComponent {
   setCircleRef = ref => this.cricelRef = ref;
 
   handleCreateFenceNextStep = values => {
-    console.log('222');
-    console.log(values);
     const { selectedAreaId } = this.props;
     values.fenceCoordinates = [];
     values.areaId = selectedAreaId;
@@ -1176,7 +1176,6 @@ class geo extends PureComponent {
   };
 
   handleEditFenceSubmit = values => {
-    console.log('111'+values);
     const { selectedExistedFence } = this.state;
 
     this.handleUpdateFence(Object.assign({}, selectedExistedFence, values));

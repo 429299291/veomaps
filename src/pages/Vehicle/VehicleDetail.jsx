@@ -282,7 +282,6 @@ const UpdateForm = (props => {
   const [form] = Form.useForm()
   form.setFieldsValue(record)
   const okHandle = () => {
-    console.log(form.getFieldsValue(true));
     form.submit()
   };
 
@@ -535,7 +534,7 @@ class VehicleDetail extends PureComponent {
       render: (text, record) => (
         <Fragment>
           {!record.end &&
-            authority.includes("end.vehicle.ride") && (
+            (
               <Popconfirm
                 title="Are you Sure？"
                 icon={
