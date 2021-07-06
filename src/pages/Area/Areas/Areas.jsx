@@ -144,11 +144,13 @@ const Areas = (props) => {
       },
     }
     if(!areas.selectedAreaId){
+      console.log('111');
       dispatch({
         type: "areas/addArea",
         payload: {...formDatas},
       });
     }else{
+      console.log('222');
       dispatch({
         type: "areas/updateAreaNew",
         areaId:areas.selectedAreaId,
@@ -221,7 +223,7 @@ const Areas = (props) => {
         </Card>
         <Geo handleEditCenterData ={handleEditCenterData}></Geo>
         <Drawer
-          title="Update Area Feature"
+          title={formStatus+" Feature"}
           width={'30vw'}
           onClose={onClose}
           visible={isDrawerVisible}
@@ -273,7 +275,7 @@ const Areas = (props) => {
                 {...tailLayout}
                     label="description"
                     name="description"
-                    rules={[{ required: false, message: 'Please input your description!' }]}
+                    rules={[{ required: true, message: 'Please input your description!' }]}
                   >
                   <Input/>
                 </Form.Item>
@@ -286,29 +288,24 @@ const Areas = (props) => {
                   <Switch size="small"/>
                 </Form.Item>
             </Col>
-            <Col span={12}>
-                <Form.Item  label="member Check" {...tailLayout} name={['feature', 'membershipEnabled']} valuePropName="checked">
-                  <Switch size="small"/>
-                </Form.Item>
+            <Col span={12} >
+                        <Form.Item
+                            {...tailLayout}
+                            label="Tax Rate %"
+                            name={['feature','taxRate']}
+                            rules={[{ required: false, message: 'Please input your tax Rate!' }]}
+                          >
+                          <Input/>
+                        </Form.Item>
             </Col>
             <Col span={12}>
-                <Form.Item  label="Hold Ride" {...tailLayout} name={['feature', 'ridePauseEnabled']} valuePropName="checked">
-                  <Switch size="small"/>
-                </Form.Item>
-            </Col>
+                      <Form.Item  label="Hold Ride" {...tailLayout} name={['feature', 'ridePauseEnabled']} valuePropName="checked">
+                        <Switch size="small"/>
+                      </Form.Item>
+            </Col>  
             <Col span={12}>
                 <Form.Item  label="ride photo Check" {...tailLayout} name={['feature', 'ridePhotoEnabled']} valuePropName="checked">
                   <Switch size="small"/>
-                </Form.Item>
-            </Col>
-            <Col span={12}>
-                <Form.Item  label="billing Address" {...tailLayout} name={['feature', 'billingAddressEnabled']} valuePropName="checked">
-                  <Switch size="small"/>
-                </Form.Item>
-            </Col>
-            <Col span={12}>
-                <Form.Item  label="ridePre Auth Fee" {...tailLayout} name={['feature', 'ridePreAuthFee']}>
-                  <InputNumber min={1} max={245}/>
                 </Form.Item>
             </Col>
             </Row>
@@ -365,7 +362,7 @@ const Areas = (props) => {
                 <Form.Item
                   name={['feature','areaAvailability','isOpen']}
                   label="is Open Now"
-                  rules={[{ required: true, message: 'Please choose the approver' }]}
+                  rules={[{ required: true, message: 'please choose the status' }]}
                 >
                   <Select placeholder="choose"  onChange={areaAvailabilityIsOpenCallback}>
                     <Select.Option value={true}>true</Select.Option>
@@ -378,7 +375,7 @@ const Areas = (props) => {
                 <Form.Item
                   name={['feature','areaAvailability','timeZone']}
                   label="Time Zone"
-                  rules={[{ required: false, message: 'Please choose the approver' }]}
+                  rules={[{ required: false, message: 'please choose the status' }]}
                 >
                   <Select placeholder="choose" disabled={!areaAvailabilityIsOpenEnabled}>
                     <Select.Option value="US/Eastern">Eastern Time Zone</Select.Option>
@@ -442,22 +439,27 @@ const Areas = (props) => {
                         </Form.Item>
                       </Col>
                       <Divider>other Configuration</Divider>
+                      <Col span={12}>
+                        <Form.Item  label="member Check" {...tailLayout} name={['feature', 'membershipEnabled']} valuePropName="checked">
+                          <Switch size="small"/>
+                        </Form.Item>
+                      </Col>              
+                      <Col span={12}>
+                          <Form.Item  label="billing Address" {...tailLayout} name={['feature', 'billingAddressEnabled']} valuePropName="checked">
+                            <Switch size="small"/>
+                          </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                          <Form.Item  label="ridePre Auth Fee" {...tailLayout} name={['feature', 'ridePreAuthFee']}>
+                            <InputNumber min={1} max={245}/>
+                          </Form.Item>
+                      </Col>   
                       <Col span={12} >
                         <Form.Item 
                       {...tailLayout}
                             label="Survey Url"
                             name={['feature','surveyUrl']}
-                            rules={[{ required: false, message: 'Please input your name!' }]}
-                          >
-                          <Input/>
-                        </Form.Item>
-                      </Col>
-                      <Col span={12} >
-                        <Form.Item 
-                            {...tailLayout}
-                            label="Tax Rate %"
-                            name={['feature','taxRate']}
-                            rules={[{ required: false, message: 'Please input your name!' }]}
+                            rules={[{ required: false, message: 'Please input your Survey Url!' }]}
                           >
                           <Input/>
                         </Form.Item>
