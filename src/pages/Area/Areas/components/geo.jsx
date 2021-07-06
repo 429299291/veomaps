@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from "react";
+import React, { PureComponent, Fragment,useState } from "react";
 import { connect } from "dva";
 import moment from "moment";
 import {
@@ -342,6 +342,7 @@ const CreateFenceForm = (props => {
     selectedExistedFence
   } = props;
   const [form] = Form.useForm()
+  const [currFenceType, setCurrFenceType] = useState();
   if(!props.editingFence||props.editingFence == false){
     form.resetFields()
   }
@@ -361,10 +362,13 @@ const CreateFenceForm = (props => {
 
       handleNext(fieldsValue);
   };
+  const fenceHandleChange = (value) =>{
+    setCurrFenceType(value)
+  }
 
   const fence = selectedExistedFence ? selectedExistedFence : editingFence;
 
-  const currFenceType = form.getFieldValue("fenceType");
+  // const currFenceType = form.getFieldValue("fenceType");
 
   const isGeoFence = currFenceType === 0 || currFenceType === 5;
 
@@ -430,7 +434,7 @@ const CreateFenceForm = (props => {
             ]
           }
         >
-            <Select placeholder="select" style={{ width: "100%" }}>
+            <Select placeholder="select" style={{ width: "100%" }} onChange={fenceHandleChange}>
               {fenceType.map((fence, index) => (
                 <Select.Option key={index} value={index}>
                   {fence}
@@ -439,8 +443,7 @@ const CreateFenceForm = (props => {
             </Select>
         </FormItem>
       )}
-      
-      {(currFenceType === 0 || currFenceType === 5) && (
+      {(currFenceType == 0 || currFenceType == 5) && (
         <FormItem
           labelCol={{ span: 10 }}
           wrapperCol={{ span: 10 }}
