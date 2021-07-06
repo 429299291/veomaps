@@ -478,6 +478,7 @@ const UpdateForm = (props => {
   } = props;
   const [form] = Form.useForm()
   form.setFieldsValue(record)
+  console.log(record);
   const okHandle = () => {
     let fieldsValue = form.getFieldsValue(true)
     if (fieldsValue){
