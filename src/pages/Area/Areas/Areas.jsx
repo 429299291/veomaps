@@ -176,6 +176,8 @@ const Areas = (props) => {
     setViolationFineDatas(msg)
   }
   const getRegulationDatas=(msg)=>{
+    console.log('msg');
+    console.log(msg);
     setRegulationDatas(msg)
   }
   ///geo
