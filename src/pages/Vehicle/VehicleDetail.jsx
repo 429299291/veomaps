@@ -775,8 +775,6 @@ class VehicleDetail extends PureComponent {
 
   handleUpdate = (id, fields) => {
     const { dispatch, vehicleId, handleGetVehicles } = this.props;
-    console.log('fields');
-    console.log(fields);
     if(fields.errorStatus){
       dispatch({
         type: "vehicles/update",

@@ -129,14 +129,17 @@ const UpdateForm = (props => {
 });
  const RenderSimpleForm=(props)=> {
   const[form] = Form.useForm()
-
+  const handleFormReset =()=>{
+    props.handleFormReset()
+    form.resetFields()
+  }
   // const areas = props.areas;
   return (
     <Form onSubmit={()=>{props.handleSearch('00')}} layout="inline" form={form}>
       <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
         <Col span={10}>
           <FormItem label="Keywords" name='numberOrPhone'>
-              <Input placeholder="NUMBER Or PHONE" />
+              <Input placeholder="NUMBER Or PHONE" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
           </FormItem>
         </Col>
         <Col span={10}>
@@ -201,7 +204,7 @@ const UpdateForm = (props => {
             <Button onClick={()=>{props.handleSearch(form.getFieldsValue(true))}}>
               Search
             </Button>
-            <Button style={{ marginLeft: 8 }} onClick={props.handleFormReset}>
+            <Button style={{ marginLeft: 8 }} onClick={handleFormReset}>
               Reset
             </Button>
           </span>

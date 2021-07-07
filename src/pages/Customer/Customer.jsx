@@ -75,6 +75,10 @@ const queryStatus = ["FROZEN"];
 const authority = getAuthority();
 const RenderSimpleForm=(props)=> {
   const [form] = Form.useForm()
+  const handleFormReset = ()=>{
+    props.handleFormReset()
+    form.resetFields()
+  }
   return (
     <Form layout="inline" form={form}>
       {/* <Row gutter={{ md: 8, lg: 24, xl: 48 }}> */}
@@ -116,7 +120,7 @@ const RenderSimpleForm=(props)=> {
               Search
             </Button>
 
-            <Button style={{ marginLeft: 8 }} onClick={props.handleFormReset}>
+            <Button style={{ marginLeft: 8 }} onClick={handleFormReset}>
               Reset
             </Button>
           </span>
