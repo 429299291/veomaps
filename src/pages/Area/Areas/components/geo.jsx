@@ -362,10 +362,13 @@ const CreateFenceForm = (props => {
 
       handleNext(fieldsValue);
   };
+  console.log(selectedExistedFence);
   let isGeoFence = currFenceType === 0 || currFenceType === 5;
   const fenceHandleChange = (value) =>{
-    console.log(value);
     // setCurrFenceType(value)
+    isGeoFence = false
+    console.log(isGeoFence);
+
   }
 
   const fence = selectedExistedFence ? selectedExistedFence : editingFence;
@@ -476,32 +479,6 @@ const CreateFenceForm = (props => {
             ) : null
           }
         </Form.Item>
-
-      {/* {(isGeoFence) && (
-        <FormItem
-          labelCol={{ span: 10 }}
-          wrapperCol={{ span: 10 }}
-          label="Has Forced Parking"
-          name='hasForce'
-          rules={
-            [
-              {
-                required: true,
-                message: "You have to define if have forced parking area"
-              }
-            ]
-          }
-        >
-            <Select placeholder="select" style={{ width: "100%" }}>
-              <Select.Option key={1} value={1}>
-                Yes
-              </Select.Option>
-              <Select.Option key={0} value={0}>
-                No
-              </Select.Option>
-            </Select>
-        </FormItem>
-      )} */}
       {
         <FormItem
           labelCol={{ span: 10 }}
@@ -510,10 +487,10 @@ const CreateFenceForm = (props => {
           label={(isGeoFence? "Force " : "") + "Vehicle Type"}
         >
             <Select placeholder="select" style={{ width: "100%" }} mode="multiple">
-            <Select.Option key={0} value={0}>Bike</Select.Option>
-            <Select.Option key={1} value={1}>Scooter</Select.Option>
-            <Select.Option key={2} value={2}>E-Bike</Select.Option>
-            <Select.Option key={3} value={3}>COSMO</Select.Option>
+              <Option value={0}>Bike</Option>
+              <Option value={1}>Scooter</Option>
+              <Option value={2}>E-Bike</Option>
+              <Option value={3}>COSMO</Option>
               {/* <Option value={0}>Bike</Option>
               <Option value={1}>Scooter</Option>
               <Option value={2}>E-Bike</Option>
