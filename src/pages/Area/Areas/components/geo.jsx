@@ -350,7 +350,6 @@ const CreateFenceForm = (props => {
     selectedExistedFence?setCurrFenceType(selectedExistedFence.fenceType):null
  }, [selectedExistedFence])
   selectedExistedFence ?  form.setFieldsValue(selectedExistedFence):null
-
   const okHandle = () => {
       const fieldsValue = form.getFieldsValue(true)
       if (Array.isArray(fieldsValue.vehicleTypes) && fieldsValue.vehicleTypes.length === 0 ) {
@@ -363,18 +362,15 @@ const CreateFenceForm = (props => {
 
       handleNext(fieldsValue);
   };
-  const fenceHandleChange = async (value) =>{
+  let isGeoFence = currFenceType === 0 || currFenceType === 5;
+  const fenceHandleChange = (value) =>{
     console.log(value);
-    await setCurrFenceType(value)
+    // setCurrFenceType(value)
   }
 
   const fence = selectedExistedFence ? selectedExistedFence : editingFence;
 
   // const currFenceType = form.getFieldValue("fenceType");
-
-  let isGeoFence = currFenceType === 0 || currFenceType === 5;
-  console.log('rence');
-  console.log(isGeoFence);
 
   const nullToUndefined = value => value ? value : undefined;
 
@@ -447,7 +443,41 @@ const CreateFenceForm = (props => {
             </Select>
         </FormItem>
       )}
-      {(currFenceType == 0 || currFenceType == 5) && (
+
+        <Form.Item
+          noStyle
+          shouldUpdate={(prevValues, currentValues) => prevValues.fenceType !== currentValues.fenceType}
+        >
+          {({ getFieldValue }) =>
+            (getFieldValue('fenceType') == 0 || getFieldValue('fenceType') == 5) ? (
+              <FormItem
+              labelCol={{ span: 10 }}
+              wrapperCol={{ span: 10 }}
+              label="Has Forced Parking"
+              name='hasForce'
+              rules={
+                [
+                  {
+                    required: true,
+                    message: "You have to define if have forced parking area"
+                  }
+                ]
+              }
+            >
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  <Select.Option key={1} value={true}>
+                    Yes
+                  </Select.Option>
+                  <Select.Option key={0} value={false}>
+                    No
+                  </Select.Option>
+                </Select>
+            </FormItem>
+            ) : null
+          }
+        </Form.Item>
+
+      {/* {(isGeoFence) && (
         <FormItem
           labelCol={{ span: 10 }}
           wrapperCol={{ span: 10 }}
@@ -471,7 +501,7 @@ const CreateFenceForm = (props => {
               </Select.Option>
             </Select>
         </FormItem>
-      )}
+      )} */}
       {
         <FormItem
           labelCol={{ span: 10 }}

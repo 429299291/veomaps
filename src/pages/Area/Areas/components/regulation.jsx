@@ -146,8 +146,6 @@ class regulation extends React.Component {
   }
   render() {
     const {tags, inputVisible, inputValue, editInputIndex, editInputValue ,content,editContentValue} = this.state;
-    // console.log('---');
-    // console.log(this.state.displayDuringOnBoarding);
     // this.props.getRegulationDatas({
     //   regulations:this.state.tags,
     //   displayDuringOnBoarding:this.state.displayDuringOnBoarding
