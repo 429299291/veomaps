@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment,useState } from "react";
+import React, { PureComponent, Fragment,useState,useEffect } from "react";
 import { connect } from "dva";
 import moment from "moment";
 import {
@@ -346,11 +346,12 @@ const CreateFenceForm = (props => {
   if(!props.editingFence||props.editingFence == false){
     form.resetFields()
   }
+  useEffect(() => {
+    selectedExistedFence?setCurrFenceType(selectedExistedFence.fenceType):null
+ }, [selectedExistedFence])
   selectedExistedFence ?  form.setFieldsValue(selectedExistedFence):null
 
   const okHandle = () => {
-
-      
       const fieldsValue = form.getFieldsValue(true)
       if (Array.isArray(fieldsValue.vehicleTypes) && fieldsValue.vehicleTypes.length === 0 ) {
         fieldsValue.vehicleTypes = undefined;
@@ -362,15 +363,18 @@ const CreateFenceForm = (props => {
 
       handleNext(fieldsValue);
   };
-  const fenceHandleChange = (value) =>{
-    setCurrFenceType(value)
+  const fenceHandleChange = async (value) =>{
+    console.log(value);
+    await setCurrFenceType(value)
   }
 
   const fence = selectedExistedFence ? selectedExistedFence : editingFence;
 
   // const currFenceType = form.getFieldValue("fenceType");
 
-  const isGeoFence = currFenceType === 0 || currFenceType === 5;
+  let isGeoFence = currFenceType === 0 || currFenceType === 5;
+  console.log('rence');
+  console.log(isGeoFence);
 
   const nullToUndefined = value => value ? value : undefined;
 
@@ -508,8 +512,9 @@ class geo extends PureComponent {
   };
 
   componentDidMount() {
-    if (this.props.selectedAreaId)
+    if (this.props.selectedAreaId){
       this.getAreaGeoInfo();
+    }
   }
 
   getAreaGeoInfo = () => {
