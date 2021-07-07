@@ -120,9 +120,13 @@ class regulation extends React.Component {
   saveEditInputRef = input => {
     this.editInput = input;
   };
-  onChangeSwitch = (value)=>{
-    this.setState({
+  onChangeSwitch = async (value)=>{
+    await this.setState({
       displayDuringOnBoarding:value
+    })
+    await this.props.getRegulationDatas({
+      regulations:this.state.tags,
+      displayDuringOnBoarding:this.state.displayDuringOnBoarding
     })
   }
   tagsPositionSt=(index)=>{

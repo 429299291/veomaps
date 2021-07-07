@@ -350,7 +350,6 @@ const CreateFenceForm = (props => {
     selectedExistedFence?setCurrFenceType(selectedExistedFence.fenceType):null
  }, [selectedExistedFence])
   selectedExistedFence ?  form.setFieldsValue(selectedExistedFence):null
-
   const okHandle = () => {
       const fieldsValue = form.getFieldsValue(true)
       if (Array.isArray(fieldsValue.vehicleTypes) && fieldsValue.vehicleTypes.length === 0 ) {
@@ -363,18 +362,18 @@ const CreateFenceForm = (props => {
 
       handleNext(fieldsValue);
   };
-  const fenceHandleChange = async (value) =>{
-    console.log(value);
-    await setCurrFenceType(value)
+  console.log(selectedExistedFence);
+  let isGeoFence = currFenceType === 0 || currFenceType === 5;
+  const fenceHandleChange = (value) =>{
+    // setCurrFenceType(value)
+    isGeoFence = false
+    console.log(isGeoFence);
+
   }
 
   const fence = selectedExistedFence ? selectedExistedFence : editingFence;
 
   // const currFenceType = form.getFieldValue("fenceType");
-
-  let isGeoFence = currFenceType === 0 || currFenceType === 5;
-  console.log('rence');
-  console.log(isGeoFence);
 
   const nullToUndefined = value => value ? value : undefined;
 
@@ -447,31 +446,39 @@ const CreateFenceForm = (props => {
             </Select>
         </FormItem>
       )}
-      {(currFenceType == 0 || currFenceType == 5) && (
-        <FormItem
-          labelCol={{ span: 10 }}
-          wrapperCol={{ span: 10 }}
-          label="Has Forced Parking"
-          name='hasForce'
-          rules={
-            [
-              {
-                required: true,
-                message: "You have to define if have forced parking area"
-              }
-            ]
-          }
+
+        <Form.Item
+          noStyle
+          shouldUpdate={(prevValues, currentValues) => prevValues.fenceType !== currentValues.fenceType}
         >
-            <Select placeholder="select" style={{ width: "100%" }}>
-              <Select.Option key={1} value={1}>
-                Yes
-              </Select.Option>
-              <Select.Option key={0} value={0}>
-                No
-              </Select.Option>
-            </Select>
-        </FormItem>
-      )}
+          {({ getFieldValue }) =>
+            (getFieldValue('fenceType') == 0 || getFieldValue('fenceType') == 5) ? (
+              <FormItem
+              labelCol={{ span: 10 }}
+              wrapperCol={{ span: 10 }}
+              label="Has Forced Parking"
+              name='hasForce'
+              rules={
+                [
+                  {
+                    required: true,
+                    message: "You have to define if have forced parking area"
+                  }
+                ]
+              }
+            >
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  <Select.Option key={1} value={true}>
+                    Yes
+                  </Select.Option>
+                  <Select.Option key={0} value={false}>
+                    No
+                  </Select.Option>
+                </Select>
+            </FormItem>
+            ) : null
+          }
+        </Form.Item>
       {
         <FormItem
           labelCol={{ span: 10 }}
@@ -480,10 +487,10 @@ const CreateFenceForm = (props => {
           label={(isGeoFence? "Force " : "") + "Vehicle Type"}
         >
             <Select placeholder="select" style={{ width: "100%" }} mode="multiple">
-            <Select.Option key={0} value={0}>Bike</Select.Option>
-            <Select.Option key={1} value={1}>Scooter</Select.Option>
-            <Select.Option key={2} value={2}>E-Bike</Select.Option>
-            <Select.Option key={3} value={3}>COSMO</Select.Option>
+              <Option value={0}>Bike</Option>
+              <Option value={1}>Scooter</Option>
+              <Option value={2}>E-Bike</Option>
+              <Option value={3}>COSMO</Option>
               {/* <Option value={0}>Bike</Option>
               <Option value={1}>Scooter</Option>
               <Option value={2}>E-Bike</Option>
