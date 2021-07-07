@@ -292,7 +292,7 @@ const Areas = (props) => {
                             name={['feature','taxRate']}
                             rules={[{ required: false, message: 'Please input your tax Rate!' }]}
                           >
-                          <Input/>
+                          <InputNumber min={0}/>
                         </Form.Item>
             </Col>
             <Col span={12}>
