@@ -95,7 +95,6 @@ const Areas = (props) => {
     setIsDrawerVisible(false);
   };
   const onFinish = (values) => {
-    console.log(values);
     let formDatas = {
       name:values.name,
       description:values.description,
@@ -144,13 +143,11 @@ const Areas = (props) => {
       },
     }
     if(!areas.selectedAreaId){
-      console.log('111');
       dispatch({
         type: "areas/addArea",
         payload: {...formDatas},
       });
     }else{
-      console.log('222');
       dispatch({
         type: "areas/updateAreaNew",
         areaId:areas.selectedAreaId,
@@ -377,11 +374,11 @@ const Areas = (props) => {
                   label="Time Zone"
                   rules={[{ required: false, message: 'please choose the status' }]}
                 >
-                  <Select placeholder="choose" disabled={!areaAvailabilityIsOpenEnabled}>
-                    <Select.Option value="US/Eastern">Eastern Time Zone</Select.Option>
-                    <Select.Option value="US/Central">Central Time Zone</Select.Option>
-                    <Select.Option value="US/Mountain">Mountain Time Zone</Select.Option>
-                    <Select.Option value="US/Pacific">Pacific Time Zone</Select.Option>
+                  <Select placeholder="choose" disabled={!areaAvailabilityIsOpenEnabled} style={{width:'100%'}}>
+                    <Select.Option value="US/Eastern">Eastern</Select.Option>
+                    <Select.Option value="US/Central">Central</Select.Option>
+                    <Select.Option value="US/Mountain">Mountain</Select.Option>
+                    <Select.Option value="US/Pacific">Pacific</Select.Option>
                   </Select>
                 </Form.Item>
               </Col>
