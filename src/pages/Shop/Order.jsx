@@ -234,7 +234,6 @@ class Order extends PureComponent {
         form.submit()
       }
       const onFinish = (fieldsValue)=>{
-        console.log(fieldsValue);
         if (fieldsValue.name) {
           const splited = fieldsValue.name.split(" ");
   
@@ -253,7 +252,6 @@ class Order extends PureComponent {
           pageNumber: 1,
           pageSize: 10
         });
-        console.log(values);
         this.setState(
           {
             filterCriteria: values
@@ -281,7 +279,7 @@ class Order extends PureComponent {
         <Form onFinish={onFinish} layout="inline" form={form} >
           <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
             
-              <Col md={8} sm={24}>
+              <Col md={9} sm={24}>
                
                   <FormItem 
                     label="Order Number"

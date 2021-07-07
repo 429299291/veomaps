@@ -120,6 +120,10 @@ const RenderSimpleForm=(props)=> {
   const handleSearch=()=>{
     form.submit()
   }
+  const handleFormReset = ()=>{
+    props.handleFormReset()
+    form.resetFields()
+  }
   return (
     <Form onSubmit={handleSearch} layout="inline" form={form} onFinish={()=>{props.handleSearch(form.getFieldsValue(true))}}>
       <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -156,7 +160,7 @@ const RenderSimpleForm=(props)=> {
               <Button type="primary" htmlType="submit">
                 Search
               </Button>
-              <Button style={{ marginLeft: 8 }} onClick={props.handleFormReset}>
+              <Button style={{ marginLeft: 8 }} onClick={handleFormReset}>
                 Reset
               </Button>
               <a style={{ marginLeft: 8 }} onClick={props.toggleForm}>
@@ -478,7 +482,6 @@ const UpdateForm = (props => {
   } = props;
   const [form] = Form.useForm()
   form.setFieldsValue(record)
-  console.log(record);
   const okHandle = () => {
     let fieldsValue = form.getFieldsValue(true)
     if (fieldsValue){

@@ -77,7 +77,10 @@ const ViolationLocation = compose(
 });
 const RenderSimpleForm=(props)=> {
   const [form] = Form.useForm()
-
+  const handleFormReset = ()=>{
+    props.handleFormReset()
+    form.resetFields()
+  }
   // const areas = this.props.areas.data;
   return (
     // <Form onSubmit={e => {typeof e === 'object' && e.preventDefault(); this.getViolations();}} layout="inline">
@@ -137,7 +140,7 @@ const RenderSimpleForm=(props)=> {
               <Button onClick={()=>{props.getViolations(form.getFieldsValue(true))}}>
                 Search
               </Button>
-              <Button style={{ marginLeft: 8 }} onClick={props.handleFormReset}>
+              <Button style={{ marginLeft: 8 }} onClick={handleFormReset}>
                 Reset
               </Button>
             </span>
