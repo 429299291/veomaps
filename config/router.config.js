@@ -6,6 +6,7 @@ export default [
   {
     path: "/user",
     component: "../layouts/UserLayout",
+    icon:'user',
     routes: [
       { path: "/user", redirect: "/user/login" },
       { path: "/user/login", component: "./User/Login" },
@@ -26,8 +27,7 @@ export default [
         path: "/dashboard",
         name: "dashboard",
         authority: "dashboard",
-        icon:'SmileOutlined',
-        key:'/dashboard',
+        icon:'dashboard',
         routes: [
           {
             path: "/dashboard/main",
@@ -58,12 +58,12 @@ export default [
         path: "/ride/",
         name: "Riding Management",
         component: "./Ride/Ride",
-        // icon: "car",
+        icon: "ride",
         authority: ["ride"],
       },
       {
         path: "/vehicle-management",
-        // icon: "car",
+        icon: "car",
         name: "Vehicle Management",
         authority:[ "vehicle"],
         routes: [
@@ -88,7 +88,7 @@ export default [
       },
       {
         path: "/customer-management",
-        // icon: "user",
+        icon: "customer",
         name: "Customer Management",
         authority: ["customer"],
         routes: [
@@ -112,7 +112,7 @@ export default [
       },
       {
         path: "/area",
-        // icon: "global",
+        icon: "global",
         name: "Area Management",
         authority:['area'],
         routes: [
@@ -165,7 +165,6 @@ export default [
       {
         path: "/employee-management/",
         name: "Admin Management",
-        // icon: "user",
         icon: "user",
         authority: ["admin"],
         routes: [
@@ -189,8 +188,7 @@ export default [
       {
         path: "/technician-management/",
         name: "Technician Management",
-        // icon: "user",
-        icon: "user",
+        icon: "technician",
         authority: ["technician"],
         routes: [
           {
@@ -217,7 +215,7 @@ export default [
       },
         {
         name: "account",
-        // icon: "user",
+        icon: "user",
         path: "/account",
         authority: ["me"],
         routes: [

@@ -8,6 +8,7 @@ import { urlToList } from '../_utils/pathTools';
 import styles from './index.less';
 import { routerRedux } from "dva/router";
 import { stringify } from "qs";
+import { DashboardOutlined,ShopOutlined,CarOutlined,UserOutlined,GlobalOutlined,UserSwitchOutlined,UsergroupAddOutlined,ArrowRightOutlined } from '@ant-design/icons';
 
 const { SubMenu } = Menu;
 
@@ -16,11 +17,30 @@ const { SubMenu } = Menu;
 //   icon: 'http://demo.com/icon.png',
 //   icon: <Icon type="setting" />,
 const getIcon = icon => {
+  console.log(icon);
   if (typeof icon === 'string' && icon.indexOf('http') === 0) {
     return <img src={icon} alt="icon" className={styles.icon} />;
   }
   if (typeof icon === 'string') {
-    return <Icon type={icon} />;
+    // return <Icon type={icon} />;
+    if(icon == 'dashboard'){
+      return <DashboardOutlined />
+    }else if(icon == 'shop'){
+      return <ShopOutlined />
+    }else if(icon == 'car'){
+      return <CarOutlined />
+    }else if(icon == 'user'){
+      return <UserOutlined />
+    }else if(icon == 'global'){
+      return <GlobalOutlined />
+    }else if(icon == 'technician'){
+      return <UserSwitchOutlined />
+    }else if(icon == 'customer'){
+      return <UsergroupAddOutlined />
+    }else if(icon == 'ride'){
+      return <ArrowRightOutlined />
+    }
+    // return _react.default.createElement(icon)
   }
   return icon;
 };
@@ -64,6 +84,7 @@ export default class BaseMenu extends PureComponent {
     if (!menusData) {
       return [];
     }
+    console.log(menusData);
     return menusData
       .filter(item => item.name && !item.hideInMenu)
       .map(item => {
@@ -83,6 +104,7 @@ export default class BaseMenu extends PureComponent {
    */
   getSubMenuOrItem = item => {
     // doc: add hideChildrenInMenu
+    // console.log(item);
     if (item.children && !item.hideChildrenInMenu && item.children.some(child => child.name)) {
       const { name } = item;
       return (

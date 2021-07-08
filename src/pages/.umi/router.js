@@ -10,6 +10,7 @@ let routes = [
   {
     "path": "/user",
     "component": dynamic({ loader: () => import('../../layouts/UserLayout'), loading: require('/Users/zhudongdong/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
+    "icon": "user",
     "routes": [
       {
         "path": "/user",
@@ -49,8 +50,7 @@ let routes = [
         "path": "/dashboard",
         "name": "dashboard",
         "authority": "dashboard",
-        "icon": "SmileOutlined",
-        "key": "/dashboard",
+        "icon": "dashboard",
         "routes": [
           {
             "path": "/dashboard/main",
@@ -92,6 +92,7 @@ let routes = [
         "path": "/ride/",
         "name": "Riding Management",
         "component": dynamic({ loader: () => import('../Ride/Ride'), loading: require('/Users/zhudongdong/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
+        "icon": "ride",
         "authority": [
           "ride"
         ],
@@ -99,6 +100,7 @@ let routes = [
       },
       {
         "path": "/vehicle-management",
+        "icon": "car",
         "name": "Vehicle Management",
         "authority": [
           "vehicle"
@@ -123,6 +125,7 @@ let routes = [
       },
       {
         "path": "/customer-management",
+        "icon": "customer",
         "name": "Customer Management",
         "authority": [
           "customer"
@@ -156,6 +159,7 @@ let routes = [
       },
       {
         "path": "/area",
+        "icon": "global",
         "name": "Area Management",
         "authority": [
           "area"
@@ -234,7 +238,7 @@ let routes = [
       {
         "path": "/technician-management/",
         "name": "Technician Management",
-        "icon": "user",
+        "icon": "technician",
         "authority": [
           "technician"
         ],
@@ -270,6 +274,7 @@ let routes = [
       },
       {
         "name": "account",
+        "icon": "user",
         "path": "/account",
         "authority": [
           "me"
