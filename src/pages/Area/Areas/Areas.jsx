@@ -14,7 +14,7 @@ import Geo from './components/geo'
 const Areas = (props) => {
     const { dispatch,selectedAreaId,areas } = props;
     const [formStatus, setFormStatus] = useState();
-    const [formDatas, setFormDatas] = useState(false);
+    const [formDatas, setFormDatas] = useState();
     const [isDrawerVisible, setIsDrawerVisible] = useState(false);
     const [ageEnabled, setAgeEnabled] = useState(false);
     const [areaAvailabilityIsOpenEnabled, setAreaAvailabilityIsOpenEnabled] = useState(false);
@@ -40,7 +40,7 @@ const Areas = (props) => {
         });
         
       }else{
-        setFormDatas({})
+        setFormDatas(null)
         setFormStatus('Add Area')
       }
 
@@ -95,7 +95,7 @@ const Areas = (props) => {
     setIsDrawerVisible(false);
   };
   const onFinish = (values) => {
-    let formDatas = {
+    let newFormDatas = {
       name:values.name,
       description:values.description,
       feature:{
@@ -103,8 +103,8 @@ const Areas = (props) => {
           lat:values.feature.center.lat,
           lng:values.feature.center.lng,
         }:{
-          lat:'0',
-          lng:'0'
+          lat:formDatas.feature?formDatas.feature.center.lat:'0',
+          lng:formDatas.feature?formDatas.feature.center.lng:'0'
         },
         activated:values.feature.activated,
         membershipEnabled:values.feature.membershipEnabled,
@@ -145,13 +145,13 @@ const Areas = (props) => {
     if(!areas.selectedAreaId){
       dispatch({
         type: "areas/addArea",
-        payload: {...formDatas},
+        payload: {...newFormDatas},
       });
     }else{
       dispatch({
         type: "areas/updateAreaNew",
         areaId:areas.selectedAreaId,
-        payload: {...formDatas},
+        payload: {...newFormDatas},
       });
     }
     setIsDrawerVisible(false);

@@ -362,12 +362,9 @@ const CreateFenceForm = (props => {
 
       handleNext(fieldsValue);
   };
-  console.log(selectedExistedFence);
-  let isGeoFence = currFenceType === 0 || currFenceType === 5;
+  // let isGeoFence = currFenceType === 0 || currFenceType === 5;
   const fenceHandleChange = (value) =>{
     // setCurrFenceType(value)
-    isGeoFence = false
-    console.log(isGeoFence);
 
   }
 
