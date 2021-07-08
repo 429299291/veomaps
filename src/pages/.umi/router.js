@@ -49,6 +49,7 @@ let routes = [
         "path": "/dashboard",
         "name": "dashboard",
         "authority": "dashboard",
+        "icon": "StepForwardOutlined",
         "key": "/dashboard",
         "routes": [
           {
