@@ -49,6 +49,7 @@ let routes = [
         "path": "/dashboard",
         "name": "dashboard",
         "authority": "dashboard",
+        "icon": "SmileOutlined",
         "key": "/dashboard",
         "routes": [
           {
@@ -64,6 +65,7 @@ let routes = [
       },
       {
         "path": "/shop-management",
+        "icon": "shop",
         "name": "Shop Management",
         "authority": [
           "shop"
