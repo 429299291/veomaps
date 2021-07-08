@@ -775,7 +775,7 @@ class VehicleDetail extends PureComponent {
 
   handleUpdate = (id, fields) => {
     const { dispatch, vehicleId, handleGetVehicles } = this.props;
-    if(fields.errorStatus){
+    // if(fields.errorStatus){
       dispatch({
         type: "vehicles/update",
         payload: fields,
@@ -785,7 +785,7 @@ class VehicleDetail extends PureComponent {
           this.handleGetVehicle(vehicleId);
         }
       });
-    }
+    // }
   };
 
   redefineProperties = (object) => {
