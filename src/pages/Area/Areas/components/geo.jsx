@@ -479,25 +479,30 @@ const CreateFenceForm = (props => {
             ) : null
           }
         </Form.Item>
-      {
-        <FormItem
-          labelCol={{ span: 10 }}
-          wrapperCol={{ span: 10 }}
-          name={isGeoFence ? "forceVehicleTypes" : "vehicleTypes"}
-          label={(isGeoFence? "Force " : "") + "Vehicle Type"}
+        <Form.Item
+          noStyle
+          shouldUpdate={(prevValues, currentValues) => prevValues.fenceType !== currentValues.fenceType}
         >
-            <Select placeholder="select" style={{ width: "100%" }} mode="multiple">
-              <Option value={0}>Bike</Option>
-              <Option value={1}>Scooter</Option>
-              <Option value={2}>E-Bike</Option>
-              <Option value={3}>COSMO</Option>
-              {/* <Option value={0}>Bike</Option>
-              <Option value={1}>Scooter</Option>
-              <Option value={2}>E-Bike</Option>
-              <Option value={3}>COSMO</Option> */}
-            </Select>
-        </FormItem>
-      }
+          {({ getFieldValue }) =>
+                <FormItem
+                labelCol={{ span: 10 }}
+                wrapperCol={{ span: 10 }}
+                name={(getFieldValue('fenceType') == 0 || getFieldValue('fenceType') == 5) ? "forceVehicleTypes" : "vehicleTypes"}
+                label={((getFieldValue('fenceType') == 0 || getFieldValue('fenceType') == 5)? "Force " : "") + "Vehicle Type"}
+              >
+                  <Select placeholder="select" style={{ width: "100%" }} mode="multiple">
+                    <Option value={0}>Bike</Option>
+                    <Option value={1}>Scooter</Option>
+                    <Option value={2}>E-Bike</Option>
+                    <Option value={3}>COSMO</Option>
+                    {/* <Option value={0}>Bike</Option>
+                    <Option value={1}>Scooter</Option>
+                    <Option value={2}>E-Bike</Option>
+                    <Option value={3}>COSMO</Option> */}
+                  </Select>
+              </FormItem>
+            }
+          </Form.Item>
       </Form>
     </Modal>
   );
