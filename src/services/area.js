@@ -97,8 +97,11 @@ export async function addArea(params) {
     body:{...params}
   })
   .then(response=>{
-    if(response.status==500)
-    message.error('add error')
+    if(response.status==500){
+      message.error('add error')
+    }else if(response == true){
+      message.success('add area success')
+    }
     return response
   })
   .catch(err=>{message.error(err)});
@@ -110,7 +113,7 @@ export async function updateAreaNew(areaId,params) {
   })
   .then(response=>{
     if(response.status!==200){
-      message.success('add success')
+      message.success('edit area success')
     }
   });
 }
