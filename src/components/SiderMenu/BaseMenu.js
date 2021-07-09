@@ -17,8 +17,8 @@ const { SubMenu } = Menu;
 //   icon: 'http://demo.com/icon.png',
 //   icon: <Icon type="setting" />,
 const getIcon = icon => {
-  console.log(icon);
   if (typeof icon === 'string' && icon.indexOf('http') === 0) {
+    console.log(icon);
     return <img src={icon} alt="icon" className={styles.icon} />;
   }
   if (typeof icon === 'string') {
@@ -84,7 +84,6 @@ export default class BaseMenu extends PureComponent {
     if (!menusData) {
       return [];
     }
-    console.log(menusData);
     return menusData
       .filter(item => item.name && !item.hideInMenu)
       .map(item => {
@@ -104,7 +103,6 @@ export default class BaseMenu extends PureComponent {
    */
   getSubMenuOrItem = item => {
     // doc: add hideChildrenInMenu
-    // console.log(item);
     if (item.children && !item.hideChildrenInMenu && item.children.some(child => child.name)) {
       const { name } = item;
       return (
