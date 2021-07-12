@@ -17,6 +17,7 @@ const Areas = (props) => {
     const [formDatas, setFormDatas] = useState();
     const [isDrawerVisible, setIsDrawerVisible] = useState(false);
     const [ageEnabled, setAgeEnabled] = useState(false);
+    const [bikeLaneEnabled, setBikeLaneEnabled] = useState(false);
     const [areaAvailabilityIsOpenEnabled, setAreaAvailabilityIsOpenEnabled] = useState(false);
     const [freeRideEnabled, setFreeRideEnabled] = useState(false);
     //geo
@@ -72,6 +73,7 @@ const Areas = (props) => {
           })
           setAgeEnabled(formDatas.feature.ageVerification.enabled)
           setFreeRideEnabled(formDatas.feature.freeRide.enabled)
+          setBikeLaneEnabled(formDatas.feature.bikeLane.enabled)
         }
         form.setFieldsValue(formDatas)
       }else{
@@ -166,10 +168,12 @@ const Areas = (props) => {
   const ageOnchange = (value) =>{
     setAgeEnabled(value)
   }
+  const bikeLaneOnchange = (value) =>{
+    setBikeLaneEnabled(value)
+  }
   const areaAvailabilityIsOpenCallback=(value)=>{
     setAreaAvailabilityIsOpenEnabled(false)
     typeof(value) =='string'?setAreaAvailabilityIsOpenEnabled(true):setAreaAvailabilityIsOpenEnabled(false)
-    console.log(areaAvailabilityIsOpenEnabled);
   }
   const freeRideOnchange=(value)=>{
     setFreeRideEnabled(value)
@@ -311,21 +315,6 @@ const Areas = (props) => {
                   <Switch size="small"/>
                 </Form.Item>
             </Col>
-            <Col span={12}>
-                <Form.Item  label="bike lane" {...tailLayout} name={['feature', 'bikeLane','enabled']} valuePropName="checked">
-                  <Switch size="small"/>
-                </Form.Item>
-            </Col>
-            <Col span={12}>
-                <Form.Item
-                    {...tailLayout}
-                    label="bike lane path"
-                    name={['feature','bikeLane','geoJsonPath']}
-                    rules={[{ required: false, message: 'Please input your bike lane path' }]}
-                  >
-                  <Input />
-                </Form.Item>
-            </Col>
             </Row>
             </Card>
             </Col>
@@ -362,6 +351,25 @@ const Areas = (props) => {
                 </Form.Item>
             </Col>
             </Row>
+            </Card>
+            <Card title="bike lane control" type="inner" size="small">
+              <Row>
+              <Col span={12}>
+                  <Form.Item  label="bike lane" {...tailLayout} name={['feature', 'bikeLane','enabled']} valuePropName="checked">
+                    <Switch size="small" onChange={bikeLaneOnchange}/>
+                  </Form.Item>
+              </Col>
+              <Col span={12}>
+                  <Form.Item
+                      // {...tailLayout}
+                      label="path"
+                      name={['feature','bikeLane','geoJsonPath']}
+                      rules={[{ required: false, message: 'Please input your bike lane path' }]}
+                    >
+                    <Input disabled={!bikeLaneEnabled}/>
+                  </Form.Item>
+              </Col>
+              </Row>
             </Card>
             </Col>
             </Row>
