@@ -57,30 +57,32 @@ const Areas = (props) => {
     wrapperCol: { offset:1, span: 14},
   };
   const showDrawer =  () => {
-    if(!formDatas){
-      message.error("You don't have permission to configure");
-      return false
-    }
-    if(formDatas.feature &&( formDatas.feature.areaAvailability.weekDay || formDatas.feature.areaAvailability.weekDay)&& (formDatas.feature.areaAvailability.weekDay.start || formDatas.feature.areaAvailability.weekend.start)){
-      formDatas.feature.areaAvailability.weekDay = [moment(formDatas.feature.areaAvailability.weekDay.start, format), moment(formDatas.feature.areaAvailability.weekDay.end, format)]
-      formDatas.feature.areaAvailability.weekend = [moment(formDatas.feature.areaAvailability.weekend.start, format), moment(formDatas.feature.areaAvailability.weekend.end, format)]
-    }
-    if(formDatas.feature){
-      if(formDatas){
-        setViolationFineDatas(formDatas.feature.violationFees)
-        setRegulationDatas({
-          regulations:formDatas.feature.regulation.regulations,
-          displayDuringOnBoarding:formDatas.feature.regulation.displayDuringOnBoarding
-        })
-        setAgeEnabled(formDatas.feature.ageVerification.enabled)
+    if(formDatas){
+      if(formDatas.feature &&( formDatas.feature.areaAvailability.weekDay || formDatas.feature.areaAvailability.weekDay)&& (formDatas.feature.areaAvailability.weekDay.start || formDatas.feature.areaAvailability.weekend.start)){
+        formDatas.feature.areaAvailability.weekDay = [moment(formDatas.feature.areaAvailability.weekDay.start, format), moment(formDatas.feature.areaAvailability.weekDay.end, format)]
+        formDatas.feature.areaAvailability.weekend = [moment(formDatas.feature.areaAvailability.weekend.start, format), moment(formDatas.feature.areaAvailability.weekend.end, format)]
       }
-      form.setFieldsValue(formDatas)
+      if(formDatas.feature){
+        formDatas.feature.areaAvailability.isOpen == null ? formDatas.feature.areaAvailability.isOpen = 'null': null   //reset isopen null 
+        if(formDatas){
+          setViolationFineDatas(formDatas.feature.violationFees)
+          setRegulationDatas({
+            regulations:formDatas.feature.regulation.regulations,
+            displayDuringOnBoarding:formDatas.feature.regulation.displayDuringOnBoarding
+          })
+          setAgeEnabled(formDatas.feature.ageVerification.enabled)
+          setFreeRideEnabled(formDatas.feature.freeRide.enabled)
+        }
+        form.setFieldsValue(formDatas)
+      }else{
+        setRegulationDatas({
+          regulations:[],
+          displayDuringOnBoarding:false
+        })
+        setViolationFineDatas([])
+        form.resetFields()
+      }
     }else{
-      setRegulationDatas({
-        regulations:[],
-        displayDuringOnBoarding:false
-      })
-      setViolationFineDatas([])
       form.resetFields()
     }
     setIsDrawerVisible(true);
@@ -103,8 +105,8 @@ const Areas = (props) => {
           lat:values.feature.center.lat,
           lng:values.feature.center.lng,
         }:{
-          lat:formDatas.feature?formDatas.feature.center.lat:'0',
-          lng:formDatas.feature?formDatas.feature.center.lng:'0'
+          lat:formDatas?formDatas.feature?formDatas.feature.center.lat:'0':'0',
+          lng:formDatas?formDatas.feature?formDatas.feature.center.lng:'0':'0'
         },
         activated:values.feature.activated,
         membershipEnabled:values.feature.membershipEnabled,
@@ -134,6 +136,10 @@ const Areas = (props) => {
           freeMinutes:values.feature.freeRide.freeMinutes
         },
         regulation:  regulationDatas,
+        bikeLane:{
+          enabled:values.feature.bikeLane.enabled,
+          geoJsonPath:values.feature.bikeLane.geoJsonPath
+        },
         prompts: [
           "string"
         ],
@@ -241,8 +247,8 @@ const Areas = (props) => {
               "freeRide": {
 
               },
-              "areaAvailability": {
-                  "isOpen": null,
+              areaAvailability: {
+                  "isOpen": true,
                   "timeZone": null,
                   weekDay: null,
                   weekend:null,
@@ -286,14 +292,14 @@ const Areas = (props) => {
                 </Form.Item>
             </Col>
             <Col span={12} >
-                        <Form.Item
-                            {...tailLayout}
-                            label="Tax Rate %"
-                            name={['feature','taxRate']}
-                            rules={[{ required: false, message: 'Please input your tax Rate!' }]}
-                          >
-                          <InputNumber min={0}/>
-                        </Form.Item>
+                <Form.Item
+                    {...tailLayout}
+                    label="Tax Rate %"
+                    name={['feature','taxRate']}
+                    rules={[{ required: false, message: 'Please input your tax Rate!' }]}
+                  >
+                  <InputNumber min={0}/>
+                </Form.Item>
             </Col>
             <Col span={12}>
                       <Form.Item  label="Hold Ride" {...tailLayout} name={['feature', 'ridePauseEnabled']} valuePropName="checked">
@@ -303,6 +309,21 @@ const Areas = (props) => {
             <Col span={12}>
                 <Form.Item  label="ride photo Check" {...tailLayout} name={['feature', 'ridePhotoEnabled']} valuePropName="checked">
                   <Switch size="small"/>
+                </Form.Item>
+            </Col>
+            <Col span={12}>
+                <Form.Item  label="bike lane" {...tailLayout} name={['feature', 'bikeLane','enabled']} valuePropName="checked">
+                  <Switch size="small"/>
+                </Form.Item>
+            </Col>
+            <Col span={12}>
+                <Form.Item
+                    {...tailLayout}
+                    label="bike lane path"
+                    name={['feature','bikeLane','geoJsonPath']}
+                    rules={[{ required: false, message: 'Please input your bike lane path' }]}
+                  >
+                  <Input />
                 </Form.Item>
             </Col>
             </Row>
@@ -359,7 +380,7 @@ const Areas = (props) => {
                 <Form.Item
                   name={['feature','areaAvailability','isOpen']}
                   label="is Open Now"
-                  rules={[{ required: true, message: 'please choose the status' }]}
+                  rules={[{ required: false, message: 'please choose the status' }]}
                 >
                   <Select placeholder="choose"  onChange={areaAvailabilityIsOpenCallback}>
                     <Select.Option value={true}>true</Select.Option>
