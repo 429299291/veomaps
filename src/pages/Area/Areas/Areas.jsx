@@ -73,7 +73,7 @@ const Areas = (props) => {
           })
           setAgeEnabled(formDatas.feature.ageVerification.enabled)
           setFreeRideEnabled(formDatas.feature.freeRide.enabled)
-          setBikeLaneEnabled(formDatas.feature.bikeLane.enabled)
+          formDatas.feature.bikeLane?setBikeLaneEnabled(formDatas.feature.bikeLane.enabled):null
         }
         form.setFieldsValue(formDatas)
       }else{
