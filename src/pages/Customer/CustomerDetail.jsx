@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from "react";
+import React, { PureComponent, Fragment, useState } from "react";
 import { connect } from "dva";
 import moment from "moment";
 import {
@@ -23,7 +23,8 @@ import {
   Popconfirm,
   Table,
   Checkbox,
-  Switch
+  Switch,
+  Spin
 } from "antd";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 import { getAuthority } from "@/utils/authority";
@@ -283,8 +284,7 @@ class CustomerDetail extends PureComponent {
     this.handleGetCustomerDetail(customerId);
     this.handleGetCustomerRides(customerId);
     this.handleGetCustomerPayments(customerId);
-    this.handleGetCustomerMembership(customerId);
-    this.handleGetAvailableCustomerMemberships(customerId);
+    this.handleGetAvailableCustomerMemberships();
     this.handleGetCustomerTransactions(customerId);
     this.handleGetCustomerApprovedViolationCount(customerId);
   };
@@ -449,18 +449,6 @@ class CustomerDetail extends PureComponent {
   };
 
 
-  handleGetCustomerMembership = () => {
-    const { dispatch, customerId } = this.props;
-
-    dispatch({
-      type: "customers/getMembership",
-      customerId: customerId,
-      onSuccess: response => {
-        this.setState({customerMembership: response})
-      }
-    });
-  };
-
   handleGetCustomerTransactions = () => {
     const { dispatch, customerId } = this.props;
 
@@ -473,25 +461,28 @@ class CustomerDetail extends PureComponent {
     });
   };
 
-  handleGetAvailableCustomerMemberships = () => {
+  handleGetAvailableCustomerMemberships = onSuccess => {
     const { dispatch, customerId } = this.props;
     dispatch({
       type: "customers/getAvailableMemberships",
       customerId: customerId,
       onSuccess: response => {
-        this.setState({availableMemberships: response})
+        this.setState({availableMemberships: response}, onSuccess)
       }
     });
   };
 
 
-  handleBuyMembership = params => {
+  handleBuyMembership = (planId, callback) => {
     const { dispatch, customerId } = this.props;
     dispatch({
-      type: "customers/updateMembership",
+      type: "customers/buyMembership",
       customerId: customerId,
-      params: params,
-      onSuccess: () => this.handleGetCustomerMembership()
+      planId: planId,
+      onSuccess: () =>  {
+        this.handleGetAvailableCustomerMemberships(callback) 
+      },
+      onFail: callback
     });
   }
 
@@ -798,77 +789,73 @@ class CustomerDetail extends PureComponent {
     
     const MembershipForm = (props => {
       const { memberships, handleBuyMembership } = props;
-      const [form] = Form.useForm()
+      const [form] = Form.useForm();
+      
+      const activeMembership = memberships.filter(m => m.activated).reduce((o , m) => m, null);
+
+      const [allowToBuy, setAllowToBuy] = useState(false); 
+
+      const [isLoading, setIsLoading] = useState(false);
+
+
       const okHandle = () => {
-          let fieldsValue = form.getFieldsValue(true)
-          if(!fieldsValue.membershipId) return false
-            if (fieldsValue.free) {
-              fieldsValue.autoRenew = false;
-              fieldsValue.paidWithBalance = true;
-            }    
-    
-            handleBuyMembership(fieldsValue);
-      };
-    
+        let fieldsValue = form.getFieldsValue(true)
+        if(!fieldsValue.selectedMembership) return false
+        
+        setIsLoading(true);
+        const setNotLoadiing = () => setIsLoading(false);
+        handleBuyMembership(fieldsValue.selectedMembership, setNotLoadiing);
+    };
+
       return (
         <div>
-        <Form form={form}>
-          {memberships && (
-            <FormItem
-              labelCol={{ span: 5 }}
-              wrapperCol={{ span: 15 }}
-              label="Membership"
-              name='membershipId'
-              rules={
-                [
-                  {
-                    required: true,
-                    message: "You have to pick a membership"
-                  }
-                ]
-              }
-            >
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  {memberships.map((membership, index) => (
-                    <Option key={index} value={membership.id}>
-                      {"Title: " + membership.title + ", Free Minutes: " + membership.freeMinutes}
-                    </Option>
-                  ))}
-                </Select>
-            </FormItem>
-          )}
-    
-          <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Free" name='free'>
-              <Checkbox />
-          </FormItem>
-    
-          <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is AutoRenew" name='autoRenew'>
-              <Checkbox value={true}/>
-          </FormItem>
-    
-          <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Paid By Balance" name='paidWithBalance'>
-              <Checkbox />
-          </FormItem>
-    
-          <Row>
-            <Col>
-              <Button
-                type="primary"
-                onClick={okHandle}
+          {isLoading ?
+            <Spin size="large" />
+            :
+            <Form form={form}>
+            {memberships && (
+              <FormItem
+                labelCol={{ span: 5 }}
+                wrapperCol={{ span: 15 }}
+                label="Membership"
+                name='selectedMembership'
               >
-                Update Customer
-              </Button>
-            </Col>
-          </Row>
-          </Form>
+                  <Select 
+                      placeholder="select" style={{ width: "100%" }} 
+                      defaultValue ={activeMembership ? activeMembership.id : undefined}
+                      onChange={val => setAllowToBuy(!activeMembership && !!val)}    
+                      disabled={!!activeMembership}            
+                  >
+                    { (activeMembership ? [activeMembership] : memberships).map((membership, index) => (
+                      <Option key={index} value={membership.id}>
+                        { membership.name + "," + membership.description}
+                      </Option>
+                    ))}
+                  </Select>
+              </FormItem>
+            )}
+      
+      
+            <Row>
+              <Col>
+                <Button
+                  type="primary"
+                  onClick={okHandle}
+                  disabled={!allowToBuy}
+                >
+                  Buy Membership
+                </Button>
+              </Col>
+            </Row>
+            </Form>
+          }         
         </div>
       );
     });
     
     const AddCouponForm = (props => {
       const { coupons, handleAddCustomerCoupon } = props;
-      const [form]= Form.useForm()    
-      console.log(coupons);
+      const [form]= Form.useForm();
       return (
         <div>
           <Form form={form}>
@@ -1315,22 +1302,16 @@ class CustomerDetail extends PureComponent {
               </Card>
             )}
 
-            {
-            <Card title="Membership" style={{ marginTop: "2em" }}>
-              {customerMembership && Object.keys(customerMembership).map(
-                (key, index) => <div key={index}>
-                  {`${key} :  ${(key === 'startTime' || key === 'endTime') ? moment(customerMembership[key]).format("YYYY-MM-DD HH:mm:ss") : customerMembership[key]}`}
-                </div>
-              )}
-              {
+            {availableMemberships &&  
+              <Card title="Membership" style={{ marginTop: "2em" }}>
                 <MembershipForm
-                  memberships={availableMemberships}
-                  handleBuyMembership={this.handleBuyMembership}
-                />
-              }
-
-            </Card>
+                    memberships={availableMemberships}
+                    handleBuyMembership={this.handleBuyMembership}
+                  />
+              </Card>
             }
+          
+            
           </div>
         )}
       </Modal>

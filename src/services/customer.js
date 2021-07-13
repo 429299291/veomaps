@@ -81,16 +81,16 @@ export async function getMembership(customerId) {
 }
 
 export async function getAvailableMemberships(customerId) {
-  return request(`/admins/memberships/customers/${customerId}/available`, {
+  return request(`/api/admins/customers/${customerId}/memberships/options`, {
     method: "GET"
   });
 }
 
-export async function updateMembership(customerId, params) {
-  return request(`/admins/memberships/customers/${customerId}/buy`, {
+export async function buyMembership(customerId, planId) {
+  return request(`/api/admins/customers/${customerId}/memberships/${planId}/buy`, {
     method: "POST",
     body: {
-      ...params
+      isAutoRenew: false
     }
   });
 }
