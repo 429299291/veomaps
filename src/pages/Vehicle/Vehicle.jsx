@@ -266,7 +266,9 @@ const HeatMapForm = (props => {
  
   return ( <div style={{fontSize: fontSize, marginTop: "1em"}}>
     <Form form={form}>
-      <span className={style}>
+      <Row>
+      {/* <span className={style}> */}
+      <Col span={3}>
           <FormItem name='isStart'>
             <Select>
               <Option value={true}>Start of Ride</Option>
@@ -275,17 +277,21 @@ const HeatMapForm = (props => {
               <Option value="customer"> Customer </Option>
             </Select>
           </FormItem>
+          </Col>
           <span> Time: </span> 
+          <Col span={3}>
           <FormItem name='timeRange'>
-            <RangePicker style={{width: "20%"}} format="YYYY-MM-DD HH:mm:ss" showTime/>
+            <RangePicker format="YYYY-MM-DD HH:mm:ss" showTime/>
           </FormItem>
-      </span> 
-
-        {isMobile && <br />} 
-      {isRideHeatMap && <span className={style} >
+          </Col>
+      {/* </span>  */}
+        {/* {isMobile && <br />}  */}
+      {isRideHeatMap && (
+        <>
             <span > Weekday : </span> 
+            <Col span={3}>
             <FormItem name='weekday'>
-              <Select placeholder="select" style={{ width: width, opacity: isRideHeatMap ? 1 : 0 }} 
+              <Select placeholder="select" style={{  opacity: isRideHeatMap ? 1 : 0 }} 
                 showSearch
                 filterOption={filterOption}
 
@@ -297,15 +303,16 @@ const HeatMapForm = (props => {
                 }
             </Select>
             </FormItem>
-      </span> }
-
-      {isMobile && <br />} 
-
-      {isRideHeatMap && <span className={style} style={{opacity: isRideHeatMap ? 1 : 0}}>
+            </Col></>)
+       }
+      {/* {isMobile && <br />}  */}
+      {isRideHeatMap &&(
+        <>
         <span> Hours : </span> 
+        <Col span={2}>
           <FormItem name='startHour'>
               <Select 
-                placeholder="select" style={{ width: width, opacity: isRideHeatMap ? 1 : 0 }} 
+                placeholder="select" style={{  opacity: isRideHeatMap ? 1 : 0 }} 
                 showSearch
                 filterOption={filterOption}
                 >
@@ -316,10 +323,12 @@ const HeatMapForm = (props => {
                 }
             </Select>
             </FormItem>
+        </Col>
             ~
+            <Col span={2}>
             <FormItem name='endHour'>
               <Select 
-                placeholder="select" style={{ width: width, opacity: isRideHeatMap ? 1 : 0 }} 
+                placeholder="select" style={{  opacity: isRideHeatMap ? 1 : 0 }} 
                 showSearch
                 filterOption={filterOption}
               >
@@ -330,13 +339,16 @@ const HeatMapForm = (props => {
                 }
             </Select>
             </FormItem>
-      </span> }
-
-      {isRideHeatMap &&   <span className={style} style={{opacity: isRideHeatMap ? 1 : 0}}>
+            </Col>
+      </>) }
+      {isRideHeatMap &&(
+        <>
         <span> Type : </span> 
+        <Col span={3}>
         <FormItem name='vehicleType'>
               <Select 
-                placeholder="select" style={{ width: width }} 
+                placeholder="select"
+                style={{opacity: isRideHeatMap ? 1 : 0}}
                 filterOption={filterOption}
                 >
                 <Option value={0} >Bike</Option>
@@ -345,11 +357,11 @@ const HeatMapForm = (props => {
                 <Option value={3} >COSMO</Option>
             </Select>
           </FormItem>
-      </span>  }
-
-      {isMobile && <br />} 
-
-      <div style={{float: "right", marginTop: "1em"}}>
+          </Col>
+      </>) }
+      {/* {isMobile && <br />}  */}
+      <Col span={5}>
+      <div style={{ marginTop: "1em"}}>
 
 
             <Button style={{ marginRight: "1vw" }}  htmlType="submit" onClick={() => { form.resetFields(); clearHeatMap();}} > Reset </Button>
@@ -357,7 +369,8 @@ const HeatMapForm = (props => {
             {shouldShowHeatMap ? <Button type="primary" htmlType="submit" onClick={handleSubmit} > Get HeatMap </Button> : <Spin size="middle" style={{ marginRight: "0.5vw" }} /> }
             
       </div> 
-
+      </Col>
+      </Row>
       </Form>
   </div>  );
 });
@@ -1101,7 +1114,7 @@ class Vehicle extends PureComponent {
         }
         
       } else {
-
+console.log(fieldsValue);
         values = Object.assign({}, filterCriteria, fieldsValue, {
           // currentPage: 1,
           // pageSize: 10,
@@ -1130,7 +1143,7 @@ class Vehicle extends PureComponent {
           values.vehiclePower = values.vehicleBattery;
         }
 
-        if (fieldsValue.vehiclePowerCustom) {
+        if (fieldsValue&&fieldsValue.vehiclePowerCustom) {
           values.vehiclePower =  fieldsValue.vehiclePowerCustom;
         }   
 
@@ -1161,21 +1174,16 @@ class Vehicle extends PureComponent {
     // });
   };
 
-  handleUpdateAllLocations = e => {
-    typeof e === 'object' && e.preventDefault();
+  handleUpdateAllLocations = ()=> {
 
     const { dispatch, form, selectedAreaId } = this.props;
     const { filterCriteria, selectedTab } = this.state;
 
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-
-      const values = Object.assign({}, filterCriteria, fieldsValue, {
+      const values = Object.assign({}, filterCriteria, {
         currentPage: 1,
         pageSize: 10,
         areaId: selectedAreaId
       });
-
       this.setState(
         {
           filterCriteria: values
@@ -1187,7 +1195,6 @@ class Vehicle extends PureComponent {
             areaId: selectedAreaId
           })
       );
-    });
   };
 
   getAreaCustomerSessionLocation = (fieldsValue) => {

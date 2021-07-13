@@ -711,6 +711,16 @@ class Ride extends PureComponent {
   }
 
     const RefundForm = (props => {
+      const refundReason = [
+        "Other",
+        "Lock Issue",
+        "Accidental Deposit",
+        "No Longer in Market",
+        "Fraud",
+        "Scooter Issue",
+        "App Issue",
+        "Phone Issue"
+      ];
       const {
         isModalVisible,
         handleModalVisible,
@@ -720,7 +730,6 @@ class Ride extends PureComponent {
         rideRefundCalculateResult
       } = props;
       const [form] = Form.useForm()
-      form.setFieldsValue(ride)
       const okHandle = () => {
         form.submit()
       };
@@ -736,11 +745,13 @@ class Ride extends PureComponent {
           payload.refundDetail = refundDetail;
         }
 
-        //console.log(payload);
+        // console.log(payload);
 
         handleRefundRide(ride.id, payload);
       }
-    
+      const fenceHandleChange =(value)=>{
+        console.log(value);
+      }
       const shouldOkButtonDisable =
         form.getFieldValue("refundWay") === "PARTIAL_REFUND" &&
         !rideRefundCalculateResult;
@@ -757,14 +768,20 @@ class Ride extends PureComponent {
           okButtonProps={{ disabled: shouldOkButtonDisable }}
           okText="Refund"
         >
-          <Form form={form} onFinish={onFinish}>
+          <Form form={form} 
+          initialValues={{
+            refundType:'DEPOSIT',
+            refundReason:'Lock Issue',
+            refundWay:'Fully Refund'
+          }}
+          onFinish={()=>{onFinish(form.getFieldsValue(true))}}>
           <FormItem
             labelCol={{ span: 6 }}
             wrapperCol={{ span: 18 }}
             label="Refund Type"
             name='refundType'
           >
-              <Select defaultValue='DEPOSIT'>
+              <Select>
                 <Option value={"DEPOSIT"}>Deposit</Option>
                 <Option value={"CREDIT_CARD"}>Credit Card</Option>
               </Select>
@@ -776,7 +793,7 @@ class Ride extends PureComponent {
             label="Refund Reason"
             name='refundReason'
           >
-              <Select style={{ width: 200 }} defaultValue='Lock Issue'>
+              <Select style={{ width: 200 }} onChange={fenceHandleChange}>
                 {refundReason.map((reason, index) => (
                   <Option key={index} value={index}>
                     {reason}
@@ -784,7 +801,23 @@ class Ride extends PureComponent {
                 ))}
               </Select>
           </FormItem>
-          {form.getFieldValue("refundReason") === 0 && (
+          <Form.Item
+          noStyle
+          shouldUpdate={(prevValues, currentValues) => prevValues.gender !== currentValues.gender}
+        >
+          {({ getFieldValue }) =>
+            getFieldValue('refundReason') == 0 ? (
+              <Form.Item
+                name="customizeGender"
+                label="Customize Gender"
+                rules={[{ required: true }]}
+              >
+                <Input />
+              </Form.Item>
+            ) : null
+          }
+        </Form.Item>
+          {/* {form.getFieldValue("refundReason") === 0 && (
             <FormItem
               labelCol={{ span: 6 }}
               wrapperCol={{ span: 18 }}
@@ -803,14 +836,14 @@ class Ride extends PureComponent {
             >
               <TextArea autosize={{ minRows: 3, maxRows: 10 }} />
             </FormItem>
-          )}
+          )} */}
           <FormItem
             labelCol={{ span: 6 }}
             wrapperCol={{ span: 18 }}
             label="Refund Way"
             name='refundWay'
           >
-              <Select defaultValue='Fully Refund'>
+              <Select>
                 <Option value={"FULLY_REFUND"}>Fully Refund</Option>
                 <Option value={"PARTIAL_REFUND"}>Partial Refund</Option>
               </Select>
