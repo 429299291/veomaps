@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from "react";
+import React, { PureComponent, Fragment,useState } from "react";
 import { connect } from "dva";
 import moment from "moment";
 import {
@@ -293,7 +293,6 @@ class Ride extends PureComponent {
 
   handleGetRideRefundCalculateResult = (id, payload) => {
     const { dispatch } = this.props;
-
     dispatch({
       type: "rides/getRefundCalculateResult",
       payload: payload,
@@ -709,9 +708,8 @@ class Ride extends PureComponent {
       </Form>
     );
   }
-
     const RefundForm = (props => {
-      const refundReason = [
+      const refundReasons = [
         "Other",
         "Lock Issue",
         "Accidental Deposit",
@@ -721,6 +719,8 @@ class Ride extends PureComponent {
         "App Issue",
         "Phone Issue"
       ];
+      // const [shouldOkButtonDisable, setShouldOkButtonDisable] = useState(false);
+
       const {
         isModalVisible,
         handleModalVisible,
@@ -730,13 +730,15 @@ class Ride extends PureComponent {
         rideRefundCalculateResult
       } = props;
       const [form] = Form.useForm()
+      console.log(isModalVisible);
       const okHandle = () => {
         form.submit()
       };
+
       const onFinish=(fieldsValue)=>{
         const payload = {
           refundType: fieldsValue.refundType,
-          refundReason: refundReason[fieldsValue.refundReason],
+          refundReason: refundReasons[fieldsValue.refundReason],
           note: fieldsValue.note
         };
 
@@ -752,7 +754,12 @@ class Ride extends PureComponent {
       const fenceHandleChange =(value)=>{
         console.log(value);
       }
-      const shouldOkButtonDisable =
+      // if(form.getFieldValue("refundWay") === "PARTIAL_REFUND" &&!rideRefundCalculateResult){
+      //   setShouldOkButtonDisable(false)
+      //   console.log(shouldOkButtonDisable);
+      // }else{
+      // }
+      let shouldOkButtonDisable =
         form.getFieldValue("refundWay") === "PARTIAL_REFUND" &&
         !rideRefundCalculateResult;
     
@@ -771,7 +778,8 @@ class Ride extends PureComponent {
           <Form form={form} 
           initialValues={{
             refundType:'DEPOSIT',
-            refundReason:'Lock Issue',
+            // refundReason:'Lock Issue',
+            refundReason:1,
             refundWay:'Fully Refund'
           }}
           onFinish={()=>{onFinish(form.getFieldsValue(true))}}>
@@ -794,7 +802,7 @@ class Ride extends PureComponent {
             name='refundReason'
           >
               <Select style={{ width: 200 }} onChange={fenceHandleChange}>
-                {refundReason.map((reason, index) => (
+                {refundReasons.map((reason, index) => (
                   <Option key={index} value={index}>
                     {reason}
                   </Option>
@@ -803,22 +811,11 @@ class Ride extends PureComponent {
           </FormItem>
           <Form.Item
           noStyle
-          shouldUpdate={(prevValues, currentValues) => prevValues.gender !== currentValues.gender}
+          shouldUpdate={(prevValues, currentValues) => prevValues.refundReason !== currentValues.refundReason}
         >
           {({ getFieldValue }) =>
             getFieldValue('refundReason') == 0 ? (
-              <Form.Item
-                name="customizeGender"
-                label="Customize Gender"
-                rules={[{ required: true }]}
-              >
-                <Input />
-              </Form.Item>
-            ) : null
-          }
-        </Form.Item>
-          {/* {form.getFieldValue("refundReason") === 0 && (
-            <FormItem
+              <FormItem
               labelCol={{ span: 6 }}
               wrapperCol={{ span: 18 }}
               label="Notes"
@@ -836,7 +833,9 @@ class Ride extends PureComponent {
             >
               <TextArea autosize={{ minRows: 3, maxRows: 10 }} />
             </FormItem>
-          )} */}
+            ) : null
+          }
+        </Form.Item>
           <FormItem
             labelCol={{ span: 6 }}
             wrapperCol={{ span: 18 }}
@@ -848,20 +847,25 @@ class Ride extends PureComponent {
                 <Option value={"PARTIAL_REFUND"}>Partial Refund</Option>
               </Select>
           </FormItem>
-          {form.getFieldValue("refundWay") === "PARTIAL_REFUND" && (
-            <Row>
-              <Col span={6} />
-              <Col span={18}>
-                <span> originally {ride.minutes} minutes. </span>
-                <span>
-                  Refund Ride as
+
+          <Form.Item
+          noStyle
+          shouldUpdate={(prevValues, currentValues) => prevValues.refundWay !== currentValues.refundWay}
+        >
+          {({ getFieldValue }) =>
+            getFieldValue('refundWay') == 'PARTIAL_REFUND' ? (
+              <Row>
+                <Col>
+                <span> originally {ride.minutes} minutes.  Refund Ride as</span>
+                </Col>
+                <Col span={2}>
                   <FormItem
                     name='minutes'
                     >
-                      <InputNumber style={{ margin: "0.5em", width: "10%" }} />
+                      <InputNumber style={{width:'auto'}}/>
                   </FormItem>
-                  minutes
-                </span>
+                </Col>
+                <Col>minutes</Col>
                 <Button
                   style={{ marginLeft: "2em" }}
                   type="primary"
@@ -877,105 +881,114 @@ class Ride extends PureComponent {
                 >
                   Estimate
                 </Button>
+            </Row>
+            ) : null
+          }
+        </Form.Item>
+    
+          {rideRefundCalculateResult &&(
+          <Form.Item
+          noStyle
+          shouldUpdate={(prevValues, currentValues) => prevValues.refundWay !== currentValues.refundWay}
+        >
+          {({ getFieldValue }) =>
+            getFieldValue('refundWay') == 'PARTIAL_REFUND' ? (
+              <Row>
+              <Col span={6} />
+              <Col span={18}>
+                {rideRefundCalculateResult.info && (
+                  <div style={{ marginTop: "0.5em" }}>
+                    {" "}
+                    <Icon type="warning" /> {rideRefundCalculateResult.info}{" "}
+                  </div>
+                )}
+  
+                <table
+                  className={styles.refundTable}
+                  style={{ marginTop: "0.5em" }}
+                >
+                  <tbody>
+                    <tr>
+                      <th>original total amount</th>
+                      <th>new total amount</th>
+                      <th>total to refund</th>
+                      {/* <th>mfm</th>
+                        <th>mfrm</th>
+                        <th>charge frequency</th>
+                        <th>charge price</th>
+                        <th>unlock fee</th>
+                        <th>is low income</th>
+                        <th> max charge </th> */}
+                    </tr>
+                    <tr>
+                      <th>
+                        $
+                        {-1 *
+                          (rideRefundCalculateResult.rideTransaction
+                            .depositChange +
+                            rideRefundCalculateResult.rideTransaction
+                              .rideCreditChange -
+                            rideRefundCalculateResult.rideTransaction
+                              .paymentCharge)}
+                      </th>
+                      <th>
+                        $
+                        {rideRefundCalculateResult.billingInfo.subTotal +
+                          rideRefundCalculateResult.billingInfo.tax}
+                      </th>
+  
+                      <th>
+                        $
+                        {-1 *
+                          (rideRefundCalculateResult.rideTransaction
+                            .depositChange +
+                            rideRefundCalculateResult.rideTransaction
+                              .rideCreditChange -
+                            rideRefundCalculateResult.rideTransaction
+                              .paymentCharge) -
+                          rideRefundCalculateResult.billingInfo.subTotal -
+                          rideRefundCalculateResult.billingInfo.tax}
+                      </th>
+                    </tr>
+                  </tbody>
+                </table>
+  
+                <div style={{ marginTop: "0.5em" }}>
+                  estimated refund transaction:{" "}
+                </div>
+  
+                <table
+                  className={styles.refundTable}
+                  style={{ marginTop: "0.5em" }}
+                >
+                  <tbody>
+                    <tr>
+                      <th>refund to deposit</th>
+                      <th>refund to ride credit</th>
+                      <th>refund to credit card</th>
+                    </tr>
+                    <tr>
+                      <th>
+                        ${rideRefundCalculateResult.refundDetail.refundToDeposit}
+                      </th>
+                      <th>
+                        $
+                        {
+                          rideRefundCalculateResult.refundDetail
+                            .refundToRideCredit
+                        }
+                      </th>
+                      <th>
+                        ${rideRefundCalculateResult.refundDetail.refundToCard}
+                      </th>
+                    </tr>
+                  </tbody>
+                </table>
               </Col>
             </Row>
-          )}
-    
-          {rideRefundCalculateResult &&
-            form.getFieldValue("refundWay") === "PARTIAL_REFUND" && (
-              <Row>
-                <Col span={6} />
-                <Col span={18}>
-                  {rideRefundCalculateResult.info && (
-                    <div style={{ marginTop: "0.5em" }}>
-                      {" "}
-                      <Icon type="warning" /> {rideRefundCalculateResult.info}{" "}
-                    </div>
-                  )}
-    
-                  <table
-                    className={styles.refundTable}
-                    style={{ marginTop: "0.5em" }}
-                  >
-                    <tbody>
-                      <tr>
-                        <th>original total amount</th>
-                        <th>new total amount</th>
-                        <th>total to refund</th>
-                        {/* <th>mfm</th>
-                          <th>mfrm</th>
-                          <th>charge frequency</th>
-                          <th>charge price</th>
-                          <th>unlock fee</th>
-                          <th>is low income</th>
-                          <th> max charge </th> */}
-                      </tr>
-                      <tr>
-                        <th>
-                          $
-                          {-1 *
-                            (rideRefundCalculateResult.rideTransaction
-                              .depositChange +
-                              rideRefundCalculateResult.rideTransaction
-                                .rideCreditChange -
-                              rideRefundCalculateResult.rideTransaction
-                                .paymentCharge)}
-                        </th>
-                        <th>
-                          $
-                          {rideRefundCalculateResult.billingInfo.subTotal +
-                            rideRefundCalculateResult.billingInfo.tax}
-                        </th>
-    
-                        <th>
-                          $
-                          {-1 *
-                            (rideRefundCalculateResult.rideTransaction
-                              .depositChange +
-                              rideRefundCalculateResult.rideTransaction
-                                .rideCreditChange -
-                              rideRefundCalculateResult.rideTransaction
-                                .paymentCharge) -
-                            rideRefundCalculateResult.billingInfo.subTotal -
-                            rideRefundCalculateResult.billingInfo.tax}
-                        </th>
-                      </tr>
-                    </tbody>
-                  </table>
-    
-                  <div style={{ marginTop: "0.5em" }}>
-                    estimated refund transaction:{" "}
-                  </div>
-    
-                  <table
-                    className={styles.refundTable}
-                    style={{ marginTop: "0.5em" }}
-                  >
-                    <tbody>
-                      <tr>
-                        <th>refund to deposit</th>
-                        <th>refund to ride credit</th>
-                        <th>refund to credit card</th>
-                      </tr>
-                      <tr>
-                        <th>
-                          ${rideRefundCalculateResult.refundDetail.refundToDeposit}
-                        </th>
-                        <th>
-                          $
-                          {
-                            rideRefundCalculateResult.refundDetail
-                              .refundToRideCredit
-                          }
-                        </th>
-                        <th>
-                          ${rideRefundCalculateResult.refundDetail.refundToCard}
-                        </th>
-                      </tr>
-                    </tbody>
-                  </table>
-                </Col>
-              </Row>
+            ) : null
+          }
+        </Form.Item>
             )}
             </Form>
         </Modal>
