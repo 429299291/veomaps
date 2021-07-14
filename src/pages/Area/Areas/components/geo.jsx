@@ -94,7 +94,6 @@ class DynamicFenceConfigForm extends PureComponent {
 
 
       return <TimePicker  
-                // defaultValue={value[field][subField] ?  moment(value[field][subField], "HH:mm") : undefined}
                 placeholder={subField}
                 onChange={
                  
@@ -473,7 +472,7 @@ const CreateFenceForm = (props => {
                   </Select.Option>
                 </Select>
             </FormItem>
-            ) : null
+            ) : console.log('fenceType')
           }
         </Form.Item>
         <Form.Item
