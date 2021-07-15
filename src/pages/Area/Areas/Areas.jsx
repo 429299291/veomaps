@@ -271,7 +271,7 @@ const Areas = (props) => {
             <Col span={12} >
                 <Form.Item 
                {...tailLayout}
-                    label="area name"
+                    label="Name"
                     name="name"
                     rules={[{ required: true, message: 'Please input your name!' }]}
                   >
@@ -281,7 +281,7 @@ const Areas = (props) => {
               <Col span={12}>
                 <Form.Item 
                 {...tailLayout}
-                    label="description"
+                    label="Description"
                     name="description"
                     rules={[{ required: true, message: 'Please input your description!' }]}
                   >
@@ -289,10 +289,10 @@ const Areas = (props) => {
                 </Form.Item>
               </Col>
             <Col span={24}>
-            <Card title="area  control" type="inner" size="small">
+            <Card title="Area  Basic" type="inner" size="small">
             <Row>
             <Col span={12}>
-                <Form.Item  label="Market" {...tailLayout} name={['feature', 'activated']} valuePropName="checked">
+                <Form.Item  label="Is Activated" {...tailLayout} name={['feature', 'activated']} valuePropName="checked">
                   <Switch size="small"/>
                 </Form.Item>
             </Col>
@@ -307,12 +307,12 @@ const Areas = (props) => {
                 </Form.Item>
             </Col>
             <Col span={12}>
-                      <Form.Item  label="Hold Ride" {...tailLayout} name={['feature', 'ridePauseEnabled']} valuePropName="checked">
+                      <Form.Item  label="Pause Ride" {...tailLayout} name={['feature', 'ridePauseEnabled']} valuePropName="checked">
                         <Switch size="small"/>
                       </Form.Item>
             </Col>  
             <Col span={12}>
-                <Form.Item  label="ride photo Check" {...tailLayout} name={['feature', 'ridePhotoEnabled']} valuePropName="checked">
+                <Form.Item  label="Need Ride Photo" {...tailLayout} name={['feature', 'ridePhotoEnabled']} valuePropName="checked">
                   <Switch size="small"/>
                 </Form.Item>
             </Col>
@@ -320,17 +320,17 @@ const Areas = (props) => {
             </Card>
             </Col>
             <Col span={24}>
-            <Card title="age control" type="inner" size="small">
+            <Card title="Age" type="inner" size="small">
             <Row>
             <Col span={12}>
-                <Form.Item  label="age verification" {...tailLayout} name={['feature', 'ageVerification','enabled']} valuePropName="checked">
+                <Form.Item  label="Need Age Verification" {...tailLayout} name={['feature', 'ageVerification','enabled']} valuePropName="checked">
                   <Switch size="small" onChange={ageOnchange}/>
                 </Form.Item>
             </Col>
               {
                 formDatas&&
                 <Col span={12}>
-                <Form.Item  label="age" {...tailLayout} name={['feature', 'ageVerification','age']}>
+                <Form.Item  label="Legal Age" {...tailLayout} name={['feature', 'ageVerification','age']}>
                   <InputNumber min={5} disabled={!ageEnabled}/>
                 </Form.Item>
             </Col>
@@ -339,31 +339,31 @@ const Areas = (props) => {
             </Card>
             </Col>
             <Col span={24}>
-            <Card title="Ride Time control" type="inner" size="small">
+            <Card title="Free Ride Time" type="inner" size="small">
             <Row justify="space-between">
             <Col span={12}>
-                <Form.Item  label="Ride Time" {...tailLayout} name={['feature','freeRide','enabled']} valuePropName="checked">
+                <Form.Item  label="Enable Free Ride Time" {...tailLayout} name={['feature','freeRide','enabled']} valuePropName="checked">
                   <Switch size="small" onChange={freeRideOnchange}/>
                 </Form.Item>
             </Col>
             <Col span={12}>
-                <Form.Item  label="Free Ride" {...tailLayout} name={['feature','freeRide','freeMinutes']}>
+                <Form.Item  label="Free Ride Time" {...tailLayout} name={['feature','freeRide','freeMinutes']}>
                   <InputNumber min={1}  disabled={!freeRideEnabled} />
                 </Form.Item>
             </Col>
             </Row>
             </Card>
-            <Card title="bike lane control" type="inner" size="small">
+            <Card title="Bike Lane" type="inner" size="small">
               <Row>
               <Col span={12}>
-                  <Form.Item  label="bike lane" {...tailLayout} name={['feature', 'bikeLane','enabled']} valuePropName="checked">
+                  <Form.Item  label="Enable Bike Lane" {...tailLayout} name={['feature', 'bikeLane','enabled']} valuePropName="checked">
                     <Switch size="small" onChange={bikeLaneOnchange}/>
                   </Form.Item>
               </Col>
               <Col span={12}>
                   <Form.Item
                       // {...tailLayout}
-                      label="path"
+                      label="S3 File Path"
                       name={['feature','bikeLane','geoJsonPath']}
                       rules={[{ required: false, message: 'Please input your bike lane path' }]}
                     >
@@ -444,8 +444,8 @@ const Areas = (props) => {
                 <Collapse defaultActiveKey={['0']} onChange={PanelCallback}>
                   <Panel header="show more control" key="1">
                   <Row>
-                  <Divider>GoogleMap Configuration</Divider>
-                  <Col span={12} >
+                  {/* <Divider>GoogleMap Configuration</Divider> */}
+                  {/* <Col span={12} >
                         <Form.Item 
                       {...tailLayout}
                             label="position lat"
@@ -464,20 +464,19 @@ const Areas = (props) => {
                           >
                           <Input/>
                         </Form.Item>
-                      </Col>
-                      <Divider>other Configuration</Divider>
+                      </Col> */}
                       <Col span={12}>
-                        <Form.Item  label="member Check" {...tailLayout} name={['feature', 'membershipEnabled']} valuePropName="checked">
+                        <Form.Item  label="Enable Membership" {...tailLayout} name={['feature', 'membershipEnabled']} valuePropName="checked">
                           <Switch size="small"/>
                         </Form.Item>
                       </Col>              
                       <Col span={12}>
-                          <Form.Item  label="billing Address" {...tailLayout} name={['feature', 'billingAddressEnabled']} valuePropName="checked">
+                          <Form.Item  label="Enable Billing Address" {...tailLayout} name={['feature', 'billingAddressEnabled']} valuePropName="checked">
                             <Switch size="small"/>
                           </Form.Item>
                       </Col>
                       <Col span={12}>
-                          <Form.Item  label="ridePre Auth Fee" {...tailLayout} name={['feature', 'ridePreAuthFee']}>
+                          <Form.Item  label="Enable Ride Pre-Auth Fee" {...tailLayout} name={['feature', 'ridePreAuthFee']}>
                             <InputNumber min={1} max={245}/>
                           </Form.Item>
                       </Col>   
@@ -493,7 +492,7 @@ const Areas = (props) => {
                       </Col>
                     </Row>
                     <Col span={24}>
-                    <Divider>regulationDatas Configuration</Divider>
+                    <Divider>Regulation Configuration</Divider>
                       <Row>
                       <Regulation data={regulationDatas} getRegulationDatas={getRegulationDatas.bind(this)}></Regulation>
                       </Row>
