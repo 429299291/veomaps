@@ -4,6 +4,7 @@ import Link from 'umi/link';
 import Debounce from 'lodash-decorators/debounce';
 import styles from './index.less';
 import RightContent from './RightContent';
+import { MenuFoldOutlined,MenuUnfoldOutlined } from '@ant-design/icons';
 
 const Option = Select.Option;
 
@@ -52,7 +53,6 @@ export default class GlobalHeader extends PureComponent {
 
   render() {
     const { collapsed, isMobile, logo, areas } = this.props;
-
     const { screenWidth } = this.state;
 
     return (
@@ -62,11 +62,12 @@ export default class GlobalHeader extends PureComponent {
               <img src={logo} alt="logo" width="32" />
             </Link>
           )}
-          <Icon
+          {/* <Icon
             className={styles.trigger}
             type={collapsed ? 'menu-unfold' : 'menu-fold'}
             onClick={this.toggle}
-          />
+          /> */}
+          {collapsed ? <MenuUnfoldOutlined onClick={this.toggle} className={styles.trigger}/> : <MenuFoldOutlined onClick={this.toggle} className={styles.trigger}/>}
           {areas && areas.length > 0 && !isMobile &&
             <span style={{padding: "12px 24px", fontSize: "15px"}}>
               <span>Area: </span>

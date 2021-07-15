@@ -42,7 +42,7 @@ class Login extends Component {
 
   getContext = () => {
     const { tabs } = this.state;
-    const { form } = this.props;
+    // const { form } = this.props;
     return {
       tabUtil: {
         addTab: id => {
@@ -56,7 +56,7 @@ class Login extends Component {
           });
         },
       },
-      form,
+      // form,
       updateActive: activeItem => {
         const { type, active } = this.state;
         if (active[type]) {
@@ -74,11 +74,12 @@ class Login extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { active, type } = this.state;
-    const { form, onSubmit } = this.props;
+    const { onSubmit } = this.props;
+    const [form] = Form.useForm()
     const activeFileds = active[type];
-    form.validateFields(activeFileds, { force: true }, (err, values) => {
-      onSubmit(err, values);
-    });
+    // form.validateFields(activeFileds, { force: true }, (err, values) => {
+    //   onSubmit(err, values);
+    // });
   };
 
   render() {
@@ -86,6 +87,7 @@ class Login extends Component {
     const { type, tabs } = this.state;
     const TabChildren = [];
     const otherChildren = [];
+    const [form] = Form.useForm()
     React.Children.forEach(children, item => {
       if (!item) {
         return;
@@ -128,5 +130,8 @@ Login.Submit = LoginSubmit;
 Object.keys(LoginItem).forEach(item => {
   Login[item] = LoginItem[item];
 });
-
-export default Form.create()(Login);
+const mapStateToProps = ({}) => {
+  return {
+  }
+}
+export default connect(mapStateToProps)(Login) 

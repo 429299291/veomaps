@@ -73,22 +73,74 @@ const customerStatus = ["NORMAL", "FROZEN", "ERROR"];
 const queryStatus = ["FROZEN"];
 
 const authority = getAuthority();
+const RenderSimpleForm=(props)=> {
+  const [form] = Form.useForm()
+  const handleFormReset = ()=>{
+    props.handleFormReset()
+    form.resetFields()
+  }
+  return (
+    <Form layout="inline" form={form}>
+      {/* <Row gutter={{ md: 8, lg: 24, xl: 48 }}> */}
+        <Col span={5} style={{padding: '0 18px 0 0'}}>
+          <FormItem label="Keywords" name='nameOrPhoneOrEmail'> 
+              <Input placeholder="PHONE NAME EMAIL" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
+          </FormItem>
+        </Col>
+        <Col span={5} style={{padding: '0 18px'}}>
+          <FormItem label="Status" name='queryStatus'>
+              <Select placeholder="select" style={{ width: "100%" }}>
+                {queryStatus.map((status, index) => (
+                  <Option key={index} value={index}>
+                    {queryStatus[index]}
+                  </Option>
+                ))}
+              </Select>
+          </FormItem>
+        </Col>
+        <Col span={6}>
+          <FormItem label="Registered" name='created'>
+            <RangePicker />
+          </FormItem>
+        </Col>
+      {/* </Row> */}
 
-const GenTempCodeForm = Form.create()(props => {
+      {/* <Row span={16}> */}
+        <Col span={3}>
+          {`count: ${props.customerTotal}`}
+        </Col>
+        <Col span={6}>
+          <span className={styles.submitButtons} style={{ float: "right" }}>
+
+          {<Button type="primary" onClick={() => props.handleGenTempCodeModalVisible(true)}>
+                Generate Verification Code
+            </Button> }
+
+            <Button  style={{ marginLeft: 8 }} onClick={()=>{props.handleSearch(form.getFieldsValue(true))}}>
+              Search
+            </Button>
+
+            <Button style={{ marginLeft: 8 }} onClick={handleFormReset}>
+              Reset
+            </Button>
+          </span>
+        </Col>
+      {/* </Row> */}
+    </Form>
+  );
+}
+const GenTempCodeForm = (props => {
   const {
-    form,
     modalVisible,
     handleGetTempCode,
     handleModalVisible,
     tempCode
   } = props;
+  const [form] = Form.useForm()
   const okHandle = () => {
-    if (form.isFieldsTouched())
-      form.validateFields((err, fieldsValue) => {
-        if (err) return;
-
-        handleGetTempCode(fieldsValue.phoneNumber);
-      });
+    if (form.isFieldsTouched()){
+      handleGetTempCode(form.getFieldsValue(true).phoneNumber);
+    }
     else handleModalVisible();
   };
 
@@ -98,38 +150,42 @@ const GenTempCodeForm = Form.create()(props => {
       title="Update Customer"
       visible={modalVisible}
       onOk={okHandle}
+      forceRender
       onCancel={() => handleModalVisible()}
     >
+      <Form form={form}>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="Phone Number:"
+        name='phoneNumber'
       >
-        {form.getFieldDecorator("phoneNumber")(
         <Input style={{marginLeft: "2em"}} placeholder="Please Input" />
-        )}
       </FormItem>
       { tempCode && <FormItem
           labelCol={{ span: 5 }}
           wrapperCol={{ span: 15 }}
           label="Temp Code"
+          name='tempCode'
         >
           <span> {tempCode}</span>
         </FormItem>
       }
+      </Form>
     </Modal>
   );
 });
 
-const UpdateForm = Form.create()(props => {
+const UpdateForm = (props => {
   const {
-    form,
     modalVisible,
     handleUpdate,
     handleModalVisible,
     areas,
     record
   } = props;
+  const [form] = Form.useForm()
+  form.setFieldsValue(record)
   const okHandle = () => {
     if (form.isFieldsTouched())
       form.validateFields((err, fieldsValue) => {
@@ -163,32 +219,31 @@ const UpdateForm = Form.create()(props => {
       title="Update Customer"
       visible={modalVisible}
       onOk={okHandle}
+      forceRender
       onCancel={() => handleModalVisible()}
     >
+      <Form form={form}>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
+        name='credit'
+        rules={
+          [{ validator: checkMoneyFormat }]
+        }
         label="CREDIT AMOUNT"
       >
-        {form.getFieldDecorator("credit", {
-          rules: [{ validator: checkMoneyFormat }],
-          initialValue: record.credit
-        })(<Input placeholder="Please Input" />)}
+       <Input placeholder="Please Input" />
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="FULL NAME"
+        name='fullName'
       >
-        {form.getFieldDecorator("fullName", {
-          initialValue: record.fullName
-        })(<Input placeholder="Please Input" />)}
+        <Input placeholder="Please Input" />
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="EMAIL">
-        {form.getFieldDecorator("email", {
-          rules: [{ validator: checkEmailFormat }],
-          initialValue: record.email
-        })(<Input placeholder="Please Input" />)}
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="EMAIL" name='email' rules={[{ validator: checkEmailFormat }]}>
+        <Input placeholder="Please Input" />
       </FormItem>
 
       {customerStatus && (
@@ -196,16 +251,17 @@ const UpdateForm = Form.create()(props => {
           labelCol={{ span: 5 }}
           wrapperCol={{ span: 15 }}
           label="Status"
-        >
-          {form.getFieldDecorator("status", {
-            rules: [
+          name='status'
+          rules={
+            [
               {
                 required: true,
                 message: "You have pick a status"
               }
-            ],
-            initialValue: record.status
-          })(
+            ]
+          }
+        >
+         
             <Select placeholder="select" style={{ width: "100%" }}>
               {customerStatus.map((status, index) => (
                 <Option key={index} value={index}>
@@ -213,21 +269,21 @@ const UpdateForm = Form.create()(props => {
                 </Option>
               ))}
             </Select>
-          )}
         </FormItem>
       )}
 
       {areas && (
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area">
-          {form.getFieldDecorator("areaId", {
-            rules: [
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area"
+          name='areaId'
+          rules={
+            [
               {
                 required: true,
                 message: "You have pick a area"
               }
-            ],
-            initialValue: record.areaId
-          })(
+            ]
+          }
+          >
             <Select placeholder="select" style={{ width: "100%" }}>
               {areas.map(area => (
                 <Option key={area.id} value={area.id}>
@@ -235,16 +291,15 @@ const UpdateForm = Form.create()(props => {
                 </Option>
               ))}
             </Select>
-          )}
         </FormItem>
       )}
+      </Form>
     </Modal>
   );
 });
 
-const CouponForm = Form.create()(props => {
+const CouponForm = (props => {
   const {
-    form,
     couponModalVisible,
     handleCouponModalVisible,
     handleGetCustomerCoupons,
@@ -254,6 +309,7 @@ const CouponForm = Form.create()(props => {
     customer,
     dispatch
   } = props;
+  const [form] = Form.useForm()
   const okHandle = () => {
     handleCouponModalVisible();
   };
@@ -330,6 +386,7 @@ const CouponForm = Form.create()(props => {
       title="Add Coupon to Customer"
       visible={couponModalVisible}
       onOk={okHandle}
+      forceRender
       onCancel={() => handleCouponModalVisible()}
       width={"95%"}
     >
@@ -407,15 +464,6 @@ const CouponForm = Form.create()(props => {
 });
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ customers, areas, coupons, loading }) => ({
-  customers,
-  areas,
-  coupons,
-  selectedAreaId: areas.selectedAreaId,
-  areaNames: areas.areaNames,
-  loading: loading.models.customers
-}))
-@Form.create()
 class Customer extends PureComponent {
   state = {
     modalVisible: false,
@@ -531,9 +579,8 @@ class Customer extends PureComponent {
   };
 
   handleFormReset = () => {
-    const { form, dispatch } = this.props;
+    const { dispatch } = this.props;
     const { filterCriteria } = this.state;
-    form.resetFields();
 
     const params = {
       currentPage: 1,
@@ -548,15 +595,9 @@ class Customer extends PureComponent {
     );
   };
 
-  handleSearch = e => {
-    e.preventDefault();
+  handleSearch = fieldsValue => {
 
-    const { form } = this.props;
     const { filterCriteria } = this.state;
-
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-
       if (fieldsValue.created) {
         fieldsValue.registerStart = moment(fieldsValue.created[0])
           .utcOffset(0)
@@ -582,7 +623,7 @@ class Customer extends PureComponent {
         },
         () => this.handleGetCustomers()
       );
-    });
+    // });
   };
 
   handleModalVisible = flag => {
@@ -627,64 +668,6 @@ class Customer extends PureComponent {
     this.handleUpdateModalVisible();
   };
 
-  renderSimpleForm() {
-    const {
-      form: { getFieldDecorator }
-    } = this.props;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="Keywords">
-              {getFieldDecorator("nameOrPhoneOrEmail")(
-                <Input placeholder="PHONE NAME EMAIL" />
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="Status">
-              {getFieldDecorator("queryStatus")(
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  {queryStatus.map((status, index) => (
-                    <Option key={index} value={index}>
-                      {queryStatus[index]}
-                    </Option>
-                  ))}
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="Registered">
-              {getFieldDecorator("created")(<RangePicker />)}
-            </FormItem>
-          </Col>
-        </Row>
-
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={4} sm={24}>
-            {`count: ${this.props.customers.total}`}
-          </Col>
-          <Col md={{ span: 8, offset: 12}} sm={24}>
-            <span className={styles.submitButtons} style={{ float: "right" }}>
-
-            {<Button type="primary" onClick={() => this.handleGenTempCodeModalVisible(true)}>
-                  Generate Verification Code
-              </Button> }
-
-              <Button  style={{ marginLeft: 8 }} type="primary" htmlType="submit">
-                Search
-              </Button>
-
-              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-                Reset
-              </Button>
-            </span>
-          </Col>
-        </Row>
-      </Form>
-    );
-  }
 
   filterCouponsByAreaId = (coupons, areaId) => {
     return coupons.filter(coupon => coupon.areaId === areaId);
@@ -838,13 +821,12 @@ class Customer extends PureComponent {
       pageSize: filterCriteria.pageSize,
       total: customers.total
     };
-
     return (
       <PageHeaderWrapper title="Customer List">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>
-              {this.renderSimpleForm()}
+              <RenderSimpleForm handleGenTempCodeModalVisible={this.handleGenTempCodeModalVisible} customerTotal={this.props.customers.total} handleSearch={this.handleSearch} handleFormReset={this.handleFormReset} />
             </div>
             <StandardTable
               loading={loading}
@@ -880,7 +862,7 @@ class Customer extends PureComponent {
           handleGetTempCode={this.handleGetTempCode}
           tempCode={tempCode}
         />
-
+{/* 
         {
           <CouponForm
             couponModalVisible={couponModalVisible}
@@ -896,7 +878,7 @@ class Customer extends PureComponent {
             customer={selectedRecord}
             dispatch={dispatch}
           />
-        }
+        } */}
 
         {detailModalVisible && (
           <CustomerDetail
@@ -911,5 +893,15 @@ class Customer extends PureComponent {
     );
   }
 }
+const mapStateToProps = ({ customers, areas, coupons, loading }) => {
+  return {
+    customers,
+    areas,
+    coupons,
+    selectedAreaId: areas.selectedAreaId,
+    areaNames: areas.areaNames,
+    loading: loading.models.customers
+        }
+}
+export default connect(mapStateToProps)(Customer) 
 
-export default Customer;

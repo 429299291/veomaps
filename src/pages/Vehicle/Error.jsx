@@ -57,23 +57,21 @@ const vehicleErrorCSVHeader = {
   updated: "Updated",
 };
 
-const UpdateForm = Form.create()(props => {
+const UpdateForm = (props => {
   const {
-    form,
     updateModalVisible,
     handleUpdate,
     handleModalVisible,
     record,
     errorImages
   } = props;
+  const [form] = Form.useForm()
+  form.setFieldsValue(record)
   const okHandle = () => {
-    if (form.isFieldsTouched())
-      form.validateFields((err, fieldsValue) => {
-        if (err) return;
-        form.resetFields();
-
-        handleUpdate(record.id, fieldsValue);
-      });
+    const fieldsValue= form.getFieldsValue(true)
+    if (form.isFieldsTouched()){
+      handleUpdate(record.id, fieldsValue);
+    }
     else handleModalVisible();
   };
 
@@ -83,10 +81,11 @@ const UpdateForm = Form.create()(props => {
       title="Process"
       visible={updateModalVisible}
       onOk={okHandle}
+      forceRender
       width={"50%"}
       onCancel={() => handleModalVisible()}
     >
-
+      <Form form={form}>
       {record.content &&
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Note:">
         <p>
@@ -102,8 +101,7 @@ const UpdateForm = Form.create()(props => {
       </FormItem>}
 
 
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Result">
-        {form.getFieldDecorator("reviewStatus", {initialValue: record.reviewStatus})(
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Result" name='reviewStatus'>
           <Select placeholder="select" style={{ width: "100%" }}>
             {ErrorReviewStatus.map((errorStatus, index) => (
               <Option key={index} value={index}>
@@ -111,10 +109,9 @@ const UpdateForm = Form.create()(props => {
               </Option>
             ))}
           </Select>
-        )}
       </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Review Note">
-        {form.getFieldDecorator("reviewNote", {initialValue: record.reviewNote})(<TextArea placeholder="Please Input" rows={10}  />)}
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Review Note" name='reviewNote'>
+        <TextArea placeholder="Please Input" rows={10}  />
       </FormItem>
       {/* <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Solved">
         {form.getFieldDecorator("status",  {initialValue: record.status})(<Select placeholder="select" style={{ width: "100%" }}>
@@ -126,20 +123,98 @@ const UpdateForm = Form.create()(props => {
           </Option>
         </Select>)}
       </FormItem> */}
-
+</Form>
     </Modal>
   );
 });
+ const RenderSimpleForm=(props)=> {
+  const[form] = Form.useForm()
+  const handleFormReset =()=>{
+    props.handleFormReset()
+    form.resetFields()
+  }
+  // const areas = props.areas;
+  return (
+    <Form onSubmit={()=>{props.handleSearch('00')}} layout="inline" form={form}>
+      <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+        <Col span={10}>
+          <FormItem label="Keywords" name='numberOrPhone'>
+              <Input placeholder="NUMBER Or PHONE" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
+          </FormItem>
+        </Col>
+        <Col span={10}>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="Type"
+            name='type'
+          >
+              <Select placeholder="select" style={{ width: "100%" }}>
+                {ErrorType.map((type,index) => (
+                  <Option key={index} value={index}>
+                    {type}
+                  </Option>
+                ))}
+                <Option value={null}>All</Option>
+              </Select>
+          </FormItem>
+        </Col>
+        <Col span={10}>
+          <FormItem
+            // labelCol={{ span: 5 }}
+            // wrapperCol={{ span: 15 }}
+            label="Review Status"
+            name='reviewStatus'
+          >
+              <Select placeholder="select" style={{ width: "100%" }}>
+                {ErrorReviewStatus.map((errorStatus, index) => (
+                  <Option key={index} value={index}>
+                    {errorStatus}
+                  </Option>
+                ))}
+                <Option value={null}>All</Option>
+              </Select>
+          </FormItem>
+        </Col>
+      </Row>
+      <Row gutter={{ md: 24, lg: 24, xl: 48 }}>
+         {/* <Col lg={6} md={8} sm={24}>
+         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Solved">
+            {getFieldDecorator("status")(<Select placeholder="select" style={{ width: "100%" }}>
+              <Option key={1} value={1}>
+                Yes
+              </Option>
+              <Option key={0} value={0}>
+                No
+              </Option>
+              <Option value={null}>All</Option>
+            </Select>)}
+        </FormItem>
+          </Col> */}
+        <Col span={20}>
+          <FormItem label="time" name='time'>
+              <RangePicker format="YYYY-MM-DD HH:mm:ss" />
+          </FormItem>
+        </Col>
+      </Row>
 
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={{ span: 8, offset: 16 }} sm={24}>
+          <span className={styles.submitButtons} style={{ float: "right" }}>
+            <Button onClick={()=>{props.handleSearch(form.getFieldsValue(true))}}>
+              Search
+            </Button>
+            <Button style={{ marginLeft: 8 }} onClick={handleFormReset}>
+              Reset
+            </Button>
+          </span>
+          </Col>
+        </Row>
+
+    </Form>
+  );
+}
 /* eslint react/no-multi-comp:0 */
-@connect(({ errors, loading, areas }) => ({
-  errors: errors.data,
-  areas: areas.data,
-  selectedAreaId: areas.selectedAreaId,
-  areaNames: areas.areaNames,
-  loading: loading.models.errors
-}))
-@Form.create()
 class Error extends PureComponent {
   state = {
     updateModalVisible: false,
@@ -263,8 +338,6 @@ class Error extends PureComponent {
   };
 
   handleFormReset = () => {
-    const { form } = this.props;
-    form.resetFields();
 
     this.setState(
       {
@@ -311,21 +384,15 @@ class Error extends PureComponent {
 
   }
 
-  handleSearch = e => {
-    e.preventDefault();
-
-    const { dispatch, form } = this.props;
+  handleSearch = fieldsValue => {
+    const { dispatch } = this.props;
     const { filterCriteria } = this.state;
-
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
 
       if (fieldsValue.time) {
         fieldsValue.start = moment(fieldsValue.time[0]).utcOffset(0).format("MM-DD-YYYY HH:mm:ss");
         fieldsValue.end = moment(fieldsValue.time[1]).utcOffset(0).format("MM-DD-YYYY HH:mm:ss");
         fieldsValue.time = undefined;
       }
-
       const values = Object.assign({}, filterCriteria, fieldsValue);
 
 
@@ -335,7 +402,6 @@ class Error extends PureComponent {
         },
         () => this.handleGetErrors()
       );
-    });
   };
 
 
@@ -428,98 +494,6 @@ class Error extends PureComponent {
   };
 
 
-  renderSimpleForm() {
-    const {
-      form: { getFieldDecorator }
-    } = this.props;
-
-    const areas = this.props.areas;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={6} sm={24}>
-            <FormItem label="Keywords">
-              {getFieldDecorator("numberOrPhone")(
-                <Input placeholder="NUMBER Or PHONE" />
-              )}
-            </FormItem>
-          </Col>
-          <Col md={6} sm={24}>
-            <FormItem
-              labelCol={{ span: 5 }}
-              wrapperCol={{ span: 15 }}
-              label="Type"
-            >
-              {getFieldDecorator("type")(
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  {ErrorType.map((type,index) => (
-                    <Option key={index} value={index}>
-                      {type}
-                    </Option>
-                  ))}
-                  <Option value={null}>All</Option>
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-          <Col md={6} sm={24}>
-            <FormItem
-              labelCol={{ span: 5 }}
-              wrapperCol={{ span: 15 }}
-              label="Review Status"
-            >
-              {getFieldDecorator("reviewStatus")(
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  {ErrorReviewStatus.map((errorStatus, index) => (
-                    <Option key={index} value={index}>
-                      {errorStatus}
-                    </Option>
-                  ))}
-                  <Option value={null}>All</Option>
-                </Select>
-              )}
-            </FormItem>
-          </Col>
-        </Row>
-        <Row gutter={{ md: 24, lg: 24, xl: 48 }}>
-           {/* <Col lg={6} md={8} sm={24}>
-           <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Solved">
-              {getFieldDecorator("status")(<Select placeholder="select" style={{ width: "100%" }}>
-                <Option key={1} value={1}>
-                  Yes
-                </Option>
-                <Option key={0} value={0}>
-                  No
-                </Option>
-                <Option value={null}>All</Option>
-              </Select>)}
-          </FormItem>
-            </Col> */}
-          <Col lg={18} md={16} sm={24}>
-            <FormItem label="time">
-              {getFieldDecorator("time")(
-                <RangePicker format="YYYY-MM-DD HH:mm:ss" />
-              )}
-            </FormItem>
-          </Col>
-        </Row>
-
-          <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-            <Col md={{ span: 8, offset: 16 }} sm={24}>
-            <span className={styles.submitButtons} style={{ float: "right" }}>
-              <Button type="primary" htmlType="submit">
-                Search
-              </Button>
-              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-                Reset
-              </Button>
-            </span>
-            </Col>
-          </Row>
-
-      </Form>
-    );
-  }
 
   handleVehicleDetailModalVisible = flag => this.setState({vehicleDetailModalVisible: flag})
 
@@ -556,7 +530,7 @@ class Error extends PureComponent {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>
-              {this.renderSimpleForm()}
+              <RenderSimpleForm handleSearch={this.handleSearch} handleFormReset={this.handleFormReset} />
             </div>
             <div className={styles.tableListOperator}>
               {selectedRows.length > 0 && (
@@ -620,5 +594,13 @@ class Error extends PureComponent {
     );
   }
 }
-
-export default Error;
+const mapStateToProps = ({ errors, loading, areas }) => {
+  return {
+    errors: errors.data,
+    areas: areas.data,
+    selectedAreaId: areas.selectedAreaId,
+    areaNames: areas.areaNames,
+    loading: loading.models.errors
+    }
+}
+export default connect(mapStateToProps)(Error) 

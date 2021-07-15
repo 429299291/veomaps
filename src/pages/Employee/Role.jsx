@@ -34,13 +34,12 @@ const getValue = obj =>
     .map(key => obj[key])
     .join(",");
 
-const CreateForm = Form.create()(props => {
-  const { modalVisible, form, handleAdd, handleModalVisible, roles } = props;
+const CreateForm = (props => {
+  const { modalVisible, handleAdd, handleModalVisible, roles } = props;
+  const [form] = Form.useForm()
   const okHandle = () => {
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
 
+    const fieldsValue = form.getFieldsValue(true)
       //disable adding super admin
       if (fieldsValue.name === "Super Admin") {
         form.resetFields();
@@ -52,80 +51,85 @@ const CreateForm = Form.create()(props => {
       }
 
       handleAdd(fieldsValue);
-    });
   };
   return (
     <Modal
       destroyOnClose
       title="Add"
+      forceRender
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="NAME">
-        {form.getFieldDecorator("name", {
-          rules: [
+      <Form form={form}>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="NAME"
+        name='name'
+        rules={
+          [
             {
               required: true,
               message: "name is required",
               min: 1
             }
           ]
-        })(<Input placeholder="Please Input" />)}
+        }
+      >
+        <Input placeholder="Please Input" />
       </FormItem>
+      </Form>
     </Modal>
   );
 });
 
-const UpdateForm = Form.create()(props => {
+const UpdateForm = (props => {
   const {
-    form,
     modalVisible,
     handleUpdate,
     handleModalVisible,
     record
   } = props;
+  const [form] = Form.useForm()
+  form.setFieldsValue(record)
   const okHandle = () => {
-    if (form.isFieldsTouched())
-      form.validateFields((err, fieldsValue) => {
-        if (err) return;
-        form.resetFields();
-
-        handleUpdate(record.id, fieldsValue);
-      });
-    else handleModalVisible();
+    const fieldsValue = form.getFieldsValue(true)
+    if(fieldsValue.name){
+      handleUpdate(record.id, fieldsValue);
+      form.resetFields()
+    }else{
+      handleModalVisible();
+    }
   };
 
   return (
     <Modal
       destroyOnClose
       title="Add"
+      forceRender
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="NAME">
-        {form.getFieldDecorator("name", {
-          rules: [
+      <Form form={form}>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="NAME"
+        name='name'
+        rules={
+          [
             {
               required: true,
               message: "name is required",
               min: 1
             }
-          ],
-          initialValue: record.name
-        })(<Input placeholder="Please Input" />)}
+          ]
+        }
+      >
+        <Input placeholder="Please Input" />
       </FormItem>
+      </Form>
     </Modal>
   );
 });
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ roles, loading }) => ({
-  roles,
-  loading: loading.models.roles
-}))
-@Form.create()
 class Role extends PureComponent {
   state = {
     modalVisible: false,
@@ -335,5 +339,10 @@ class Role extends PureComponent {
     );
   }
 }
-
-export default Role;
+const mapStateToProps = ({ roles, loading }) => {
+  return {
+    roles,
+    loading: loading.models.roles
+    }
+}
+export default connect(mapStateToProps)(Role) 

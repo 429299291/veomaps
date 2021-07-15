@@ -299,19 +299,19 @@ export default {
 
     },
 
-    *fetchAreaDistance({params}, { call, put }) {
-      const response = yield call(getAreaTotalDistance, params);
+    // *fetchAreaDistance({params}, { call, put }) {
+    //   const response = yield call(getAreaTotalDistance, params);
 
-      if (response) {
-        yield put({
-          type: "save",
-          payload: {
-            totalRideDistance: response
-          }
-        });
-      }
+    //   if (response) {
+    //     yield put({
+    //       type: "save",
+    //       payload: {
+    //         totalRideDistance: response
+    //       }
+    //     });
+    //   }
 
-    },
+    // },
 
     *fetchTotalRefund({params}, { call, put }) {
       const response = yield call(getTotalRefund, params);

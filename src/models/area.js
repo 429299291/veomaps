@@ -10,6 +10,8 @@ import {
   updateAreaFeature,
   createAreaFeature,
   getAreasAll,
+  addArea,//
+  updateAreaNew,//
   getHubImageUploadUrl
 } from "@/services/area";
 import { message } from "antd";
@@ -27,14 +29,36 @@ export default {
 
   effects: {
     //new api
-    *getAreasAll({ payload }, { call, put }) {
-      let response = (yield call(getAreasAll, payload));
+    *getAreasAll({ payload }, { call, put }) {//get singel area
+      const response = yield call(getAreasAll, payload);
       yield put({
         type: "newSave",
         payload: response
       });
 
     },
+    *addArea({ payload }, { call, put }) {
+      const response = yield call(addArea, payload);
+      yield put({
+        type: "get"
+      });
+      // yield put({
+      //   type: "getAreasAll"
+      // });
+    },
+    *updateAreaNew({ payload,areaId }, { call, put }) {
+      const response = yield call(updateAreaNew,areaId, payload);
+      yield put({
+        type: "get"
+      });
+      yield put({
+        type: "getAreasAll",
+        payload:{
+          areaId
+        }
+      });
+    },
+    //////////////
     *get({ payload, onSuccess }, { call, put }) {
       let response = (yield call(getAdminAreas, payload)).content;
       if (Array.isArray(response)) {
