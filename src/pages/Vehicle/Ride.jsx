@@ -141,7 +141,7 @@ const refundReason = [
 
 const queryStatus = ["FROZEN"];
 
-const RefundForm = Form.create()(props => {
+const RefundForm = (props => {
   const {
     isModalVisible,
     handleModalVisible,
@@ -151,13 +151,9 @@ const RefundForm = Form.create()(props => {
     handleGetRideRefundCalculateResult,
     rideRefundCalculateResult
   } = props;
+  const [form] = Form.useForm()
   const okHandle = () => {
-    form.validateFields((err, fieldsValue) => {
-      if (err) {
-        return;
-      } else {
-        form.resetFields();
-
+      const fieldsValue = form.getFieldsValue(true)
         const payload = {
           refundType: fieldsValue.refundType,
           refundReason: refundReason[fieldsValue.refundReason],
@@ -172,8 +168,7 @@ const RefundForm = Form.create()(props => {
         //console.log(payload);
 
         handleRefundRide(ride.id, payload);
-      }
-    });
+      
   };
 
   const shouldOkButtonDisable =
@@ -185,35 +180,32 @@ const RefundForm = Form.create()(props => {
       destroyOnClose
       title="Refund Ride"
       visible={isModalVisible}
+      forceRender
       width="800px"
       onOk={okHandle}
       onCancel={() => handleModalVisible(false)}
       okButtonProps={{ disabled: shouldOkButtonDisable }}
       okText="Refund"
     >
+      <Form form={form}>
       <FormItem
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 18 }}
         label="Refund Type"
+        name='refundType'
       >
-        {form.getFieldDecorator("refundType", {
-          initialValue: "DEPOSIT"
-        })(
           <Select>
             <Option value={"DEPOSIT"}>Deposit</Option>
             <Option value={"CREDIT_CARD"}>Credit Card</Option>
           </Select>
-        )}
       </FormItem>
 
       <FormItem
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 18 }}
         label="Refund Reason"
+        name='refundReason'
       >
-        {form.getFieldDecorator("refundReason", {
-          initialValue: 1
-        })(
           <Select style={{ width: 200 }}>
             {refundReason.map((reason, index) => (
               <Option key={index} value={index}>
@@ -221,16 +213,15 @@ const RefundForm = Form.create()(props => {
               </Option>
             ))}
           </Select>
-        )}
       </FormItem>
       {form.getFieldValue("refundReason") === 0 && (
         <FormItem
           labelCol={{ span: 6 }}
           wrapperCol={{ span: 18 }}
           label="Notes"
-        >
-          {form.getFieldDecorator("note", {
-            rules: [
+          name='note'
+          rules={
+            [
               {
                 required: true,
                 message: "note can't be empty",
@@ -238,22 +229,21 @@ const RefundForm = Form.create()(props => {
                 min: 1
               }
             ]
-          })(<TextArea autosize={{ minRows: 3, maxRows: 10 }} />)}
+          }
+        >
+         <TextArea autosize={{ minRows: 3, maxRows: 10 }} />
         </FormItem>
       )}
       <FormItem
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 18 }}
         label="Refund Way"
+        name='refundWay'
       >
-        {form.getFieldDecorator("refundWay", {
-          initialValue: "FULLY_REFUND"
-        })(
           <Select>
             <Option value={"FULLY_REFUND"}>Fully Refund</Option>
             <Option value={"PARTIAL_REFUND"}>Partial Refund</Option>
           </Select>
-        )}
       </FormItem>
       {form.getFieldValue("refundWay") === "PARTIAL_REFUND" && (
         <Row>
@@ -382,11 +372,12 @@ const RefundForm = Form.create()(props => {
             </Col>
           </Row>
         )}
+        </Form>
     </Modal>
   );
 });
 
-const EndRideForm = Form.create()(props => {
+const EndRideForm = (props => {
   const {
     isEndRideVisible,
     form,
@@ -394,12 +385,11 @@ const EndRideForm = Form.create()(props => {
     handleEndRideVisible,
     ride
   } = props;
+  const [form] = Form.useForm()
   const okHandle = () => {
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
+      const fieldsValue = form.getFieldsValue(true)
       handleEndRide(ride.id, fieldsValue);
-    });
+      form.resetFields();
   };
 
   const minutes = Math.round((new Date() - new Date(ride.start)) / 60000); // This will give difference in milliseconds
@@ -412,29 +402,22 @@ const EndRideForm = Form.create()(props => {
       onOk={okHandle}
       onCancel={() => handleEndRideVisible(false)}
     >
+      <Form form={form}>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="Minutes"
+        name='minutes'
       >
-        {form.getFieldDecorator("minutes", {
-          initialValue: minutes
-        })(<InputNumber placeholder="Please Input" />)}
+        <InputNumber placeholder="Please Input" />
       </FormItem>
+      </Form>
     </Modal>
   );
 });
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ rides, areas, geo, loading }) => ({
-  rides,
-  areas: areas.data,
-  geo,
-  selectedAreaId: areas.selectedAreaId,
-  areaNames: areas.areaNames,
-  loading: loading.models.rides
-}))
-@Form.create()
+
 class Ride extends PureComponent {
   state = {
     isEndRideVisible: false,
@@ -568,6 +551,7 @@ class Ride extends PureComponent {
   }
 
   isRideRefundable = ride => {
+    console.log(ride);
     const meta = JSON.parse(ride.metaData);
 
     // return (authority.includes("refund.ride")) && ride.end && (!meta || !meta.refunded);
@@ -1104,5 +1088,14 @@ class Ride extends PureComponent {
     );
   }
 }
-
-export default Ride;
+const mapStateToProps = ({ rides, areas, geo, loading }) => {
+  return {
+    rides,
+    areas: areas.data,
+    geo,
+    selectedAreaId: areas.selectedAreaId,
+    areaNames: areas.areaNames,
+    loading: loading.models.rides
+      }
+}
+export default connect(mapStateToProps)(Ride) 

@@ -6,7 +6,7 @@ import {
   removeCustomer,
   updateCustomer,
   getCustomerPayments,
-  updateMembership,
+  buyMembership,
   getMembership,
   getAvailableMemberships,
   getCustomerTransactions,
@@ -86,13 +86,13 @@ export default {
         message.error(`Fail!`);
       }
     },
-    *updateMembership({  customerId, params, onSuccess }, { call, put }) {
-      const data = yield call(updateMembership, customerId, params);
+    *buyMembership({  customerId, planId, onSuccess, onFail }, { call, put }) {
+      const data = yield call(buyMembership, customerId, planId);
 
       if (data) {
-        onSuccess(data);
+        onSuccess && onSuccess(data);
       } else {
-        message.error(`Fail!`);
+        onFail && onFail();
       }
     },
     *refund({  id, params, onSuccess }, { call, put }) {

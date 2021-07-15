@@ -1,8 +1,12 @@
+// import Icon from '@ant-design/icons';
+import { SmileOutlined } from '@ant-design/icons';
+
 export default [
   // user
   {
     path: "/user",
     component: "../layouts/UserLayout",
+    icon:'user',
     routes: [
       { path: "/user", redirect: "/user/login" },
       { path: "/user/login", component: "./User/Login" },
@@ -22,8 +26,8 @@ export default [
       {
         path: "/dashboard",
         name: "dashboard",
-        icon: "dashboard",
         authority: "dashboard",
+        icon:'dashboard',
         routes: [
           {
             path: "/dashboard/main",
@@ -54,7 +58,7 @@ export default [
         path: "/ride/",
         name: "Riding Management",
         component: "./Ride/Ride",
-        icon: "car",
+        icon: "ride",
         authority: ["ride"],
       },
       {
@@ -84,7 +88,7 @@ export default [
       },
       {
         path: "/customer-management",
-        icon: "user",
+        icon: "customer",
         name: "Customer Management",
         authority: ["customer"],
         routes: [
@@ -112,21 +116,21 @@ export default [
         name: "Area Management",
         authority:['area'],
         routes: [
-          {
-            path: "/area/geo-management/",
-            name: "Geo Management",
-            component: "./Area/Geo",
-          },
+          // {
+          //   path: "/area/geo-management/",
+          //   name: "Geo Management",
+          //   component: "./Area/Geo",
+          // },
+          // {
+          //   path: "/area/area-management/",
+          //   name: "Area Management",
+          //   component: "./Area/Area",
+          // },
           {
             path: "/area/area-management/",
             name: "Area Management",
-            component: "./Area/Area",
+            component: "./Area/Areas/Areas",
           },
-          // {
-          //   path: "/area/areaManagement/",
-          //   name: "Area Management",
-          //   component: "./Area/Areas",
-          // },
           {
             path: "/area/promo-management/",
             name: "Promo Management",
@@ -184,7 +188,7 @@ export default [
       {
         path: "/technician-management/",
         name: "Technician Management",
-        icon: "user",
+        icon: "technician",
         authority: ["technician"],
         routes: [
           {

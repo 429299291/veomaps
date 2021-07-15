@@ -1,5 +1,6 @@
 import { stringify } from "qs";
 import request from "@/utils/request";
+import { message } from "antd";
 
 // export async function getAdminAreas(params) {
 //   return request(`/admins/areas?${stringify(params, { indices: false })}`, {
@@ -88,6 +89,32 @@ export async function getAreaFeature(areaId) {
 export async function getAreasAll(areaId) {
   return request(`/api/admins/areas/${areaId.areaId}`, {
     method: "GET"
+  });
+}
+export async function addArea(params) {
+  return request(`/api/admins/areas`, {
+    method: "POST",
+    body:{...params}
+  })
+  .then(response=>{
+    if(response.status==500){
+      message.error('add error')
+    }else if(response == true){
+      message.success('add area success')
+    }
+    return response
+  })
+  .catch(err=>{message.error(err)});
+}
+export async function updateAreaNew(areaId,params) {
+  return request(`/api/admins/areas/${areaId}`, {
+    method: "PATCH",
+    body:{...params}
+  })
+  .then(response=>{
+    if(response.status!==200){
+      message.success('edit area success')
+    }
   });
 }
 

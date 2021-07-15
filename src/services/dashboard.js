@@ -87,11 +87,11 @@ export async function getAreaTotalMinutes(params) {
   });
 }
 
-export async function getAreaTotalDistance(params) {
-  return request(`/admins/dashboard/total_area_distance?${stringify(params, { indices: false })}`, {
-    method: "GET"
-  });
-}
+// export async function getAreaTotalDistance(params) {
+//   return request(`/admins/dashboard/total_area_distance?${stringify(params, { indices: false })}`, {
+//     method: "GET"
+//   });
+// }
 
 export async function getTotalRideRevenue(params) {
   return request(`/admins/dashboard/ride_revenue_by_vehicle_type?${stringify(params, { indices: false })}`, {

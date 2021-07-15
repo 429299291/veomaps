@@ -56,100 +56,7 @@ const checkNumberFormat = (rule, value, callback) => {
     return;
   };
 
-const UpdateForm = Form.create()((props) => {
-  const {
-    form,
-    modalVisible,
-    handleUpdate,
-    handleModalVisible,
-    currentUser,
-    record,
-  } = props;
-  const okHandle = () => {
-    if (form.isFieldsTouched()) {
-      form.validateFields((err, fieldsValue) => {
-        if (err) return;
-        form.resetFields();
-        handleUpdate(record.id, fieldsValue);
-      });
-    } else handleModalVisible();
-  };
-
-
-
-  return (
-    <Modal
-      destroyOnClose
-      title="Detail"
-      visible={modalVisible}
-      onOk={okHandle}
-      width={"30%"}
-      onCancel={() => handleModalVisible()}
-    >
-
-                <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Description">
-                    <div> {record.description} </div>
-                </FormItem>
-
-                <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Type">
-                    <div> {record.type} </div>
-                </FormItem>
-
-                <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Price">
-                    <div> {record.price} </div>
-                </FormItem>
-
-
-                <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Availability">
-                {form.getFieldDecorator("availability", {
-                    rules: [{ validator: checkNumberFormat }],
-                    initialValue: record.availability
-                })(<Input placeholder="Please Input" />)}
-                </FormItem>
-
-                <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Lead Time in Days">
-                {form.getFieldDecorator("leadTimeDays", {
-                    rules: [{ validator: checkNumberFormat }],
-                    initialValue: record.leadTimeDays
-                })(<Input placeholder="Please Input" />)}
-                </FormItem>
-
-                <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Status">
-                {form.getFieldDecorator("listingItemStatus", {
-                    initialValue: record.status
-                })(<Select
-                    placeholder="select"
-                    style={{ width: "100%" }}
-                   >
-                    <Option key={0} value="NORMAL">
-                      NORMAL
-                    </Option>
-                    <Option key={1} value="PRE_ORDER">
-                      PRE_ORDER
-                    </Option>
-                    <Option key={2} value="BACK_ORDER">
-                      BACK_ORDER
-                    </Option>
-                    <Option key={2} value="SOLD_OUT">
-                      SOLD_OUT
-                    </Option>
-                  </Select>)
-                }
-                </FormItem>
-     
-    </Modal>
-  );
-});
-
 /* eslint react/no-multi-comp:0 */
-@connect(({
-  listing,
-  loading,
-}) => ({
-    listing,
-    loading: loading.models.listing
-}))
-@Form.create()
 class Listing extends PureComponent {
   state = {
     updateModalVisible: false,
@@ -254,17 +161,6 @@ class Listing extends PureComponent {
   }
 
 
-  handleUpdate = (id, fields) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'listing/update',
-      payload: fields,
-      id,
-      onSuccess: this.getListings,
-    });
-
-    this.handleUpdateModalVisible();
-  };
 
 
   render() {
@@ -284,7 +180,96 @@ class Listing extends PureComponent {
       handleModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
     };
-
+    const UpdateForm = ((props) => {
+      const {
+        modalVisible,
+        // handleUpdate,
+        handleModalVisible,
+        currentUser,
+        record,
+      } = props;
+      const [form] = Form.useForm()
+      form.setFieldsValue(record)
+      const okHandle = () => {
+        form.submit()
+      };
+      const handleUpdate = (id, fields) => {
+        const { dispatch } = this.props;
+        fields={
+          availability:fields.availability,
+          leadTimeDays:fields.leadTimeDays,
+          listingItemStatus:fields.status,
+        }
+        dispatch({
+          type: 'listing/update',
+          payload: fields,
+          id,
+          onSuccess: this.getListings,
+        });
+    
+        this.handleUpdateModalVisible();
+      };
+    
+    
+      return (
+        <Modal
+          destroyOnClose
+          title="Detail"
+          visible={modalVisible}
+          onOk={okHandle}
+          forceRender
+          width={"30%"}
+          onCancel={() => handleModalVisible()}
+        >
+          <Form form={form} onFinish={()=>{handleUpdate(record.id, form.getFieldsValue(true))}}>
+                    <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Description">
+                        <div> {record.description} </div>
+                    </FormItem>
+    
+                    <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Type">
+                        <div> {record.type} </div>
+                    </FormItem>
+    
+                    <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Price">
+                        <div> {record.price} </div>
+                    </FormItem>
+    
+    
+                    <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Availability" name='availability' rules={[{ validator: checkNumberFormat }]}>
+                    <Input placeholder="Please Input" />
+                    </FormItem>
+    
+                    <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Lead Time in Days" name='leadTimeDays' rules={[{ validator: checkNumberFormat }]}>
+                    <Input placeholder="Please Input" />
+                    </FormItem>
+    
+                    <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="Status" name='status'>
+                    <Select
+                        placeholder="select"
+                        style={{ width: "100%" }}
+                       >
+                        <Option key={0} value="NORMAL">
+                          NORMAL
+                        </Option>
+                        <Option key={1} value="PRE_ORDER">
+                          PRE_ORDER
+                        </Option>
+                        <Option key={2} value="BACK_ORDER">
+                          BACK_ORDER
+                        </Option>
+                        {/* <Option key={2} value="SOLD_OUT">
+                          SOLD_OUT
+                        </Option> */}
+                        <Option key={3} value="SOLD_OUT">
+                          SOLD_OUT
+                        </Option>
+                      </Select>
+                    </FormItem>
+                    </Form>
+        </Modal>
+      );
+    });
+    
 
     return (
       <PageHeaderWrapper title="Listing">
@@ -310,5 +295,10 @@ class Listing extends PureComponent {
     );
   }
 }
-
-export default Listing;
+const mapStateToProps = ({ listing, loading }) => {
+  return {
+    listing,
+    loading: loading.models.listing
+  }
+}
+export default connect(mapStateToProps)(Listing) 
