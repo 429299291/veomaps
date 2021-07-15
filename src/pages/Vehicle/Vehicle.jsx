@@ -171,6 +171,159 @@ const RenderSimpleForm=(props)=> {
     </Form>
   );
 }
+const RenderAdvancedForm=(props)=> {
+  const [form] = Form.useForm()
+  // const { areas }= this.props;
+
+
+  const checkIdleDays = (rule, value, callback) => {
+    if (value === undefined || ( value > 0 && Number.isInteger(value))) {
+      callback();
+      return;
+    }
+
+    callback("Number must be larger than zero.");
+  };
+
+  return (
+    <Form  layout="inline" form= {form}>
+      <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+        <Col span={8}>
+          <FormItem label="Keywords" name='numberOrImei'>
+              <Input className="number_or_imei_input"  placeholder="number or imei" />
+          </FormItem>
+        </Col>
+        <Col span={8}>
+          <FormItem label="Lock Battery Status" name='iotBattery'>
+              <Select placeholder="select" style={{ width: "100%" }}>
+                <Option value={40}>Low Battery</Option>
+                <Option value={100}>Full Battery</Option>
+                <Option value={null}>All</Option>
+              </Select>
+          </FormItem>
+        </Col>
+
+        <Col span={8}>
+          <FormItem label="Connection Status" name='connected'>
+              <Select placeholder="select" style={{ width: "100%" }}>
+                <Option value={false}>offline</Option>
+                <Option value={true}>online</Option>
+                <Option value={null}>All</Option>
+              </Select>
+          </FormItem>
+        </Col>
+        
+      {/* </Row>
+      <Row> */}
+      <Col span={8}>
+          <FormItem label="Lock Status" name='locked'>
+              <Select placeholder="select" style={{ width: "100%" }}>
+                <Option value={false}>Unlock</Option>
+                <Option value={true}>Lock</Option>
+                <Option value={null}>All</Option>
+              </Select>
+          </FormItem>
+        </Col>
+        <Col span={8}>
+          <FormItem label="Vehicle Type" name='vehicleType'>
+              <Select placeholder="select" style={{ width: "100%" }}>
+                <Option value="0">Bike</Option>
+                <Option value="1">Scooter</Option>
+                <Option value="2">e-bike</Option>
+                <Option value="3">COSMO</Option>
+                <Option value={null}>All</Option>
+              </Select>
+          </FormItem>
+        </Col>
+        <Col span={8}>
+          <FormItem label="Error Status" name='statuses'>
+              <Select
+                mode="multiple"
+                placeholder="select"
+              >
+
+              {
+                errorStatus.map((status) => {
+                return <Option value={status} key={status}>{errorStatusIndexs[status]}</Option>;
+                })
+              }
+              </Select>
+          </FormItem>
+          </Col>
+      {/* </Row>
+
+      <Row > */}
+      <Col span={8}>
+          <FormItem label="Is Using" name='isUsing'>
+              <Select placeholder="select" style={{ width: "100%" }}>
+                <Option value={true}>Yes</Option>
+                <Option value={false}>No</Option>
+                <Option value={null}>All</Option>
+              </Select>
+          </FormItem>
+        </Col>
+        <Col span={8}>
+          <FormItem label="Vehicle Power Status" name='vehicleBattery'>
+              <Select placeholder="select" style={{ width: "100%" }}>
+              <Option value={40}>Low Battery</Option>
+              <Option value={100}>Full Battery</Option>
+              <Option value={null}>All</Option>
+            </Select>
+          </FormItem>
+        </Col>
+        <Col span={8}>
+            <FormItem label="Idle Days"
+              name='idleDays'
+              rules={
+                [
+                  {
+                    validator: checkIdleDays
+                  }
+                ]
+              }
+              >
+
+             <InputNumber placeholder="Please Input" style={{ marginLeft: "1em" }} />
+        </FormItem>
+        </Col>
+      {/* </Row>
+
+      <Row gutter={{ md: 8, lg: 24, xl: 48 }}> */}
+      <Col md={8} sm={24}>
+          <FormItem label="Is Reported" name='isReported'>
+              <Select placeholder="select" style={{ width: "100%" }}>
+                <Option value={true}>Yes</Option>
+                <Option value={false}>No</Option>
+                <Option value={null}>All</Option>
+              </Select>
+          </FormItem>
+        </Col>
+        <Col md={12} sm={24}>
+          <FormItem label="Custom Vehicle Power Search:" name='vehiclePowerCustom'>
+              <Input placeholder="power" suffix="%"/>
+          </FormItem>
+        </Col>
+      </Row>
+
+     
+      
+
+      <div style={{ overflow: "hidden" }}>
+        <div style={{ marginBottom: 24 }}>
+          <Button  onClick={()=>{props.handleSearch(form.getFieldsValue(true))}}>
+            Search
+          </Button>
+          <Button style={{ marginLeft: 8 }} onClick={()=>{form.resetFields();props.handleFormReset()}}>
+            Reset
+          </Button>
+          <a style={{ marginLeft: 8 }} onClick={()=>{props.toggleForm()}}>
+            close <Icon type="up" />
+          </a>
+        </div>
+      </div>
+    </Form>
+  );
+}
 
 const getPowerPercent = power => {
   if (power >= 420) return 100;
@@ -1077,10 +1230,7 @@ class Vehicle extends PureComponent {
       let values;
 
       if (selectedTab == 1) {
-
        values = Object.assign({}, filterCriteria, fieldsValue, {
-          // currentPage: 1,
-          // pageSize: 10,
           pagination: {
               page: 0,
               pageSize: 10
@@ -1098,10 +1248,7 @@ class Vehicle extends PureComponent {
           values.imei = null;
           values.vehicleNumber = null;
         }
-  
-  
         values.vehicleTypes = values.vehicleType ? [values.vehicleType] : null;
-  
         if (values.idleDays) {
           values.idleQuery = {idleDays: values.idleDays};
         } else {
@@ -1148,7 +1295,16 @@ console.log(fieldsValue);
         }   
 
       }
-     
+    if(!fieldsValue){
+      values={
+        areaIds: null,
+        idleQuery: null,
+        imei: null,
+        pagination: {page: 0, pageSize: 10},
+        vehicleNumber: null,
+        vehicleTypes: null
+      }
+    }
 
  
 
@@ -1318,168 +1474,9 @@ console.log(fieldsValue);
     this.handleUpdateModalVisible();
   };
 
-
-  renderAdvancedForm() {
-
-
-    const { areas }= this.props;
-
-
-    const checkIdleDays = (rule, value, callback) => {
-      if (value === undefined || ( value > 0 && Number.isInteger(value))) {
-        callback();
-        return;
-      }
-  
-      callback("Number must be larger than zero.");
-    };
-
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="Keywords" name='numberOrImei'>
-                <Input className="number_or_imei_input"  placeholder="number or imei" />
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="Lock Battery Status" name='iotBattery'>
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  <Option value={40}>Low Battery</Option>
-                  <Option value={100}>Full Battery</Option>
-                  <Option value={null}>All</Option>
-                </Select>
-            </FormItem>
-          </Col>
-
-          <Col md={8} sm={24}>
-            <FormItem label="Connection Status" name='connected'>
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  <Option value={false}>offline</Option>
-                  <Option value={true}>online</Option>
-                  <Option value={null}>All</Option>
-                </Select>
-            </FormItem>
-          </Col>
-          
-        </Row>
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-
-          <Col md={8} sm={24}>
-            <FormItem label="Lock Status" name='locked'>
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  <Option value={false}>Unlock</Option>
-                  <Option value={true}>Lock</Option>
-                  <Option value={null}>All</Option>
-                </Select>
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="Vehicle Type" name='vehicleType'>
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  <Option value="0">Bike</Option>
-                  <Option value="1">Scooter</Option>
-                  <Option value="2">e-bike</Option>
-                  <Option value="3">COSMO</Option>
-                  <Option value={null}>All</Option>
-                </Select>
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="Error Status" name='statuses'>
-                <Select
-                  mode="multiple"
-                  placeholder="select"
-                  style={{ width: "100%" }}
-                >
-
-                {
-                  errorStatus.map((status) => {
-                  return <Option value={status} key={status}>{errorStatusIndexs[status]}</Option>;
-                  })
-                }
-                </Select>
-            </FormItem>
-            </Col>
-        </Row>
-
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-        <Col md={8} sm={24}>
-            <FormItem label="Is Using" name='isUsing'>
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  <Option value={true}>Yes</Option>
-                  <Option value={false}>No</Option>
-                  <Option value={null}>All</Option>
-                </Select>
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="Vehicle Power Status" name='vehicleBattery'>
-                <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value={40}>Low Battery</Option>
-                <Option value={100}>Full Battery</Option>
-                <Option value={null}>All</Option>
-              </Select>
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-              <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Idle Days"
-                name='idleDays'
-                rules={
-                  [
-                    {
-                      validator: checkIdleDays
-                    }
-                  ]
-                }
-                >
-
-               <InputNumber placeholder="Please Input" style={{ marginLeft: "1em" }} />
-          </FormItem>
-          </Col>
-        </Row>
-
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-        <Col md={8} sm={24}>
-            <FormItem label="Is Reported" name='isReported'>
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  <Option value={true}>Yes</Option>
-                  <Option value={false}>No</Option>
-                  <Option value={null}>All</Option>
-                </Select>
-            </FormItem>
-          </Col>
-          <Col md={12} sm={24}>
-            <FormItem label="Custom Vehicle Power Search:" name='vehiclePowerCustom'>
-                <InputNumber placeholder="power" />
-               %
-            </FormItem>
-          </Col>
-        </Row>
-
-       
-        
-
-        <div style={{ overflow: "hidden" }}>
-          <div style={{ float: "right", marginBottom: 24 }}>
-            <Button type="primary" htmlType="submit">
-              Search
-            </Button>
-            <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-              Reset
-            </Button>
-            <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
-              close <Icon type="up" />
-            </a>
-          </div>
-        </div>
-      </Form>
-    );
-  }
-
   renderForm() {
     const { expandForm } = this.state;
-    return expandForm ? this.renderAdvancedForm() : <RenderSimpleForm toggleForm={this.toggleForm} handleSearch={this.handleSearch} handleFormReset={this.handleFormReset}/>;
+    return expandForm ? <RenderAdvancedForm handleSearch={this.handleSearch} handleFormReset={this.handleFormReset} toggleForm={this.toggleForm} /> : <RenderSimpleForm toggleForm={this.toggleForm} handleSearch={this.handleSearch} handleFormReset={this.handleFormReset}/>;
   }
 
 

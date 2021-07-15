@@ -612,6 +612,7 @@ class Ride extends PureComponent {
 
     const RenderSimpleForm=(props)=> {
       const [form] = Form.useForm()
+      console.log(this.state.filterCriteria);
       form.setFieldsValue(this.state.filterCriteria)
       const handleSearchFirst=()=>{
         form.submit()
