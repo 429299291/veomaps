@@ -345,6 +345,7 @@ class Ride extends PureComponent {
   handleSearch = fieldsValue => {
     const { selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
+    console.log(fieldsValue);
     if (fieldsValue) {
       if(fieldsValue.timeRange){
       fieldsValue.rideStart = moment(fieldsValue.timeRange[0])
@@ -362,7 +363,6 @@ class Ride extends PureComponent {
         pageSize: 10,
         areaId: selectedAreaId
       });
-
       this.setState(
         {
           filterCriteria: values
@@ -527,11 +527,11 @@ class Ride extends PureComponent {
   };
 
   handleExportData = () => {
-    const { form, selectedAreaId } = this.props;
+    const { selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
-
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
+    const [form] = Form.useForm()
+    const fieldsValue = form.getFieldsValue(true)
+    // form.validateFields((err, fieldsValue) => {
 
       if (fieldsValue.timeRange) {
         fieldsValue.rideStart = moment(fieldsValue.timeRange[0])
@@ -561,7 +561,7 @@ class Ride extends PureComponent {
         },
         this.finishExportData
       );
-    });
+    // });
   };
 
   finishExportData() {
@@ -612,6 +612,7 @@ class Ride extends PureComponent {
 
     const RenderSimpleForm=(props)=> {
       const [form] = Form.useForm()
+      form.setFieldsValue(this.state.filterCriteria)
       const handleSearchFirst=()=>{
         form.submit()
       }
@@ -720,7 +721,6 @@ class Ride extends PureComponent {
         "Phone Issue"
       ];
       // const [shouldOkButtonDisable, setShouldOkButtonDisable] = useState(false);
-
       const {
         isModalVisible,
         handleModalVisible,
