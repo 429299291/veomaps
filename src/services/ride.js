@@ -72,7 +72,7 @@ export async function getRideDetail(id) {
   });
 }
 
-export async function getRefundCalculateResult(id, payload) {
+export function getRefundCalculateResult(id, payload) {
   return request(`/api/admins/rides/${id}/refund/calculate`, {
     method: "POST",
     body: {
