@@ -283,7 +283,7 @@ class Dashboard extends Component {
     this.fetchCoupounSummary();
 
     if (this.props.selectedAreaId !== null) {
-      this.fetchAreaDistance();
+      // this.fetchAreaDistance();
       this.fetchAreaMinutes();
       this.fetchStripeNetResult();
     }

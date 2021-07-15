@@ -65,63 +65,16 @@ const lockOperationWay = ["GPRS", "BLUETOOTH"];
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const vehicleOrders = ["", "sign in", "heart", "unlock", "lock", "location", "info", "find", "version", "ip", "error", "alert", "heart period", "iccid", "shut down", "ok", "mac info", "connect", "disconnect", "version update", "Report", "External Device"];
-
-
-const EndRideForm = Form.create()(props => {
-  const {
-    isEndRideVisible,
-    form,
-    handleEndRide,
-    handleEndRideVisible,
-    ride
-  } = props;
+const VehicleControlForm = (props => {
   const okHandle = () => {
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      handleEndRide(ride.id, fieldsValue);
-    });
-  };
-
-  const minutes = Math.round((new Date() - new Date(ride.start)) / 60000); // This will give difference in milliseconds
-
-  return (
-    <Modal
-      destroyOnClose
-      title="End Ride"
-      visible={isEndRideVisible}
-      onOk={okHandle}
-      onCancel={() => handleEndRideVisible(false)}
-    >
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Minutes"
-      >
-        {form.getFieldDecorator("minutes", {
-          initialValue: minutes
-        })(<InputNumber placeholder="Please Input" />)}
-      </FormItem>
-    </Modal>
-  );
-});
-
-const VehicleControlForm = Form.create()(props => {
-  const okHandle = () => {
-    if (form.isFieldsTouched())
-      form.validateFields((err, fieldsValue) => {
-        if (err) return;
-        form.resetFields();
-
-        handleControl(record.id, fieldsValue);
-      });
+    form.submit()
   };
 
   const {
-    form,
     record,
     handleControl,
   } = props;
+  const [form] = Form.useForm()
 
   const marks = {
     0: 'Not Set',
@@ -149,106 +102,94 @@ const VehicleControlForm = Form.create()(props => {
 
   return (
     <div>
+      <Form form={form} onFinish={()=>{handleControl(record.id, form.getFieldsValue(true))}}>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="Light"
+        name='changeLight'
       >
-        {form.getFieldDecorator("changeLight", {
-        })(
           <Select placeholder="select" style={{ width: "100%" }}>
             <Option value={0}>Not Set</Option>
             <Option value={1}>Off</Option>
             <Option value={2}>On</Option>
           </Select>
-        )}
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="Mode"
+        name='changeMode'
       >
-        {form.getFieldDecorator("changeMode", {
-        })(
           <Select placeholder="select" style={{ width: "100%" }}>
             <Option value={0}>Not Set</Option>
             <Option value={1}>Off</Option>
             <Option value={2}>On</Option>
           </Select>
-        )}
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="Cruise Control"
+        name='cruiseControl'
       >
-        {form.getFieldDecorator("cruiseControl")(
           <Select placeholder="select" style={{ width: "100%" }}>
             <Option value={0}>Not Set</Option>
             <Option value={1}>Off</Option>
             <Option value={2}>On</Option>
           </Select>
-        )}
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="Inch Status"
+        name='inchStatus'
       >
-        {form.getFieldDecorator("inchStatus")(
           <Select placeholder="select" style={{ width: "100%" }}>
             <Option value={0}>Not Set</Option>
             <Option value={1}>Off</Option>
             <Option value={2}>On</Option>
           </Select>
-        )}
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="Start Type"
+        name='startType'
       >
-        {form.getFieldDecorator("startType", {
-        })(
           <Select placeholder="select" style={{ width: "100%" }}>
             <Option value={0}>Not Set</Option>
             <Option value={1}>Non-Zero Start</Option>
             <Option value={2}>Zero Start</Option>
           </Select>
-        )}
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="High Speed Limit"
+        name='highSpeedLimit'
       >
-        {form.getFieldDecorator("highSpeedLimit", {
-        })(
-          <Slider defaultValue={0} max={25} step={null} marks={marks} />
-        )}
+
+          <Slider  max={25} step={null} marks={marks} />
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="Med Speed Limit"
+        name='midSpeedLimit'
       >
-        {form.getFieldDecorator("midSpeedLimit", {
-        })(
-          <Slider defaultValue={0} max={25} step={null} marks={marks} />
-        )}
+
+          <Slider  max={25} step={null} marks={marks} />
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="Low Speed Limit"
+        name='lowSpeedLimit'
       >
-        {form.getFieldDecorator("lowSpeedLimit", {
-        })(
-          <Slider defaultValue={0} max={25} step={null} marks={marks} />
-        )}
+          <Slider  max={25} step={null} marks={marks} />
       </FormItem>
       <Button
-        icon="plus"
         type="primary"
         onClick={okHandle}
         disabled={!form.isFieldsTouched()}
@@ -256,88 +197,75 @@ const VehicleControlForm = Form.create()(props => {
       >
         Update Control
       </Button>
+      </Form>
     </div>
   );
 });
 
-const VehicleControlExtensionForm = Form.create()(props => {
+const VehicleControlExtensionForm = (props => {
   const okHandle = () => {
-    if (form.isFieldsTouched())
-      form.validateFields((err, fieldsValue) => {
-        if (err) return;
-        form.resetFields();
-
-        handleControlExtension(record.id, fieldsValue);
-      });
+    form.submit()
   };
 
   const {
-    form,
     record,
     handleControlExtension,
   } = props;
+  const [form] = Form.useForm()
 
   return (
     <div>
+      <Form form={form} onFinish={()=>{handleControlExtension(record.id, form.getFieldsValue(true))}}>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="Headlight"
+        name='headLight'
       >
-        {form.getFieldDecorator("headLight", {
-        })(
           <Select placeholder="select" style={{ width: "100%" }}>
             <Option value={0}>Not Set</Option>
             <Option value={1}>Off</Option>
             <Option value={2}>On</Option>
           </Select>
-        )}
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="Taillight"
+        name='tailLight'
       >
-        {form.getFieldDecorator("tailLight", {
-        })(
           <Select placeholder="select" style={{ width: "100%" }}>
             <Option value={0}>Not Set</Option>
             <Option value={1}>Off</Option>
             <Option value={2}>On</Option>
           </Select>
-        )}
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="Speed Mode"
+        name='speedMode'
       >
-        {form.getFieldDecorator("speedMode", {
-        })(
           <Select placeholder="select" style={{ width: "100%" }}>
             <Option value={0}>Not Set</Option>
             <Option value={1}>Low Speed</Option>
             <Option value={2}>Medium Speed</Option>
             <Option value={3}>High Speed</Option>
           </Select>
-        )}
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="Throttle"
+        name='throttleStatus'
       >
-        {form.getFieldDecorator("throttleStatus", {
-        })(
-          <Select defaultValue='Not Set' placeholder="select" style={{ width: "100%" }}>
+          <Select placeholder="select" style={{ width: "100%" }}>
             <Option value={0}>Not Set</Option>
             <Option value={1}>Off</Option>
             <Option value={2}>On</Option>
           </Select>
-        )}
       </FormItem>
       <Button
-        icon="plus"
         type="primary"
         onClick={okHandle}
         disabled={!form.isFieldsTouched()}
@@ -345,25 +273,21 @@ const VehicleControlExtensionForm = Form.create()(props => {
       >
         Update Control Extension
       </Button>
+      </Form>
     </div>
   )
 });
-
-
-const UpdateForm = Form.create()(props => {
-  const { form, handleUpdate, areas, record, changeLockStatus, updateLocation, alertVehicle, getVehicleStatus, restartVehicle } = props;
+const UpdateForm = (props => {
+  const { handleUpdate, areas, record, changeLockStatus, updateLocation, alertVehicle, getVehicleStatus, restartVehicle } = props;
+  const [form] = Form.useForm()
+  form.setFieldsValue(record)
   const okHandle = () => {
-    if (form.isFieldsTouched())
-      form.validateFields((err, fieldsValue) => {
-        if (err) return;
-        form.resetFields();
-
-        handleUpdate(record.id, fieldsValue);
-      });
+    form.submit()
   };
 
   return (
     <div>
+      <Form form={form} onFinish={()=>{handleUpdate(record.id, form.getFieldsValue(true))}}>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
@@ -374,24 +298,21 @@ const UpdateForm = Form.create()(props => {
         </div>
       </FormItem>
 
-      {errorStatus && (
         <FormItem
           labelCol={{ span: 5 }}
           wrapperCol={{ span: 15 }}
           label="Status"
+          name='errorStatus'
+          rules={
+            [
+              {
+                required: true,
+                message: "You have pick a area"
+              }
+            ]
+          }
         >
-          <div>
 
-
-            {form.getFieldDecorator("errorStatus", {
-              rules: [
-                {
-                  required: true,
-                  message: "You have pick a area"
-                }
-              ],
-              initialValue: record.errorStatus
-            })(
               <Select placeholder="select" style={{ width: "100%" }}>
 
                 <Option value={0} >Normal</Option>
@@ -408,11 +329,8 @@ const UpdateForm = Form.create()(props => {
 
 
               </Select>
-            )}
 
-          </div>
         </FormItem>
-      )}
 
       <FormItem
         labelCol={{ span: 5 }}
@@ -466,16 +384,17 @@ const UpdateForm = Form.create()(props => {
       </FormItem>
 
       {areas && (
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area">
-          {form.getFieldDecorator("areaId", {
-            rules: [
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} 
+          name='areaId'
+          rules={
+            [
               {
                 required: true,
                 message: "You have pick a area"
               }
-            ],
-            initialValue: record.areaId
-          })(
+            ]
+          }
+          label="Area">
             <Select placeholder="select" style={{ width: "100%" }}>
               {areas.map(area => (
                 <Option key={area.id} value={area.id}>
@@ -483,14 +402,12 @@ const UpdateForm = Form.create()(props => {
                 </Option>
               ))}
             </Select>
-          )}
         </FormItem>
       )}
 
-    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Provider">
-              {form.getFieldDecorator("provider", {            
-                initialValue: record.provider
-              })(
+    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} 
+      name='provider'
+      label="Provider">
                 <Select placeholder="select" style={{ width: "100%" }}>
                    <Option key={0} value={0}>
                       Omni
@@ -499,13 +416,11 @@ const UpdateForm = Form.create()(props => {
                       Meige
                     </Option>
                 </Select>
-              )}
             </FormItem>
 
       <Row>
         <Col>
           <Button
-            icon="plus"
             type="primary"
             onClick={okHandle}
             // disabled={!form.isFieldsTouched() && !authority.includes("update.vehicle.detail")}
@@ -514,7 +429,6 @@ const UpdateForm = Form.create()(props => {
             Update Vehicle
           </Button>
           <Button
-            icon="plus"
             type="primary"
             onClick={changeLockStatus}
             // disabled={!authority.includes("unlock.vehicle") }
@@ -523,7 +437,6 @@ const UpdateForm = Form.create()(props => {
             {(record.lockStatus === 1 ? "Unlock" : "Lock") + " Vehicle"}
           </Button>
           <Button
-            icon="plus"
             type="primary"
             onClick={alertVehicle}
             // disabled={!authority.includes("alert.vehicle")}
@@ -532,7 +445,6 @@ const UpdateForm = Form.create()(props => {
             Beep Remotely
           </Button>
           <Button
-            icon="plus"
             type="primary"
             onClick={updateLocation}
             // disabled={!authority.includes("update.vehicle.location")}
@@ -545,7 +457,6 @@ const UpdateForm = Form.create()(props => {
       <Row>
         <Col>
           <Button
-            icon="plus"
             type="primary"
             onClick={getVehicleStatus}
             // disabled={!form.isFieldsTouched() && !authority.includes("get.status")}
@@ -567,16 +478,10 @@ const UpdateForm = Form.create()(props => {
         </Col>
 
       </Row>
+      </Form>
     </div>
   );
 });
-
-
-
-@connect(({ coupons, areas, geo, loading }) => ({
-  areas,
-  loading: loading.models.areas
-}))
 class VehicleDetail extends PureComponent {
   state = {
     vehicleRides: null,
@@ -629,7 +534,7 @@ class VehicleDetail extends PureComponent {
       render: (text, record) => (
         <Fragment>
           {!record.end &&
-            authority.includes("end.vehicle.ride") && (
+            (
               <Popconfirm
                 title="Are you Sure？"
                 icon={
@@ -870,15 +775,17 @@ class VehicleDetail extends PureComponent {
 
   handleUpdate = (id, fields) => {
     const { dispatch, vehicleId, handleGetVehicles } = this.props;
-    dispatch({
-      type: "vehicles/update",
-      payload: fields,
-      id: id,
-      onSuccess: () => {
-        handleGetVehicles && handleGetVehicles();
-        this.handleGetVehicle(vehicleId);
-      }
-    });
+    // if(fields.errorStatus){
+      dispatch({
+        type: "vehicles/update",
+        payload: fields,
+        id: id,
+        onSuccess: () => {
+          handleGetVehicles && handleGetVehicles();
+          this.handleGetVehicle(vehicleId);
+        }
+      });
+    // }
   };
 
   redefineProperties = (object) => {
@@ -984,7 +891,51 @@ class VehicleDetail extends PureComponent {
       handleEndRide: this.handleEndRide,
       handleEndRideVisible: this.handleEndRideVisible
     };
+    const EndRideForm = (props => {
+      const {
+        isEndRideVisible,
+        handleEndRide,
+        handleEndRideVisible,
+        ride
+      } = props;
+      const [form] = Form.useForm()
+      const okHandle = () => {
+        form.submit()
+        // form.validateFields((err, fieldsValue) => {
+        //   if (err) return;
+        //   form.resetFields();
+        //   handleEndRide(ride.id, fieldsValue);
+        // });
+      };
+    
+      const minutes = Math.round((new Date() - new Date(ride.start)) / 60000); // This will give difference in milliseconds
+    
+      return (
+        <Modal
+          destroyOnClose
+          title="End Ride"
+          visible={isEndRideVisible}
+          forceRender
+          onOk={okHandle}
+          onCancel={() => handleEndRideVisible(false)}
+        >
+          <Form form={form} onFinish={()=>{handleEndRide(ride.id, form.getFieldsValue(true));}}>
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="Minutes"
+            name='minutes'
+          >
+            <InputNumber placeholder="Please Input" />
+          </FormItem>
+          </Form>
+        </Modal>
+      );
+    });
+    
+    
 
+    
     return (
       <Modal
         destroyOnClose
@@ -1069,5 +1020,10 @@ class VehicleDetail extends PureComponent {
     );
   }
 }
-
-export default VehicleDetail;
+const mapStateToProps = ({ coupons, areas, geo, loading }) => {
+  return {
+    areas,
+    loading: loading.models.areas
+    }
+}
+export default connect(mapStateToProps)(VehicleDetail) 

@@ -6,6 +6,7 @@ import Debounce from 'lodash-decorators/debounce';
 import Bind from 'lodash-decorators/bind';
 import styles from './index.less';
 
+
 export default class HeaderSearch extends PureComponent {
   static propTypes = {
     className: PropTypes.string,

@@ -24,12 +24,6 @@ const Option = Select.Option;
 
 const superAdminId = 1;
 
-@connect(({ roles, privileges, loading }) => ({
-  roles,
-  privileges,
-  loading: loading.models.roles && loading.models.privileges
-}))
-@Form.create()
 class Privilege extends PureComponent {
   state = {
     selectedRoleId: null,
@@ -100,7 +94,7 @@ class Privilege extends PureComponent {
     const privileges = role.privileges;
 
     const selectedRolePrivileges =
-      role.privileges !== null
+      role.privileges
         ? role.privileges.reduce((result, privilege) => {
             result[`${privilege.method} ${privilege.url}`] = privilege;
             return result;
@@ -165,7 +159,7 @@ class Privilege extends PureComponent {
   };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
+    // const { getFieldDecorator } = this.props.form;
 
     const { roles, privileges } = this.props;
 
@@ -245,7 +239,7 @@ class Privilege extends PureComponent {
               );
             })}
           <FormItem>
-            {authority.includes("update.role.privilege") &&
+            {
               selectedRoleId && (
                 <Button
                   onClick={this.handleSubmit}
@@ -260,5 +254,11 @@ class Privilege extends PureComponent {
     );
   }
 }
-
-export default Privilege;
+const mapStateToProps = ({ roles, privileges, loading }) => {
+  return {
+    roles,
+    privileges,
+    loading: loading.models.roles && loading.models.privileges
+      }
+}
+export default connect(mapStateToProps)(Privilege) 

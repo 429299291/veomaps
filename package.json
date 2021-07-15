@@ -30,7 +30,7 @@
     "@ant-design/icons": "^4.6.2",
     "@antv/data-set": "^0.9.6",
     "@babel/runtime": "^7.1.2",
-    "antd": "^3.10.0",
+    "antd": "^4.16.2",
     "babel-plugin-module-resolver": "^3.2.0",
     "bizcharts": "^3.2.2",
     "bizcharts-plugin-slider": "^2.0.3",
