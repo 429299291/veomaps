@@ -11,6 +11,7 @@ import {
   getAvailableMemberships,
   getCustomerTransactions,
   refund,
+  updateMembership,
   getTempCode
 } from "@/services/customer";
 import { message } from "antd";
@@ -56,6 +57,16 @@ export default {
         onSuccess && onSuccess(data);
       } else {
         message.error("Download Fail!");
+      }
+    },
+    *updateMembership({  customerId, params, onSuccess }, { call, put }) {
+      console.log('===');
+      const data = yield call(updateMembership, customerId, params);
+
+      if (data) {
+        onSuccess(data);
+      } else {
+        message.error(`Fail!`);
       }
     },
     *getTransactions({ customerId, onSuccess }, { call, put }) {
