@@ -106,7 +106,8 @@ const MembershipForm = (props => {
       </FormItem>
 
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is AutoRenew" name='autoRenew' valuePropName="checked">
-          <Checkbox value={true}/>
+      {/* <Checkbox value={true}/> */}
+      <Checkbox/>
       </FormItem>
 
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Is Paid By Balance" name='paidWithBalance' valuePropName="checked">
