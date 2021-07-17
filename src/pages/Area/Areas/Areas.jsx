@@ -139,7 +139,7 @@ const Areas = (props) => {
           freeMinutes:values.feature.freeRide.freeMinutes
         },
         regulation:  regulationDatas,
-        bikeLane:{
+        bikeLane:(!values.feature.bikeLane.enabled && !values.feature.bikeLane.geoJsonPath)?null:{
           enabled:values.feature.bikeLane.enabled,
           geoJsonPath:values.feature.bikeLane.geoJsonPath
         },
