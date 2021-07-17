@@ -22,9 +22,9 @@ import {
   Radio,
   Popconfirm,
   Table,
-  Spin,
   Checkbox,
-  Switch
+  Switch,
+  Spin
 } from "antd";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 import { getAuthority } from "@/utils/authority";
@@ -699,7 +699,6 @@ const RefundForm = (props => {
     </Modal>
   );
 });
-
 class CustomerDetail extends PureComponent {
   state = {
     customerCoupons: null,
@@ -922,8 +921,7 @@ class CustomerDetail extends PureComponent {
     this.handleGetCustomerDetail(customerId);
     this.handleGetCustomerRides(customerId);
     this.handleGetCustomerPayments(customerId);
-    this.handleGetCustomerMembership(customerId);
-    this.handleGetAvailableCustomerMemberships(customerId);
+    this.handleGetAvailableCustomerMemberships();
     this.handleGetCustomerTransactions(customerId);
     this.handleGetCustomerApprovedViolationCount(customerId);
   };
@@ -1088,18 +1086,6 @@ class CustomerDetail extends PureComponent {
   };
 
 
-  handleGetCustomerMembership = () => {
-    const { dispatch, customerId } = this.props;
-
-    dispatch({
-      type: "customers/getMembership",
-      customerId: customerId,
-      onSuccess: response => {
-        this.setState({customerMembership: response})
-      }
-    });
-  };
-
   handleGetCustomerTransactions = () => {
     const { dispatch, customerId } = this.props;
 
@@ -1112,7 +1098,7 @@ class CustomerDetail extends PureComponent {
     });
   };
 
-  handleGetAvailableCustomerMemberships = (onSuccess) => {
+  handleGetAvailableCustomerMemberships = onSuccess => {
     const { dispatch, customerId } = this.props;
     dispatch({
       type: "customers/getAvailableMemberships",
@@ -1215,9 +1201,363 @@ class CustomerDetail extends PureComponent {
         </Modal>
       );
     });
+    const UpdateForm = (props => {
+      const { handleUpdate, areas, record, customerActiveDays, customerApprovedViolationCount } = props;
+      const [form] = Form.useForm()
+      form.setFieldsValue(record)
+      const okHandle = () => {
+            handleUpdate(record.id, form.getFieldsValue(true));
+      };
+    
+      const checkMoneyFormat = (rule, value, callback) => {
+        if (isNumberRegex.test(value)) {
+          callback();
+          return;
+        }
+        callback("Credit Must be Number!");
+      };
+    
+      const checkEmailFormat = (rule, value, callback) => {
+        if (value === null || value === "" || isEmailRegex.test(value)) {
+          callback();
+          return;
+        }
+        callback("Please input correct email format");
+      };
+    
+    
+      return (
+        <div>
+          <Form form={form}>
+          <FormItem labelCol={{ span: 10}} wrapperCol={{ span: 10 }} label="Balance (Deposit + Ride Credit)">
+            <span> {record.deposit + record.rideCredit} </span>
+          </FormItem>
+        
+          <FormItem
+            labelCol={{ span: 10 }}
+            wrapperCol={{ span: 10 }}
+            label="Ride Credit Amount"
+            name='rideCredit'
+            rules={[{ validator: checkMoneyFormat }]}
+          >
+            <Input placeholder="Please Input" />
+          </FormItem>
+    
+          <FormItem
+            labelCol={{ span: 10 }}
+            wrapperCol={{ span: 10 }}
+            label="Deposit Amount"
+            name='deposit'
+            rules={[{ validator: checkMoneyFormat }]}
+          >
+            <Input placeholder="Please Input" />
+          </FormItem>
     
     
     
+          
+          <FormItem
+            labelCol={{ span: 10}}
+            wrapperCol={{ span: 10 }}
+            label="FULL NAME"
+            name='fullName'
+          >
+           <Input placeholder="Please Input" />
+          </FormItem>
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Email" name='email' rules={[{ validator: checkEmailFormat }]}>
+            <Input placeholder="Please Input" />
+          </FormItem>
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Email Status" name='emailStatus' >
+            <Select placeholder="select" style={{ width: "100%" }}>
+              <Option key={2} value={2}>
+                Educational
+              </Option>
+              <Option key={1} value={1}>
+                Normal
+              </Option>
+              <Option key={0} value={0}>
+                Unverified
+              </Option>
+            </Select>
+          </FormItem>
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Migrated" name='migrated'>
+            <Select placeholder="select" style={{ width: "100%" }}>
+              <Option key={1} value={true}>
+                Yes
+              </Option>
+              <Option key={0} value={false}>
+                No
+              </Option>
+            </Select>
+          </FormItem>
+    
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Low Income" name='lowIncome'>
+            <Select placeholder="select" style={{ width: "100%" }}>
+              <Option key={1} value={true}>
+                Yes
+              </Option>
+              <Option key={0} value={false}>
+                No
+              </Option>
+            </Select>
+          </FormItem>
+    
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Auto Reload" name='autoReloaded'>
+            <Select placeholder="select" style={{ width: "100%" }}>
+              <Option key={1} value={true}>
+                Yes
+              </Option>
+              <Option key={0} value={false}>
+                No
+              </Option>
+            </Select>
+          </FormItem>
+    
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Education Mode Activated" name='isEducationModeActivated'>
+            <Select placeholder="select" style={{ width: "100%" }}>
+              <Option key={1} value={true}>
+                Yes
+              </Option>
+              <Option key={0} value={false}>
+                No
+              </Option>
+            </Select>
+          </FormItem>
+    
+          {customerStatus && (
+            <FormItem
+              labelCol={{ span: 10 }}
+              wrapperCol={{ span: 10 }}
+              label="Status"
+              name='status'
+              rules={
+                [
+                  {
+                    required: true,
+                    message: "You have pick a status"
+                  }
+                ]
+              }
+            >
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  {customerStatus.map((status, index) => (
+                    <Option key={index} value={index}>
+                      {customerStatus[index]}
+                    </Option>
+                  ))}
+                </Select>
+            </FormItem>
+          )}
+    
+          {areas && (
+            <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Area" name='areaId' 
+              rules={
+                [
+                  {
+                    required: true,
+                    message: "You have pick a area"
+                  }
+                ]
+              }
+            >
+            
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  {areas.map(area => (
+                    <Option key={area.id} value={area.id}>
+                      {area.name}
+                    </Option>
+                  ))}
+                </Select>
+            </FormItem>
+          )}
+    
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Notes" name='notes'>
+            <TextArea placeholder="Please Input" />
+          </FormItem>
+    
+          <FormItem
+            labelCol={{ span: 10 }}
+            wrapperCol={{ span: 10 }}
+            label="Is Driver License Verified"
+            name='licenseStatus'
+          >
+            <Select>
+                <Option value={1}>Verified</Option>
+                <Option value={0}>Not Verified</Option>
+               </Select>
+          </FormItem>
+    
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10}} label="Phone Model">
+            <span> {record.phoneModel} </span>
+          </FormItem>
+          <FormItem labelCol={{ span: 10}} wrapperCol={{ span: 10 }} label="App Version">
+            <span> {record.appVersion} </span>
+          </FormItem>
+    
+          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Register Date">
+            <span> { moment(record.created).format("YYYY/MM/DD hh:mm:ss")} </span>
+          </FormItem>
+    
+            <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Active Days">
+              <span> {customerActiveDays} </span>
+            </FormItem> 
+    
+    
+    
+              <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Customer Approved Violation Count">
+                <span> {customerApprovedViolationCount} </span>
+              </FormItem> 
+          
+    
+          <Row>
+            <Col>
+              <Button
+                type="primary"
+                onClick={okHandle}
+              >
+                Update Customer
+              </Button>
+            </Col>
+          </Row>
+          </Form>
+        </div>
+      );
+    });
+    
+    const MembershipForm = (props => {
+      const { memberships, handleBuyMembership } = props;
+      const [form] = Form.useForm();
+      
+      const activeMembership = memberships.filter(m => m.activated).reduce((o , m) => m, null);
+
+      const [allowToBuy, setAllowToBuy] = useState(false); 
+
+      const [isLoading, setIsLoading] = useState(false);
+
+
+      const okHandle = () => {
+        let fieldsValue = form.getFieldsValue(true)
+        if(!fieldsValue.selectedMembership) return false
+        
+        setIsLoading(true);
+        const setNotLoadiing = () => setIsLoading(false);
+        handleBuyMembership(fieldsValue.selectedMembership, setNotLoadiing);
+    };
+
+      return (
+        <div>
+          {isLoading ?
+            <Spin size="large" />
+            :
+            <Form form={form}>
+            {memberships && (
+              <FormItem
+                labelCol={{ span: 5 }}
+                wrapperCol={{ span: 15 }}
+                label="Membership"
+                name='selectedMembership'
+              >
+                  <Select 
+                      placeholder="select" style={{ width: "100%" }} 
+                      // defaultValue ={activeMembership ? activeMembership.id : undefined}
+                      onChange={val => setAllowToBuy(!activeMembership && !!val)}    
+                      disabled={!!activeMembership}            
+                  >
+                    { (activeMembership ? [activeMembership] : memberships).map((membership, index) => (
+                      <Option key={index} value={membership.id}>
+                        { membership.name + "," + membership.description}
+                      </Option>
+                    ))}
+                  </Select>
+              </FormItem>
+            )}
+      
+      
+            <Row>
+              <Col>
+                <Button
+                  type="primary"
+                  onClick={okHandle}
+                  disabled={!allowToBuy}
+                >
+                  Buy Membership
+                </Button>
+              </Col>
+            </Row>
+            </Form>
+          }         
+        </div>
+      );
+    });
+    
+    const AddCouponForm = (props => {
+      const { coupons, handleAddCustomerCoupon } = props;
+      const [form]= Form.useForm();
+      return (
+        <div>
+          <Form form={form}>
+          {coupons && (
+            <FormItem
+              labelCol={{ span: 5 }}
+              wrapperCol={{ span: 15 }}
+              label="Coupon"
+              name='couponId'
+              rules={
+                [
+                  {
+                    required: true,
+                    message: "You have pick a coupon to add"
+                  }
+                ]
+              }
+            >
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  {coupons.map(coupon => (
+                    <Option key={coupon.id} value={coupon.id}>
+                      Name: <b> {coupon.name} </b> free minutes:{" "}
+                      {coupon.freeMinutes} Valid days: <b> {coupon.days} </b>
+                    </Option>
+                  ))}
+                </Select>
+            </FormItem>
+          )}
+    
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="Start Time"
+            name='start'
+            rules={
+              [
+                {
+                  required: true,
+                  message: "You have to pick a time to start!"
+                }
+              ]
+            }
+          >
+              <DatePicker
+                showTime
+                format="YYYY-MM-DD HH:mm:ss"
+                placeholder="Select Start Time"
+              />
+          </FormItem>
+    
+          <Row>
+            <Col>
+              <Button
+                type="primary"
+                onClick={() => handleAddCustomerCoupon(form.getFieldsValue(true))}
+                // disabled={!form.isFieldsTouched()}
+              >
+                Add Coupon
+              </Button>
+            </Col>
+          </Row>
+          </Form>
+        </div>
+      );
+    });
     return (
       <Modal
         destroyOnClose
@@ -1319,22 +1659,16 @@ class CustomerDetail extends PureComponent {
               </Card>
             )}
 
-            {
-            <Card title="Membership" style={{ marginTop: "2em" }}>
-              {customerMembership && Object.keys(customerMembership).map(
-                (key, index) => <div key={index}>
-                  {`${key} :  ${(key === 'startTime' || key === 'endTime') ? moment(customerMembership[key]).format("YYYY-MM-DD HH:mm:ss") : customerMembership[key]}`}
-                </div>
-              )}
-              {
+            {availableMemberships &&  
+              <Card title="Membership" style={{ marginTop: "2em" }}>
                 <MembershipForm
-                  memberships={availableMemberships}
-                  handleBuyMembership={this.handleBuyMembership}
-                />
-              }
-
-            </Card>
+                    memberships={availableMemberships}
+                    handleBuyMembership={this.handleBuyMembership}
+                  />
+              </Card>
             }
+          
+            
           </div>
         )}
       </Modal>

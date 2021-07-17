@@ -99,7 +99,7 @@ export async function updateMembership(customerId, params) {
   return request(`/admins/memberships/customers/${customerId}/buy`, {
     method: "POST",
     body: {
-      ...params
+      isAutoRenew: false
     }
   });
 }
