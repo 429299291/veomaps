@@ -94,6 +94,7 @@ export async function buyMembership(customerId, planId) {
     }
   });
 }
+
 export async function updateMembership(customerId, params) {
   return request(`/admins/memberships/customers/${customerId}/buy`, {
     method: "POST",
