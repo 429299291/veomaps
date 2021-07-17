@@ -125,7 +125,6 @@ export default {
     },
     *getAvailableMemberships({  customerId, onSuccess }, { call, put }) {
       const data = yield call(getAvailableMemberships, customerId);
-
       if (data) {
         onSuccess(data);
       }
