@@ -63,7 +63,6 @@ const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+
 const MembershipForm = (props => {
   const { memberships, handleBuyMembership } = props;
   const [form] = Form.useForm();
-  console.log(memberships);
   const activeMembership = memberships.filter(m => m.activated).reduce((o , m) => m, null);
 
   const [allowToBuy, setAllowToBuy] = useState(false); 
@@ -351,7 +350,6 @@ const UpdateForm = (props => {
 const AddCouponForm = (props => {
   const { coupons, handleAddCustomerCoupon } = props;
   const [form]= Form.useForm()    
-  console.log(coupons);
   return (
     <div>
       <Form form={form}>
@@ -1107,7 +1105,6 @@ class CustomerDetail extends PureComponent {
         this.setState({availableMemberships: response},onSuccess)
       }
     });
-    console.log(this.state.availableMemberships);
   };
 
 

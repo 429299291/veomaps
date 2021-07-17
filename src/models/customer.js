@@ -60,9 +60,7 @@ export default {
       }
     },
     *updateMembership({  customerId, params, onSuccess }, { call, put }) {
-      console.log('===');
       const data = yield call(updateMembership, customerId, params);
-
       if (data) {
         onSuccess(data);
       } else {
