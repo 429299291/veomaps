@@ -139,7 +139,7 @@ const Areas = (props) => {
           freeMinutes:values.feature.freeRide.freeMinutes
         },
         regulation:  regulationDatas,
-        bikeLane:{
+        bikeLane:(!values.feature.bikeLane.enabled && !values.feature.bikeLane.geoJsonPath)?null:{
           enabled:values.feature.bikeLane.enabled,
           geoJsonPath:values.feature.bikeLane.geoJsonPath
         },
@@ -444,8 +444,8 @@ const Areas = (props) => {
                 <Collapse defaultActiveKey={['0']} onChange={PanelCallback}>
                   <Panel header="show more control" key="1">
                   <Row>
-                  {/* <Divider>GoogleMap Configuration</Divider> */}
-                  {/* <Col span={12} >
+                  <Divider>GoogleMap Configuration</Divider>
+                  <Col span={12} >
                         <Form.Item 
                       {...tailLayout}
                             label="position lat"
@@ -464,7 +464,8 @@ const Areas = (props) => {
                           >
                           <Input/>
                         </Form.Item>
-                      </Col> */}
+                      </Col>
+                      <Divider>other Configuration</Divider>
                       <Col span={12}>
                         <Form.Item  label="Enable Membership" {...tailLayout} name={['feature', 'membershipEnabled']} valuePropName="checked">
                           <Switch size="small"/>
