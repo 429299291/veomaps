@@ -16,6 +16,7 @@ export default {
 
     effects: {
         *get({ payload }, { call, put }) {
+            if(!payload.areaId){return false}
             const response = yield call(getMessages, payload);
             if (response) {
                 yield put({
