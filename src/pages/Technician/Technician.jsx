@@ -75,7 +75,7 @@ const PhoneRegisterForm = (props => {
       <FormItem
         labelCol={{ span: 7 }}
         wrapperCol={{ span: 15 }}
-        label="First Name1"
+        label="First Name"
         name='firstName'
         rules={
           [
@@ -368,7 +368,6 @@ class Technician extends PureComponent {
   };
 
   handleSearch = fieldsValue => {
-
     const { dispatch, technicians } = this.props;
     const { filterCriteria } = this.state;
 

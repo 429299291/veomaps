@@ -37,6 +37,9 @@ const CreateForm = ((props) => {
     handleAdd(form.getFieldsValue(true));
     form.resetFields();
   };
+  const areaIdChange = (value) => {
+    console.log(value);
+  }
   return (
     <Modal
       destroyOnClose
@@ -58,16 +61,16 @@ const CreateForm = ((props) => {
             ]
           }
         >
-            <Select placeholder="select" style={{ width: '100%' }}>
+            <Select placeholder="select" style={{ width: '100%' }} onChange = {areaIdChange} >
               {areas.map(area => (
                 <Option key={area.id} value={area.id}>
                   {area.name}
                 </Option>
               ))}
-            </Select>,
+            </Select>
         </FormItem>
       )}
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Violation Type" name='messageType'>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Violation Type" name='type'>
         <Input placeholder="Please Input" />
       </FormItem>
 
@@ -117,7 +120,7 @@ const UpdateForm = ((props) => {
             },
           ]
         }
-      name='messageType'>
+      name='type'>
         <Input placeholder="Please Input" />
       </FormItem>
       <FormItem labelCol={{ span: 6 }} wrapperCol={{ span: 14 }} label="Message"
@@ -157,7 +160,7 @@ class Violation extends PureComponent {
     },
     {
       title: 'Message Type',
-      dataIndex: 'messageType',
+      dataIndex: 'type',
     },
     {
       title: 'Message',
@@ -239,6 +242,7 @@ class Violation extends PureComponent {
 
   handleAdd = (fields) => {
     const { dispatch } = this.props;
+    fields.active = true
     dispatch({
       type: 'violation/add',
       payload: fields,
