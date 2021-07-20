@@ -17,23 +17,17 @@ export default {
     effects: {
         *get({ payload }, { call, put }) {
             const response = yield call(getViolations, payload);
-
-            const total = yield call(countViolations, payload);
-
-        
-            if (response && total >= 0) {
-
+            if (response) {
                 yield put({
                     type: "save",
-                    data: response,
-                    total, total
+                    data: response.content,
+                    total:response.totalSize
                 });
             }
         },
         *getDetail({ id, onSuccess }, { call, put }) {
             const response = yield call(getViolationDatail, id);
-
-        
+            console.log(response);
             if (response ) {
                 onSuccess(response);
             }

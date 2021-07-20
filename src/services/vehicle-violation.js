@@ -2,9 +2,19 @@ import { stringify } from "qs";
 import request from "@/utils/request";
 
 
+// export async function getViolations(params) {
+//     return request(`/admins/violations?${stringify(params, { indices: false })}`, {
+//         method: "GET"
+//     })
+// }
 export async function getViolations(params) {
-    return request(`/admins/violations?${stringify(params, { indices: false })}`, {
-        method: "GET"
+    console.log(params);
+    return request(`/api/admins/violations/search`, {
+        method: "POST",
+        body:{
+            currentPage:params.currentPage,
+            pageSize:params.pageSize
+        }
     })
 }
 
