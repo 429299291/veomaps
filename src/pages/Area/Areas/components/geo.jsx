@@ -724,10 +724,10 @@ class geo extends PureComponent {
     const { dispatch, geo, selectedAreaId } = this.props;
 
     if (isEditingCenter) {
+      console.log(geo);
       if (geo.area) {
         const newArea = Object.assign({}, geo.area);
         newArea.center = editingCenter;
-
         dispatch({
           type: "geo/updateCenter",
           payload: newArea,

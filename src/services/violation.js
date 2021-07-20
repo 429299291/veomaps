@@ -10,32 +10,49 @@ export async function getMessage(id) {
 }
 
 export async function getMessages(params) {
-    return request(`/admins/custom-technician-messages?${stringify(params, { indices: false })}`, {
+    return request(`/api/admins/violations/types?${stringify(params, { indices: false })}`, {
         method: "GET"
     })
 }
+// export async function getMessages(params) {
+//     return request(`/api/admins/violations/search`, {
+//         method: "POST",
+//         body:{}
+//     })
+// }
 
+// export async function createMessage(message) {
+//     return request(`​/api/admins/violations/types`, {
+//         method: "POST",
+//         body: {
+//             ...message
+//         }
+//     })
+// }
 export async function createMessage(message) {
-    return request(`/admins/custom-technician-messages`, {
-        method: "POST",
-        body: {
+    return request(`/api/admins/violations/types`,{
+        method:'POST',
+        body:{
             ...message
-        }
-    })
+        }})
 }
-
 export async function getCustomerApprovedViolationCount(customerId) {
     return request(`/admins/customers/${customerId}/approved_violation_count`, {
         method: "GET",
     })
 }
 
-
-
-
+// export async function updateMessage(id, message) {
+//     return request(`/admins/custom-technician-messages/${id}`, {
+//         method: "PUT",
+//         body: {
+//             ...message
+//         }
+//     })
+// }
 export async function updateMessage(id, message) {
-    return request(`/admins/custom-technician-messages/${id}`, {
-        method: "PUT",
+    return request(`/api/admins/violations/types/${id}`, {
+        method: "PATCH",
         body: {
             ...message
         }

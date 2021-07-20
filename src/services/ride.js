@@ -6,6 +6,11 @@ export async function getAdminRides(params) {
     method: "GET"
   });
 }
+// export async function getAdminRides(params) {
+//   return request(`/api/admins/rides?${stringify(params, { indices: false })}`, {
+//     method: "GET"
+//   });
+// }
 
 export async function getAdminRidesTotal(params) {
   return request(

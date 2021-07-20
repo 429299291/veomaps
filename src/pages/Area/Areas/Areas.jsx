@@ -86,6 +86,11 @@ const Areas = (props) => {
         form.resetFields()
       }
     }else{
+      setRegulationDatas({
+        regulations:[],
+        displayDuringOnBoarding:false
+      })
+      setViolationFineDatas([])
       form.resetFields()
     }
     setIsDrawerVisible(true);
