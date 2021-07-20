@@ -50,7 +50,7 @@ const CreateForm = ((props) => {
       onCancel={() => handleModalVisible()}
     >
       <Form form={form}>
-      {areas && (
+      {/* {areas && (
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area"
           name='areaId'
           rules={
@@ -69,7 +69,7 @@ const CreateForm = ((props) => {
               ))}
             </Select>
         </FormItem>
-      )}
+      )} */}
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Violation Type" name='type'>
         <Input placeholder="Please Input" />
       </FormItem>
@@ -150,6 +150,7 @@ class Violation extends PureComponent {
     detailModalVisible: false,
     filterCriteria: {},
     selectedRecord: {},
+    addVisible:false
   };
 
   columns = [
@@ -210,6 +211,7 @@ class Violation extends PureComponent {
     getMessages = () => {
       const { dispatch, selectedAreaId } = this.props;
       const { filterCriteria } = this.state;
+      selectedAreaId ? this.setState({addVisible:true}) : this.setState({addVisible:false})
       dispatch({
         type: 'violation/get',
         payload: Object.assign({}, filterCriteria, { areaId: selectedAreaId }),
@@ -243,6 +245,7 @@ class Violation extends PureComponent {
   handleAdd = (fields) => {
     const { dispatch } = this.props;
     fields.active = true
+    fields.areaId = this.props.selectedAreaId
     dispatch({
       type: 'violation/add',
       payload: fields,
@@ -305,6 +308,7 @@ class Violation extends PureComponent {
             <div className={styles.tableListOperator}>
               <Button
                 type="primary"
+                style={this.state.addVisible?{display:'inline-block'}:{display:'none'}}
                 onClick={() => this.handleCreateModalVisible(true)}
               >
                 Add
