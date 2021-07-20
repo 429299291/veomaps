@@ -242,7 +242,6 @@ class Violation extends PureComponent {
 
   handleAdd = (fields) => {
     const { dispatch } = this.props;
-    console.log(fields);
     fields.active = true
     dispatch({
       type: 'violation/add',
