@@ -108,7 +108,7 @@ class UserLayout extends React.PureComponent {
       onFinishFailed={onFinishFailed}
     >
       <Form.Item
-        label="user name"
+        label="Email"
         name="email"
         rules={[
           {

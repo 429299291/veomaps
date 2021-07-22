@@ -53,6 +53,7 @@ import violation from '@/models/violation';
 import {formatPhoneNumber} from "@/utils/utils"
 
 import { getAuthority } from "@/utils/authority";
+import { reject } from 'lodash';
 
 const authority = getAuthority();
 
@@ -154,6 +155,8 @@ const UpdateForm = ((props) => {
   const {
     modalVisible,
     handleUpdate,
+    handleUpdateReject,
+    handleUpdateApprove,
     handleModalVisible,
     record,
     recordDetail
@@ -161,9 +164,10 @@ const UpdateForm = ((props) => {
   const [form] = Form.useForm()
   
   const validateFormAndUpdate = newState => {
+    // newState   2:approve  1:reject
       const fieldsValue = form.getFieldsValue(true)
         fieldsValue.type = newState;
-        handleUpdate(record.id, fieldsValue);
+        newState == 1 ? handleUpdateReject(record.id, fieldsValue) : handleUpdateApprove(record.id, fieldsValue)
         form.resetFields();
         handleModalVisible();
   };
@@ -245,7 +249,6 @@ const UpdateForm = ((props) => {
 
    const isReviewEditable = (record.status === violationStatusIndex.WAITING || record.status === violationStatusIndex.APPROVE);
 
-
   return (
     <Modal
       destroyOnClose
@@ -266,33 +269,33 @@ const UpdateForm = ((props) => {
 
       {
 
-        recordDetail && recordDetail.techPhone &&
+        recordDetail && recordDetail.phone &&
         <FormItem labelCol={{ span: 8}} wrapperCol={{ span: 12 }} label="Technician Number">
-            {<span>{recordDetail.techPhone}</span>}
+            {<span>{recordDetail.phone}</span>}
         </FormItem>
       }
       {
-        recordDetail && recordDetail.customerViolationCount >= 0 &&
+        recordDetail &&
         <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12}} label="Customer Violations">
             {<span>{recordDetail.customerViolationCount}</span>}
         </FormItem>
       }
       {
-        recordDetail && recordDetail.ride &&
+        recordDetail &&
         <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12}} label="Ride Start">
-            {<span>{moment(recordDetail.ride.start).format('YYYY-MM-DD HH:mm:ss') }</span>}
+            {<span>{moment(recordDetail.start).format('YYYY-MM-DD HH:mm:ss') }</span>}
         </FormItem>
       }
       {
-        recordDetail && recordDetail.ride  &&
+        recordDetail &&
         <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12}} label="Ride End">
-            {<span>{moment(recordDetail.ride.end).format('YYYY-MM-DD HH:mm:ss') }</span>}
+            {<span>{moment(recordDetail.end).format('YYYY-MM-DD HH:mm:ss') }</span>}
         </FormItem>
       }
       {
-        recordDetail && recordDetail.ride &&
+        recordDetail &&
         <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12}} label="Ride Duration">
-            {<span>{recordDetail.ride.minutes} mins</span>}
+            {<span>{recordDetail.minutes} mins</span>}
         </FormItem>
       }
       {
@@ -302,9 +305,9 @@ const UpdateForm = ((props) => {
         </FormItem>
       }
       {
-        recordDetail && recordDetail.techName &&
+        recordDetail && recordDetail.firstName &&
         <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12 }} label="Technician">
-            {<span>{recordDetail.techName}</span>}
+            {<span>{recordDetail.firstName+' '+recordDetail.lastName}</span>}
         </FormItem>
       }
 
@@ -317,9 +320,9 @@ const UpdateForm = ((props) => {
       }
 
       {
-        recordDetail && recordDetail.operatedBy && recordDetail.operatedBy.adminEmail &&
+        recordDetail && record.status >= 0 &&
         <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12 }} label={`${violationStatus[record.status].name} By`}>
-            {<span>{recordDetail.operatedBy.adminEmail}</span>}
+            {<span>{recordDetail.email}</span>}
         </FormItem>
       }
       {
@@ -338,18 +341,18 @@ const UpdateForm = ((props) => {
         <Col xs={24} sm={12}> 
         
             {
-            record.lat &&  record.lng &&
+            recordDetail && recordDetail.location &&
             <ViolationLocation 
              style={{height: "100px"}}
-              location={{lat: record.lat, lng: record.lng}}
+              location={{lat: recordDetail.location.lat, lng: recordDetail.location.lng}}
             />
 
             }
             {
-              recordDetail &&  recordDetail.imageUrl &&
+              recordDetail &&  recordDetail.downloadUrl &&
                 <Row style={{height: "420px", textAlign: "center"}}>
                           
-                  <img  src={recordDetail.imageUrl} style={{ maxWidth: "90%", maxHeight: "420px",  marginTop: "10px"}}  />
+                  <img  src={recordDetail.downloadUrl} style={{ maxWidth: "90%", maxHeight: "420px",  marginTop: "10px"}}  />
 
                 </Row>
             }
@@ -403,7 +406,7 @@ class VehicleViolation extends PureComponent {
         <div>
           <a onClick={() => { 
               this.handleUpdateModalVisible(true, record);
-              this.handleGetViolationDetail(record.id);
+              this.handleGetViolationDetail(record.id,record);
               }}>
                 Review
           </a>
@@ -543,8 +546,8 @@ class VehicleViolation extends PureComponent {
   };
 
 
-  handleGetViolationDetail = id => {
-      
+  handleGetViolationDetail = (id,record) => {
+      console.log(record);
       const { dispatch } = this.props;
       
       dispatch({
@@ -552,14 +555,30 @@ class VehicleViolation extends PureComponent {
         id: id,
         onSuccess: detail => this.setState({selectedRecordDetail: detail}),
       });
+      // dispatch({
+      //   type: 'vehicleViolations/getDetail',
+      //   id: id,
+      //   onSuccess: detail => this.setState({selectedRecordDetail: detail}),
+      // });
 
   }
 
 
-  handleUpdate = (id, fields) => {
+  handleUpdateReject = (id, fields) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'vehicleViolations/update',
+      type: 'vehicleViolations/updateReject',
+      payload: fields,
+      id,
+      onSuccess: this.getViolations,
+    });
+
+    this.handleUpdateModalVisible();
+  };
+  handleUpdateApprove = (id, fields) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'vehicleViolations/updateApprove',
       payload: fields,
       id,
       onSuccess: this.getViolations,
@@ -608,7 +627,7 @@ class VehicleViolation extends PureComponent {
 
   render() {
     const {
-      areas, violations , loading, total
+      areas, violations , loading, total,technicians
     } = this.props;
     const {
       updateModalVisible,
@@ -629,6 +648,8 @@ class VehicleViolation extends PureComponent {
     const updateMethods = {
       handleModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
+      handleUpdateApprove : this.handleUpdateApprove,
+      handleUpdateReject : this.handleUpdateReject
     };
 
     const pagination = {
@@ -691,13 +712,14 @@ class VehicleViolation extends PureComponent {
     );
   }
 }
-const mapStateToProps = ({ areas, loading, vehicleViolations }) => {
+const mapStateToProps = ({ areas, loading, vehicleViolations,technicians }) => {
   return {
     areas,
     violations: vehicleViolations.data,
     loading: loading.models.vehicleViolations,
     total: vehicleViolations.total,
     selectedAreaId: areas.selectedAreaId,
+    technicians:technicians.newData
       }
 }
 export default connect(mapStateToProps)(VehicleViolation) 
