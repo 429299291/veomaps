@@ -372,7 +372,16 @@ class VehicleViolation extends PureComponent {
     selectedVehicleId: undefined,
     modalVisible: false,
     updateModalVisible: false,
-    filterCriteria: {currentPage: 1, pageSize: 10 },
+    filterCriteria: {
+      pagination:{
+        page: 1, 
+        pageSize: 10,
+        sort:{
+          direction:'desc',
+          sortBy:"created"
+        }
+      }
+    },
     selectedRecord: {},
     selectedRecordDetail: {},
   };
@@ -520,12 +529,19 @@ class VehicleViolation extends PureComponent {
       }
       }
       let values = Object.assign({}, {
-        currentPage: 1,
-        pageSize: 10,
+        pagination:{
+          page: 1,
+          pageSize: 10,
+          sort:{
+            direction:'desc',
+            sortBy:"created"
+          }
+        }
       }, 
       filterCriteria, 
       fieldsValue);
       selectedAreaId ? values = {...values,areaIds:[selectedAreaId]} : null
+      values.pagination.page = values.pagination.page-1
     dispatch({
         type: 'vehicleViolations/get',
         payload: values,
@@ -596,13 +612,12 @@ class VehicleViolation extends PureComponent {
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
-
     const params = {
       ...filterCriteria
     };
 
-    params.currentPage = pagination.current;
-    params.pageSize = pagination.pageSize;
+    params.pagination.page = pagination.current;
+    params.pagination.pageSize = pagination.pageSize;
 
     if (sorter.field) {
       params.sorter = `${sorter.field}_${sorter.order}`;
@@ -617,8 +632,16 @@ class VehicleViolation extends PureComponent {
     const { filterCriteria } = this.state;
 
     const params = {
-      currentPage: 1,
-      pageSize: filterCriteria.pageSize
+      // page: 1,
+      // pageSize: filterCriteria.pageSize,
+      pagination:{
+        page: 1,
+        pageSize: filterCriteria.pageSize,
+        sort:{
+          direction:'desc',
+          sortBy:"created"
+        }
+      }
     };
 
     this.setState(
@@ -657,8 +680,8 @@ class VehicleViolation extends PureComponent {
 
     const pagination = {
         defaultCurrent: 1,
-        current: filterCriteria.currentPage,
-        pageSize: filterCriteria.pageSize,
+        current: filterCriteria.pagination.page+1,
+        pageSize: filterCriteria.pagination.pageSize,
         total: total
       };
 
