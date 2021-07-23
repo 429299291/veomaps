@@ -449,7 +449,6 @@ class VehicleViolation extends PureComponent {
           })
         }
       });
-      console.log(record);
       dispatch({
         type: "rides/getRoute",
         rideId: record.id,
@@ -642,7 +641,6 @@ class VehicleViolation extends PureComponent {
       selectedRidePathInfo,
       rideImageUrl
     } = this.state;
-    console.log(selectedRidePathInfo);
     const updateMethods = {
       handleModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
