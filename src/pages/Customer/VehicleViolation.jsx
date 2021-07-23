@@ -518,7 +518,6 @@ class VehicleViolation extends PureComponent {
       }, 
       filterCriteria, 
       fieldsValue);
-
     dispatch({
         type: 'vehicleViolations/get',
         payload: values,

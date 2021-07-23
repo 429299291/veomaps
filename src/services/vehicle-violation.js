@@ -10,9 +10,13 @@ import request from "@/utils/request";
 export async function getViolations(params) {
     return request(`/api/admins/violations/search`, {
         method: "POST",
-        body:{
+        body:params.areaId?{
             currentPage:params.currentPage,
-            pageSize:params.pageSize
+            pageSize:params.pageSize,
+            areaIds:[params.areaId]
+        }:{
+            currentPage:params.currentPage,
+            pageSize:params.pageSize,
         }
     })
 }
