@@ -502,22 +502,31 @@ class VehicleViolation extends PureComponent {
       }
       if (fieldsValue.timeRange) {
       
-        fieldsValue.start = moment(fieldsValue.timeRange[0]).utcOffset(0).format(
-          "MM-DD-YYYY HH:mm:ss"
-        );
-        fieldsValue.end = moment(fieldsValue.timeRange[1]).utcOffset(0).format(
-          "MM-DD-YYYY HH:mm:ss"
-        );
-        fieldsValue.timeRange = undefined;
+        // fieldsValue.timeRange.start = moment(fieldsValue.timeRange[0]).utcOffset(0).format(
+        //   "MM-DD-YYYY HH:mm:ss"
+        // );
+        // fieldsValue.timeRange.end = moment(fieldsValue.timeRange[1]).utcOffset(0).format(
+        //   "MM-DD-YYYY HH:mm:ss"
+        // );
+        // fieldsValue.timeRange = undefined;
+        fieldsValue.timeRange={
+          start:moment(fieldsValue.timeRange[0]).utcOffset(0).format(
+            "YYYY-MM-DDTHH:mm:ssZ"
+          ),
+          end:moment(fieldsValue.timeRange[1]).utcOffset(0).format(
+            "YYYY-MM-DDTHH:mm:ssZ"
+          )
+        }
       }
       }
-      const values = Object.assign({}, {
+      console.log(fieldsValue);
+      let values = Object.assign({}, {
         currentPage: 1,
         pageSize: 10,
-        areaId: selectedAreaId
       }, 
       filterCriteria, 
       fieldsValue);
+      selectedAreaId ? values = {...values,areaIds:[selectedAreaId]} : null
     dispatch({
         type: 'vehicleViolations/get',
         payload: values,
