@@ -1,6 +1,7 @@
 import {
   createTechnician,
   getTechnicians,
+  getTechniciansAll,
   removeTechnician,
   upadteTechnician
 } from "@/services/technician";
@@ -10,7 +11,8 @@ export default {
   namespace: "technicians",
 
   state: {
-    data: []
+    data: [],
+    newData:[]
   },
 
   effects: {
@@ -26,6 +28,17 @@ export default {
         payload: Array.isArray(response) ? response : []
       });
 
+      if (typeof onSuccess === "function") {
+        onSuccess();
+      }
+    },
+    // api2
+    *getAll({payload,onSuccess},{call,put}){
+      const {content} = yield call(getTechniciansAll);
+      yield put({
+        type: "save",
+        payload: Array.isArray(content) ? content : []
+      });
       if (typeof onSuccess === "function") {
         onSuccess();
       }
@@ -60,6 +73,12 @@ export default {
         ...state,
         data: action.payload
       };
-    }
+    },
+    newSave(state, action) {
+      return {
+        ...state,
+        newData: action.payload
+      };
+    },
   }
 };

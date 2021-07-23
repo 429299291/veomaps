@@ -106,14 +106,14 @@ export default function request(url, options) {
       const status = e.name;
 
       if (status === 401) {
-        window.g_app._store.dispatch({
-          type: "login/logout"
-        });
-        localStorage.removeItem(ACCESS_TOKEN);
-        localStorage.removeItem(TOKEN_CREATE_DATE);
-        localStorage.removeItem("veoride-authority");
-        router.push("/user/login");
-        return;
+        // window.g_app._store.dispatch({
+        //   type: "login/logout"
+        // });
+        // localStorage.removeItem(ACCESS_TOKEN);
+        // localStorage.removeItem(TOKEN_CREATE_DATE);
+        // localStorage.removeItem("veoride-authority");
+        // router.push("/user/login");
+        // return;
       }
       // environment should not be used
       if (status === 403) {
