@@ -473,7 +473,7 @@ class Customer extends PureComponent {
     expandForm: false,
     selectedRows: [],
     customerCoupons: null,
-    filterCriteria: { currentPage: 1, pageSize: 10 },
+    filterCriteria: { page: 1, pageSize: 10 },
     selectedRecord: {},
     genTempCodeModalVisible: false,
     tempCode: null
@@ -542,12 +542,15 @@ class Customer extends PureComponent {
   handleGetCustomers = () => {
     const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
-
+    const data = {pagination:filterCriteria}
+    console.log(data);
     dispatch({
       type: "customers/get",
-      payload: selectedAreaId
-        ? Object.assign({}, filterCriteria, { areaId: selectedAreaId })
-        : filterCriteria
+      payload: Object.assign(selectedAreaId?{areaIds:[selectedAreaId]}:{},{pagination:filterCriteria},)
+        
+
+      
+      // selectedAreaId ? Object.assign({}, filterCriteria, { areaId: selectedAreaId }) : filterCriteria
     });
   };
 
@@ -568,7 +571,7 @@ class Customer extends PureComponent {
       ...filterCriteria
     };
 
-    params.currentPage = pagination.current;
+    params.page = pagination.current;
     params.pageSize = pagination.pageSize;
 
     if (sorter.field) {
@@ -583,7 +586,7 @@ class Customer extends PureComponent {
     const { filterCriteria } = this.state;
 
     const params = {
-      currentPage: 1,
+      page: 1,
       pageSize: filterCriteria.pageSize
     };
 
@@ -609,7 +612,7 @@ class Customer extends PureComponent {
       }
 
       const values = Object.assign({}, filterCriteria, fieldsValue, {
-        currentPage: 1,
+        page: 1,
         pageSize: 10
       });
       if(/[0-9]()/.test(values.nameOrPhoneOrEmail) &&
@@ -751,7 +754,7 @@ class Customer extends PureComponent {
         fieldsValue,
         { areaId: selectedAreaId },
         {
-          currentPage: null,
+          page: null,
           pageSize: null
         }
       );
@@ -817,7 +820,7 @@ class Customer extends PureComponent {
 
     const pagination = {
       defaultCurrent: 1,
-      current: filterCriteria.currentPage,
+      current: filterCriteria.page,
       pageSize: filterCriteria.pageSize,
       total: customers.total
     };

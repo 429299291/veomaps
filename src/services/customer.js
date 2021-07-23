@@ -1,9 +1,17 @@
 import { stringify } from "qs";
 import request from "@/utils/request";
 
+// export async function getAdminCustomers(params) {
+//   return request(`/admins/customers?${stringify(params, { indices: false })}`, {
+//     method: "GET"
+//   });
+// }
 export async function getAdminCustomers(params) {
-  return request(`/admins/customers?${stringify(params, { indices: false })}`, {
-    method: "GET"
+  return request(`/api/admins/customers/search`, {
+    method: "POST",
+    body:{
+      ...params
+    }
   });
 }
 

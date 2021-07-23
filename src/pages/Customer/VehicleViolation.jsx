@@ -519,7 +519,6 @@ class VehicleViolation extends PureComponent {
         }
       }
       }
-      console.log(fieldsValue);
       let values = Object.assign({}, {
         currentPage: 1,
         pageSize: 10,
