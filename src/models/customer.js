@@ -26,18 +26,19 @@ export default {
 
   effects: {
     *get({ payload }, { call, put }) {
-      const total = yield call(getAdminCustomersTotal, payload);
+      // const total = yield call(getAdminCustomersTotal, payload);
 
-      const data = yield call(getAdminCustomers, payload);
+      let Alldata = yield call(getAdminCustomers, payload);
+      const data = Alldata.content
+
 
       if (Array.isArray(data)) {
         data.map(bike => (bike.key = bike.id));
       }
-
       yield put({
         type: "save",
         data: Array.isArray(data) ? data : [],
-        total: total
+        total: Alldata.totalSize
       });
     },
     *getTempCode({phoneNumber, onSuccess}, { call, put }) {

@@ -21,7 +21,6 @@ export default {
 
     effects: {
         *get({ payload }, { call, put }) {
-            console.log(payload);
             const response = yield call(getViolations, payload);
             if (response) {
                 yield put({
