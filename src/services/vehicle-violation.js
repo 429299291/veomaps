@@ -8,12 +8,26 @@ import request from "@/utils/request";
 //     })
 // }
 export async function getViolations(params) {
+    console.log(params);
     return request(`/api/admins/violations/search`, {
         method: "POST",
-        body:{
-            currentPage:params.currentPage,
-            pageSize:params.pageSize
-        }
+        body:params
+        // body:params.areaId?{
+        //     currentPage:params.currentPage,
+        //     pageSize:params.pageSize,
+        //     areaIds:[params.areaId],
+        //     timeRange:{
+        //         start:params.start,
+        //         end:params.end
+        //     }
+        // }:{
+        //     currentPage:params.currentPage,
+        //     pageSize:params.pageSize,
+        //     timeRange:{
+        //         start:params.start,
+        //         end:params.end
+        //     }
+        // }
     })
 }
 
