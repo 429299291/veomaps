@@ -34,14 +34,13 @@ export default {
             const response = yield call(getViolationDatail, id);
             const technicianResponseAll = yield call(getTechniciansAll, response.violationTechnicianInfo.technicianId,);
             const technicianResponse = yield call(getTechnicians, response.violationTechnicianInfo.technicianId,);
-            console.log(technicianResponse);
             const rideResponse = yield call(getRideBillingInfo, response.violationRideInfo.rideId,);
               const customerResponse = yield call(getCustomerDetail, response.violationCustomerInfo.customerId,);
               const allResponse = Object.assign(response,rideResponse.ride,technicianResponse,
                 // technicianResponseAll.content.filter(data=>{return data.id == response.violationTechnicianInfo.technicianId})[0]
                 )
-              console.log(customerResponse);
-              console.log(allResponse);
+            //   console.log(customerResponse);
+            //   console.log(allResponse);
               onSuccess(allResponse);
         },
         /////

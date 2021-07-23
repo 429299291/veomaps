@@ -166,7 +166,7 @@ const UpdateForm = ((props) => {
   const validateFormAndUpdate = newState => {
     // newState   2:approve  1:reject
       const fieldsValue = form.getFieldsValue(true)
-        fieldsValue.type = newState;
+        // fieldsValue.type = newState;
         newState == 1 ? handleUpdateReject(record.id, fieldsValue) : handleUpdateApprove(record.id, fieldsValue)
         form.resetFields();
         handleModalVisible();
@@ -262,10 +262,11 @@ const UpdateForm = ((props) => {
       <Form form={form}>
       <Row>
         <Col xs={24} sm={12} style={{height: "90%"}}> 
-
-        <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12 }} label="Technician Note">
-        {<span>{record.techNote}</span>}
-      </FormItem>
+        {recordDetail && recordDetail.violationTechnicianInfo &&
+          <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12 }} label="Technician Note">
+          {<span>{recordDetail.violationTechnicianInfo.technicianNote}</span>}
+          </FormItem>
+        }
 
       {
 
@@ -413,8 +414,8 @@ class VehicleViolation extends PureComponent {
           <Divider  type="vertical" />
           <a onClick={() => { 
                 this.props.dispatch({
-                  type: "rides/detail",
-                  id: record.rideId,
+                  type: "rides/violationRideDetail",
+                  id: record.id,
                   onSuccess: result => this.handleRideModalVisible(true, result),
                   onError: () => {
                     message.error("backend error: can't get ride detail.")
@@ -448,7 +449,7 @@ class VehicleViolation extends PureComponent {
           })
         }
       });
-
+      console.log(record);
       dispatch({
         type: "rides/getRoute",
         rideId: record.id,
@@ -495,7 +496,6 @@ class VehicleViolation extends PureComponent {
     getViolations = (fieldsValue) => {
       const { dispatch, selectedAreaId } = this.props;
       const { filterCriteria } = this.state;
-      console.log(fieldsValue);
 
       if(fieldsValue){
         if (filterCriteria.phone === "") {
@@ -547,7 +547,6 @@ class VehicleViolation extends PureComponent {
 
 
   handleGetViolationDetail = (id,record) => {
-      console.log(record);
       const { dispatch } = this.props;
       
       dispatch({
@@ -643,8 +642,7 @@ class VehicleViolation extends PureComponent {
       selectedRidePathInfo,
       rideImageUrl
     } = this.state;
-
-
+    console.log(selectedRidePathInfo);
     const updateMethods = {
       handleModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
