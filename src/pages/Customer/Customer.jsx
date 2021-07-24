@@ -87,7 +87,7 @@ const RenderSimpleForm=(props)=> {
               <Input placeholder="PHONE" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
           </FormItem>
         </Col>
-        <Col span={5} style={{padding: '0 18px'}}>
+        {/* <Col span={5} style={{padding: '0 18px'}}>
           <FormItem label="Status" name='queryStatus'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 {queryStatus.map((status, index) => (
@@ -97,15 +97,12 @@ const RenderSimpleForm=(props)=> {
                 ))}
               </Select>
           </FormItem>
-        </Col>
-        <Col span={6}>
+        </Col> */}
+        {/* <Col span={6}>
           <FormItem label="Registered" name='created'>
             <RangePicker />
           </FormItem>
-        </Col>
-      {/* </Row> */}
-
-      {/* <Row span={16}> */}
+        </Col> */}
         <Col span={3}>
           {`count: ${props.customerTotal}`}
         </Col>
@@ -547,6 +544,7 @@ class Customer extends PureComponent {
     const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
     const data = {pagination:filterCriteria.pagination}
+    filterCriteria.pagination.page-1<0 ?filterCriteria.pagination.page = 0 : filterCriteria.pagination.page = filterCriteria.pagination.page-1
     dispatch({
       type: "customers/get",
       payload: Object.assign(selectedAreaId?{areaIds:[selectedAreaId]}:{},filterCriteria)
@@ -571,8 +569,8 @@ class Customer extends PureComponent {
       ...filterCriteria
     };
 
-    params.page = pagination.current;
-    params.pageSize = pagination.pageSize;
+    params.pagination.page = pagination.current;
+    params.pagination.pageSize = pagination.pageSize;
 
     if (sorter.field) {
       params.sorter = `${sorter.field}_${sorter.order}`;
@@ -586,8 +584,10 @@ class Customer extends PureComponent {
     const { filterCriteria } = this.state;
 
     const params = {
-      page: 1,
-      pageSize: filterCriteria.pageSize
+      pagination:{
+        page: 1,
+        pageSize: filterCriteria.pagination.pageSize
+      }
     };
 
     this.setState(
@@ -610,10 +610,12 @@ class Customer extends PureComponent {
           .format("MM-DD-YYYY HH:mm:ss");
         fieldsValue.created = undefined;
       }
-
+      console.log(filterCriteria);
       const values = Object.assign({}, filterCriteria, fieldsValue, {
-        page: 1,
-        pageSize: 10
+        pagination:{
+          page: 0,
+          pageSize: 10
+        }
       });
       if(/[0-9]()/.test(values.phone) &&
       !values.phone.includes("@")
@@ -820,8 +822,8 @@ class Customer extends PureComponent {
 
     const pagination = {
       defaultCurrent: 1,
-      current: filterCriteria.page,
-      pageSize: filterCriteria.pageSize,
+      current: filterCriteria.pagination.page+1,
+      pageSize: filterCriteria.pagination.pageSize,
       total: customers.total
     };
     return (
