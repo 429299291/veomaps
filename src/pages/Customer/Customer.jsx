@@ -83,8 +83,8 @@ const RenderSimpleForm=(props)=> {
     <Form layout="inline" form={form}>
       {/* <Row gutter={{ md: 8, lg: 24, xl: 48 }}> */}
         <Col span={5} style={{padding: '0 18px 0 0'}}>
-          <FormItem label="Keywords" name='nameOrPhoneOrEmail'> 
-              <Input placeholder="PHONE NAME EMAIL" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
+          <FormItem label="phone" name='phone'> 
+              <Input placeholder="PHONE" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
           </FormItem>
         </Col>
         <Col span={5} style={{padding: '0 18px'}}>
@@ -473,7 +473,11 @@ class Customer extends PureComponent {
     expandForm: false,
     selectedRows: [],
     customerCoupons: null,
-    filterCriteria: { page: 1, pageSize: 10 },
+    filterCriteria: { 
+        pagination:{
+          page: 1, pageSize: 10
+      } 
+    },
     selectedRecord: {},
     genTempCodeModalVisible: false,
     tempCode: null
@@ -542,14 +546,10 @@ class Customer extends PureComponent {
   handleGetCustomers = () => {
     const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
-    const data = {pagination:filterCriteria}
-    console.log(data);
+    const data = {pagination:filterCriteria.pagination}
     dispatch({
       type: "customers/get",
-      payload: Object.assign(selectedAreaId?{areaIds:[selectedAreaId]}:{},{pagination:filterCriteria},)
-        
-
-      
+      payload: Object.assign(selectedAreaId?{areaIds:[selectedAreaId]}:{},filterCriteria)
       // selectedAreaId ? Object.assign({}, filterCriteria, { areaId: selectedAreaId }) : filterCriteria
     });
   };
@@ -615,10 +615,10 @@ class Customer extends PureComponent {
         page: 1,
         pageSize: 10
       });
-      if(/[0-9]()/.test(values.nameOrPhoneOrEmail) &&
-      !values.nameOrPhoneOrEmail.includes("@")
+      if(/[0-9]()/.test(values.phone) &&
+      !values.phone.includes("@")
       ) {
-        values.nameOrPhoneOrEmail = values.nameOrPhoneOrEmail.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
+        values.phone = values.phone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
       }
       this.setState(
         {
