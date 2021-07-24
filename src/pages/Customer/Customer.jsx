@@ -87,7 +87,7 @@ const RenderSimpleForm=(props)=> {
               <Input placeholder="PHONE" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
           </FormItem>
         </Col>
-        <Col span={5} style={{padding: '0 18px'}}>
+        {/* <Col span={5} style={{padding: '0 18px'}}>
           <FormItem label="Status" name='queryStatus'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 {queryStatus.map((status, index) => (
@@ -97,12 +97,12 @@ const RenderSimpleForm=(props)=> {
                 ))}
               </Select>
           </FormItem>
-        </Col>
-        <Col span={6}>
+        </Col> */}
+        {/* <Col span={6}>
           <FormItem label="Registered" name='created'>
             <RangePicker />
           </FormItem>
-        </Col>
+        </Col> */}
       {/* </Row> */}
 
       {/* <Row span={16}> */}
