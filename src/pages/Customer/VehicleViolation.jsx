@@ -541,7 +541,8 @@ class VehicleViolation extends PureComponent {
       filterCriteria, 
       fieldsValue);
       selectedAreaId ? values = {...values,areaIds:[selectedAreaId]} : null
-      values.pagination.page = values.pagination.page-1
+      console.log(filterCriteria);
+      values.pagination.page-1<0 ?values.pagination.page = 0 : values.pagination.page = values.pagination.page-1
     dispatch({
         type: 'vehicleViolations/get',
         payload: values,
@@ -636,7 +637,7 @@ class VehicleViolation extends PureComponent {
       // pageSize: filterCriteria.pageSize,
       pagination:{
         page: 1,
-        pageSize: filterCriteria.pageSize,
+        pageSize: filterCriteria.pagination.pageSize,
         sort:{
           direction:'desc',
           sortBy:"created"
