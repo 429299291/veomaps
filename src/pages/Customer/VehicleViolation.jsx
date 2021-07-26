@@ -157,7 +157,7 @@ const UpdateForm = ((props) => {
     handleUpdate,
     handleUpdateReject,
     handleUpdateApprove,
-    handleModalVisible,
+    handleModalVisible, 
     record,
     recordDetail
   } = props;
@@ -167,7 +167,14 @@ const UpdateForm = ((props) => {
     // newState   2:approve  1:reject
       const fieldsValue = form.getFieldsValue(true)
         // fieldsValue.type = newState;
-        newState == 1 ? handleUpdateReject(record.id, fieldsValue) : handleUpdateApprove(record.id, fieldsValue)
+        if(newState == 1){
+          handleUpdateReject(record.id, fieldsValue)
+        }else if(newState == 2){
+          handleUpdateApprove(record.id, fieldsValue)
+        }else if(newState == 3){
+          console.log('none api');
+        }
+        // newState == 1 ? handleUpdateReject(record.id, fieldsValue) : handleUpdateApprove(record.id, fieldsValue)
         form.resetFields();
         handleModalVisible();
   };
@@ -541,7 +548,6 @@ class VehicleViolation extends PureComponent {
       filterCriteria, 
       fieldsValue);
       selectedAreaId ? values = {...values,areaIds:[selectedAreaId]} : null
-      console.log(filterCriteria);
       values.pagination.page-1<0 ?values.pagination.page = 0 : values.pagination.page = values.pagination.page-1
     dispatch({
         type: 'vehicleViolations/get',
