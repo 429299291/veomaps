@@ -39,7 +39,6 @@ export default {
   effects: {
     *get({ payload }, { call, put }) {
       //const total = yield call(countVehicles, payload);
-
       const result = yield call(getVehicles, payload);
 
       if (Array.isArray(result.content)) {

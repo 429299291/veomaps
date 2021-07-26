@@ -1,12 +1,29 @@
 import { stringify } from "qs";
 import request from "@/utils/request";
 
+// export async function getTechnicians(params) {
+//   return request(
+//     `/admins/technicians?${stringify(params, { indices: false })}`,
+//     {
+//       method: "GET"
+//     }
+//   );
+// }
 export async function getTechnicians(params) {
   return request(
-    `/admins/technicians?${stringify(params, { indices: false })}`,
+    `/api/admins/technicians/${params}`,
     {
       method: "GET"
     }
+  );
+}
+//api2
+export async function getTechniciansAll(params) {
+  console.log('all');
+  return request(`/api/admins/technicians/search`,{
+    method:'POST',
+    body:{}
+  }
   );
 }
 

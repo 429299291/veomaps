@@ -13,6 +13,9 @@ import {
   getRefundCalculateResult,
   getRideBillingInfo
 } from "@/services/ride";
+import {
+  getViolationDatail
+} from '@/services/vehicle-violation';
 import { message } from "antd";
 
 export default {
@@ -42,6 +45,16 @@ export default {
     },
     *detail({ id, onSuccess, onError }, { call, put }) {
       const result = yield call(getRideDetail, id);
+      if (result) {
+        onSuccess(result);
+      } else {
+        onError();
+      }
+    },
+    *violationRideDetail({ id, onSuccess, onError }, { call, put }) {
+      console.log(id);
+      const response = yield call(getViolationDatail, id);
+      const result = yield call(getRideDetail, response.violationRideInfo.rideId,);
       if (result) {
         onSuccess(result);
       } else {
@@ -115,7 +128,8 @@ export default {
     },
     *getRoute({ rideId, onSuccess, onFail }, { call, put }) {
       const path = yield call(getRideRoute, rideId);
-
+      console.log('path');
+      console.log(path);
       if (path && typeof path === "object") {
         onSuccess(path);
       }
