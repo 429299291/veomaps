@@ -53,6 +53,7 @@ import violation from '@/models/violation';
 import {formatPhoneNumber} from "@/utils/utils"
 
 import { getAuthority } from "@/utils/authority";
+import { reject } from 'lodash';
 
 const authority = getAuthority();
 
@@ -154,16 +155,28 @@ const UpdateForm = ((props) => {
   const {
     modalVisible,
     handleUpdate,
-    handleModalVisible,
+    handleUpdateReject,
+    handleUpdateRevert,
+    handleUpdateApprove,
+    handleModalVisible, 
     record,
     recordDetail
   } = props;
   const [form] = Form.useForm()
   
   const validateFormAndUpdate = newState => {
+    // newState   2:approve  1:reject
       const fieldsValue = form.getFieldsValue(true)
-        fieldsValue.type = newState;
-        handleUpdate(record.id, fieldsValue);
+        // fieldsValue.type = newState;
+        if(newState == 1){
+          // handleUpdateReject(record.id, fieldsValue)
+          console.log('none reject api');
+        }else if(newState == 2){
+          handleUpdateApprove(record.id, fieldsValue)
+        }else if(newState == 3){
+          handleUpdateRevert(record.id, fieldsValue)
+        }
+        // newState == 1 ? handleUpdateReject(record.id, fieldsValue) : handleUpdateApprove(record.id, fieldsValue)
         form.resetFields();
         handleModalVisible();
   };
@@ -245,7 +258,6 @@ const UpdateForm = ((props) => {
 
    const isReviewEditable = (record.status === violationStatusIndex.WAITING || record.status === violationStatusIndex.APPROVE);
 
-
   return (
     <Modal
       destroyOnClose
@@ -259,40 +271,41 @@ const UpdateForm = ((props) => {
       <Form form={form}>
       <Row>
         <Col xs={24} sm={12} style={{height: "90%"}}> 
-
-        <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12 }} label="Technician Note">
-        {<span>{record.techNote}</span>}
-      </FormItem>
+        {recordDetail && recordDetail.violationTechnicianInfo &&
+          <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12 }} label="Technician Note">
+          {<span>{recordDetail.violationTechnicianInfo.technicianNote}</span>}
+          </FormItem>
+        }
 
       {
 
-        recordDetail && recordDetail.techPhone &&
+        recordDetail && recordDetail.phone &&
         <FormItem labelCol={{ span: 8}} wrapperCol={{ span: 12 }} label="Technician Number">
-            {<span>{recordDetail.techPhone}</span>}
+            {<span>{recordDetail.phone}</span>}
         </FormItem>
       }
       {
-        recordDetail && recordDetail.customerViolationCount >= 0 &&
+        recordDetail &&
         <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12}} label="Customer Violations">
             {<span>{recordDetail.customerViolationCount}</span>}
         </FormItem>
       }
       {
-        recordDetail && recordDetail.ride &&
+        recordDetail &&
         <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12}} label="Ride Start">
-            {<span>{moment(recordDetail.ride.start).format('YYYY-MM-DD HH:mm:ss') }</span>}
+            {<span>{moment(recordDetail.start).format('YYYY-MM-DD HH:mm:ss') }</span>}
         </FormItem>
       }
       {
-        recordDetail && recordDetail.ride  &&
+        recordDetail &&
         <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12}} label="Ride End">
-            {<span>{moment(recordDetail.ride.end).format('YYYY-MM-DD HH:mm:ss') }</span>}
+            {<span>{moment(recordDetail.end).format('YYYY-MM-DD HH:mm:ss') }</span>}
         </FormItem>
       }
       {
-        recordDetail && recordDetail.ride &&
+        recordDetail &&
         <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12}} label="Ride Duration">
-            {<span>{recordDetail.ride.minutes} mins</span>}
+            {<span>{recordDetail.minutes} mins</span>}
         </FormItem>
       }
       {
@@ -302,9 +315,9 @@ const UpdateForm = ((props) => {
         </FormItem>
       }
       {
-        recordDetail && recordDetail.techName &&
+        recordDetail && recordDetail.firstName &&
         <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12 }} label="Technician">
-            {<span>{recordDetail.techName}</span>}
+            {<span>{recordDetail.firstName+' '+recordDetail.lastName}</span>}
         </FormItem>
       }
 
@@ -317,9 +330,9 @@ const UpdateForm = ((props) => {
       }
 
       {
-        recordDetail && recordDetail.operatedBy && recordDetail.operatedBy.adminEmail &&
+        recordDetail && record.status >= 0 &&
         <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12 }} label={`${violationStatus[record.status].name} By`}>
-            {<span>{recordDetail.operatedBy.adminEmail}</span>}
+            {<span>{recordDetail.email}</span>}
         </FormItem>
       }
       {
@@ -338,18 +351,18 @@ const UpdateForm = ((props) => {
         <Col xs={24} sm={12}> 
         
             {
-            record.lat &&  record.lng &&
+            recordDetail && recordDetail.location &&
             <ViolationLocation 
              style={{height: "100px"}}
-              location={{lat: record.lat, lng: record.lng}}
+              location={{lat: recordDetail.location.lat, lng: recordDetail.location.lng}}
             />
 
             }
             {
-              recordDetail &&  recordDetail.imageUrl &&
+              recordDetail &&  recordDetail.downloadUrl &&
                 <Row style={{height: "420px", textAlign: "center"}}>
                           
-                  <img  src={recordDetail.imageUrl} style={{ maxWidth: "90%", maxHeight: "420px",  marginTop: "10px"}}  />
+                  <img  src={recordDetail.downloadUrl} style={{ maxWidth: "90%", maxHeight: "420px",  marginTop: "10px"}}  />
 
                 </Row>
             }
@@ -368,7 +381,16 @@ class VehicleViolation extends PureComponent {
     selectedVehicleId: undefined,
     modalVisible: false,
     updateModalVisible: false,
-    filterCriteria: {currentPage: 1, pageSize: 10 },
+    filterCriteria: {
+      pagination:{
+        page: 1, 
+        pageSize: 10,
+        sort:{
+          direction:'desc',
+          sortBy:"created"
+        }
+      }
+    },
     selectedRecord: {},
     selectedRecordDetail: {},
   };
@@ -403,15 +425,15 @@ class VehicleViolation extends PureComponent {
         <div>
           <a onClick={() => { 
               this.handleUpdateModalVisible(true, record);
-              this.handleGetViolationDetail(record.id);
+              this.handleGetViolationDetail(record.id,record);
               }}>
                 Review
           </a>
           <Divider  type="vertical" />
           <a onClick={() => { 
                 this.props.dispatch({
-                  type: "rides/detail",
-                  id: record.rideId,
+                  type: "rides/violationRideDetail",
+                  id: record.id,
                   onSuccess: result => this.handleRideModalVisible(true, result),
                   onError: () => {
                     message.error("backend error: can't get ride detail.")
@@ -445,7 +467,6 @@ class VehicleViolation extends PureComponent {
           })
         }
       });
-
       dispatch({
         type: "rides/getRoute",
         rideId: record.id,
@@ -492,7 +513,6 @@ class VehicleViolation extends PureComponent {
     getViolations = (fieldsValue) => {
       const { dispatch, selectedAreaId } = this.props;
       const { filterCriteria } = this.state;
-      console.log(fieldsValue);
 
       if(fieldsValue){
         if (filterCriteria.phone === "") {
@@ -500,23 +520,37 @@ class VehicleViolation extends PureComponent {
       }
       if (fieldsValue.timeRange) {
       
-        fieldsValue.start = moment(fieldsValue.timeRange[0]).utcOffset(0).format(
-          "MM-DD-YYYY HH:mm:ss"
-        );
-        fieldsValue.end = moment(fieldsValue.timeRange[1]).utcOffset(0).format(
-          "MM-DD-YYYY HH:mm:ss"
-        );
-        fieldsValue.timeRange = undefined;
+        // fieldsValue.timeRange.start = moment(fieldsValue.timeRange[0]).utcOffset(0).format(
+        //   "MM-DD-YYYY HH:mm:ss"
+        // );
+        // fieldsValue.timeRange.end = moment(fieldsValue.timeRange[1]).utcOffset(0).format(
+        //   "MM-DD-YYYY HH:mm:ss"
+        // );
+        // fieldsValue.timeRange = undefined;
+        fieldsValue.timeRange={
+          start:moment(fieldsValue.timeRange[0]).utcOffset(0).format(
+            "YYYY-MM-DDTHH:mm:ss"
+          ),
+          end:moment(fieldsValue.timeRange[1]).utcOffset(0).format(
+            "YYYY-MM-DDTHH:mm:ss"
+          )
+        }
       }
       }
-      const values = Object.assign({}, {
-        currentPage: 1,
-        pageSize: 10,
-        areaId: selectedAreaId
+      let values = Object.assign({}, {
+        pagination:{
+          page: 1,
+          pageSize: 10,
+          sort:{
+            direction:'desc',
+            sortBy:"created"
+          }
+        }
       }, 
       filterCriteria, 
       fieldsValue);
-
+      selectedAreaId ? values = {...values,areaIds:[selectedAreaId]} : null
+      values.pagination.page-1<0 ?values.pagination.page = 0 : values.pagination.page = values.pagination.page-1
     dispatch({
         type: 'vehicleViolations/get',
         payload: values,
@@ -543,8 +577,7 @@ class VehicleViolation extends PureComponent {
   };
 
 
-  handleGetViolationDetail = id => {
-      
+  handleGetViolationDetail = (id,record) => {
       const { dispatch } = this.props;
       
       dispatch({
@@ -552,14 +585,40 @@ class VehicleViolation extends PureComponent {
         id: id,
         onSuccess: detail => this.setState({selectedRecordDetail: detail}),
       });
+      // dispatch({
+      //   type: 'vehicleViolations/getDetail',
+      //   id: id,
+      //   onSuccess: detail => this.setState({selectedRecordDetail: detail}),
+      // });
 
   }
-
-
-  handleUpdate = (id, fields) => {
+  handleUpdateRevert = (id, fields) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'vehicleViolations/update',
+      type: 'vehicleViolations/updateRevert',
+      payload: fields,
+      id,
+      onSuccess: this.getViolations,
+    });
+
+    this.handleUpdateModalVisible();
+  };
+
+  handleUpdateReject = (id, fields) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'vehicleViolations/updateReject',
+      payload: fields,
+      id,
+      onSuccess: this.getViolations,
+    });
+
+    this.handleUpdateModalVisible();
+  };
+  handleUpdateApprove = (id, fields) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'vehicleViolations/updateApprove',
       payload: fields,
       id,
       onSuccess: this.getViolations,
@@ -572,13 +631,12 @@ class VehicleViolation extends PureComponent {
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
-
     const params = {
       ...filterCriteria
     };
 
-    params.currentPage = pagination.current;
-    params.pageSize = pagination.pageSize;
+    params.pagination.page = pagination.current;
+    params.pagination.pageSize = pagination.pageSize;
 
     if (sorter.field) {
       params.sorter = `${sorter.field}_${sorter.order}`;
@@ -593,8 +651,16 @@ class VehicleViolation extends PureComponent {
     const { filterCriteria } = this.state;
 
     const params = {
-      currentPage: 1,
-      pageSize: filterCriteria.pageSize
+      // page: 1,
+      // pageSize: filterCriteria.pageSize,
+      pagination:{
+        page: 1,
+        pageSize: filterCriteria.pagination.pageSize,
+        sort:{
+          direction:'desc',
+          sortBy:"created"
+        }
+      }
     };
 
     this.setState(
@@ -608,7 +674,7 @@ class VehicleViolation extends PureComponent {
 
   render() {
     const {
-      areas, violations , loading, total
+      areas, violations , loading, total,technicians
     } = this.props;
     const {
       updateModalVisible,
@@ -624,17 +690,18 @@ class VehicleViolation extends PureComponent {
       selectedRidePathInfo,
       rideImageUrl
     } = this.state;
-
-
     const updateMethods = {
       handleModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
+      handleUpdateApprove : this.handleUpdateApprove,
+      handleUpdateReject : this.handleUpdateReject,
+      handleUpdateRevert : this.handleUpdateRevert
     };
 
     const pagination = {
         defaultCurrent: 1,
-        current: filterCriteria.currentPage,
-        pageSize: filterCriteria.pageSize,
+        current: filterCriteria.pagination.page+1,
+        pageSize: filterCriteria.pagination.pageSize,
         total: total
       };
 
@@ -691,13 +758,14 @@ class VehicleViolation extends PureComponent {
     );
   }
 }
-const mapStateToProps = ({ areas, loading, vehicleViolations }) => {
+const mapStateToProps = ({ areas, loading, vehicleViolations,technicians }) => {
   return {
     areas,
     violations: vehicleViolations.data,
     loading: loading.models.vehicleViolations,
     total: vehicleViolations.total,
     selectedAreaId: areas.selectedAreaId,
+    technicians:technicians.newData
       }
 }
 export default connect(mapStateToProps)(VehicleViolation) 
