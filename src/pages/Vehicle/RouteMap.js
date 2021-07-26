@@ -23,10 +23,8 @@ const RouteMap = compose(
     withGoogleMap
   )(props => {
     const { path, fences, distance} = props;
-  
-  
-    const center = path[Math.round(path.length / 2)];
-  
+    // const center = path[Math.round(path.length / 2)];
+    const center = path[Math.round(path.length / 2)] ? path[Math.round(path.length / 2)] : path[0];
     const dashLineDot = {
       path: window.google.maps.SymbolPath.CIRCLE,
       fillOpacity: 1,

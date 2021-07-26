@@ -322,7 +322,7 @@ class Technician extends PureComponent {
     const { filterCriteria } = this.state;
 
     dispatch({
-      type: "technicians/get",
+      type: "technicians/getAll",
       payload: selectedAreaId
         ? Object.assign({}, filterCriteria, { areaId: selectedAreaId })
         : filterCriteria,
@@ -331,7 +331,7 @@ class Technician extends PureComponent {
   };
 
   getNameByAreaId = areaId => {
-    const  areas = this.props.areas.allAreas;
+    const  areas = this.props.areas.data;
     if (areas.length === 0) return "";
     else return areas.find(area => area.id === areaId).name;
   };

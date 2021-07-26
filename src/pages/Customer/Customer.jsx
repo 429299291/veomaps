@@ -70,7 +70,8 @@ const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+
 
 const customerStatus = ["NORMAL", "FROZEN", "ERROR"];
 
-const queryStatus = ["FROZEN"];
+// const queryStatus = ["FROZEN"];
+const queryStatus = ["NORMAL","FROZEN"];
 
 const authority = getAuthority();
 const RenderSimpleForm=(props)=> {
@@ -83,12 +84,12 @@ const RenderSimpleForm=(props)=> {
     <Form layout="inline" form={form}>
       {/* <Row gutter={{ md: 8, lg: 24, xl: 48 }}> */}
         <Col span={5} style={{padding: '0 18px 0 0'}}>
-          <FormItem label="Keywords" name='nameOrPhoneOrEmail'> 
-              <Input placeholder="PHONE NAME EMAIL" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
+          <FormItem label="phone" name='phone'> 
+              <Input placeholder="PHONE" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
           </FormItem>
         </Col>
         <Col span={5} style={{padding: '0 18px'}}>
-          <FormItem label="Status" name='queryStatus'>
+          <FormItem label="Status" name='status'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 {queryStatus.map((status, index) => (
                   <Option key={index} value={index}>
@@ -103,9 +104,6 @@ const RenderSimpleForm=(props)=> {
             <RangePicker />
           </FormItem>
         </Col>
-      {/* </Row> */}
-
-      {/* <Row span={16}> */}
         <Col span={3}>
           {`count: ${props.customerTotal}`}
         </Col>
@@ -473,7 +471,11 @@ class Customer extends PureComponent {
     expandForm: false,
     selectedRows: [],
     customerCoupons: null,
-    filterCriteria: { currentPage: 1, pageSize: 10 },
+    filterCriteria: { 
+        pagination:{
+          page: 1, pageSize: 10
+      } 
+    },
     selectedRecord: {},
     genTempCodeModalVisible: false,
     tempCode: null
@@ -542,12 +544,12 @@ class Customer extends PureComponent {
   handleGetCustomers = () => {
     const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
-
+    const data = {pagination:filterCriteria.pagination}
+    filterCriteria.pagination.page-1<0 ?filterCriteria.pagination.page = 0 : filterCriteria.pagination.page = filterCriteria.pagination.page-1
     dispatch({
       type: "customers/get",
-      payload: selectedAreaId
-        ? Object.assign({}, filterCriteria, { areaId: selectedAreaId })
-        : filterCriteria
+      payload: Object.assign(selectedAreaId?{areaIds:[selectedAreaId]}:{},filterCriteria)
+      // selectedAreaId ? Object.assign({}, filterCriteria, { areaId: selectedAreaId }) : filterCriteria
     });
   };
 
@@ -568,8 +570,8 @@ class Customer extends PureComponent {
       ...filterCriteria
     };
 
-    params.currentPage = pagination.current;
-    params.pageSize = pagination.pageSize;
+    params.pagination.page = pagination.current;
+    params.pagination.pageSize = pagination.pageSize;
 
     if (sorter.field) {
       params.sorter = `${sorter.field}_${sorter.order}`;
@@ -583,8 +585,10 @@ class Customer extends PureComponent {
     const { filterCriteria } = this.state;
 
     const params = {
-      currentPage: 1,
-      pageSize: filterCriteria.pageSize
+      pagination:{
+        page: 1,
+        pageSize: filterCriteria.pagination.pageSize
+      }
     };
 
     this.setState(
@@ -596,26 +600,34 @@ class Customer extends PureComponent {
   };
 
   handleSearch = fieldsValue => {
-
     const { filterCriteria } = this.state;
       if (fieldsValue.created) {
-        fieldsValue.registerStart = moment(fieldsValue.created[0])
+        // fieldsValue.registerStart = moment(fieldsValue.created[0])
+        //   .utcOffset(0)
+        //   .format("YYYY-MM-DDTHH:mm:ssZ");
+        // fieldsValue.registerEnd = moment(fieldsValue.created[1])
+        //   .utcOffset(0)
+        //   .format("YYYY-MM-DDTHH:mm:ssZ");
+        fieldsValue.timeRange = {
+          start:moment(fieldsValue.created[0])
           .utcOffset(0)
-          .format("MM-DD-YYYY HH:mm:ss");
-        fieldsValue.registerEnd = moment(fieldsValue.created[1])
+          .format("YYYY-MM-DDTHH:mm:ss"),
+          end:moment(fieldsValue.created[1])
           .utcOffset(0)
-          .format("MM-DD-YYYY HH:mm:ss");
+          .format("YYYY-MM-DDTHH:mm:ss")
+        }
         fieldsValue.created = undefined;
       }
-
       const values = Object.assign({}, filterCriteria, fieldsValue, {
-        currentPage: 1,
-        pageSize: 10
+        pagination:{
+          page: 0,
+          pageSize: 10
+        }
       });
-      if(/[0-9]()/.test(values.nameOrPhoneOrEmail) &&
-      !values.nameOrPhoneOrEmail.includes("@")
+      if(/[0-9]()/.test(values.phone) &&
+      !values.phone.includes("@")
       ) {
-        values.nameOrPhoneOrEmail = values.nameOrPhoneOrEmail.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
+        values.phone = values.phone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
       }
       this.setState(
         {
@@ -751,7 +763,7 @@ class Customer extends PureComponent {
         fieldsValue,
         { areaId: selectedAreaId },
         {
-          currentPage: null,
+          page: null,
           pageSize: null
         }
       );
@@ -817,8 +829,8 @@ class Customer extends PureComponent {
 
     const pagination = {
       defaultCurrent: 1,
-      current: filterCriteria.currentPage,
-      pageSize: filterCriteria.pageSize,
+      current: filterCriteria.pagination.page+1,
+      pageSize: filterCriteria.pagination.pageSize,
       total: customers.total
     };
     return (
