@@ -156,6 +156,7 @@ const UpdateForm = ((props) => {
     modalVisible,
     handleUpdate,
     handleUpdateReject,
+    handleUpdateRevert,
     handleUpdateApprove,
     handleModalVisible, 
     record,
@@ -168,11 +169,12 @@ const UpdateForm = ((props) => {
       const fieldsValue = form.getFieldsValue(true)
         // fieldsValue.type = newState;
         if(newState == 1){
-          handleUpdateReject(record.id, fieldsValue)
+          // handleUpdateReject(record.id, fieldsValue)
+          console.log('none reject api');
         }else if(newState == 2){
           handleUpdateApprove(record.id, fieldsValue)
         }else if(newState == 3){
-          console.log('none api');
+          handleUpdateRevert(record.id, fieldsValue)
         }
         // newState == 1 ? handleUpdateReject(record.id, fieldsValue) : handleUpdateApprove(record.id, fieldsValue)
         form.resetFields();
@@ -590,7 +592,17 @@ class VehicleViolation extends PureComponent {
       // });
 
   }
+  handleUpdateRevert = (id, fields) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'vehicleViolations/updateRevert',
+      payload: fields,
+      id,
+      onSuccess: this.getViolations,
+    });
 
+    this.handleUpdateModalVisible();
+  };
 
   handleUpdateReject = (id, fields) => {
     const { dispatch } = this.props;
@@ -682,7 +694,8 @@ class VehicleViolation extends PureComponent {
       handleModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
       handleUpdateApprove : this.handleUpdateApprove,
-      handleUpdateReject : this.handleUpdateReject
+      handleUpdateReject : this.handleUpdateReject,
+      handleUpdateRevert : this.handleUpdateRevert
     };
 
     const pagination = {

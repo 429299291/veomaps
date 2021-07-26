@@ -56,7 +56,14 @@ export async function countViolations(params) {
 //         body: body
 //     })
 // }
+//???
 export async function updateViolationReject(id, body) {
+    return request(`/api/admins/violations/${id}/invert`, {
+        method: "POST",
+        body: body
+    })
+}
+export async function updateViolationRevert(id, body) {
     return request(`/api/admins/violations/${id}/invert`, {
         method: "POST",
         body: body
