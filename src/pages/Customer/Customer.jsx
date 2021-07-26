@@ -70,7 +70,8 @@ const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+
 
 const customerStatus = ["NORMAL", "FROZEN", "ERROR"];
 
-const queryStatus = ["FROZEN"];
+// const queryStatus = ["FROZEN"];
+const queryStatus = ["NORMAL","FROZEN"];
 
 const authority = getAuthority();
 const RenderSimpleForm=(props)=> {
@@ -87,8 +88,8 @@ const RenderSimpleForm=(props)=> {
               <Input placeholder="PHONE" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
           </FormItem>
         </Col>
-        {/* <Col span={5} style={{padding: '0 18px'}}>
-          <FormItem label="Status" name='queryStatus'>
+        <Col span={5} style={{padding: '0 18px'}}>
+          <FormItem label="Status" name='status'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 {queryStatus.map((status, index) => (
                   <Option key={index} value={index}>
@@ -97,12 +98,12 @@ const RenderSimpleForm=(props)=> {
                 ))}
               </Select>
           </FormItem>
-        </Col> */}
-        {/* <Col span={6}>
+        </Col>
+        <Col span={6}>
           <FormItem label="Registered" name='created'>
             <RangePicker />
           </FormItem>
-        </Col> */}
+        </Col>
         <Col span={3}>
           {`count: ${props.customerTotal}`}
         </Col>
@@ -599,18 +600,24 @@ class Customer extends PureComponent {
   };
 
   handleSearch = fieldsValue => {
-
     const { filterCriteria } = this.state;
       if (fieldsValue.created) {
-        fieldsValue.registerStart = moment(fieldsValue.created[0])
+        // fieldsValue.registerStart = moment(fieldsValue.created[0])
+        //   .utcOffset(0)
+        //   .format("YYYY-MM-DDTHH:mm:ssZ");
+        // fieldsValue.registerEnd = moment(fieldsValue.created[1])
+        //   .utcOffset(0)
+        //   .format("YYYY-MM-DDTHH:mm:ssZ");
+        fieldsValue.timeRange = {
+          start:moment(fieldsValue.created[0])
           .utcOffset(0)
-          .format("MM-DD-YYYY HH:mm:ss");
-        fieldsValue.registerEnd = moment(fieldsValue.created[1])
+          .format("YYYY-MM-DDTHH:mm:ss"),
+          end:moment(fieldsValue.created[1])
           .utcOffset(0)
-          .format("MM-DD-YYYY HH:mm:ss");
+          .format("YYYY-MM-DDTHH:mm:ss")
+        }
         fieldsValue.created = undefined;
       }
-      console.log(filterCriteria);
       const values = Object.assign({}, filterCriteria, fieldsValue, {
         pagination:{
           page: 0,

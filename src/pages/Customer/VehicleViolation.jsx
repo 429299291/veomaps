@@ -520,10 +520,10 @@ class VehicleViolation extends PureComponent {
         // fieldsValue.timeRange = undefined;
         fieldsValue.timeRange={
           start:moment(fieldsValue.timeRange[0]).utcOffset(0).format(
-            "YYYY-MM-DDTHH:mm:ssZ"
+            "YYYY-MM-DDTHH:mm:ss"
           ),
           end:moment(fieldsValue.timeRange[1]).utcOffset(0).format(
-            "YYYY-MM-DDTHH:mm:ssZ"
+            "YYYY-MM-DDTHH:mm:ss"
           )
         }
       }
