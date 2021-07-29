@@ -514,7 +514,6 @@ class VehicleViolation extends PureComponent {
       const { dispatch, selectedAreaId } = this.props;
       const { filterCriteria } = this.state;
       fieldsValue ? this.setState({searchOldData:fieldsValue}) : null
-      console.log(this.state.searchOldData);
       if(fieldsValue){
         if (filterCriteria.phone === "") {
           filterCriteria.phone = null;
@@ -650,7 +649,7 @@ class VehicleViolation extends PureComponent {
   handleFormReset = () => {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
-
+    this.setState({searchOldData:{}}) 
     const params = {
       // page: 1,
       // pageSize: filterCriteria.pageSize,
