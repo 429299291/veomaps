@@ -16,9 +16,19 @@ export async function getVehicles(params) {
   });
 }
 
+// export async function getVehicleLocations(params) {
+//   console.log('---');
+//   return request(`/admins/vehicles/locations?${stringify(params, { indices: false })}`, {
+//     method: "GET"
+//   });
+// }
 export async function getVehicleLocations(params) {
-  return request(`/admins/vehicles/locations?${stringify(params, { indices: false })}`, {
-    method: "GET"
+  console.log(params);
+  return request(`/api/admins/vehicles/${params.vehicleNumber}/location`, {
+    method: "POST",
+    body:{
+      ...params
+    }
   });
 }
 

@@ -117,15 +117,15 @@ const hours = ["12AM", "1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "
 
 const RenderSimpleForm=(props)=> {
   const [form] = Form.useForm()
-  const handleSearch=()=>{
-    form.submit()
-  }
+  // const handleSearch=()=>{
+  //   form.submit()
+  // }
   const handleFormReset = ()=>{
     props.handleFormReset()
     form.resetFields()
   }
   return (
-    <Form onSubmit={handleSearch} layout="inline" form={form} onFinish={()=>{props.handleSearch(form.getFieldsValue(true))}}>
+    <Form layout="inline" form={form}>
       <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
         <Col md={8} sm={24}>
           <FormItem label="Keywords" name='numberOrImei'>
@@ -157,7 +157,7 @@ const RenderSimpleForm=(props)=> {
 
       <div style={{ overflow: "hidden" }}>
         <div style={{ float: "right", marginBottom: 24 }}>
-              <Button type="primary" htmlType="submit">
+              <Button onClick={()=>{props.handleSearch(form.getFieldsValue(true))}}>
                 Search
               </Button>
               <Button style={{ marginLeft: 8 }} onClick={handleFormReset}>
@@ -1261,13 +1261,7 @@ class Vehicle extends PureComponent {
         }
         
       } else {
-console.log(fieldsValue);
-        values = Object.assign({}, filterCriteria, fieldsValue, {
-          // currentPage: 1,
-          // pageSize: 10,
-         
-          areaId: selectedAreaId ? selectedAreaId: null
-        });
+        values = Object.assign({}, filterCriteria, fieldsValue);
 
         if (values.connected !== null && values.connected !== undefined) {
           values.connectStatus = values.connected ? "1" : "0";
@@ -1297,7 +1291,7 @@ console.log(fieldsValue);
       }
     if(!fieldsValue){
       values={
-        areaIds: null,
+        areaIds: selectedAreaId ? [selectedAreaId] : [],
         idleQuery: null,
         imei: null,
         pagination: {page: 0, pageSize: 10},
@@ -1500,7 +1494,7 @@ console.log(fieldsValue);
     const { dispatch, selectedAreaId } = this.props;
 
     const { filterCriteria } = this.state;
-
+    console.log(filterCriteria);
     dispatch({
       type: "vehicles/getVehicleLocation",
       payload: filterCriteria,
