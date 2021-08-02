@@ -993,7 +993,7 @@ class Ride extends PureComponent {
         ride,
       } = props;
       const [form] = Form.useForm()
-      form.setFieldsValue(ride)
+      form.setFieldsValue({"minutes": ride.minutes})
       const okHandle = () => {
         form.submit()
         // form.validateFields((err, fieldsValue) => {

@@ -302,12 +302,12 @@ const UpdateForm = (props => {
       <FormItem
         labelCol={{ span: 10 }}
         wrapperCol={{ span: 10 }}
-        label="Is Driver License Verified"
-        name='licenseStatus'
+        label="Is Age Verified"
+        name='ageValidated'
       >
         <Select>
-            <Option value={1}>Verified</Option>
-            <Option value={0}>Not Verified</Option>
+            <Option value={true}>Verified</Option>
+            <Option value={false}>Not Verified</Option>
            </Select>
       </FormItem>
 
@@ -1277,7 +1277,7 @@ class CustomerDetail extends PureComponent {
               </Option>
             </Select>
           </FormItem>
-          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Migrated" name='migrated'>
+          {/* <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Migrated" name='migrated'>
             <Select placeholder="select" style={{ width: "100%" }}>
               <Option key={1} value={true}>
                 Yes
@@ -1286,7 +1286,7 @@ class CustomerDetail extends PureComponent {
                 No
               </Option>
             </Select>
-          </FormItem>
+          </FormItem> */}
     
           <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Low Income" name='lowIncome'>
             <Select placeholder="select" style={{ width: "100%" }}>
@@ -1375,12 +1375,12 @@ class CustomerDetail extends PureComponent {
           <FormItem
             labelCol={{ span: 10 }}
             wrapperCol={{ span: 10 }}
-            label="Is Driver License Verified"
-            name='licenseStatus'
+            label="Is Age Verified"
+            name='ageValidated'
           >
             <Select>
-                <Option value={1}>Verified</Option>
-                <Option value={0}>Not Verified</Option>
+                <Option value={true}>Verified</Option>
+                <Option value={false}>Not Verified</Option>
                </Select>
           </FormItem>
     
