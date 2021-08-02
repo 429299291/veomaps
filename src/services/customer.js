@@ -70,8 +70,8 @@ export async function removeCustomer(id) {
 }
 
 export async function updateCustomer(id, params) {
-  return request(`/admins/customers/${id}`, {
-    method: "PUT",
+  return request(`/api/admins/customers/${id}`, {
+    method: "PATCH",
     body: {
       ...params
     }
