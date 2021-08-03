@@ -16,7 +16,7 @@ export async function getAdminCustomers(params) {
 }
 
 export async function getCustomerPayments(customerId) {
-  return request(`/admins/customers/${customerId}/charge_history`, {
+  return request(`/api/admins/customers/${customerId}/charge-history`, {
     method: "GET"
   });
 }

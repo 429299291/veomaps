@@ -1886,9 +1886,7 @@ handleShowingVehicles = val => {
           onCancel={() => this.setState({unlockModalVisible: false})}
           title="Purpose for Unlock"
         >
-
           {
-
             [5,6,7].map(vehicleStatus => <Row style={{textAlign: "center", marginTop: "2em"}}>
             <Button 
               style={{width: "80vw"}}

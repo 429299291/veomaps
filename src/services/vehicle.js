@@ -130,14 +130,24 @@ export async function addVehicle(params) {
   });
 }
 
+// export async function getVehicleDetail(id) {
+//   return request(`/admins/vehicles/${id}/detail`, {
+//     method: "GET",
+//   });
+// }
 export async function getVehicleDetail(id) {
-  return request(`/admins/vehicles/${id}/detail`, {
+  return request(`/api/admins/vehicles/${id}`, {
     method: "GET",
   });
 }
 
+// export async function getVehicle(id) {
+//   return request(`/admins/vehicles/${id}`, {
+//     method: "GET",
+//   });
+// }
 export async function getVehicle(id) {
-  return request(`/admins/vehicles/${id}`, {
+  return request(`/api/admins/vehicles/${id}`, {
     method: "GET",
   });
 }
@@ -149,8 +159,8 @@ export async function removeVehicle(id) {
 }
 
 export async function updateVehicle(id, params) {
-  return request(`/admins/vehicles/${id}`, {
-    method: "PUT",
+  return request(`/api/admins/vehicles/${id}`, {
+    method: "PATCH",
     body: {
       ...params
     }
@@ -158,8 +168,8 @@ export async function updateVehicle(id, params) {
 }
 
 export async function unlockVehicle(id) {
-  return request(`/admins/vehicles/${id}/unlock`, {
-    method: "PUT"
+  return request(`/api/admins/vehicles/${id}/unlock`, {
+    method: "POST"
   });
 }
 
@@ -170,14 +180,14 @@ export async function getRef(id) {
 }
 
 export async function lockVehicle(id) {
-  return request(`/admins/vehicles/${id}/lock`, {
-    method: "PUT"
+  return request(`/api/admins/vehicles/${id}/lock`, {
+    method: "POST"
   });
 }
 
 export async function updateLocation(id) {
-  return request(`/admins/vehicles/${id}/location`, {
-    method: "PUT"
+  return request(`/api/admins/vehicles/${id}/location`, {
+    method: "POST"
   });
 }
 
@@ -188,8 +198,8 @@ export async function restart(id) {
 }
 
 export async function getStatus(id) {
-  return request(`/admins/vehicles/${id}/get_status`, {
-    method: "POST"
+  return request(`/api/admins/vehicles/${id}/status`, {
+    method: "GET"
   });
 }
 
