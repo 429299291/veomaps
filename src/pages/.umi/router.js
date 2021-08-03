@@ -113,12 +113,6 @@ let routes = [
             "exact": true
           },
           {
-            "path": "/vehicle-management/error",
-            "name": "Report",
-            "component": dynamic({ loader: () => import('../Vehicle/Error'), loading: require('/Users/zhudongdong/Desktop/veo-admin-website/src/components/PageLoading/index').default }),
-            "exact": true
-          },
-          {
             "component": () => React.createElement(require('/Users/zhudongdong/Desktop/veo-admin-website/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })
           }
         ]

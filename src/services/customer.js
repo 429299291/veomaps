@@ -16,7 +16,7 @@ export async function getAdminCustomers(params) {
 }
 
 export async function getCustomerPayments(customerId) {
-  return request(`/admins/customers/${customerId}/charge_history`, {
+  return request(`/api/admins/customers/${customerId}/charge-history`, {
     method: "GET"
   });
 }
@@ -70,8 +70,8 @@ export async function removeCustomer(id) {
 }
 
 export async function updateCustomer(id, params) {
-  return request(`/admins/customers/${id}`, {
-    method: "PUT",
+  return request(`/api/admins/customers/${id}`, {
+    method: "PATCH",
     body: {
       ...params
     }

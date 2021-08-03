@@ -1,9 +1,17 @@
 import { stringify } from "qs";
 import request from "@/utils/request";
 
+// export async function getAdminMemberships(params) {
+//   return request(
+//     `/admins/memberships?${stringify(params, { indices: false })}`,
+//     {
+//       method: "GET"
+//     }
+//   );
+// }
 export async function getAdminMemberships(params) {
   return request(
-    `/admins/memberships?${stringify(params, { indices: false })}`,
+    `/api/admins/areas/${params.areaId}/memberships`,
     {
       method: "GET"
     }

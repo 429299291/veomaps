@@ -152,11 +152,13 @@ class Membership extends PureComponent {
   handleGetMemberships = () => {
     const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
+    if(selectedAreaId){
+      dispatch({
+        type: "memberships/get",
+        payload: selectedAreaId ? Object.assign({}, filterCriteria, {areaId: selectedAreaId}) : filterCriteria
+      });
+    }
 
-    dispatch({
-      type: "memberships/get",
-      payload: selectedAreaId ? Object.assign({}, filterCriteria, {areaId: selectedAreaId}) : filterCriteria
-    });
   };
 
   handleStandardTableChange = (filtersArg, sorter) => {

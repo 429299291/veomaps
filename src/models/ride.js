@@ -28,10 +28,12 @@ export default {
 
   effects: {
     *get({ payload }, { call, put }) {
-      const total = yield call(getAdminRidesTotal, payload);
-      console.log(total);
+      // const total = yield call(getAdminRidesTotal, payload);
+      // console.log(total);
 
-      const data = yield call(getAdminRides, payload);
+      let data = yield call(getAdminRides, payload);
+      const total = data.totalSize
+      data = data.content
 
       if (Array.isArray(data)) {
         data.map(bike => (bike.key = bike.id));
@@ -117,8 +119,8 @@ export default {
       }
     },
     *getVehicleRides({ vehicleId, onSuccess }, { call, put }) {
-      const rides = yield call(getAdminRides, { vehicleId: vehicleId });
-
+      let rides = yield call(getAdminRides, { vehicleId: vehicleId });
+      rides = rides.content
       if (Array.isArray(rides)) {
         rides.map(ride => (ride.key = ride.id));
         onSuccess(rides);

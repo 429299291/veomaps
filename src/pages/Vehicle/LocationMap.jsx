@@ -153,7 +153,7 @@ const MapComponent = compose(
   )(props => {
     const { record, fences,  vehicleDetail , currPosition, vehicleRef, shouldShowLastScan } = props;
   
-    const location = (({ x, y }) => ({ lat: y, lng:x }))(vehicleDetail.location);
+    const location =  vehicleDetail.location.lat ? (({ lat, lng }) => ({ lat: lng, lng:lat }))(vehicleDetail.location) : (({ x, y }) => ({ lat: y, lng:x }))(vehicleDetail.location);
 
 
     let lastScan = false;
@@ -285,11 +285,6 @@ const MapComponent = compose(
     );
   });
 
-
-  @connect(({ coupons, areas, geo, loading }) => ({
-    geo,
-    fenceLoading: loading.models.geo
-  }))
   class LocationMap extends PureComponent {
 
     state = {
@@ -435,7 +430,6 @@ const MapComponent = compose(
         const { geo, record, fenceLoading, selectedVehicleRefresh, handleSetSelectedVehicleRefresh, orderLocation } = this.props;
 
         const { vehicleDetail, isLoading, currPosition, vehicleRef, shouldShowLastScan} = this.state;
-
         if (orderLocation && vehicleDetail) {
 
           vehicleDetail.location = {x: orderLocation.lng, y: orderLocation.lat };
@@ -490,6 +484,10 @@ const MapComponent = compose(
       }
 
   }
-
-
-  export default LocationMap;
+  const mapStateToProps = ({ coupons, areas, geo, loading }) => {
+    return {
+      geo,
+      fenceLoading: loading.models.geo
+        }
+  }
+  export default connect(mapStateToProps)(LocationMap) 
