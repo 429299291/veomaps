@@ -22,15 +22,15 @@ export async function getVehicles(params) {
 //     method: "GET"
 //   });
 // }
-export async function getVehicleLocations(params) {
-  console.log(params);
-  return request(`/api/admins/vehicles/${params.vehicleNumber}/location`, {
-    method: "POST",
-    body:{
-      ...params
-    }
-  });
-}
+// export async function getVehicleLocations(params) {
+//   console.log(params);
+//   return request(`/api/admins/areas/search`, {
+//     method: "POST",
+//     body:{
+//       ...params
+//     }
+//   });
+// }
 
 export async function getVehicleOrders(vehicleId) {
   return request(`/admins/vehicles/${vehicleId}/orders`, {

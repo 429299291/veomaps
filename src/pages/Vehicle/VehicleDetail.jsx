@@ -44,8 +44,6 @@ const { Option } = Select;
 const RadioGroup = Radio.Group;
 
 import { fenceType, fenceTypeColor } from "@/constant";
-import VehicleMap from "@/components/Map/VehicleMap";
-
 const authority = getAuthority();
 
 const errorStatusIndexs = {
