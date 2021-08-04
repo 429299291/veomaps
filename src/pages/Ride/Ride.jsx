@@ -910,11 +910,7 @@ class Ride extends PureComponent {
 
     const RenderSimpleForm=(props)=> {
       const [form] = Form.useForm()
-      // this.setState({
-      //   filterCriteria : {...this.state.filterCriteria,numberOrPhone:this.state.filterCriteria.phone,numberOrPhone:this.state.filterCriteria.email,numberOrPhone:this.state.filterCriteria.name}
-      // })
       this.state.filterCriteria.numberOrPhone = this.state.filterCriteria.phone || this.state.filterCriteria.email || this.state.filterCriteria.name
-      console.log(this.state.filterCriteria);
       form.setFieldsValue(this.state.filterCriteria)
     return (
       <Form layout="inline" form={form}>
