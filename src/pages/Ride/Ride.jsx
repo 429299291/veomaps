@@ -631,13 +631,36 @@ class Ride extends PureComponent {
         .format("MM-DD-YYYY HH:mm:ss");
       fieldsValue.timeRange = undefined;
     }
+    if (fieldsValue.numberOrPhone){
+      if(
+        /[0-9]()/.test(fieldsValue.numberOrPhone) &&
+      !fieldsValue.numberOrPhone.includes("@")
+      ) {
+        fieldsValue.phone = fieldsValue.numberOrPhone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
+        delete(fieldsValue.name)
+        delete(fieldsValue.numberOrPhone)
+        delete(fieldsValue.email)
+      }else if(fieldsValue.numberOrPhone.includes("@")){
+        fieldsValue.email = fieldsValue.numberOrPhone.trim()
+        delete(fieldsValue.phone)
+        delete(fieldsValue.name)
+        delete(fieldsValue.numberOrPhone)
+      }else{
+        fieldsValue.name = fieldsValue.numberOrPhone.trim()
+        delete(fieldsValue.email)
+        delete(fieldsValue.phone)
+        delete(fieldsValue.numberOrPhone)
+      }
+    }
+
   }
 
-      const values = Object.assign({}, filterCriteria, fieldsValue, {
+      let values = Object.assign({}, fieldsValue, {
         currentPage: 1,
         pageSize: 10,
-        areaId: selectedAreaId
+        
       });
+      selectedAreaId ? values.areaIds= [selectedAreaId] : null
       this.setState(
         {
           filterCriteria: values
@@ -887,16 +910,18 @@ class Ride extends PureComponent {
 
     const RenderSimpleForm=(props)=> {
       const [form] = Form.useForm()
+      // this.setState({
+      //   filterCriteria : {...this.state.filterCriteria,numberOrPhone:this.state.filterCriteria.phone,numberOrPhone:this.state.filterCriteria.email,numberOrPhone:this.state.filterCriteria.name}
+      // })
+      this.state.filterCriteria.numberOrPhone = this.state.filterCriteria.phone || this.state.filterCriteria.email || this.state.filterCriteria.name
+      console.log(this.state.filterCriteria);
       form.setFieldsValue(this.state.filterCriteria)
-      const handleSearchFirst=()=>{
-        form.submit()
-      }
     return (
-      <Form onSubmit={handleSearchFirst} layout="inline" onFinish={()=>{this.handleSearch(form.getFieldsValue(true))}} form={form}>
+      <Form layout="inline" form={form}>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col span={6}>
             <FormItem label="Keywords" name='numberOrPhone'>
-                <Input placeholder="NUMBER PHONE" />
+                <Input placeholder="PHONE,Name,Email" />
             </FormItem>
           </Col>
           <Col span={4}>
@@ -972,7 +997,7 @@ class Ride extends PureComponent {
           </Col>
           <Col span={10}>
             <span className={styles.submitButtons} >
-              <Button type="primary" htmlType="submit">
+              <Button  onClick={()=>{this.handleSearch(form.getFieldsValue(true))}}>
                 Search
               </Button>
               <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
