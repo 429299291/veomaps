@@ -19,10 +19,9 @@ export async function getTechnicians(params) {
 }
 //api2
 export async function getTechniciansAll(params) {
-  console.log('all');
   return request(`/api/admins/technicians/search`,{
     method:'POST',
-    body:{}
+    body:{...params}
   }
   );
 }

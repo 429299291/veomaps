@@ -6,10 +6,18 @@ export async function getAdminPromos(params) {
     method: "GET"
   });
 }
+// export async function getAdminPromos(params) {
+//   return request(`/api/admins/promos/search`, {
+//     method: "POST",
+//     body:{
+//       ...params
+//     }
+//   });
+// }
 
 export async function updatePromo(id, params) {
-    return request(`/admins/promos/${id}`, {
-      method: "PUT",
+    return request(`/api/admins/promos/${id}`, {
+      method: "PATCH",
       body: {
         ...params
       }

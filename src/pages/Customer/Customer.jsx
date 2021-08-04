@@ -85,7 +85,7 @@ const RenderSimpleForm=(props)=> {
       {/* <Row gutter={{ md: 8, lg: 24, xl: 48 }}> */}
         <Col span={5} style={{padding: '0 18px 0 0'}}>
           <FormItem label="phone" name='phone'> 
-              <Input placeholder="PHONE" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
+              <Input placeholder="PHONE or EMAIL" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
           </FormItem>
         </Col>
         <Col span={5} style={{padding: '0 18px'}}>
@@ -624,10 +624,21 @@ class Customer extends PureComponent {
           pageSize: 10
         }
       });
-      if(/[0-9]()/.test(values.phone) &&
+      if(
+        /[0-9]()/.test(values.phone) &&
       !values.phone.includes("@")
       ) {
         values.phone = values.phone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
+        delete(values.name)
+        delete(values.email)
+      }else if(values.phone.includes("@")){
+        values.email = values.phone.trim()
+        delete(values.phone)
+        delete(values.name)
+      }else{
+        values.name = values.phone.trim()
+        delete(values.email)
+        delete(values.phone)
       }
       this.setState(
         {

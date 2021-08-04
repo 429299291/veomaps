@@ -26,6 +26,7 @@ import {
   Spin,
   Switch
 } from "antd";
+const { Search,TextAdmin } = Input;
 
 const { RangePicker } = DatePicker;
 
@@ -117,47 +118,44 @@ const hours = ["12AM", "1AM", "2AM", "3AM", "4AM", "5AM", "6AM", "7AM", "8AM", "
 
 const RenderSimpleForm=(props)=> {
   const [form] = Form.useForm()
-  const handleSearch=()=>{
-    form.submit()
-  }
+  // const handleSearch=()=>{
+  //   form.submit()
+  // }
   const handleFormReset = ()=>{
     props.handleFormReset()
     form.resetFields()
   }
   return (
-    <Form onSubmit={handleSearch} layout="inline" form={form} onFinish={()=>{props.handleSearch(form.getFieldsValue(true))}}>
+    <Form form={form}>
       <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-        <Col md={8} sm={24}>
-          <FormItem label="Keywords" name='numberOrImei'>
-              <Input placeholder="number or imei" />
+        <Col md={5} sm={24}>
+          <FormItem label="" name='numberOrImei'>
+              <Search placeholder="number or imei" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
           </FormItem>
         </Col>
-        <Col md={8} sm={24}>
-          <FormItem label="Battery Status" name='lockPower'>
+        <Col md={5} sm={24}>
+          <FormItem label="IOT Battery" name='iotBattery'>
               <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value="0">Low Battery</Option>
-                <Option value="1">Full Battery</Option>
+                <Option value={45}>Low Battery(45%)</Option>
+                <Option value={100}>Full Battery</Option>
                 <Option value={null}>All</Option>
               </Select>
           </FormItem>
         </Col>
-        <Col md={8} sm={24}>
-          <FormItem label="Connection Status" name='connected'>
+        <Col md={5} sm={24}>
+          <FormItem label="Connected" name='connected'>
               <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value={false}>offline</Option>
-                <Option value={true}>online</Option>
+                <Option value={false}>false</Option>
+                <Option value={true}>true</Option>
                 <Option value={null}>All</Option>
               </Select>
           </FormItem>
         </Col>
-        
         </Row>
-
-
-
+        <Row>
       <div style={{ overflow: "hidden" }}>
         <div style={{ float: "right", marginBottom: 24 }}>
-              <Button type="primary" htmlType="submit">
+              <Button onClick={()=>{props.handleSearch(form.getFieldsValue(true))}}>
                 Search
               </Button>
               <Button style={{ marginLeft: 8 }} onClick={handleFormReset}>
@@ -168,6 +166,7 @@ const RenderSimpleForm=(props)=> {
               </a>
               </div>
       </div>
+      </Row>
     </Form>
   );
 }
@@ -194,9 +193,9 @@ const RenderAdvancedForm=(props)=> {
           </FormItem>
         </Col>
         <Col span={8}>
-          <FormItem label="Lock Battery Status" name='iotBattery'>
+          <FormItem label="IOT Battery" name='iotBattery'>
               <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value={40}>Low Battery</Option>
+                <Option value={45}>Low Battery(45%)</Option>
                 <Option value={100}>Full Battery</Option>
                 <Option value={null}>All</Option>
               </Select>
@@ -204,10 +203,10 @@ const RenderAdvancedForm=(props)=> {
         </Col>
 
         <Col span={8}>
-          <FormItem label="Connection Status" name='connected'>
+          <FormItem label="Connected" name='connected'>
               <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value={false}>offline</Option>
-                <Option value={true}>online</Option>
+                <Option value={false}>false</Option>
+                <Option value={true}>true</Option>
                 <Option value={null}>All</Option>
               </Select>
           </FormItem>
@@ -216,10 +215,10 @@ const RenderAdvancedForm=(props)=> {
       {/* </Row>
       <Row> */}
       <Col span={8}>
-          <FormItem label="Lock Status" name='locked'>
+          <FormItem label="Locked" name='locked'>
               <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value={false}>Unlock</Option>
-                <Option value={true}>Lock</Option>
+                <Option value={false}>false</Option>
+                <Option value={true}>true</Option>
                 <Option value={null}>All</Option>
               </Select>
           </FormItem>
@@ -236,7 +235,7 @@ const RenderAdvancedForm=(props)=> {
           </FormItem>
         </Col>
         <Col span={8}>
-          <FormItem label="Error Status" name='statuses'>
+          <FormItem label="Status" name='statuses'>
               <Select
                 mode="multiple"
                 placeholder="select"
@@ -253,7 +252,7 @@ const RenderAdvancedForm=(props)=> {
       {/* </Row>
 
       <Row > */}
-      <Col span={8}>
+      {/* <Col span={8}>
           <FormItem label="Is Using" name='isUsing'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 <Option value={true}>Yes</Option>
@@ -261,11 +260,11 @@ const RenderAdvancedForm=(props)=> {
                 <Option value={null}>All</Option>
               </Select>
           </FormItem>
-        </Col>
+        </Col> */}
         <Col span={8}>
-          <FormItem label="Vehicle Power Status" name='vehicleBattery'>
+          <FormItem label="Vehicle Battery" name='vehicleBattery'>
               <Select placeholder="select" style={{ width: "100%" }}>
-              <Option value={40}>Low Battery</Option>
+              <Option value={45}>Low Battery(45%)</Option>
               <Option value={100}>Full Battery</Option>
               <Option value={null}>All</Option>
             </Select>
@@ -289,7 +288,7 @@ const RenderAdvancedForm=(props)=> {
       {/* </Row>
 
       <Row gutter={{ md: 8, lg: 24, xl: 48 }}> */}
-      <Col md={8} sm={24}>
+      {/* <Col md={8} sm={24}>
           <FormItem label="Is Reported" name='isReported'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 <Option value={true}>Yes</Option>
@@ -297,9 +296,9 @@ const RenderAdvancedForm=(props)=> {
                 <Option value={null}>All</Option>
               </Select>
           </FormItem>
-        </Col>
+        </Col> */}
         <Col md={12} sm={24}>
-          <FormItem label="Custom Vehicle Power Search:" name='vehiclePowerCustom'>
+          <FormItem label="Custom Vehicle Battery" name='vehiclePowerCustom'>
               <Input placeholder="power" suffix="%"/>
           </FormItem>
         </Col>
@@ -1238,9 +1237,11 @@ class Vehicle extends PureComponent {
           areaIds: selectedAreaId ? [selectedAreaId] : null
         });
         if (values.numberOrImei) {
-          if (values.numberOrImei.toString().length == 15) {
+          if (values.numberOrImei.toString().length > 12) {
+            values.vehicleNumber = null
             values.imei = values.numberOrImei;
           } else {
+            values.imei = null
             values.vehicleNumber = values.numberOrImei;  
           }
           values.numberOrImei = undefined;
@@ -1261,13 +1262,7 @@ class Vehicle extends PureComponent {
         }
         
       } else {
-console.log(fieldsValue);
-        values = Object.assign({}, filterCriteria, fieldsValue, {
-          // currentPage: 1,
-          // pageSize: 10,
-         
-          areaId: selectedAreaId ? selectedAreaId: null
-        });
+        values = Object.assign({}, filterCriteria, fieldsValue);
 
         if (values.connected !== null && values.connected !== undefined) {
           values.connectStatus = values.connected ? "1" : "0";
@@ -1297,7 +1292,7 @@ console.log(fieldsValue);
       }
     if(!fieldsValue){
       values={
-        areaIds: null,
+        areaIds: selectedAreaId ? [selectedAreaId] : [],
         idleQuery: null,
         imei: null,
         pagination: {page: 0, pageSize: 10},
@@ -1305,7 +1300,7 @@ console.log(fieldsValue);
         vehicleTypes: null
       }
     }
-
+    selectedAreaId ? values.locationCriteria={} : null
  
 
       this.setState(
@@ -1497,15 +1492,15 @@ console.log(fieldsValue);
   };
 
   getVehicleLocations() {
-    const { dispatch, selectedAreaId } = this.props;
+    // const { dispatch, selectedAreaId } = this.props;
 
-    const { filterCriteria } = this.state;
-
-    dispatch({
-      type: "vehicles/getVehicleLocation",
-      payload: filterCriteria,
-      onSuccess: result => this.setState({vehicleLocations: result})
-    });
+    // const { filterCriteria } = this.state;
+    // console.log(filterCriteria);
+    // dispatch({
+    //   type: "vehicles/getVehicleLocation",
+    //   payload: filterCriteria,
+    //   onSuccess: result => this.setState({vehicleLocations: result})
+    // });
   }
 
   setClickedMarker = vehicleNumber => {
@@ -1599,7 +1594,6 @@ handleShowingVehicles = val => {
 
   render() {
     const { vehicles, areas, loading, selectedAreaId, geo, areaNames, dispatch } = this.props;
-
     const center = geo.area && geo.area.center;
 
     const fences = geo.fences;
@@ -1665,7 +1659,8 @@ handleShowingVehicles = val => {
               
 
               <span style={{marginLeft: "1em"}}>
-                {`count: ${selectedTab === "1" ? vehicles.total : vehicleLocations.length}`}
+              {/* {`count: ${selectedTab === "1" ? vehicles.total : vehicleLocations.length}`} */}
+              {vehicles.total}
               </span>
             </div>
             <Tabs defaultActiveKey="1" onChange={this.hadnleTabChange}>
@@ -1813,7 +1808,8 @@ handleShowingVehicles = val => {
                     {center && fences &&
                     <VehicleMap
                       center={center}
-                      vehicles={vehicleLocations}
+                      // vehicles={vehicleLocations}
+                      vehicles={vehicles.data}
                       fences={fences}
                       heatMapData={heatmapData}
                       heatmapType={heatmapType}
@@ -1839,7 +1835,7 @@ handleShowingVehicles = val => {
                       setClickedMarker={this.setClickedMarker}
                       selectedMarker={selectedMarker}
                     />}
-                    {authority.includes("vehicle")  && !this.props.isMobile &&
+                    {/* {authority.includes("vehicle")  && !this.props.isMobile &&
                       <HeatMapForm 
                         isMobile={this.props.isMobile} 
                         styles={styles} 
@@ -1848,7 +1844,7 @@ handleShowingVehicles = val => {
                         clearHeatMap={this.clearHeatMap}
                         selectedAreaId={selectedAreaId}
                         getAreaCustomerSessionLocation={this.getAreaCustomerSessionLocation}/> 
-                    }
+                    } */}
                     { vehicleLocations.length > 0 && 
                         <Button style={{marginTop: "1em"}} onClick={() => exportCSVFile(vehicleCsvHeader, this.formatCsvData(vehicleLocations), areaNames[selectedAreaId])} >
                             Export
@@ -1892,9 +1888,7 @@ handleShowingVehicles = val => {
           onCancel={() => this.setState({unlockModalVisible: false})}
           title="Purpose for Unlock"
         >
-
           {
-
             [5,6,7].map(vehicleStatus => <Row style={{textAlign: "center", marginTop: "2em"}}>
             <Button 
               style={{width: "80vw"}}

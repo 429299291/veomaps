@@ -44,8 +44,6 @@ const { Option } = Select;
 const RadioGroup = Radio.Group;
 
 import { fenceType, fenceTypeColor } from "@/constant";
-import VehicleMap from "@/components/Map/VehicleMap";
-
 const authority = getAuthority();
 
 const errorStatusIndexs = {
@@ -302,7 +300,8 @@ const UpdateForm = (props => {
           labelCol={{ span: 5 }}
           wrapperCol={{ span: 15 }}
           label="Status"
-          name='errorStatus'
+          // name='errorStatus'
+          name='status'
           rules={
             [
               {
