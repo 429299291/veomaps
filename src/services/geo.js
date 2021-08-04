@@ -69,6 +69,14 @@ export async function createFence(fence) {
     }
   });
 }
+// export async function createFence(fence) {
+//   return request(`/api/admins/areas/fences`, {
+//     method: "POST",
+//     body: {
+//       ...fence
+//     }
+//   });
+// }
 
 
 
@@ -98,6 +106,11 @@ export async function getAreaCenterByAreaId(areaId) {
     method: "GET"
   });
 }
+// export async function getAreaCenterByAreaId(areaId) {
+//   return request(`/api/admins/areas/${areaId}/fences`, {
+//     method: "GET"
+//   });
+// }
 
 export async function createAreaCenter(center) {
   return request(`/admins/geo/area_center`, {

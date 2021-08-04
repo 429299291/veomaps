@@ -629,8 +629,15 @@ class Customer extends PureComponent {
       !values.phone.includes("@")
       ) {
         values.phone = values.phone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
-      }else{
+        delete(values.name)
+        delete(values.email)
+      }else if(values.phone.includes("@")){
         values.email = values.phone.trim()
+        delete(values.phone)
+        delete(values.name)
+      }else{
+        values.name = values.phone.trim()
+        delete(values.email)
         delete(values.phone)
       }
       this.setState(

@@ -32,6 +32,7 @@ export async function getVehicles(params) {
 //   });
 // }
 
+//null data
 export async function getVehicleOrders(vehicleId) {
   return request(`/admins/vehicles/${vehicleId}/orders`, {
     method: "GET"
