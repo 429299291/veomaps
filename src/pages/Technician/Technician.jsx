@@ -17,6 +17,8 @@ import {
   DatePicker
 
 } from "antd";
+const { Search,TextAdmin } = Input;
+
 import StandardTable from "@/components/StandardTable";
 
 import { getAuthority } from "@/utils/authority";
@@ -35,8 +37,8 @@ const RenderSimpleForm=(props)=> {
     <Form onSubmit={()=>{props.handleSearch(form.getFieldsValue(true))}} layout="inline" form={form}>
     <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
       <Col span={14}>
-        <FormItem label="Name" name='name'>
-          <Input placeholder="Name,Email,Phone" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
+        <FormItem label="" name='name'>
+          <Search placeholder="Name,Email,Phone" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
         </FormItem>
       </Col>
       <Col md={6} sm={24}>
