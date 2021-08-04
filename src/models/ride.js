@@ -109,7 +109,8 @@ export default {
       }
     },
     *getCustomerRides({ customerId, onSuccess }, { call, put }) {
-      const rides = yield call(getAdminRides, { customerId: customerId });
+      let rides = yield call(getAdminRides, { customerId: customerId });
+      rides = rides.content
 
       if (Array.isArray(rides)) {
         rides.map(ride => (ride.key = ride.id));
@@ -125,7 +126,7 @@ export default {
         rides.map(ride => (ride.key = ride.id));
         onSuccess(rides);
       } else {
-        message.error("Fail to get customer rides.");
+        message.error("Fail to get customer rides2.");
       }
     },
     *getRoute({ rideId, onSuccess, onFail }, { call, put }) {

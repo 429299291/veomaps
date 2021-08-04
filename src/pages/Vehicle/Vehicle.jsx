@@ -133,10 +133,10 @@ const RenderSimpleForm=(props)=> {
           </FormItem>
         </Col>
         <Col md={8} sm={24}>
-          <FormItem label="IOT Battery" name='lockPower'>
+          <FormItem label="IOT Battery" name='iotBattery'>
               <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value="0">Low Battery(45%)</Option>
-                <Option value="1">Full Battery</Option>
+                <Option value={45}>Low Battery(45%)</Option>
+                <Option value={100}>Full Battery</Option>
                 <Option value={null}>All</Option>
               </Select>
           </FormItem>
