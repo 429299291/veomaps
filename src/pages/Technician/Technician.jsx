@@ -36,7 +36,7 @@ const RenderSimpleForm=(props)=> {
     <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
       <Col span={14}>
         <FormItem label="Name" name='name'>
-          <Input placeholder="Name" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
+          <Input placeholder="Name,Email,Phone" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
         </FormItem>
       </Col>
       <Col md={6} sm={24}>
@@ -58,7 +58,7 @@ const PhoneRegisterForm = (props => {
   const okHandle = () => {
       
       handleSubmit(form.getFieldsValue(true));
-      form.resetFields()
+      // form.resetFields()
   };
 
   return (
@@ -320,13 +320,12 @@ class Technician extends PureComponent {
   handleGetTechnicians = () => {
     const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
-
     dispatch({
       type: "technicians/getAll",
       payload: selectedAreaId
-        ? Object.assign({}, filterCriteria, { areaId: selectedAreaId })
+        ? Object.assign({}, filterCriteria, { areaIds: [selectedAreaId] })
         : filterCriteria,
-      onSuccess: this.handleSearch
+      onSuccess: result =>{ this.setState({ filterTechnician: result })}
     });
   };
 
@@ -367,22 +366,34 @@ class Technician extends PureComponent {
     this.handleUpdateModalVisible();
   };
 
-  handleSearch = fieldsValue => {
+  handleSearch = values => {
     const { dispatch, technicians } = this.props;
     const { filterCriteria } = this.state;
 
     let result = technicians;
-    if(fieldsValue){
-      if (fieldsValue.name) {
-        result = technicians.filter(technician =>
-          (technician.firstName + " " + technician.lastName).includes(
-            fieldsValue.name
-          )
-        );
+    if(values.name){
+      if(
+        /[0-9]()/.test(values.name) &&
+      !values.name.includes("@")
+      ) {
+        values.phone = values.name.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
+        delete(values.name)
+        delete(values.email)
+      }else if(values.name.includes("@")){
+        values.email = values.name.trim()
+        delete(values.phone)
+        delete(values.name)
+      }else{
+        values.name = values.name.trim()
+        delete(values.email)
+        delete(values.phone)
       }
-    }
 
-      this.setState({ filterTechnician: result });
+    }else{
+      values = {}
+    }
+    this.setState({ filterCriteria: values },()=>{this.handleGetTechnicians()});
+    
   };
 
   render() {

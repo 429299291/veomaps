@@ -126,7 +126,7 @@ export default {
         rides.map(ride => (ride.key = ride.id));
         onSuccess(rides);
       } else {
-        message.error("Fail to get customer rides2.");
+        message.error("Fail to get customer rides.");
       }
     },
     *getRoute({ rideId, onSuccess, onFail }, { call, put }) {

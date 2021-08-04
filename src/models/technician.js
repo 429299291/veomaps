@@ -34,13 +34,13 @@ export default {
     },
     // api2
     *getAll({payload,onSuccess},{call,put}){
-      const {content} = yield call(getTechniciansAll);
+      const {content} = yield call(getTechniciansAll,payload);
       yield put({
         type: "save",
         payload: Array.isArray(content) ? content : []
       });
       if (typeof onSuccess === "function") {
-        onSuccess();
+        onSuccess(content);
       }
     },
 
