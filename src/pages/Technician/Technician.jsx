@@ -77,6 +77,23 @@ const PhoneRegisterForm = (props => {
       <FormItem
         labelCol={{ span: 7 }}
         wrapperCol={{ span: 15 }}
+        label="name"
+        name='name'
+        rules={
+          [
+            {
+              required: true,
+              message: "Name can't be empty",
+              min: 1
+            }
+          ]
+        }
+      >
+        <Input placeholder="First Name" />
+      </FormItem>
+      {/* <FormItem
+        labelCol={{ span: 7 }}
+        wrapperCol={{ span: 15 }}
         label="First Name"
         name='firstName'
         rules={
@@ -90,8 +107,8 @@ const PhoneRegisterForm = (props => {
         }
       >
         <Input placeholder="First Name" />
-      </FormItem>
-      <FormItem
+      </FormItem> */}
+      {/* <FormItem
         labelCol={{ span: 7 }}
         wrapperCol={{ span: 15 }}
         label="Last Name"
@@ -107,7 +124,7 @@ const PhoneRegisterForm = (props => {
         }
       >
         <Input placeholder="Last Name" />
-      </FormItem>
+      </FormItem> */}
       <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} label="Email"
         name='email'
         rules={
@@ -230,15 +247,19 @@ class Technician extends PureComponent {
   };
 
   columns = [
+    // {
+    //   title: "Name",
+    //   dataIndex: "lastName",
+    //   render: (text, record) => (
+    //     <span>
+    //       {`${record.firstName ? record.firstName : ""}
+    //       ${record.lastName ? record.lastName : ""}`}
+    //     </span>
+    //   )
+    // },
     {
       title: "Name",
-      dataIndex: "lastName",
-      render: (text, record) => (
-        <span>
-          {`${record.firstName ? record.firstName : ""}
-          ${record.lastName ? record.lastName : ""}`}
-        </span>
-      )
+      dataIndex: "name"
     },
     {
       title: "Email",
