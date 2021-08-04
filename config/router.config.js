@@ -72,18 +72,6 @@ export default [
             name: "Vehicle List",
             component: "./Vehicle/Vehicle",
           },
-          // {
-          //   path: "/vehicle-management/error",
-          //   name: "Report",
-          //   component: "./Vehicle/Error",
-          // },
-          // {
-          //   path: "/vehicle-management/ride/",
-          //   name: "Riding management",
-          //   component: "./Vehicle/Ride",
-          //   authority: "vehicle",
-          // },
-    
         ]
       },
       {
