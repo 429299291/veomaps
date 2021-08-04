@@ -26,6 +26,7 @@ import {
   Spin,
   Switch
 } from "antd";
+const { Search,TextAdmin } = Input;
 
 const { RangePicker } = DatePicker;
 
@@ -125,14 +126,14 @@ const RenderSimpleForm=(props)=> {
     form.resetFields()
   }
   return (
-    <Form layout="inline" form={form}>
+    <Form form={form}>
       <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-        <Col md={8} sm={24}>
-          <FormItem label="Keywords" name='numberOrImei'>
-              <Input placeholder="number or imei" />
+        <Col md={5} sm={24}>
+          <FormItem label="" name='numberOrImei'>
+              <Search placeholder="number or imei" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
           </FormItem>
         </Col>
-        <Col md={8} sm={24}>
+        <Col md={5} sm={24}>
           <FormItem label="IOT Battery" name='iotBattery'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 <Option value={45}>Low Battery(45%)</Option>
@@ -141,7 +142,7 @@ const RenderSimpleForm=(props)=> {
               </Select>
           </FormItem>
         </Col>
-        <Col md={8} sm={24}>
+        <Col md={5} sm={24}>
           <FormItem label="Connected" name='connected'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 <Option value={false}>false</Option>
@@ -151,6 +152,7 @@ const RenderSimpleForm=(props)=> {
           </FormItem>
         </Col>
         </Row>
+        <Row>
       <div style={{ overflow: "hidden" }}>
         <div style={{ float: "right", marginBottom: 24 }}>
               <Button onClick={()=>{props.handleSearch(form.getFieldsValue(true))}}>
@@ -164,6 +166,7 @@ const RenderSimpleForm=(props)=> {
               </a>
               </div>
       </div>
+      </Row>
     </Form>
   );
 }
@@ -214,8 +217,8 @@ const RenderAdvancedForm=(props)=> {
       <Col span={8}>
           <FormItem label="Locked" name='locked'>
               <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value={false}>Unlock</Option>
-                <Option value={true}>Lock</Option>
+                <Option value={false}>false</Option>
+                <Option value={true}>true</Option>
                 <Option value={null}>All</Option>
               </Select>
           </FormItem>
