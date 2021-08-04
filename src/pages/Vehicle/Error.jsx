@@ -303,12 +303,13 @@ class Error extends PureComponent {
     const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
 
-
-    dispatch({
-      type: "errors/get",
-      payload: selectedAreaId ? Object.assign({},filterCriteria, {areaId: selectedAreaId} ) : filterCriteria,
-      onSuccess: () => this.setState({selectedRows: []})
-    });
+    if(selectedAreaId){
+      dispatch({
+        type: "errors/get",
+        payload: selectedAreaId ? Object.assign({},filterCriteria, {areaIds: [selectedAreaId]} ) : filterCriteria,
+        onSuccess: () => this.setState({selectedRows: []})
+      });
+    }
   };
 
   handleDelete = id => {
@@ -455,6 +456,7 @@ class Error extends PureComponent {
 
   handleUpdate = (id, fields) => {
     const { dispatch } = this.props;
+    
 
     dispatch({
       type: "errors/update",

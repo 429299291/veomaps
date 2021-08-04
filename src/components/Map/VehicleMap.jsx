@@ -229,13 +229,13 @@ const VehicleMap = compose(
             return;
           }
 
-          if (vehicle.lat === null || vehicle.lng === null) {
+          if (vehicle.location === null || vehicle.location.lat === null) {
             return;
           }
   
           return <Marker
                   key={vehicle.vehicleNumber}
-                  position={{lat: vehicle.lat, lng: vehicle.lng}}
+                  position={{lat: vehicle.location.lat, lng: vehicle.location.lng}}
                   icon={icon}
                   onClick={() => setClickedMarker(vehicle.vehicleNumber)}
                   options={shouldShowHeatMap && heatMapData ? {opacity: 0.5} : {opacity: 1}}
@@ -245,7 +245,7 @@ const VehicleMap = compose(
                     <InfoWindow onCloseClick={() => setClickedMarker(null)}>
                       <div>
                         {Object.keys(vehicle).map(key => <div>{`${key} : ${vehicle[key]}`}</div>)}
-                         {vehicle.lat &&  vehicle.lng && <Button onClick={() => goMapAndNavigate(vehicle.lat, vehicle.lng)} > Go! </Button>}
+                         {vehicle.location.lat &&  vehicle.location.lng && <Button onClick={() => goMapAndNavigate(vehicle.location.lat, vehicle.location.lng)} > Go! </Button>}
                       </div>
                     </InfoWindow>
                   }

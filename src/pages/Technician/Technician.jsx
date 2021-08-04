@@ -17,6 +17,8 @@ import {
   DatePicker
 
 } from "antd";
+const { Search,TextAdmin } = Input;
+
 import StandardTable from "@/components/StandardTable";
 
 import { getAuthority } from "@/utils/authority";
@@ -35,8 +37,8 @@ const RenderSimpleForm=(props)=> {
     <Form onSubmit={()=>{props.handleSearch(form.getFieldsValue(true))}} layout="inline" form={form}>
     <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
       <Col span={14}>
-        <FormItem label="Name" name='name'>
-          <Input placeholder="Name" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
+        <FormItem label="" name='name'>
+          <Search placeholder="Name,Email,Phone" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
         </FormItem>
       </Col>
       <Col md={6} sm={24}>
@@ -58,7 +60,7 @@ const PhoneRegisterForm = (props => {
   const okHandle = () => {
       
       handleSubmit(form.getFieldsValue(true));
-      form.resetFields()
+      // form.resetFields()
   };
 
   return (
@@ -75,6 +77,23 @@ const PhoneRegisterForm = (props => {
       <FormItem
         labelCol={{ span: 7 }}
         wrapperCol={{ span: 15 }}
+        label="name"
+        name='name'
+        rules={
+          [
+            {
+              required: true,
+              message: "Name can't be empty",
+              min: 1
+            }
+          ]
+        }
+      >
+        <Input placeholder="First Name" />
+      </FormItem>
+      {/* <FormItem
+        labelCol={{ span: 7 }}
+        wrapperCol={{ span: 15 }}
         label="First Name"
         name='firstName'
         rules={
@@ -88,8 +107,8 @@ const PhoneRegisterForm = (props => {
         }
       >
         <Input placeholder="First Name" />
-      </FormItem>
-      <FormItem
+      </FormItem> */}
+      {/* <FormItem
         labelCol={{ span: 7 }}
         wrapperCol={{ span: 15 }}
         label="Last Name"
@@ -105,7 +124,7 @@ const PhoneRegisterForm = (props => {
         }
       >
         <Input placeholder="Last Name" />
-      </FormItem>
+      </FormItem> */}
       <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} label="Email"
         name='email'
         rules={
@@ -228,15 +247,19 @@ class Technician extends PureComponent {
   };
 
   columns = [
+    // {
+    //   title: "Name",
+    //   dataIndex: "lastName",
+    //   render: (text, record) => (
+    //     <span>
+    //       {`${record.firstName ? record.firstName : ""}
+    //       ${record.lastName ? record.lastName : ""}`}
+    //     </span>
+    //   )
+    // },
     {
       title: "Name",
-      dataIndex: "lastName",
-      render: (text, record) => (
-        <span>
-          {`${record.firstName ? record.firstName : ""}
-          ${record.lastName ? record.lastName : ""}`}
-        </span>
-      )
+      dataIndex: "name"
     },
     {
       title: "Email",
@@ -320,13 +343,12 @@ class Technician extends PureComponent {
   handleGetTechnicians = () => {
     const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
-
     dispatch({
       type: "technicians/getAll",
       payload: selectedAreaId
-        ? Object.assign({}, filterCriteria, { areaId: selectedAreaId })
+        ? Object.assign({}, filterCriteria, { areaIds: [selectedAreaId] })
         : filterCriteria,
-      onSuccess: this.handleSearch
+      onSuccess: result =>{ this.setState({ filterTechnician: result })}
     });
   };
 
@@ -367,22 +389,34 @@ class Technician extends PureComponent {
     this.handleUpdateModalVisible();
   };
 
-  handleSearch = fieldsValue => {
+  handleSearch = values => {
     const { dispatch, technicians } = this.props;
     const { filterCriteria } = this.state;
 
     let result = technicians;
-    if(fieldsValue){
-      if (fieldsValue.name) {
-        result = technicians.filter(technician =>
-          (technician.firstName + " " + technician.lastName).includes(
-            fieldsValue.name
-          )
-        );
+    if(values.name){
+      if(
+        /[0-9]()/.test(values.name) &&
+      !values.name.includes("@")
+      ) {
+        values.phone = values.name.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
+        delete(values.name)
+        delete(values.email)
+      }else if(values.name.includes("@")){
+        values.email = values.name.trim()
+        delete(values.phone)
+        delete(values.name)
+      }else{
+        values.name = values.name.trim()
+        delete(values.email)
+        delete(values.phone)
       }
-    }
 
-      this.setState({ filterTechnician: result });
+    }else{
+      values = {}
+    }
+    this.setState({ filterCriteria: values },()=>{this.handleGetTechnicians()});
+    
   };
 
   render() {

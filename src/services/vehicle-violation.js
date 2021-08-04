@@ -8,7 +8,6 @@ import request from "@/utils/request";
 //     })
 // }
 export async function getViolations(params) {
-    console.log(params);
     return request(`/api/admins/violations/search`, {
         method: "POST",
         body:params
@@ -58,7 +57,7 @@ export async function countViolations(params) {
 // }
 //???
 export async function updateViolationReject(id, body) {
-    return request(`/api/admins/violations/${id}/invert`, {
+    return request(`/api/admins/violations/${id}/reject`, {
         method: "POST",
         body: body
     })

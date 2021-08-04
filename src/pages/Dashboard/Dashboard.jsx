@@ -55,7 +55,6 @@ import {fenceType, fenceTypeColor, vehicleType} from "@/constant";
 import { exportCSVFile } from "../../utils/utils";
 import moment from "moment";
 import 'moment-timezone';
-import VehicleMap from "@/components/Map/VehicleMap";
 
 const authority = getAuthority();
 

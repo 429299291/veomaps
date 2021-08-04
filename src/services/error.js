@@ -6,6 +6,14 @@ export async function getAdminErrors(params) {
     method: "GET"
   });
 }
+// export async function getAdminErrors(params) {
+//   return request(`/api/admins/errors/search`, {
+//     method: "POST",
+//     body:{
+//       ...params
+//     }
+//   });
+// }
 
 export async function getImages(errorId) {
   return request(`/admins/errors/${errorId}/image_paths`, {

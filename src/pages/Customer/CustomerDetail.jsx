@@ -204,7 +204,7 @@ const UpdateForm = (props => {
           </Option>
         </Select>
       </FormItem>
-      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Migrated" name='migrated'>
+      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="It rs Migrated" name='migrated'>
         <Select placeholder="select" style={{ width: "100%" }}>
           <Option key={1} value={true}>
             Yes

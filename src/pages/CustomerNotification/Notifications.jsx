@@ -199,7 +199,7 @@ class Notifications extends PureComponent {
 
     dispatch({
       type: "notifications/getForCustomer",
-      payload: selectedAreaId ? Object.assign({},filterCriteria, {areaId: selectedAreaId} ) : filterCriteria,
+      payload: selectedAreaId ? Object.assign({},filterCriteria, {areaIds: [selectedAreaId]}, ) : filterCriteria,
       onSuccess: () => this.setState({selectedRows: []})
     });
   };

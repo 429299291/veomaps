@@ -169,8 +169,7 @@ const UpdateForm = ((props) => {
       const fieldsValue = form.getFieldsValue(true)
         // fieldsValue.type = newState;
         if(newState == 1){
-          // handleUpdateReject(record.id, fieldsValue)
-          console.log('none reject api');
+          handleUpdateReject(record.id, fieldsValue)
         }else if(newState == 2){
           handleUpdateApprove(record.id, fieldsValue)
         }else if(newState == 3){
@@ -393,6 +392,7 @@ class VehicleViolation extends PureComponent {
     },
     selectedRecord: {},
     selectedRecordDetail: {},
+    searchOldData:{}
   };
 
   columns = [
@@ -513,7 +513,7 @@ class VehicleViolation extends PureComponent {
     getViolations = (fieldsValue) => {
       const { dispatch, selectedAreaId } = this.props;
       const { filterCriteria } = this.state;
-
+      fieldsValue ? this.setState({searchOldData:fieldsValue}) : null
       if(fieldsValue){
         if (filterCriteria.phone === "") {
           filterCriteria.phone = null;
@@ -548,6 +548,7 @@ class VehicleViolation extends PureComponent {
         }
       }, 
       filterCriteria, 
+      this.state.searchOldData,
       fieldsValue);
       selectedAreaId ? values = {...values,areaIds:[selectedAreaId]} : null
       values.pagination.page-1<0 ?values.pagination.page = 0 : values.pagination.page = values.pagination.page-1
@@ -579,7 +580,6 @@ class VehicleViolation extends PureComponent {
 
   handleGetViolationDetail = (id,record) => {
       const { dispatch } = this.props;
-      
       dispatch({
         type: 'vehicleViolations/getDetail',
         id: id,
@@ -649,7 +649,7 @@ class VehicleViolation extends PureComponent {
   handleFormReset = () => {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
-
+    this.setState({searchOldData:{}}) 
     const params = {
       // page: 1,
       // pageSize: filterCriteria.pageSize,
