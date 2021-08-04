@@ -1286,8 +1286,8 @@ class CustomerDetail extends PureComponent {
                 No
               </Option>
             </Select>
-          </FormItem>
-     */}
+          </FormItem> */}
+    
           <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Low Income" name='lowIncome'>
             <Select placeholder="select" style={{ width: "100%" }}>
               <Option key={1} value={true}>
