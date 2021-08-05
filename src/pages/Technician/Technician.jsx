@@ -34,7 +34,6 @@ const FormItem = Form.Item;
 const RenderSimpleForm=(props)=> {
   const [form] = Form.useForm()
   const handleChangetype= (value)=>{
-    console.log(value);
     // switch (value) {
     //   case 0:
     //     form.setFieldsValue({ statuses: 0 });
@@ -51,7 +50,7 @@ const RenderSimpleForm=(props)=> {
     <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
       <Col span={5}>
         <FormItem label="" name='name'>
-          <Search placeholder="Name,Email,Phone" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
+          <Search placeholder="Name,Email,Phone" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}} onSearch={()=>{props.handleSearch(form.getFieldsValue(true))}} />
         </FormItem>
       </Col>
       <Col span={4}>
@@ -285,6 +284,7 @@ const UpdateForm = (props => {
 class Technician extends PureComponent {
   state = {
     registerPhoneModalVisible: false,
+    // filterCriteria: {statuses: [0]},
     filterCriteria: {},
     areas: [],
     selectedRecord: {},
@@ -436,7 +436,6 @@ class Technician extends PureComponent {
   };
 
   handleSearch = values => {
-    console.log(values);
     const { dispatch, technicians } = this.props;
     const { filterCriteria } = this.state;
 

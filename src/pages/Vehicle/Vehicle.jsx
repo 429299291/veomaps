@@ -130,7 +130,7 @@ const RenderSimpleForm=(props)=> {
       <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
         <Col md={5} sm={24}>
           <FormItem label="" name='numberOrImei'>
-              <Search placeholder="number or imei" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
+              <Search placeholder="number or imei" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}} onSearch={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
           </FormItem>
         </Col>
         <Col md={5} sm={24}>
@@ -1262,7 +1262,6 @@ class Vehicle extends PureComponent {
         }
         
       } else {
-        console.log('===');
         values = Object.assign({}, filterCriteria, fieldsValue);
 
         if (values.connected !== null && values.connected !== undefined) {
@@ -1289,7 +1288,6 @@ class Vehicle extends PureComponent {
         if (fieldsValue&&fieldsValue.vehiclePowerCustom) {
           values.vehiclePower =  fieldsValue.vehiclePowerCustom;
         }   
-        console.log(selectedAreaId);
         selectedAreaId ? values.locationCriteria={} : null
         selectedAreaId ? values.pagination.pageSize = vehicles.total : null
     
@@ -1304,7 +1302,6 @@ class Vehicle extends PureComponent {
     //     vehicleTypes: null
     //   }
     // }
-    console.log(values);
       this.setState(
         {
           filterCriteria: values
