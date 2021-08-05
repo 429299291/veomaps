@@ -38,6 +38,7 @@ export default {
 
   effects: {
     *get({ payload }, { call, put }) {
+      console.log('===');
       //const total = yield call(countVehicles, payload);
       const result = yield call(getVehicles, payload);
 

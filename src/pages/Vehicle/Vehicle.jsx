@@ -130,13 +130,13 @@ const RenderSimpleForm=(props)=> {
       <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
         <Col md={5} sm={24}>
           <FormItem label="" name='numberOrImei'>
-              <Search placeholder="number or imei" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
+              <Search placeholder="number or imei" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}} onSearch={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
           </FormItem>
         </Col>
         <Col md={5} sm={24}>
           <FormItem label="IOT Battery" name='iotBattery'>
               <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value={45}>Low Battery(45%)</Option>
+                <Option value={35}>Low Battery(35%)</Option>
                 <Option value={100}>Full Battery</Option>
                 <Option value={null}>All</Option>
               </Select>
@@ -195,7 +195,7 @@ const RenderAdvancedForm=(props)=> {
         <Col span={8}>
           <FormItem label="IOT Battery" name='iotBattery'>
               <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value={45}>Low Battery(45%)</Option>
+                <Option value={35}>Low Battery(35%)</Option>
                 <Option value={100}>Full Battery</Option>
                 <Option value={null}>All</Option>
               </Select>
@@ -264,7 +264,7 @@ const RenderAdvancedForm=(props)=> {
         <Col span={8}>
           <FormItem label="Vehicle Battery" name='vehicleBattery'>
               <Select placeholder="select" style={{ width: "100%" }}>
-              <Option value={45}>Low Battery(45%)</Option>
+              <Option value={35}>Low Battery(35%)</Option>
               <Option value={100}>Full Battery</Option>
               <Option value={null}>All</Option>
             </Select>
@@ -1214,7 +1214,7 @@ class Vehicle extends PureComponent {
   }
 
   handleSearch = fieldsValue => {
-    const { dispatch,  selectedAreaId } = this.props;
+    const { dispatch,  selectedAreaId,vehicles } = this.props;
     const { filterCriteria, selectedTab } = this.state;
     // form.validateFields((err, fieldsValue) => {
       // if (err) return;
@@ -1288,21 +1288,20 @@ class Vehicle extends PureComponent {
         if (fieldsValue&&fieldsValue.vehiclePowerCustom) {
           values.vehiclePower =  fieldsValue.vehiclePowerCustom;
         }   
-
+        selectedAreaId ? values.locationCriteria={} : null
+        selectedAreaId ? values.pagination.pageSize = vehicles.total : null
+    
       }
-    if(!fieldsValue){
-      values={
-        areaIds: selectedAreaId ? [selectedAreaId] : [],
-        idleQuery: null,
-        imei: null,
-        pagination: {page: 0, pageSize: 10},
-        vehicleNumber: null,
-        vehicleTypes: null
-      }
-    }
-    selectedAreaId ? values.locationCriteria={} : null
- 
-
+    // if(!fieldsValue){
+    //   values={
+    //     areaIds: selectedAreaId ? [selectedAreaId] : [],
+    //     idleQuery: null,
+    //     imei: null,
+    //     pagination: {page: 0, pageSize: 10},
+    //     vehicleNumber: null,
+    //     vehicleTypes: null
+    //   }
+    // }
       this.setState(
         {
           filterCriteria: values
@@ -1314,6 +1313,7 @@ class Vehicle extends PureComponent {
             this.handleGetListVehicles();
             break;
           case "2":
+            this.handleGetListVehicles();
             this.handleGetMapData();
             break;
           default:
@@ -1595,7 +1595,6 @@ handleShowingVehicles = val => {
   render() {
     const { vehicles, areas, loading, selectedAreaId, geo, areaNames, dispatch } = this.props;
     const center = geo.area && geo.area.center;
-
     const fences = geo.fences;
     
     const {
