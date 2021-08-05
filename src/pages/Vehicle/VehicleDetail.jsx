@@ -575,8 +575,8 @@ class VehicleDetail extends PureComponent {
 
 
            const coords = record.content.match(/[+-]?\d+(\.\d+)?/g).map(parseFloat);
-          
-            return <div>   <LocationMap record = {this.state.record} orderLocation={{lat:coords[0], lng: coords[1]}}/> 
+            return <div>   
+              <LocationMap record = {this.state.record} orderLocation={{lat:coords[0], lng: coords[1]}}/> 
 
                   <Button onClick={e => {
                     this.handleRenderingOrderLocation(false);
@@ -933,7 +933,6 @@ class VehicleDetail extends PureComponent {
     });
     
     
-
     
     return (
       <Modal
