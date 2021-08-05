@@ -33,14 +33,36 @@ const { Option } = Select;
 const FormItem = Form.Item;
 const RenderSimpleForm=(props)=> {
   const [form] = Form.useForm()
+  const handleChangetype= (value)=>{
+    console.log(value);
+    // switch (value) {
+    //   case 0:
+    //     form.setFieldsValue({ statuses: 0 });
+    //     return;
+    //   case 1:
+    //     form.setFieldsValue({ statuses: 1 });
+    //     return;
+    //   case 2:
+    //     form.setFieldsValue({ statuses: 2 });
+    // }
+  }
   return (
-    <Form onSubmit={()=>{props.handleSearch(form.getFieldsValue(true))}} layout="inline" form={form}>
+    <Form onSubmit={()=>{props.handleSearch(form.getFieldsValue(true))}} form={form} initialValues={{ statuses: 0 }}>
     <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-      <Col span={14}>
+      <Col span={5}>
         <FormItem label="" name='name'>
           <Search placeholder="Name,Email,Phone" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
         </FormItem>
       </Col>
+      <Col span={4}>
+        <FormItem label="" name='statuses'>
+          <Select>
+              <Select.Option value={0}>on</Select.Option>
+              <Select.Option value={1}>off</Select.Option>
+              <Select.Option value={2}>all</Select.Option>
+          </Select>
+        </FormItem>
+    </Col>
       <Col md={6} sm={24}>
         <Button
           type="primary"
@@ -206,6 +228,30 @@ const UpdateForm = (props => {
       onCancel={() => handleModalVisible()}
     >
       <Form form={form}>
+      <FormItem
+        labelCol={{ span: 7 }}
+        wrapperCol={{ span: 15 }}
+        label="Name"
+        name='name'
+      >
+          <Input placeholder="Please Input" />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 7 }}
+        wrapperCol={{ span: 15 }}
+        label="Email"
+        name='email'
+      >
+          <Input placeholder="Please Input" />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 7 }}
+        wrapperCol={{ span: 15 }}
+        label="Phone"
+        name='phone'
+      >
+          <Input placeholder="Please Input" />
+      </FormItem>
       <FormItem
         labelCol={{ span: 7 }}
         wrapperCol={{ span: 15 }}
@@ -390,10 +436,12 @@ class Technician extends PureComponent {
   };
 
   handleSearch = values => {
+    console.log(values);
     const { dispatch, technicians } = this.props;
     const { filterCriteria } = this.state;
 
     let result = technicians;
+    values.statuses.constructor== Array?values.statuses =values.statuses : values.statuses=[values.statuses]
     if(values.name){
       if(
         /[0-9]()/.test(values.name) &&
@@ -413,10 +461,11 @@ class Technician extends PureComponent {
       }
 
     }else{
-      values = {}
+      // values = {}
     }
-    this.setState({ filterCriteria: values },()=>{this.handleGetTechnicians()});
-    
+    this.setState({ filterCriteria: values },()=>{
+      this.handleGetTechnicians()
+    });
   };
 
   render() {

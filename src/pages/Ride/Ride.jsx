@@ -127,6 +127,7 @@ const limitType = ["Normal", "No Ride Zone", "limit speed zone", "unknown"];
 const violateTypeColor = ["black", "#ff0000", "#b72126", "#1300ff", "#f1fc64"];
 
 import { fenceType, fenceTypeColor } from "@/constant";
+import Search from "antd/lib/input/Search";
 
 const refundReason = [
   "Other",
@@ -895,8 +896,8 @@ class Ride extends PureComponent {
       <Form onSubmit={handleSearchFirst} layout="inline" onFinish={()=>{this.handleSearch(form.getFieldsValue(true))}} form={form}>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col span={6}>
-            <FormItem label="Keywords" name='numberOrPhone'>
-                <Input placeholder="NUMBER PHONE" />
+            <FormItem label="" name='numberOrPhone'>
+                <Search placeholder="NUMBER PHONE" onPressEnter={()=>{this.handleSearch(form.getFieldsValue(true))}}/>
             </FormItem>
           </Col>
           <Col span={4}>
@@ -972,7 +973,7 @@ class Ride extends PureComponent {
           </Col>
           <Col span={10}>
             <span className={styles.submitButtons} >
-              <Button type="primary" htmlType="submit">
+              <Button onClick={()=>{this.handleSearch(form.getFieldsValue(true))}}>
                 Search
               </Button>
               <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
