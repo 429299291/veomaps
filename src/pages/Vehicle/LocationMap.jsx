@@ -154,8 +154,6 @@ const MapComponent = compose(
     const { record, fences,  vehicleDetail , currPosition, vehicleRef, shouldShowLastScan } = props;
   
     const location =  vehicleDetail.location.lat ? (({ lat, lng }) => ({ lat: lng, lng:lat }))(vehicleDetail.location) : (({ x, y }) => ({ lat: y, lng:x }))(vehicleDetail.location);
-
-
     let lastScan = false;
 
     let lastScanLabel = null;
@@ -294,21 +292,21 @@ const MapComponent = compose(
 
       handleGetVehicleDetail = vehicleId => {
         const { dispatch } = this.props;
-        // if (authority.includes("get.vehicles.detail")) {
+        if (authority.includes("")) {
 
-        //     this.setState({isLoading: true});
+            this.setState({isLoading: true});
 
-        //     dispatch({
-        //         type: "vehicles/getVehicleDetail",
-        //         vehicleId: vehicleId,
-        //         onSuccess: response =>  {
-        //             this.setState({ vehicleDetail: response, isLoading: false });
-        //             this.getAreaGeoInfo(response.areaId)
-        //             }
-        //     });
-        // } else {
-        //     this.setState({ vehicleDetail: null, isLoading: false });
-        // }
+            dispatch({
+                type: "vehicles/getVehicleDetail",
+                vehicleId: vehicleId,
+                onSuccess: response =>  {
+                    this.setState({ vehicleDetail: response, isLoading: false });
+                    this.getAreaGeoInfo(response.areaId)
+                    }
+            });
+        } else {
+            this.setState({ vehicleDetail: null, isLoading: false });
+        }
         this.setState({isLoading: true});
 
             dispatch({
@@ -427,14 +425,12 @@ const MapComponent = compose(
 
       render() {
 
-        const { geo, record, fenceLoading, selectedVehicleRefresh, handleSetSelectedVehicleRefresh, orderLocation } = this.props;
+        const { geo, record, fenceLoading, selectedVehicleRefresh, handleSetSelectedVehicleRefresh } = this.props;
 
         const { vehicleDetail, isLoading, currPosition, vehicleRef, shouldShowLastScan} = this.state;
-        if (orderLocation && vehicleDetail) {
+        if (vehicleDetail &&vehicleDetail.location) {
 
-          vehicleDetail.location = {x: orderLocation.lng, y: orderLocation.lat };
-
-        
+          vehicleDetail.location =  vehicleDetail.location.lat ? (({ lat, lng }) => ({ lat: lng, lng:lat }))(vehicleDetail.location) : (({ x, y }) => ({ lat: y, lng:x }))(vehicleDetail.location);
         }
 
        
@@ -459,7 +455,7 @@ const MapComponent = compose(
                     />
 
                     <div style={{position: "absolute", left: "1vw", bottom: "2em", color: "#51B5AA"}}>
-                        <Button onClick={() => this.goMapAndNavigate(vehicleDetail.location.y, vehicleDetail.location.x)} > Go! </Button>
+                        <Button onClick={() => this.goMapAndNavigate(vehicleDetail.location.lat, vehicleDetail.location.lng)} > Go! </Button>
                     </div> 
 
                     <div style={{position: "absolute", left: "1vw", bottom: "5em", color: "#51B5AA"}}>

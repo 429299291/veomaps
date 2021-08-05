@@ -26,8 +26,16 @@ export async function getTechniciansAll(params) {
   );
 }
 
+// export async function createTechnician(technician) {
+//   return request(`/admins/technicians/register_by_email`, {
+//     method: "POST",
+//     body: {
+//       ...technician
+//     }
+//   });
+// }
 export async function createTechnician(technician) {
-  return request(`/admins/technicians/register_by_email`, {
+  return request(`/api/admins/technicians`, {
     method: "POST",
     body: {
       ...technician
@@ -35,9 +43,17 @@ export async function createTechnician(technician) {
   });
 }
 
+// export async function upadteTechnician(technicianId, technician) {
+//   return request(`/admins/technicians/${technicianId}`, {
+//     method: "PUT",
+//     body: {
+//       ...technician
+//     }
+//   });
+// }
 export async function upadteTechnician(technicianId, technician) {
-  return request(`/admins/technicians/${technicianId}`, {
-    method: "PUT",
+  return request(`/api/admins/technicians/${technicianId}`, {
+    method: "PATCH",
     body: {
       ...technician
     }
