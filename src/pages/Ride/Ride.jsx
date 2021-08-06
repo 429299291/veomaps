@@ -651,8 +651,12 @@ class Ride extends PureComponent {
     }
     if (fieldsValue.phone){
         fieldsValue.phone = fieldsValue.phone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
+        fieldsValue.phone == '' ? delete fieldsValue.phone : null
     }
     fieldsValue.notEnded === 0 ? delete fieldsValue.notEnded  : null
+    fieldsValue.vehicleNumber ? null : delete fieldsValue.vehicleNumber
+    fieldsValue.lockMethod ? null : delete fieldsValue.lockMethod
+    fieldsValue.unlockMethod ? null : delete fieldsValue.unlockMethod
   }
 
       let values = Object.assign({}, fieldsValue, {
