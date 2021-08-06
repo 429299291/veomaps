@@ -85,8 +85,11 @@ const RenderSimpleForm=(props)=> {
       }, 20);
     }
   }
+  console.log(props.filterCriteria);
   setTimeout(() => {
     props.filterCriteria.hasOwnProperty('notEnded') ? null : props.filterCriteria.notEnded = 0
+    props.filterCriteria.hasOwnProperty('lockMethod') ? null : props.filterCriteria.lockMethod = null
+    props.filterCriteria.hasOwnProperty('unlockMethod') ? null : props.filterCriteria.unlockMethod = null
   }, 20);
   form.setFieldsValue(props.filterCriteria)
 return (
@@ -814,10 +817,10 @@ class Ride extends PureComponent {
         fieldsValue.phone = fieldsValue.phone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
         fieldsValue.phone == '' ? delete fieldsValue.phone : null
     }
-    fieldsValue.notEnded === 0 ? delete fieldsValue.notEnded  : null
     fieldsValue.vehicleNumber ? null : delete fieldsValue.vehicleNumber
-    fieldsValue.lockMethod ? null : delete fieldsValue.lockMethod
-    fieldsValue.unlockMethod ? null : delete fieldsValue.unlockMethod
+    fieldsValue.notEnded === 0 ? delete fieldsValue.notEnded  : null
+    fieldsValue.lockMethod === null ? delete fieldsValue.lockMethod : null
+    fieldsValue.unlockMethod === null ? delete fieldsValue.unlockMethod : null
   }
 
       let values = Object.assign({}, fieldsValue, {
