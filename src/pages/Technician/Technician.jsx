@@ -56,8 +56,8 @@ const RenderSimpleForm=(props)=> {
       <Col span={4}>
         <FormItem label="" name='statuses'>
           <Select>
-              <Select.Option value={0}>on</Select.Option>
-              <Select.Option value={1}>off</Select.Option>
+              <Select.Option value={0}>activated</Select.Option>
+              <Select.Option value={1}>deactivated</Select.Option>
               <Select.Option value={2}>all</Select.Option>
           </Select>
         </FormItem>
@@ -264,7 +264,7 @@ const UpdateForm = (props => {
         <FormItem
           labelCol={{ span: 7 }}
           wrapperCol={{ span: 15 }}
-          label="Areas"
+          label="Area"
           name='areaId'
         >
             <Select placeholder="select" style={{ width: "100%" }}>
@@ -284,9 +284,14 @@ const UpdateForm = (props => {
 class Technician extends PureComponent {
   state = {
     registerPhoneModalVisible: false,
-    // filterCriteria: {statuses: [0]},
-    filterCriteria: {},
+    filterCriteria: {statuses: [0],    "pagination": {
+      "page": 0,
+      "pageSize": 10,
+
+    }},
+    // filterCriteria: {},
     areas: [],
+
     selectedRecord: {},
     updateModalVisible: false,
     filterTechnician: []

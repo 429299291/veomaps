@@ -624,21 +624,23 @@ class Customer extends PureComponent {
           pageSize: 10
         }
       });
-      if(
-        /[0-9]()/.test(values.phone) &&
-      !values.phone.includes("@")
-      ) {
-        values.phone = values.phone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
-        delete(values.name)
-        delete(values.email)
-      }else if(values.phone.includes("@")){
-        values.email = values.phone.trim()
-        delete(values.phone)
-        delete(values.name)
-      }else{
-        values.name = values.phone.trim()
-        delete(values.email)
-        delete(values.phone)
+      if(values.phone){
+        if(
+          /[0-9]()/.test(values.phone) &&
+        !values.phone.includes("@")
+        ) {
+          values.phone = values.phone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
+          delete(values.name)
+          delete(values.email)
+        }else if(values.phone.includes("@")){
+          values.email = values.phone.trim()
+          delete(values.phone)
+          delete(values.name)
+        }else{
+          values.name = values.phone.trim()
+          delete(values.email)
+          delete(values.phone)
+        }
       }
       this.setState(
         {

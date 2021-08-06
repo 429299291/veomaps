@@ -378,7 +378,7 @@ const UpdateForm = (props => {
         label="Is Connected"
       >
         <div>
-          {record.connectStatus === 1 ? "true" : "false"}
+          {record.connected === true ? "true" : "false"}
         </div>
       </FormItem>
 
