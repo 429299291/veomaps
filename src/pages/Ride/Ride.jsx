@@ -635,35 +635,31 @@ class Ride extends PureComponent {
     const { filterCriteria } = this.state;
     if (fieldsValue) {
       if(fieldsValue.timeRange){
-      fieldsValue.rideStart = moment(fieldsValue.timeRange[0])
-        .utcOffset(0)
-        .format("MM-DD-YYYY HH:mm:ss");
-      fieldsValue.rideEnd = moment(fieldsValue.timeRange[1])
-        .utcOffset(0)
-        .format("MM-DD-YYYY HH:mm:ss");
-      fieldsValue.timeRange = undefined;
+        fieldsValue.timeRange ={
+          start:moment(fieldsValue.timeRange[0]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss"),
+          end:moment(fieldsValue.timeRange[1]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss")
+        }
+      // fieldsValue.rideStart = moment(fieldsValue.timeRange[0])
+      //   .utcOffset(0)
+      //   .format("YYYY-MM-DDTHH:mm:ss");
+      // fieldsValue.rideEnd = moment(fieldsValue.timeRange[1])
+      //   .utcOffset(0)
+      //   .format("YYYY-MM-DDTHH:mm:ss");
+      // fieldsValue.timeRange = undefined;
     }
-    if (fieldsValue.numberOrPhone){
-      if(
-        /[0-9]()/.test(fieldsValue.numberOrPhone) &&
-      !fieldsValue.numberOrPhone.includes("@")
-      ) {
-        fieldsValue.phone = fieldsValue.numberOrPhone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
-        delete(fieldsValue.name)
-        delete(fieldsValue.numberOrPhone)
-        delete(fieldsValue.email)
-      }else if(fieldsValue.numberOrPhone.includes("@")){
-        fieldsValue.email = fieldsValue.numberOrPhone.trim()
-        delete(fieldsValue.phone)
-        delete(fieldsValue.name)
-        delete(fieldsValue.numberOrPhone)
-      }else{
-        fieldsValue.name = fieldsValue.numberOrPhone.trim()
-        delete(fieldsValue.email)
-        delete(fieldsValue.phone)
-        delete(fieldsValue.numberOrPhone)
-      }
-    }
+    // if (fieldsValue.numberOrPhone){
+    //   if(
+    //     /[0-9]()/.test(fieldsValue.numberOrPhone) &&
+    //   !fieldsValue.numberOrPhone.includes("@")
+    //   ) {
+    //     fieldsValue.phone = fieldsValue.numberOrPhone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
+    //     delete(fieldsValue.name)
+    //     delete(fieldsValue.numberOrPhone)
+    //     delete(fieldsValue.email)
+    //   }else{
+        
+    //   }
+    // }
     fieldsValue.notEnded === 0 ? delete fieldsValue.notEnded  : null
   }
 
@@ -929,16 +925,21 @@ class Ride extends PureComponent {
 
     const RenderSimpleForm=(props)=> {
       const [form] = Form.useForm()
-      this.state.filterCriteria.numberOrPhone = this.state.filterCriteria.phone || this.state.filterCriteria.email || this.state.filterCriteria.name
+      // this.state.filterCriteria.numberOrPhone = this.state.filterCriteria.phone || this.state.filterCriteria.email || this.state.filterCriteria.name
       form.setFieldsValue(this.state.filterCriteria)
     return (
       <Form layout="inline" form={form} initialValues={{
         notEnded: 0,
       }}>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col span={6}>
-            <FormItem label="Keywords" name='numberOrPhone'>
-                <Input placeholder="PHONE,Name,Email" />
+        <Col span={4}>
+            <FormItem label="PHONE" name='phone'>
+                <Input placeholder="PHONE" />
+            </FormItem>
+          </Col>
+          <Col span={5}>
+            <FormItem label="Vehicle Number" name='vehicleNumber'>
+                <Input placeholder="Vehicle Number" />
             </FormItem>
           </Col>
           <Col span={4}>
