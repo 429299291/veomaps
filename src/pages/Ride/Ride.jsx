@@ -102,7 +102,8 @@ const statusMap = ["default", "processing", "success", "error"];
 const operationStatus = ["NORMAL", "MANTAINANCE"];
 const connectStatus = ["Offline", "Online"];
 const lockStatus = ["Unlock", "lock"];
-const rideType = ["USING", "FINISHED"];
+// const rideType = ["True", "False"];
+const rideType = [{name:"True",value:true},{name:"False",value:false},{name:"All",value:0}];
 const vehicleType = ["Bicycle", "Scooter", "E-Bike", "COSMO"];
 const lockOperationWay = [
   "GPRS",
@@ -127,7 +128,6 @@ const limitType = ["Normal", "No Ride Zone", "limit speed zone", "unknown"];
 const violateTypeColor = ["black", "#ff0000", "#b72126", "#1300ff", "#f1fc64"];
 
 import { fenceType, fenceTypeColor } from "@/constant";
-import Search from "antd/lib/input/Search";
 
 const refundReason = [
   "Other",
@@ -579,15 +579,21 @@ class Ride extends PureComponent {
   };
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
+    console.log(pagination);
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
 
     const params = {
       ...filterCriteria
     };
-
-    params.currentPage = pagination.current;
-    params.pageSize = pagination.pageSize;
+    params.pagination={
+      page:pagination.current-1,
+      pageSize:pagination.pageSize,
+      sort:{
+        sortBy:'created',
+        direction:'desc'
+      }
+    }
 
     if (sorter.field) {
       params.sorter = `${sorter.field}_${sorter.order}`;
@@ -607,7 +613,7 @@ class Ride extends PureComponent {
     // form.resetFields();
 
     const params = {
-      currentPage: 1,
+      // currentPage: 1,
       pageSize: filterCriteria.pageSize
     };
 
@@ -632,13 +638,41 @@ class Ride extends PureComponent {
         .format("MM-DD-YYYY HH:mm:ss");
       fieldsValue.timeRange = undefined;
     }
+    if (fieldsValue.numberOrPhone){
+      if(
+        /[0-9]()/.test(fieldsValue.numberOrPhone) &&
+      !fieldsValue.numberOrPhone.includes("@")
+      ) {
+        fieldsValue.phone = fieldsValue.numberOrPhone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
+        delete(fieldsValue.name)
+        delete(fieldsValue.numberOrPhone)
+        delete(fieldsValue.email)
+      }else if(fieldsValue.numberOrPhone.includes("@")){
+        fieldsValue.email = fieldsValue.numberOrPhone.trim()
+        delete(fieldsValue.phone)
+        delete(fieldsValue.name)
+        delete(fieldsValue.numberOrPhone)
+      }else{
+        fieldsValue.name = fieldsValue.numberOrPhone.trim()
+        delete(fieldsValue.email)
+        delete(fieldsValue.phone)
+        delete(fieldsValue.numberOrPhone)
+      }
+    }
+    fieldsValue.notEnded === 0 ? delete fieldsValue.notEnded  : null
   }
 
-      const values = Object.assign({}, filterCriteria, fieldsValue, {
-        currentPage: 1,
-        pageSize: 10,
-        areaId: selectedAreaId
+      let values = Object.assign({}, fieldsValue, {
+        pagination:{
+          page: 0,
+          pageSize: 10,
+          sort:{
+            sortBy:'created',
+            direction:'desc'
+          }
+        }
       });
+      selectedAreaId ? values.areaIds= [selectedAreaId] : null
       this.setState(
         {
           filterCriteria: values
@@ -825,8 +859,10 @@ class Ride extends PureComponent {
         { areaId: selectedAreaId },
         fieldsValue,
         {
-          currentPage: null,
-          pageSize: null,
+          // pagination:{
+          //   page: null,
+          //   pageSize: null,
+          // },
           areaId: selectedAreaId
         }
       );
@@ -888,32 +924,32 @@ class Ride extends PureComponent {
 
     const RenderSimpleForm=(props)=> {
       const [form] = Form.useForm()
+      this.state.filterCriteria.numberOrPhone = this.state.filterCriteria.phone || this.state.filterCriteria.email || this.state.filterCriteria.name
       form.setFieldsValue(this.state.filterCriteria)
-      const handleSearchFirst=()=>{
-        form.submit()
-      }
     return (
-      <Form onSubmit={handleSearchFirst} layout="inline" onFinish={()=>{this.handleSearch(form.getFieldsValue(true))}} form={form}>
+      <Form layout="inline" form={form} initialValues={{
+        notEnded: 0,
+      }}>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col span={6}>
-            <FormItem label="" name='numberOrPhone'>
-                <Search placeholder="NUMBER PHONE" onPressEnter={()=>{this.handleSearch(form.getFieldsValue(true))}}/>
+            <FormItem label="Keywords" name='numberOrPhone'>
+                <Input placeholder="PHONE,Name,Email" />
             </FormItem>
           </Col>
           <Col span={4}>
-            <FormItem label="Type" name='type'>
+            <FormItem label="In Use" name='notEnded'>
                 <Select placeholder="select" style={{ width: "100%" }}>
                   {rideType.map((status, index) => (
-                    <Option key={index} value={index}>
-                      {rideType[index]}
+                    <Option key={index} value={status.value}>
+                      {status.name}
                     </Option>
                   ))}
-                  <Option value={null}>All</Option>
+                  {/* <Option value={null}>All</Option> */}
                 </Select>
             </FormItem>
           </Col>
           <Col span={5}>
-            <FormItem label="Lock Way" name='lockWay'>
+            <FormItem label="Lock Method" name='lockWay'>
                 <Select placeholder="select" style={{ width: "100%" }}>
                   {lockOperationWay.map((status, index) => (
                     <Option key={index} value={index}>
@@ -925,7 +961,7 @@ class Ride extends PureComponent {
             </FormItem>
           </Col>
           <Col span={5}>
-            <FormItem label="Unlock Way" name='unlockWay'>
+            <FormItem label="Unlock Method" name='unlockWay'>
                 <Select placeholder="select" style={{ width: "100%" }}>
                   {lockOperationWay.map((status, index) => (
                     <Option key={index} value={index}>
@@ -973,7 +1009,7 @@ class Ride extends PureComponent {
           </Col>
           <Col span={10}>
             <span className={styles.submitButtons} >
-              <Button onClick={()=>{this.handleSearch(form.getFieldsValue(true))}}>
+              <Button  onClick={()=>{this.handleSearch(form.getFieldsValue(true))}}>
                 Search
               </Button>
               <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
@@ -994,7 +1030,7 @@ class Ride extends PureComponent {
         ride,
       } = props;
       const [form] = Form.useForm()
-      form.setFieldsValue({"minutes": ride.minutes})
+      form.setFieldsValue(ride)
       const okHandle = () => {
         form.submit()
         // form.validateFields((err, fieldsValue) => {
