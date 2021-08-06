@@ -476,14 +476,14 @@ const UpdateForm = (props => {
             Voice
           </Button>
           <Radio.Group onChange={onChangeVoice} style={{display:props.voiceVisible}}>
-            <Radio value={0}>SELF_ALERT</Radio>
-            <Radio value={1}>INVALID_PARKING</Radio>
-            <Radio value={2}>SLOW_SPEED_ZONE</Radio>
-            <Radio value={3}>DO_NOT_SHAKE</Radio>
-            <Radio value={4}>START_RIDE</Radio>
-            <Radio value={5}>END_RIDE</Radio>
-            <Radio value={6}>NO_RIDE_ZONE</Radio>
-            <Radio value={7}>LOW_BATTERY</Radio>
+            <Radio value={0}>SELF ALERT</Radio>
+            <Radio value={1}>INVALID PARKING</Radio>
+            <Radio value={2}>SLOW SPEED ZONE</Radio>
+            <Radio value={3}>DO NOT SHAKE</Radio>
+            <Radio value={4}>START RIDE</Radio>
+            <Radio value={5}>END RIDE</Radio>
+            <Radio value={6}>NO RIDE ZONE</Radio>
+            <Radio value={7}>LOW BATTERY</Radio>
           </Radio.Group>
           {/* <Button
             icon="plus"
