@@ -46,7 +46,7 @@ const RenderSimpleForm=(props)=> {
     // }
   }
   return (
-    <Form onSubmit={()=>{props.handleSearch(form.getFieldsValue(true))}} form={form} initialValues={{ statuses: 0 }}>
+    <Form onSubmit={()=>{props.handleSearch(form.getFieldsValue(true))}} form={form} initialValues={{ status: 0 }}>
     <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
       <Col span={5}>
         <FormItem label="" name='name'>
@@ -54,10 +54,10 @@ const RenderSimpleForm=(props)=> {
         </FormItem>
       </Col>
       <Col span={4}>
-        <FormItem label="" name='statuses'>
+        <FormItem label="" name='status'>
           <Select>
-              <Select.Option value={0}>on</Select.Option>
-              <Select.Option value={1}>off</Select.Option>
+              <Select.Option value={0}>activated</Select.Option>
+              <Select.Option value={1}>deactivated</Select.Option>
               <Select.Option value={2}>all</Select.Option>
           </Select>
         </FormItem>
@@ -264,7 +264,7 @@ const UpdateForm = (props => {
         <FormItem
           labelCol={{ span: 7 }}
           wrapperCol={{ span: 15 }}
-          label="Areas"
+          label="Area"
           name='areaId'
         >
             <Select placeholder="select" style={{ width: "100%" }}>
@@ -284,9 +284,10 @@ const UpdateForm = (props => {
 class Technician extends PureComponent {
   state = {
     registerPhoneModalVisible: false,
-    // filterCriteria: {statuses: [0]},
-    filterCriteria: {},
+    filterCriteria: {status: 0},
+    // filterCriteria: {},
     areas: [],
+
     selectedRecord: {},
     updateModalVisible: false,
     filterTechnician: []
@@ -440,7 +441,7 @@ class Technician extends PureComponent {
     const { filterCriteria } = this.state;
 
     let result = technicians;
-    values.statuses.constructor== Array?values.statuses =values.statuses : values.statuses=[values.statuses]
+    values.status== 2 ? delete values.status : null
     if(values.name){
       if(
         /[0-9]()/.test(values.name) &&

@@ -63,6 +63,178 @@ import {
 import { getAuthority } from "@/utils/authority";
 
 const authority = getAuthority();
+const RenderSimpleForm=(props)=> {
+  const [form] = Form.useForm()
+  const dateFormat = 'YYYY-MM-DDTHH:mm:ss'
+  const handleReaset = ()=>{
+    props.handleFormReset()
+    form.resetFields()
+  }
+  console.log(props);
+  // setTimeout(() => {
+  //   props.filterCriteria.timeRange = [moment('2015-01-01T12:22:22', dateFormat), moment('2021-05-01T12:33:33', dateFormat)] 
+  // }, 20);
+  if(props.filterCriteria.timeRange){
+    // console.log(this.state.filterCriteria.timeRange.start);
+    if(props.filterCriteria.timeRange.start){
+      setTimeout(() => {
+        const start = props.filterCriteria.timeRange.start;
+        const end = props.filterCriteria.timeRange.end;
+        start? props.filterCriteria.timeRange = [moment(start, dateFormat), moment(end, dateFormat)] : null
+        // props.filterCriteria.timeRange = [moment('2015-01-01T12:22:22', dateFormat), moment('2021-05-01T12:33:33', dateFormat)] 
+      }, 20);
+    }
+  }
+  console.log(props.filterCriteria);
+  setTimeout(() => {
+    props.filterCriteria.hasOwnProperty('notEnded') ? null : props.filterCriteria.notEnded = 0
+    props.filterCriteria.hasOwnProperty('lockMethod') ? null : props.filterCriteria.lockMethod = null
+    props.filterCriteria.hasOwnProperty('unlockMethod') ? null : props.filterCriteria.unlockMethod = null
+  }, 20);
+  form.setFieldsValue(props.filterCriteria)
+return (
+  <Form layout="inline" form={form} initialValues={{
+    notEnded: 0,
+  }}>
+    <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+    <Col span={5}>
+        <FormItem label="PHONE" name='phone'>
+            <Input placeholder="PHONE" />
+        </FormItem>
+      </Col>
+      <Col span={6}>
+        <FormItem label="Vehicle Number" name='vehicleNumber'>
+            <Input placeholder="Vehicle Number" />
+        </FormItem>
+      </Col>
+      <Col span={4}>
+        <FormItem label="In Use" name='notEnded'>
+            <Select placeholder="select" style={{ width: "100%" }}>
+              {rideType.map((status, index) => (
+                <Option key={index} value={status.value}>
+                  {status.name}
+                </Option>
+              ))}
+              {/* <Option value={null}>All</Option> */}
+            </Select>
+        </FormItem>
+      </Col>
+      <Col span={5}>
+        <FormItem label="Lock Method" name='lockMethod'>
+            <Select placeholder="select" style={{ width: "100%" }}>
+              {lockOperationWay.map((status, index) => (
+                <Option key={index} value={index}>
+                  {lockOperationWay[index]}
+                </Option>
+              ))}
+              <Option value={null}>All</Option>
+            </Select>
+        </FormItem>
+      </Col>
+      <Col span={5}>
+        <FormItem label="Unlock Method" name='unlockMethod'>
+            <Select placeholder="select" style={{ width: "100%" }}>
+              {lockOperationWay.map((status, index) => (
+                <Option key={index} value={index}>
+                  {lockOperationWay[index]}
+                </Option>
+              ))}
+              <Option value={null}>All</Option>
+            </Select>
+        </FormItem>
+      </Col>
+    {/* <Row gutter={{ md: 8, lg: 24, xl: 48 }}> */}
+      <Col span={6}>
+        <FormItem
+          label="Time"
+          name='timeRange'
+        >
+            <RangePicker
+              // style={{ width: "90%" }}
+              format="YYYY-MM-DDTHH:mm:ss"
+              showTime
+            />
+        </FormItem>
+      </Col>
+      <Col span={4}>
+        <FormItem
+          label="Vehicle Type"
+          name='vehicleType'
+        >
+            <Select placeholder="select">
+              {vehicleType.map((status, index) => (
+                <Option key={index} value={index}>
+                  {vehicleType[index]}
+                </Option>
+              ))}
+              <Option value={null}>All</Option>
+            </Select>
+        </FormItem>
+      </Col>
+    {/* </Row> */}
+    </Row>
+
+    <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+      <Col span={10}>
+        {`count: ${props.total}`}
+      </Col>
+      <Col span={10}>
+        <span className={styles.submitButtons} >
+          <Button  onClick={()=>{props.handleSearch(form.getFieldsValue(true))}}>
+            Search
+          </Button>
+          <Button style={{ marginLeft: 8 }} onClick={handleReaset}>
+            Reset
+          </Button>
+        </span>
+      </Col>
+    </Row>
+  </Form>
+);
+}
+
+const EndRideForm = (props => {
+  const {
+    isEndRideVisible,
+    handleEndRide,
+    handleEndRideVisible,
+    ride,
+  } = props;
+  const [form] = Form.useForm()
+  form.setFieldsValue(ride)
+  const okHandle = () => {
+    form.submit()
+    // form.validateFields((err, fieldsValue) => {
+    //   if (err) return;
+    //   form.resetFields();
+    //   handleEndRide(ride.id, fieldsValue);
+    // });
+  };
+
+  const minutes = Math.round((new Date() - new Date(ride.start)) / 60000); // This will give difference in milliseconds
+
+  return (
+    <Modal
+      destroyOnClose
+      title="End Ride"
+      visible={isEndRideVisible}
+      forceRender
+      onOk={okHandle}
+      onCancel={() => handleEndRideVisible(false)}
+    >
+      <Form form={form} onFinish={()=>{handleEndRide(ride.id, form.getFieldsValue(true))}}>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Minutes"
+        name='minutes'
+      >
+        <InputNumber placeholder="Please Input" />
+      </FormItem>
+      </Form>
+    </Modal>
+  );
+});
 
 const getViolateType = (val, record) => {
   const violateColor = val >= 0 ? violateTypeColor[val] : "black";
@@ -102,7 +274,8 @@ const statusMap = ["default", "processing", "success", "error"];
 const operationStatus = ["NORMAL", "MANTAINANCE"];
 const connectStatus = ["Offline", "Online"];
 const lockStatus = ["Unlock", "lock"];
-const rideType = ["USING", "FINISHED"];
+// const rideType = ["True", "False"];
+const rideType = [{name:"True",value:true},{name:"False",value:false},{name:"All",value:0}];
 const vehicleType = ["Bicycle", "Scooter", "E-Bike", "COSMO"];
 const lockOperationWay = [
   "GPRS",
@@ -127,7 +300,6 @@ const limitType = ["Normal", "No Ride Zone", "limit speed zone", "unknown"];
 const violateTypeColor = ["black", "#ff0000", "#b72126", "#1300ff", "#f1fc64"];
 
 import { fenceType, fenceTypeColor } from "@/constant";
-import Search from "antd/lib/input/Search";
 
 const refundReason = [
   "Other",
@@ -462,7 +634,8 @@ class Ride extends PureComponent {
       render: val => <span>{vehicleType[val]}</span>
     },
     {
-      title: "Lock Way",
+      // title: "Lock Way",
+      title: "Lock Method",
       dataIndex: "lockMethod",
       render: val => <span>{lockOperationWay[val]}</span>
     },
@@ -480,7 +653,7 @@ class Ride extends PureComponent {
       render: getViolateType
     },
     {
-      title: "Unlock Way",
+      title: "Unlock Method",
       dataIndex: "unlockMethod",
       render: val => <span>{lockOperationWay[val]}</span>
     },
@@ -561,7 +734,6 @@ class Ride extends PureComponent {
   handleGetRides = () => {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
-
     dispatch({
       type: "rides/get",
       payload: filterCriteria
@@ -579,15 +751,21 @@ class Ride extends PureComponent {
   };
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
+    console.log(pagination);
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
 
     const params = {
       ...filterCriteria
     };
-
-    params.currentPage = pagination.current;
-    params.pageSize = pagination.pageSize;
+    params.pagination={
+      page:pagination.current-1,
+      pageSize:pagination.pageSize,
+      sort:{
+        sortBy:'created',
+        direction:'desc'
+      }
+    }
 
     if (sorter.field) {
       params.sorter = `${sorter.field}_${sorter.order}`;
@@ -605,12 +783,17 @@ class Ride extends PureComponent {
     const { form, dispatch } = this.props;
     const { filterCriteria } = this.state;
     // form.resetFields();
-
-    const params = {
-      currentPage: 1,
-      pageSize: filterCriteria.pageSize
-    };
-
+    let params = {
+      pagination:{
+        page: 0,
+        pageSize: 10,
+        sort:{
+          sortBy:'created',
+          direction:'desc'
+        }
+      }
+    }
+    this.props.selectedAreaId ? params.areaIds= [this.props.selectedAreaId] : null
     this.setState(
       {
         filterCriteria: params
@@ -620,25 +803,37 @@ class Ride extends PureComponent {
   };
 
   handleSearch = fieldsValue => {
+    console.log(fieldsValue);
     const { selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
     if (fieldsValue) {
       if(fieldsValue.timeRange){
-      fieldsValue.rideStart = moment(fieldsValue.timeRange[0])
-        .utcOffset(0)
-        .format("MM-DD-YYYY HH:mm:ss");
-      fieldsValue.rideEnd = moment(fieldsValue.timeRange[1])
-        .utcOffset(0)
-        .format("MM-DD-YYYY HH:mm:ss");
-      fieldsValue.timeRange = undefined;
+        fieldsValue.timeRange ={
+          start:moment(fieldsValue.timeRange[0]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss"),
+          end:moment(fieldsValue.timeRange[1]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss")
+        }
     }
+    if (fieldsValue.phone){
+        fieldsValue.phone = fieldsValue.phone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
+        fieldsValue.phone == '' ? delete fieldsValue.phone : null
+    }
+    fieldsValue.vehicleNumber ? null : delete fieldsValue.vehicleNumber
+    fieldsValue.notEnded === 0 ? delete fieldsValue.notEnded  : null
+    fieldsValue.lockMethod === null ? delete fieldsValue.lockMethod : null
+    fieldsValue.unlockMethod === null ? delete fieldsValue.unlockMethod : null
   }
 
-      const values = Object.assign({}, filterCriteria, fieldsValue, {
-        currentPage: 1,
-        pageSize: 10,
-        areaId: selectedAreaId
+      let values = Object.assign({}, fieldsValue, {
+        pagination:{
+          page: 0,
+          pageSize: 10,
+          sort:{
+            sortBy:'created',
+            direction:'desc'
+          }
+        }
       });
+      selectedAreaId ? values.areaIds= [selectedAreaId] : null
       this.setState(
         {
           filterCriteria: values
@@ -778,7 +973,6 @@ class Ride extends PureComponent {
 
   formatCsvData = rides => {
     const { areaNames, selectedAreaId } = this.props;
-
     return rides.map(ride => {
       return {
         id: ride.id,
@@ -789,8 +983,8 @@ class Ride extends PureComponent {
         charge: ride.charge,
         lockMethod: lockOperationWay[ride.lockMethod],
         unlockMethod: lockOperationWay[ride.unlockMethod],
-        start: moment(ride.start).format("MM-DD-YYYY HH:mm:ss"),
-        end: moment(ride.end).format("MM-DD-YYYY HH:mm:ss"),
+        start: moment(ride.start).format("YYYY-MM-DDTHH:mm:ss"),
+        end: moment(ride.end).format("YYYY-MM-DDTHH:mm:ss"),
         area: areaNames[ride.areaId],
         state: ride.state,
         areaId: ride.areaId,
@@ -809,15 +1003,15 @@ class Ride extends PureComponent {
     const fieldsValue = form.getFieldsValue(true)
     // form.validateFields((err, fieldsValue) => {
 
-      if (fieldsValue.timeRange) {
-        fieldsValue.rideStart = moment(fieldsValue.timeRange[0])
-          .utcOffset(0)
-          .format("MM-DD-YYYY HH:mm:ss");
-        fieldsValue.rideEnd = moment(fieldsValue.timeRange[1])
-          .utcOffset(0)
-          .format("MM-DD-YYYY HH:mm:ss");
-        fieldsValue.timeRange = undefined;
-      }
+      // if (fieldsValue.timeRange) {
+      //   fieldsValue.rideStart = moment(fieldsValue.timeRange[0])
+      //     .utcOffset(0)
+      //     .format("YYYY-MM-DDTHH:mm:ss");
+      //   fieldsValue.rideEnd = moment(fieldsValue.timeRange[1])
+      //     .utcOffset(0)
+      //     .format("YYYY-MM-DDTHH:mm:ss");
+      //   fieldsValue.timeRange = undefined;
+      // }
 
       const values = Object.assign(
         {},
@@ -825,8 +1019,10 @@ class Ride extends PureComponent {
         { areaId: selectedAreaId },
         fieldsValue,
         {
-          currentPage: null,
-          pageSize: null,
+          // pagination:{
+          //   page: null,
+          //   pageSize: null,
+          // },
           areaId: selectedAreaId
         }
       );
@@ -886,155 +1082,12 @@ class Ride extends PureComponent {
       total: rides.total
     };
 
-    const RenderSimpleForm=(props)=> {
-      const [form] = Form.useForm()
-      form.setFieldsValue(this.state.filterCriteria)
-      const handleSearchFirst=()=>{
-        form.submit()
-      }
-    return (
-      <Form onSubmit={handleSearchFirst} layout="inline" onFinish={()=>{this.handleSearch(form.getFieldsValue(true))}} form={form}>
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col span={6}>
-            <FormItem label="" name='numberOrPhone'>
-                <Search placeholder="NUMBER PHONE" onPressEnter={()=>{this.handleSearch(form.getFieldsValue(true))}}/>
-            </FormItem>
-          </Col>
-          <Col span={4}>
-            <FormItem label="Type" name='type'>
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  {rideType.map((status, index) => (
-                    <Option key={index} value={index}>
-                      {rideType[index]}
-                    </Option>
-                  ))}
-                  <Option value={null}>All</Option>
-                </Select>
-            </FormItem>
-          </Col>
-          <Col span={5}>
-            <FormItem label="Lock Way" name='lockWay'>
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  {lockOperationWay.map((status, index) => (
-                    <Option key={index} value={index}>
-                      {lockOperationWay[index]}
-                    </Option>
-                  ))}
-                  <Option value={null}>All</Option>
-                </Select>
-            </FormItem>
-          </Col>
-          <Col span={5}>
-            <FormItem label="Unlock Way" name='unlockWay'>
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  {lockOperationWay.map((status, index) => (
-                    <Option key={index} value={index}>
-                      {lockOperationWay[index]}
-                    </Option>
-                  ))}
-                  <Option value={null}>All</Option>
-                </Select>
-            </FormItem>
-          </Col>
-        {/* <Row gutter={{ md: 8, lg: 24, xl: 48 }}> */}
-          <Col span={6}>
-            <FormItem
-              label="Time"
-              name='timeRange'
-            >
-                <RangePicker
-                  // style={{ width: "90%" }}
-                  format="YYYY-MM-DD HH:mm:ss"
-                  showTime
-                />
-            </FormItem>
-          </Col>
-          <Col span={4}>
-            <FormItem
-              label="Vehicle Type"
-              name='vehicleType'
-            >
-                <Select placeholder="select">
-                  {vehicleType.map((status, index) => (
-                    <Option key={index} value={index}>
-                      {vehicleType[index]}
-                    </Option>
-                  ))}
-                  <Option value={null}>All</Option>
-                </Select>
-            </FormItem>
-          </Col>
-        {/* </Row> */}
-        </Row>
-
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col span={10}>
-            {`count: ${this.props.rides.total}`}
-          </Col>
-          <Col span={10}>
-            <span className={styles.submitButtons} >
-              <Button onClick={()=>{this.handleSearch(form.getFieldsValue(true))}}>
-                Search
-              </Button>
-              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-                Reset
-              </Button>
-            </span>
-          </Col>
-        </Row>
-      </Form>
-    );
-  }
-    
-    const EndRideForm = (props => {
-      const {
-        isEndRideVisible,
-        handleEndRide,
-        handleEndRideVisible,
-        ride,
-      } = props;
-      const [form] = Form.useForm()
-      form.setFieldsValue({"minutes": ride.minutes})
-      const okHandle = () => {
-        form.submit()
-        // form.validateFields((err, fieldsValue) => {
-        //   if (err) return;
-        //   form.resetFields();
-        //   handleEndRide(ride.id, fieldsValue);
-        // });
-      };
-    
-      const minutes = Math.round((new Date() - new Date(ride.start)) / 60000); // This will give difference in milliseconds
-    
-      return (
-        <Modal
-          destroyOnClose
-          title="End Ride"
-          visible={isEndRideVisible}
-          forceRender
-          onOk={okHandle}
-          onCancel={() => handleEndRideVisible(false)}
-        >
-          <Form form={form} onFinish={()=>{handleEndRide(ride.id, form.getFieldsValue(true))}}>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Minutes"
-            name='minutes'
-          >
-            <InputNumber placeholder="Please Input" />
-          </FormItem>
-          </Form>
-        </Modal>
-      );
-    });
-
     return (
       <PageHeaderWrapper title="Ride List">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>
-              <RenderSimpleForm/>
+              <RenderSimpleForm filterCriteria={this.state.filterCriteria} total={this.props.rides.total} handleFormReset={this.handleFormReset} handleSearch={this.handleSearch}/>
             </div>
             <StandardTable
               loading={loading}

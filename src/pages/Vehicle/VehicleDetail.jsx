@@ -276,8 +276,12 @@ const VehicleControlExtensionForm = (props => {
   )
 });
 const UpdateForm = (props => {
-  const { handleUpdate, areas, record, changeLockStatus, updateLocation, alertVehicle, getVehicleStatus, restartVehicle } = props;
+  const { handleUpdate, areas, record, changeLockStatus, updateLocation, alertVehicle, getVehicleStatus, restartVehicle,handleVoice } = props;
   const [form] = Form.useForm()
+  let voiceType = null
+  const onChangeVoice =(value)=>{
+    voiceType = value.target.value
+  }
   form.setFieldsValue(record)
   const okHandle = () => {
     form.submit()
@@ -378,7 +382,7 @@ const UpdateForm = (props => {
         label="Is Connected"
       >
         <div>
-          {record.connectStatus === 1 ? "true" : "false"}
+          {record.connected === true ? "true" : "false"}
         </div>
       </FormItem>
 
@@ -455,7 +459,7 @@ const UpdateForm = (props => {
       </Row>
       <Row>
         <Col>
-          <Button
+        <Button
             type="primary"
             onClick={getVehicleStatus}
             // disabled={!form.isFieldsTouched() && !authority.includes("get.status")}
@@ -463,7 +467,24 @@ const UpdateForm = (props => {
           >
             Get Status
           </Button>
-
+          <Button
+            type="primary"
+            onClick={()=>{handleVoice(voiceType)}}
+            // disabled={!form.isFieldsTouched() && !authority.includes("get.status")}
+            style={{ marginRight: "1em", marginTop: "0.5em" }}
+          >
+            Voice
+          </Button>
+          <Radio.Group onChange={onChangeVoice} style={{display:props.voiceVisible}}>
+            <Radio value={0}>SELF ALERT</Radio>
+            <Radio value={1}>INVALID PARKING</Radio>
+            <Radio value={2}>SLOW SPEED ZONE</Radio>
+            <Radio value={3}>DO NOT SHAKE</Radio>
+            <Radio value={4}>START RIDE</Radio>
+            <Radio value={5}>END RIDE</Radio>
+            <Radio value={6}>NO RIDE ZONE</Radio>
+            <Radio value={7}>LOW BATTERY</Radio>
+          </Radio.Group>
           {/* <Button
             icon="plus"
             type="primary"
@@ -487,7 +508,8 @@ class VehicleDetail extends PureComponent {
     isEndRideVisible: false,
     selectedRide: null,
     vehicleOrders: [],
-    orderTablePagination: null
+    orderTablePagination: null,
+    voiceVisible:'none'
   };
 
   vehicleRideColumns = [
@@ -719,7 +741,23 @@ class VehicleDetail extends PureComponent {
       }
     });
   }
-
+  handleVoice = (value) => {
+    const { dispatch, vehicleId,voiceVisible } = this.props;
+    console.log(value);
+    if(value){
+      dispatch({
+        type: "vehicles/controlVoice",
+        payload: {
+          vehicleId:vehicleId,
+          type:value,
+          repeated:false
+        }
+      });
+      this.setState({voiceVisible:'none'})
+    }else{
+      this.setState({voiceVisible:'block'})
+    }
+  }
   restartVehicle = () => {
     const { dispatch, vehicleId } = this.props;
     dispatch({
@@ -951,11 +989,13 @@ class VehicleDetail extends PureComponent {
             {record && <UpdateForm
               areas={areas.data}
               record={record}
+              voiceVisible = {this.state.voiceVisible}
               handleUpdate={this.handleUpdate}
               changeLockStatus={this.changeLockStatus}
               updateLocation={this.updateLocation}
               restartVehicle={this.restartVehicle}
               getVehicleStatus={this.getVehicleStatus}
+              handleVoice = {this.handleVoice}
               alertVehicle={this.alertVehicle}
             />}
           </Card>

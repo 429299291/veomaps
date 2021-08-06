@@ -47,16 +47,16 @@ export async function deletePrimeLocation(id) {
   });
 }
 
-export async function getFencesByAreaId(areaId) {
-  return request(`/admins/geo/fences?areaId=${areaId}`, {
-    method: "GET"
-  });
-}
 // export async function getFencesByAreaId(areaId) {
-//   return request(`/api/admins/areas/${areaId}/fences`, {
+//   return request(`/admins/geo/fences?areaId=${areaId}`, {
 //     method: "GET"
 //   });
 // }
+export async function getFencesByAreaId(areaId) {
+  return request(`/api/admins/areas/${areaId}/fences`, {
+    method: "GET"
+  });
+}
 
 
 
