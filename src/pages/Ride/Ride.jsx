@@ -631,6 +631,7 @@ class Ride extends PureComponent {
   };
 
   handleSearch = fieldsValue => {
+    console.log(fieldsValue);
     const { selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
     if (fieldsValue) {
@@ -647,19 +648,9 @@ class Ride extends PureComponent {
       //   .format("YYYY-MM-DDTHH:mm:ss");
       // fieldsValue.timeRange = undefined;
     }
-    // if (fieldsValue.numberOrPhone){
-    //   if(
-    //     /[0-9]()/.test(fieldsValue.numberOrPhone) &&
-    //   !fieldsValue.numberOrPhone.includes("@")
-    //   ) {
-    //     fieldsValue.phone = fieldsValue.numberOrPhone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
-    //     delete(fieldsValue.name)
-    //     delete(fieldsValue.numberOrPhone)
-    //     delete(fieldsValue.email)
-    //   }else{
-        
-    //   }
-    // }
+    if (fieldsValue.phone){
+        fieldsValue.phone = fieldsValue.phone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
+    }
     fieldsValue.notEnded === 0 ? delete fieldsValue.notEnded  : null
   }
 
@@ -932,12 +923,12 @@ class Ride extends PureComponent {
         notEnded: 0,
       }}>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-        <Col span={4}>
+        <Col span={5}>
             <FormItem label="PHONE" name='phone'>
                 <Input placeholder="PHONE" />
             </FormItem>
           </Col>
-          <Col span={5}>
+          <Col span={6}>
             <FormItem label="Vehicle Number" name='vehicleNumber'>
                 <Input placeholder="Vehicle Number" />
             </FormItem>
