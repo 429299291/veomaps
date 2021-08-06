@@ -29,7 +29,7 @@ export default {
   effects: {
     *get({ payload }, { call, put }) {
       // const total = yield call(getAdminRidesTotal, payload);
-      // console.log(total);
+      console.log(payload);
 
       let data = yield call(getAdminRides, payload);
       const total = data.totalSize
