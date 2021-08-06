@@ -1,16 +1,19 @@
 import { stringify } from "qs";
 import request from "@/utils/request";
 
-export async function getAdminRides(params) {
-  return request(`/admins/rides?${stringify(params, { indices: false })}`, {
-    method: "GET"
-  });
-}
 // export async function getAdminRides(params) {
-//   return request(`/api/admins/rides?${stringify(params, { indices: false })}`, {
+//   return request(`/admins/rides?${stringify(params, { indices: false })}`, {
 //     method: "GET"
 //   });
 // }
+export async function getAdminRides(params) {
+  return request(`/api/admins/rides/search`, {
+    method: "POST",
+    body:{
+      ...params
+    }
+  });
+}
 
 export async function getAdminRidesTotal(params) {
   return request(
@@ -35,8 +38,8 @@ export async function getRideRoute(rideId) {
 }
 
 export async function endRide(rideId, minutes) {
-  return request(`/api/admins/rides/${rideId}/end`, {
-    method: "POST",
+  return request(`/admins/rides/${rideId}/end`, {
+    method: "PUT",
     body: minutes
   });
 }
