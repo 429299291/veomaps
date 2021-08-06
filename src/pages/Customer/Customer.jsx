@@ -71,7 +71,7 @@ const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+
 const customerStatus = ["NORMAL", "FROZEN", "ERROR"];
 
 // const queryStatus = ["FROZEN"];
-const queryStatus = ["NORMAL","FROZEN"];
+const queryStatus = ["NORMAL","FROZEN",'ALL'];
 
 const authority = getAuthority();
 const RenderSimpleForm=(props)=> {
@@ -81,7 +81,9 @@ const RenderSimpleForm=(props)=> {
     form.resetFields()
   }
   return (
-    <Form layout="inline" form={form}>
+    <Form layout="inline" form={form} initialValues={{
+      status:2
+    }}>
       {/* <Row gutter={{ md: 8, lg: 24, xl: 48 }}> */}
         <Col span={5} style={{padding: '0 18px 0 0'}}>
           <FormItem label="phone" name='phone'> 
@@ -619,27 +621,31 @@ class Customer extends PureComponent {
         fieldsValue.created = undefined;
       }
       const values = Object.assign({}, filterCriteria, fieldsValue, {
+        // status:2,
         pagination:{
           page: 0,
           pageSize: 10
         }
       });
-      if(
-        /[0-9]()/.test(values.phone) &&
-      !values.phone.includes("@")
-      ) {
-        values.phone = values.phone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
-        delete(values.name)
-        delete(values.email)
-      }else if(values.phone.includes("@")){
-        values.email = values.phone.trim()
-        delete(values.phone)
-        delete(values.name)
-      }else{
-        values.name = values.phone.trim()
-        delete(values.email)
-        delete(values.phone)
+      if(values.phone){
+        if(
+          /[0-9]()/.test(values.phone) &&
+        !values.phone.includes("@")
+        ) {
+          values.phone = values.phone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
+          delete(values.name)
+          delete(values.email)
+        }else if(values.phone.includes("@")){
+          values.email = values.phone.trim()
+          delete(values.phone)
+          delete(values.name)
+        }else{
+          values.name = values.phone.trim()
+          delete(values.email)
+          delete(values.phone)
+        }
       }
+      values.status == 2 ? delete values.status : null
       this.setState(
         {
           filterCriteria: values

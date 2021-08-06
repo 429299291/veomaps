@@ -22,7 +22,8 @@ import {
   controlVehicle,
   controlVehicleExtension,
   getVehicleSnapshot,
-  handleGetPrimLocationSnapshot
+  handleGetPrimLocationSnapshot,
+  controlVoice
 } from "@/services/vehicle";
 import { message } from "antd";
 
@@ -38,7 +39,6 @@ export default {
 
   effects: {
     *get({ payload }, { call, put }) {
-      console.log('===');
       //const total = yield call(countVehicles, payload);
       const result = yield call(getVehicles, payload);
 
@@ -51,6 +51,11 @@ export default {
         data: Array.isArray(result.content) ? result.content : [],
         total: result.totalSize
       });
+    },
+    *controlVoice({ payload }, { call, put }) {
+      console.log(payload);
+      //const total = yield call(countVehicles, payload);
+      const result = yield call(controlVoice, payload);
     },
     
     *getVehicleSnapshot({ payload, onSuccess }, { call, put }) {

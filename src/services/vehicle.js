@@ -221,3 +221,13 @@ export async function controlVehicleExtension(id, params) {
     }
   });
 }
+export async function controlVoice(params) {
+  console.log('000');
+  return request(`/api/admins/vehicles/${params.vehicleId}/voice`, {
+    method: "POST",
+    body: {
+      repeated:params.repeated,
+      type:params.type
+    }
+  });
+}
