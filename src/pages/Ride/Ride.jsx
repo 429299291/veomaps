@@ -611,12 +611,17 @@ class Ride extends PureComponent {
     const { form, dispatch } = this.props;
     const { filterCriteria } = this.state;
     // form.resetFields();
-
-    const params = {
-      // currentPage: 1,
-      pageSize: filterCriteria.pageSize
-    };
-
+    let params = {
+      pagination:{
+        page: 0,
+        pageSize: 10,
+        sort:{
+          sortBy:'created',
+          direction:'desc'
+        }
+      }
+    }
+    this.props.selectedAreaId ? params.areaIds= [this.props.selectedAreaId] : null
     this.setState(
       {
         filterCriteria: params
