@@ -462,7 +462,8 @@ class Ride extends PureComponent {
       render: val => <span>{vehicleType[val]}</span>
     },
     {
-      title: "Lock Way",
+      // title: "Lock Way",
+      title: "Lock Method",
       dataIndex: "lockMethod",
       render: val => <span>{lockOperationWay[val]}</span>
     },
@@ -480,7 +481,7 @@ class Ride extends PureComponent {
       render: getViolateType
     },
     {
-      title: "Unlock Way",
+      title: "Unlock Method",
       dataIndex: "unlockMethod",
       render: val => <span>{lockOperationWay[val]}</span>
     },
@@ -946,7 +947,7 @@ class Ride extends PureComponent {
             </FormItem>
           </Col>
           <Col span={5}>
-            <FormItem label="Lock Method" name='lockWay'>
+            <FormItem label="Lock Method" name='lockMethod'>
                 <Select placeholder="select" style={{ width: "100%" }}>
                   {lockOperationWay.map((status, index) => (
                     <Option key={index} value={index}>
@@ -958,7 +959,7 @@ class Ride extends PureComponent {
             </FormItem>
           </Col>
           <Col span={5}>
-            <FormItem label="Unlock Method" name='unlockWay'>
+            <FormItem label="Unlock Method" name='unlockMethod'>
                 <Select placeholder="select" style={{ width: "100%" }}>
                   {lockOperationWay.map((status, index) => (
                     <Option key={index} value={index}>
