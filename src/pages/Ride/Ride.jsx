@@ -762,7 +762,7 @@ class Ride extends PureComponent {
       page:pagination.current-1,
       pageSize:pagination.pageSize,
       sort:{
-        sortBy:'created',
+        sortBy:'start',
         direction:'desc'
       }
     }
@@ -788,7 +788,7 @@ class Ride extends PureComponent {
         page: 0,
         pageSize: 10,
         sort:{
-          sortBy:'created',
+          sortBy:'start',
           direction:'desc'
         }
       }
@@ -828,7 +828,7 @@ class Ride extends PureComponent {
           page: 0,
           pageSize: 10,
           sort:{
-            sortBy:'created',
+            sortBy:'start',
             direction:'desc'
           }
         }
