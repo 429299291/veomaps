@@ -34,16 +34,6 @@ const FormItem = Form.Item;
 const RenderSimpleForm=(props)=> {
   const [form] = Form.useForm()
   const handleChangetype= (value)=>{
-    // switch (value) {
-    //   case 0:
-    //     form.setFieldsValue({ statuses: 0 });
-    //     return;
-    //   case 1:
-    //     form.setFieldsValue({ statuses: 1 });
-    //     return;
-    //   case 2:
-    //     form.setFieldsValue({ statuses: 2 });
-    // }
   }
   return (
     <Form onSubmit={()=>{props.handleSearch(form.getFieldsValue(true))}} form={form} initialValues={{ status: 0 }}>
@@ -441,7 +431,6 @@ class Technician extends PureComponent {
     const { filterCriteria } = this.state;
 
     let result = technicians;
-    values.status== 2 ? delete values.status : null
     if(values.name){
       if(
         /[0-9]()/.test(values.name) &&
