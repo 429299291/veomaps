@@ -70,7 +70,6 @@ const RenderSimpleForm=(props)=> {
     props.handleFormReset()
     form.resetFields()
   }
-  console.log(props);
   // setTimeout(() => {
   //   props.filterCriteria.timeRange = [moment('2015-01-01T12:22:22', dateFormat), moment('2021-05-01T12:33:33', dateFormat)] 
   // }, 20);
@@ -85,7 +84,6 @@ const RenderSimpleForm=(props)=> {
       }, 20);
     }
   }
-  console.log(props.filterCriteria);
   setTimeout(() => {
     props.filterCriteria.hasOwnProperty('notEnded') ? null : props.filterCriteria.notEnded = 0
     props.filterCriteria.hasOwnProperty('lockMethod') ? null : props.filterCriteria.lockMethod = null
@@ -93,18 +91,22 @@ const RenderSimpleForm=(props)=> {
   }, 20);
   form.setFieldsValue(props.filterCriteria)
 return (
-  <Form layout="inline" form={form} initialValues={{
+  <Form form={form} initialValues={{
     notEnded: 0,
   }}>
     <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
     <Col span={5}>
-        <FormItem label="PHONE" name='phone'>
-            <Input placeholder="PHONE" />
+        <FormItem label="Phone" name='phone' rules={[
+          {message: 'PHONE Error!',type:'number'},
+        ]}>
+            <InputNumber placeholder="Phone"  style={{width:'100%'}} maxlength='10'/>
         </FormItem>
       </Col>
-      <Col span={6}>
-        <FormItem label="Vehicle Number" name='vehicleNumber'>
-            <Input placeholder="Vehicle Number" />
+      <Col span={5}>
+        <FormItem label="Vehicle Number" name='vehicleNumber' rules={[
+          {message: 'Vehicle Number Error!',type:'number'},
+        ]}>
+            <InputNumber placeholder="Vehicle Number" style={{width:'100%'}}/>
         </FormItem>
       </Col>
       <Col span={4}>
@@ -175,7 +177,7 @@ return (
     </Row>
 
     <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-      <Col span={10}>
+      <Col span={3}>
         {`count: ${props.total}`}
       </Col>
       <Col span={10}>
@@ -300,6 +302,7 @@ const limitType = ["Normal", "No Ride Zone", "limit speed zone", "unknown"];
 const violateTypeColor = ["black", "#ff0000", "#b72126", "#1300ff", "#f1fc64"];
 
 import { fenceType, fenceTypeColor } from "@/constant";
+import { number } from "prop-types";
 
 const refundReason = [
   "Other",
@@ -594,7 +597,7 @@ const RefundForm = (props => {
 class Ride extends PureComponent {
   state = {
     isEndRideVisible: false,
-    filterCriteria: { currentPage: 1, pageSize: 10 },
+    filterCriteria: {},
     selectedRecord: null,
     rideRefundCalculateResult: null
   };
@@ -751,7 +754,6 @@ class Ride extends PureComponent {
   };
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    console.log(pagination);
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
 
@@ -813,10 +815,10 @@ class Ride extends PureComponent {
           end:moment(fieldsValue.timeRange[1]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss")
         }
     }
-    if (fieldsValue.phone){
-        fieldsValue.phone = fieldsValue.phone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
-        fieldsValue.phone == '' ? delete fieldsValue.phone : null
-    }
+    // if (fieldsValue.phone){
+    //     fieldsValue.phone = fieldsValue.phone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
+    //     fieldsValue.phone == '' ? delete fieldsValue.phone : null
+    // }
     fieldsValue.vehicleNumber ? null : delete fieldsValue.vehicleNumber
     fieldsValue.notEnded === 0 ? delete fieldsValue.notEnded  : null
     fieldsValue.lockMethod === null ? delete fieldsValue.lockMethod : null
@@ -1077,7 +1079,7 @@ class Ride extends PureComponent {
 
     const pagination = {
       defaultCurrent: 1,
-      current: filterCriteria.currentPage,
+      // current: filterCriteria.currentPage,
       pageSize: filterCriteria.pageSize,
       total: rides.total
     };
