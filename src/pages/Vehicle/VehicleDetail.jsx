@@ -725,7 +725,7 @@ class VehicleDetail extends PureComponent {
     dispatch({
       type: "vehicles/getVehicle",
       vehicleId: vehicleId,
-      onSuccess: response => this.setState({ record: response }, () => this.getAreaGeoInfo(response.areaId))
+      onSuccess: response => this.setState({ record: response }, () => this.getAreaGeoInfo(response.areaId)),
     });
   };
 
@@ -743,7 +743,6 @@ class VehicleDetail extends PureComponent {
   }
   handleVoice = (value) => {
     const { dispatch, vehicleId,voiceVisible } = this.props;
-    console.log(value);
     if(value){
       dispatch({
         type: "vehicles/controlVoice",

@@ -70,7 +70,6 @@ const RenderSimpleForm=(props)=> {
     props.handleFormReset()
     form.resetFields()
   }
-  console.log(props);
   // setTimeout(() => {
   //   props.filterCriteria.timeRange = [moment('2015-01-01T12:22:22', dateFormat), moment('2021-05-01T12:33:33', dateFormat)] 
   // }, 20);
@@ -85,7 +84,6 @@ const RenderSimpleForm=(props)=> {
       }, 20);
     }
   }
-  console.log(props.filterCriteria);
   setTimeout(() => {
     props.filterCriteria.hasOwnProperty('notEnded') ? null : props.filterCriteria.notEnded = 0
     props.filterCriteria.hasOwnProperty('lockMethod') ? null : props.filterCriteria.lockMethod = null
@@ -751,7 +749,6 @@ class Ride extends PureComponent {
   };
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    console.log(pagination);
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
 
@@ -803,7 +800,6 @@ class Ride extends PureComponent {
   };
 
   handleSearch = fieldsValue => {
-    console.log(fieldsValue);
     const { selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
     if (fieldsValue) {

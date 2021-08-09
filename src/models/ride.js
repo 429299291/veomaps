@@ -109,7 +109,14 @@ export default {
       }
     },
     *getCustomerRides({ customerId, onSuccess }, { call, put }) {
-      let rides = yield call(getAdminRides, { customerId: customerId });
+      let rides = yield call(getAdminRides, { customerId: customerId,pagination:{
+        page: 0,
+        pageSize: 10,
+        sort:{
+          sortBy:'start',
+          direction:'desc'
+        }
+      } });
       rides = rides.content
 
       if (Array.isArray(rides)) {
@@ -120,7 +127,14 @@ export default {
       }
     },
     *getVehicleRides({ vehicleId, onSuccess }, { call, put }) {
-      let rides = yield call(getAdminRides, { vehicleId: vehicleId });
+      let rides = yield call(getAdminRides, { vehicleId: vehicleId,pagination:{
+        page: 0,
+        pageSize: 10,
+        sort:{
+          sortBy:'start',
+          direction:'desc'
+        }
+      } });
       rides = rides.content
       if (Array.isArray(rides)) {
         rides.map(ride => (ride.key = ride.id));
@@ -131,8 +145,6 @@ export default {
     },
     *getRoute({ rideId, onSuccess, onFail }, { call, put }) {
       const path = yield call(getRideRoute, rideId);
-      console.log('path');
-      console.log(path);
       if (path && typeof path === "object") {
         onSuccess(path);
       }
