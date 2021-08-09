@@ -592,7 +592,7 @@ const RefundForm = (props => {
 class Ride extends PureComponent {
   state = {
     isEndRideVisible: false,
-    filterCriteria: { currentPage: 1, pageSize: 10 },
+    filterCriteria: {},
     selectedRecord: null,
     rideRefundCalculateResult: null
   };
@@ -1073,7 +1073,7 @@ class Ride extends PureComponent {
 
     const pagination = {
       defaultCurrent: 1,
-      current: filterCriteria.currentPage,
+      // current: filterCriteria.currentPage,
       pageSize: filterCriteria.pageSize,
       total: rides.total
     };
