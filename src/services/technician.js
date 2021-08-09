@@ -21,7 +21,7 @@ export async function getTechnicians(params) {
 export async function getTechniciansAll(params) {
   return request(`/api/admins/technicians/search`,{
     method:'POST',
-    body:{...params}
+    body:params.status !== 2 ? {...params} : {}
   }
   );
 }
