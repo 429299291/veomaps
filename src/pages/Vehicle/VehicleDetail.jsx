@@ -844,7 +844,6 @@ class VehicleDetail extends PureComponent {
 
   handleGetVehicleRides = vehicleId => {
     const { dispatch } = this.props;
-    console.log('===');
       dispatch({
         type: "rides/getVehicleRides",
         payload:{

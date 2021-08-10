@@ -74,6 +74,8 @@ import scooterLocked from "../../assets/scooter-pin-lockedbackend.png";
 import scooterUnLocked from "../../assets/scooter-pin-unlockedbackend.png";
 import scooterReported from "../../assets/scooter-pin-reportedbackend.png";
 
+import cosmo_normal from "../../assets/cosmo_normal.png";
+
 const icons = {
     ebikeError,
     ebikeLowBattery,
@@ -117,9 +119,10 @@ const getVehicleIcon = (vehicleDetail) => {
               break;
         case 3:
           if (vehicleDetail.vehiclePower <= 20) {
-            return scooterLowBattery;
+            return cosmo_normal;
           } else {
-              return constructIcon(vehicleDetail, "scooter");
+              // return constructIcon(vehicleDetail, "scooter");
+              return cosmo_normal;
           }
           break;
             default:
@@ -305,7 +308,6 @@ const MapComponent = compose(
                 type: "vehicles/getVehicleDetail",
                 vehicleId: vehicleId,
                 onSuccess: response =>  {
-                  console.log(response);
                     this.setState({ vehicleDetail: response, isLoading: false });
                     this.getAreaGeoInfo(response.areaId)
                     }
@@ -319,7 +321,6 @@ const MapComponent = compose(
                 type: "vehicles/getVehicleDetail",
                 vehicleId: vehicleId,
                 onSuccess: response =>  {
-                  console.log(response);
                     this.setState({ vehicleDetail: response, isLoading: false });
                     this.getAreaGeoInfo(response.areaId)
                     }
