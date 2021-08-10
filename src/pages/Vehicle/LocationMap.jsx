@@ -74,6 +74,8 @@ import scooterLocked from "../../assets/scooter-pin-lockedbackend.png";
 import scooterUnLocked from "../../assets/scooter-pin-unlockedbackend.png";
 import scooterReported from "../../assets/scooter-pin-reportedbackend.png";
 
+import cosmo_normal from "../../assets/cosmo_normal.png";
+
 const icons = {
     ebikeError,
     ebikeLowBattery,
@@ -109,13 +111,21 @@ const getVehicleIcon = (vehicleDetail) => {
             }
             break;
         case 2:
-            if (vehicleDetail.vehiclePower <= 20 || vehicleDetail.power < 20) {
-                return ebikeLowBattery;
-            } else {
-                return constructIcon(vehicleDetail, "ebike");
-            }
-            break;
-        default:
+              if (vehicleDetail.vehiclePower <= 20 || vehicleDetail.power < 20) {
+                  return ebikeLowBattery;
+              } else {
+                  return constructIcon(vehicleDetail, "ebike");
+              }
+              break;
+        case 3:
+          if (vehicleDetail.vehiclePower <= 20) {
+            return cosmo_normal;
+          } else {
+              // return constructIcon(vehicleDetail, "scooter");
+              return cosmo_normal;
+          }
+          break;
+            default:
             return null;
     }
 }
@@ -152,10 +162,8 @@ const MapComponent = compose(
     withGoogleMap
   )(props => {
     const { record, fences,  vehicleDetail , currPosition, vehicleRef, shouldShowLastScan } = props;
-  
-    const location =  vehicleDetail.location.lat ? (({ lat, lng }) => ({ lat: lng, lng:lat }))(vehicleDetail.location) : (({ x, y }) => ({ lat: y, lng:x }))(vehicleDetail.location);
+    const location =  vehicleDetail.location.lat ?vehicleDetail.location : (({ x, y }) => ({ lat: y, lng:x }))(vehicleDetail.location);
     let lastScan = false;
-
     let lastScanLabel = null;
 
     if (vehicleRef && vehicleRef.length > 0) {
@@ -430,7 +438,7 @@ const MapComponent = compose(
         const { vehicleDetail, isLoading, currPosition, vehicleRef, shouldShowLastScan} = this.state;
         if (vehicleDetail &&vehicleDetail.location) {
 
-          vehicleDetail.location =  vehicleDetail.location.lat ? (({ lat, lng }) => ({ lat: lng, lng:lat }))(vehicleDetail.location) : (({ x, y }) => ({ lat: y, lng:x }))(vehicleDetail.location);
+          vehicleDetail.location =  vehicleDetail.location.lat ? vehicleDetail.location : (({ x, y }) => ({ lat: y, lng:x }))(vehicleDetail.location);
         }
 
        
@@ -457,14 +465,14 @@ const MapComponent = compose(
                     <div style={{position: "absolute", left: "1vw", bottom: "2em", color: "#51B5AA"}}>
                         <Button onClick={() => this.goMapAndNavigate(vehicleDetail.location.lat, vehicleDetail.location.lng)} > Go! </Button>
                     </div> 
-
+{/* 
                     <div style={{position: "absolute", left: "1vw", bottom: "5em", color: "#51B5AA"}}>
                         <Checkbox onChange={this.handleGetMyLocation}>Show My Position</Checkbox>
                     </div> 
 
                     <div style={{position: "absolute", left: "1vw", bottom: "7em", color: "#51B5AA"}}>
                         <Checkbox onChange={this.handleShowLastScan}>Show Last Scan Position</Checkbox>
-                    </div> 
+                    </div>  */}
 
 
                 </div>
