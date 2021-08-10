@@ -109,13 +109,20 @@ const getVehicleIcon = (vehicleDetail) => {
             }
             break;
         case 2:
-            if (vehicleDetail.vehiclePower <= 20 || vehicleDetail.power < 20) {
-                return ebikeLowBattery;
-            } else {
-                return constructIcon(vehicleDetail, "ebike");
-            }
-            break;
-        default:
+              if (vehicleDetail.vehiclePower <= 20 || vehicleDetail.power < 20) {
+                  return ebikeLowBattery;
+              } else {
+                  return constructIcon(vehicleDetail, "ebike");
+              }
+              break;
+        case 3:
+          if (vehicleDetail.vehiclePower <= 20) {
+            return scooterLowBattery;
+          } else {
+              return constructIcon(vehicleDetail, "scooter");
+          }
+          break;
+            default:
             return null;
     }
 }
@@ -298,6 +305,7 @@ const MapComponent = compose(
                 type: "vehicles/getVehicleDetail",
                 vehicleId: vehicleId,
                 onSuccess: response =>  {
+                  console.log(response);
                     this.setState({ vehicleDetail: response, isLoading: false });
                     this.getAreaGeoInfo(response.areaId)
                     }
@@ -311,6 +319,7 @@ const MapComponent = compose(
                 type: "vehicles/getVehicleDetail",
                 vehicleId: vehicleId,
                 onSuccess: response =>  {
+                  console.log(response);
                     this.setState({ vehicleDetail: response, isLoading: false });
                     this.getAreaGeoInfo(response.areaId)
                     }
