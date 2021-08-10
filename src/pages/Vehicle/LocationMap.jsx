@@ -152,10 +152,8 @@ const MapComponent = compose(
     withGoogleMap
   )(props => {
     const { record, fences,  vehicleDetail , currPosition, vehicleRef, shouldShowLastScan } = props;
-  
-    const location =  vehicleDetail.location.lat ? (({ lat, lng }) => ({ lat: lng, lng:lat }))(vehicleDetail.location) : (({ x, y }) => ({ lat: y, lng:x }))(vehicleDetail.location);
+    const location =  vehicleDetail.location.lat ?vehicleDetail.location : (({ x, y }) => ({ lat: y, lng:x }))(vehicleDetail.location);
     let lastScan = false;
-
     let lastScanLabel = null;
 
     if (vehicleRef && vehicleRef.length > 0) {
@@ -430,7 +428,7 @@ const MapComponent = compose(
         const { vehicleDetail, isLoading, currPosition, vehicleRef, shouldShowLastScan} = this.state;
         if (vehicleDetail &&vehicleDetail.location) {
 
-          vehicleDetail.location =  vehicleDetail.location.lat ? (({ lat, lng }) => ({ lat: lng, lng:lat }))(vehicleDetail.location) : (({ x, y }) => ({ lat: y, lng:x }))(vehicleDetail.location);
+          vehicleDetail.location =  vehicleDetail.location.lat ? vehicleDetail.location : (({ x, y }) => ({ lat: y, lng:x }))(vehicleDetail.location);
         }
 
        
