@@ -29,8 +29,6 @@ export default {
   effects: {
     *get({ payload }, { call, put }) {
       // const total = yield call(getAdminRidesTotal, payload);
-      console.log(payload);
-
       let data = yield call(getAdminRides, payload);
       const total = data.totalSize
       data = data.content
@@ -108,37 +106,27 @@ export default {
         onError();
       }
     },
-    *getCustomerRides({ customerId, onSuccess }, { call, put }) {
-      let rides = yield call(getAdminRides, { customerId: customerId,pagination:{
-        page: 0,
-        pageSize: 10,
-        sort:{
-          sortBy:'start',
-          direction:'desc'
-        }
-      } });
+    *getCustomerRides({ payload, onSuccess }, { call, put }) {
+      let rides = yield call(getAdminRides,payload);
+      const totalSize = rides.totalSize
+      const current = rides.current
       rides = rides.content
-
       if (Array.isArray(rides)) {
         rides.map(ride => (ride.key = ride.id));
-        onSuccess(rides);
+        onSuccess(rides,totalSize,current);
       } else {
         message.error("Fail to get customer rides.");
       }
     },
-    *getVehicleRides({ vehicleId, onSuccess }, { call, put }) {
-      let rides = yield call(getAdminRides, { vehicleId: vehicleId,pagination:{
-        page: 0,
-        pageSize: 10,
-        sort:{
-          sortBy:'start',
-          direction:'desc'
-        }
-      } });
+    *getVehicleRides({ payload, onSuccess }, { call, put }) {
+      let rides = yield call(getAdminRides,payload);
+      console.log(rides);
+      const totalSize = rides.totalSize
+      const current = rides.page
       rides = rides.content
       if (Array.isArray(rides)) {
         rides.map(ride => (ride.key = ride.id));
-        onSuccess(rides);
+        onSuccess(rides,totalSize,current);
       } else {
         message.error("Fail to get customer rides.");
       }

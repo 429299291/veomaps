@@ -60,6 +60,140 @@ const REFUND_REASON = ["first timer forgot to lock", "first timer locked outside
 
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    
+const AddCouponForm = (props => {
+  const { coupons, handleAddCustomerCoupon } = props;
+  const [form]= Form.useForm();
+  return (
+    <div>
+      <Form form={form}>
+      {coupons && (
+        <FormItem
+          labelCol={{ span: 5 }}
+          wrapperCol={{ span: 15 }}
+          label="Coupon"
+          name='couponId'
+          rules={
+            [
+              {
+                required: true,
+                message: "You have pick a coupon to add"
+              }
+            ]
+          }
+        >
+            <Select placeholder="select" style={{ width: "100%" }}>
+              {coupons.map(coupon => (
+                <Option key={coupon.id} value={coupon.id}>
+                  Name: <b> {coupon.name} </b> free minutes:{" "}
+                  {coupon.freeMinutes} Valid days: <b> {coupon.days} </b>
+                </Option>
+              ))}
+            </Select>
+        </FormItem>
+      )}
+
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Start Time"
+        name='start'
+        rules={
+          [
+            {
+              required: true,
+              message: "You have to pick a time to start!"
+            }
+          ]
+        }
+      >
+          <DatePicker
+            showTime
+            format="YYYY-MM-DD HH:mm:ss"
+            placeholder="Select Start Time"
+          />
+      </FormItem>
+
+      <Row>
+        <Col>
+          <Button
+            type="primary"
+            onClick={() => handleAddCustomerCoupon(form.getFieldsValue(true))}
+            // disabled={!form.isFieldsTouched()}
+          >
+            Add Coupon
+          </Button>
+        </Col>
+      </Row>
+      </Form>
+    </div>
+  );
+});
+// const MembershipForm = (props => {
+//   const { memberships, handleBuyMembership } = props;
+//   const [form] = Form.useForm();
+//   const activeMembership = memberships.filter(m => m.activated).reduce((o , m) => m, null);
+
+//   const [allowToBuy, setAllowToBuy] = useState(false); 
+
+//   const [isLoading, setIsLoading] = useState(false);
+
+
+//   const okHandle = () => {
+//     let fieldsValue = form.getFieldsValue(true)
+//     if(!fieldsValue.selectedMembership) return false
+    
+//     setIsLoading(true);
+//     const setNotLoadiing = () => setIsLoading(false);
+//     handleBuyMembership(fieldsValue.selectedMembership, setNotLoadiing);
+// };
+
+//   return (
+//     <div>
+//     {isLoading ?
+//       <Spin size="large" />
+//       :
+//       <Form form={form}>
+//       {memberships && (
+//         <FormItem
+//           labelCol={{ span: 5 }}
+//           wrapperCol={{ span: 15 }}
+//           label="Membership"
+//           name='selectedMembership'
+//         >
+//             <Select 
+//                 placeholder="select" style={{ width: "100%" }} 
+//                 defaultValue ={activeMembership ? activeMembership.id : undefined}
+//                 onChange={val => setAllowToBuy(!activeMembership && !!val)}    
+//                 disabled={!!activeMembership}            
+//             >
+//               { (activeMembership ? [activeMembership] : memberships).map((membership, index) => (
+//                 <Option key={index} value={membership.id}>
+//                   { membership.name + "," + membership.description}
+//                 </Option>
+//               ))}
+//             </Select>
+//         </FormItem>
+//       )}
+
+
+//       <Row>
+//         <Col>
+//           <Button
+//             type="primary"
+//             onClick={okHandle}
+//             disabled={!allowToBuy}
+//           >
+//             Buy Membership
+//           </Button>
+//         </Col>
+//       </Row>
+//       </Form>
+//     }         
+//   </div>
+
+//   );
+// });
 const MembershipForm = (props => {
   const { memberships, handleBuyMembership } = props;
   const [form] = Form.useForm();
@@ -81,50 +215,308 @@ const MembershipForm = (props => {
 
   return (
     <div>
-    {isLoading ?
-      <Spin size="large" />
-      :
-      <Form form={form}>
-      {memberships && (
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="Membership"
-          name='selectedMembership'
-        >
-            <Select 
-                placeholder="select" style={{ width: "100%" }} 
-                defaultValue ={activeMembership ? activeMembership.id : undefined}
-                onChange={val => setAllowToBuy(!activeMembership && !!val)}    
-                disabled={!!activeMembership}            
-            >
-              { (activeMembership ? [activeMembership] : memberships).map((membership, index) => (
-                <Option key={index} value={membership.id}>
-                  { membership.name + "," + membership.description}
-                </Option>
-              ))}
-            </Select>
-        </FormItem>
-      )}
-
-
-      <Row>
-        <Col>
-          <Button
-            type="primary"
-            onClick={okHandle}
-            disabled={!allowToBuy}
+      {isLoading ?
+        <Spin size="large" />
+        :
+        <Form form={form}>
+        {memberships && (
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="Membership"
+            name='selectedMembership'
           >
-            Buy Membership
-          </Button>
-        </Col>
-      </Row>
-      </Form>
-    }         
-  </div>
-
+              <Select 
+                  placeholder="select" style={{ width: "100%" }} 
+                  defaultValue ={activeMembership ? activeMembership.id : undefined}
+                  onChange={val => setAllowToBuy(!activeMembership && !!val)}    
+                  disabled={!!activeMembership}            
+              >
+                { (activeMembership ? [activeMembership] : memberships).map((membership, index) => (
+                  <Option key={index} value={membership.id}>
+                    { membership.name + "," + membership.description}
+                  </Option>
+                ))}
+              </Select>
+          </FormItem>
+        )}
+  
+  
+        <Row>
+          <Col>
+            <Button
+              type="primary"
+              onClick={okHandle}
+              disabled={!allowToBuy}
+            >
+              Buy Membership
+            </Button>
+          </Col>
+        </Row>
+        </Form>
+      }         
+    </div>
   );
 });
+const EndRideForm = (props => {
+  const {
+    isEndRideVisible,
+    handleEndRide,
+    handleEndRideVisible,
+    ride
+  } = props;
+  const [form] = Form.useForm()
+  const okHandle = () => {
+
+      handleEndRide(ride.id, form.getFieldsValue(true));
+  };
+
+  const minutes = Math.round((new Date() - new Date(ride.start)) / 60000); // This will give difference in milliseconds
+
+  return (
+    <Modal
+      destroyOnClose
+      title="End Ride"
+      visible={isEndRideVisible}
+      onOk={okHandle}
+      forceRender
+      onCancel={() => handleEndRideVisible(false)}
+    >
+      <Form>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Minutes"
+        name='minutes'
+      >
+        <InputNumber placeholder="Please Input" />
+      </FormItem>
+      </Form>
+    </Modal>
+  );
+});
+// const UpdateForm = (props => {
+//   const { handleUpdate, areas, record, customerActiveDays, customerApprovedViolationCount } = props;
+//   const [form] = Form.useForm()
+//   form.setFieldsValue(record)
+//   const okHandle = () => {
+//         handleUpdate(record.id, form.getFieldsValue(true));
+//   };
+
+//   const checkMoneyFormat = (rule, value, callback) => {
+//     if (isNumberRegex.test(value)) {
+//       callback();
+//       return;
+//     }
+//     callback("Credit Must be Number!");
+//   };
+
+//   const checkEmailFormat = (rule, value, callback) => {
+//     if (value === null || value === "" || isEmailRegex.test(value)) {
+//       callback();
+//       return;
+//     }
+//     callback("Please input correct email format");
+//   };
+
+
+//   return (
+//     <div>
+//       <Form form={form}>
+//       <FormItem labelCol={{ span: 10}} wrapperCol={{ span: 10 }} label="Balance (Deposit + Ride Credit)">
+//         <span> {record.deposit + record.rideCredit} </span>
+//       </FormItem>
+    
+//       <FormItem
+//         labelCol={{ span: 10 }}
+//         wrapperCol={{ span: 10 }}
+//         label="Ride Credit Amount"
+//         name='rideCredit'
+//         rules={[{ validator: checkMoneyFormat }]}
+//       >
+//         <Input placeholder="Please Input" />
+//       </FormItem>
+
+//       <FormItem
+//         labelCol={{ span: 10 }}
+//         wrapperCol={{ span: 10 }}
+//         label="Deposit Amount"
+//         name='deposit'
+//         rules={[{ validator: checkMoneyFormat }]}
+//       >
+//         <Input placeholder="Please Input" />
+//       </FormItem>
+
+
+
+      
+//       <FormItem
+//         labelCol={{ span: 10}}
+//         wrapperCol={{ span: 10 }}
+//         label="FULL NAME"
+//         name='fullName'
+//       >
+//        <Input placeholder="Please Input" />
+//       </FormItem>
+//       <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Email" name='email' rules={[{ validator: checkEmailFormat }]}>
+//         <Input placeholder="Please Input" />
+//       </FormItem>
+//       <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Email Status" name='emailStatus' >
+//         <Select placeholder="select" style={{ width: "100%" }}>
+//           <Option key={2} value={2}>
+//             Educational
+//           </Option>
+//           <Option key={1} value={1}>
+//             Normal
+//           </Option>
+//           <Option key={0} value={0}>
+//             Unverified
+//           </Option>
+//         </Select>
+//       </FormItem>
+//       <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="It rs Migrated" name='migrated'>
+//         <Select placeholder="select" style={{ width: "100%" }}>
+//           <Option key={1} value={true}>
+//             Yes
+//           </Option>
+//           <Option key={0} value={false}>
+//             No
+//           </Option>
+//         </Select>
+//       </FormItem>
+
+//       <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Low Income" name='lowIncome'>
+//         <Select placeholder="select" style={{ width: "100%" }}>
+//           <Option key={1} value={true}>
+//             Yes
+//           </Option>
+//           <Option key={0} value={false}>
+//             No
+//           </Option>
+//         </Select>
+//       </FormItem>
+
+//       <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Auto Reload" name='autoReloaded'>
+//         <Select placeholder="select" style={{ width: "100%" }}>
+//           <Option key={1} value={true}>
+//             Yes
+//           </Option>
+//           <Option key={0} value={false}>
+//             No
+//           </Option>
+//         </Select>
+//       </FormItem>
+
+//       <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Education Mode Activated" name='isEducationModeActivated'>
+//         <Select placeholder="select" style={{ width: "100%" }}>
+//           <Option key={1} value={true}>
+//             Yes
+//           </Option>
+//           <Option key={0} value={false}>
+//             No
+//           </Option>
+//         </Select>
+//       </FormItem>
+
+//       {customerStatus && (
+//         <FormItem
+//           labelCol={{ span: 10 }}
+//           wrapperCol={{ span: 10 }}
+//           label="Status"
+//           name='status'
+//           rules={
+//             [
+//               {
+//                 required: true,
+//                 message: "You have pick a status"
+//               }
+//             ]
+//           }
+//         >
+//             <Select placeholder="select" style={{ width: "100%" }}>
+//               {customerStatus.map((status, index) => (
+//                 <Option key={index} value={index}>
+//                   {customerStatus[index]}
+//                 </Option>
+//               ))}
+//             </Select>
+//         </FormItem>
+//       )}
+
+//       {areas && (
+//         <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Area" name='areaId' 
+//           rules={
+//             [
+//               {
+//                 required: true,
+//                 message: "You have pick a area"
+//               }
+//             ]
+//           }
+//         >
+        
+//             <Select placeholder="select" style={{ width: "100%" }}>
+//               {areas.map(area => (
+//                 <Option key={area.id} value={area.id}>
+//                   {area.name}
+//                 </Option>
+//               ))}
+//             </Select>
+//         </FormItem>
+//       )}
+
+//       <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Notes" name='notes'>
+//         <TextArea placeholder="Please Input" />
+//       </FormItem>
+
+//       <FormItem
+//         labelCol={{ span: 10 }}
+//         wrapperCol={{ span: 10 }}
+//         label="Is Age Verified"
+//         name='ageValidated'
+//       >
+//         <Select>
+//             <Option value={true}>Verified</Option>
+//             <Option value={false}>Not Verified</Option>
+//            </Select>
+//       </FormItem>
+
+//       <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10}} label="Phone Model">
+//         <span> {record.phoneModel} </span>
+//       </FormItem>
+//       <FormItem labelCol={{ span: 10}} wrapperCol={{ span: 10 }} label="App Version">
+//         <span> {record.appVersion} </span>
+//       </FormItem>
+
+//       <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Register Date">
+//         <span> { moment(record.created).format("YYYY/MM/DD hh:mm:ss")} </span>
+//       </FormItem>
+
+//         <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Active Days">
+//           <span> {customerActiveDays} </span>
+//         </FormItem> 
+
+
+
+//           <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Customer Approved Violation Count">
+//             <span> {customerApprovedViolationCount} </span>
+//           </FormItem> 
+      
+
+//       <Row>
+//         <Col>
+//           <Button
+//             type="primary"
+//             onClick={okHandle}
+//           >
+//             Update Customer
+//           </Button>
+//         </Col>
+//       </Row>
+//       </Form>
+//     </div>
+//   );
+// });
 const UpdateForm = (props => {
   const { handleUpdate, areas, record, customerActiveDays, customerApprovedViolationCount } = props;
   const [form] = Form.useForm()
@@ -204,7 +596,7 @@ const UpdateForm = (props => {
           </Option>
         </Select>
       </FormItem>
-      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="It rs Migrated" name='migrated'>
+      {/* <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Migrated" name='migrated'>
         <Select placeholder="select" style={{ width: "100%" }}>
           <Option key={1} value={true}>
             Yes
@@ -213,7 +605,7 @@ const UpdateForm = (props => {
             No
           </Option>
         </Select>
-      </FormItem>
+      </FormItem> */}
 
       <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Low Income" name='lowIncome'>
         <Select placeholder="select" style={{ width: "100%" }}>
@@ -340,74 +732,6 @@ const UpdateForm = (props => {
             onClick={okHandle}
           >
             Update Customer
-          </Button>
-        </Col>
-      </Row>
-      </Form>
-    </div>
-  );
-});
-const AddCouponForm = (props => {
-  const { coupons, handleAddCustomerCoupon } = props;
-  const [form]= Form.useForm()    
-  return (
-    <div>
-      <Form form={form}>
-      {coupons && (
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="Coupon"
-          name='couponId'
-          rules={
-            [
-              {
-                required: true,
-                message: "You have pick a coupon to add"
-              }
-            ]
-          }
-        >
-            <Select placeholder="select" style={{ width: "100%" }}>
-              {coupons.map(coupon => (
-                <Option key={coupon.id} value={coupon.id}>
-                  Name: <b> {coupon.name} </b> free minutes:{" "}
-                  {coupon.freeMinutes} Valid days: <b> {coupon.days} </b>
-                </Option>
-              ))}
-            </Select>
-        </FormItem>
-      )}
-
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Start Time"
-        name='start'
-        rules={
-          [
-            {
-              required: true,
-              message: "You have to pick a time to start!"
-            }
-          ]
-        }
-      >
-          <DatePicker
-            showTime
-            format="YYYY-MM-DD HH:mm:ss"
-            placeholder="Select Start Time"
-          />
-      </FormItem>
-
-      <Row>
-        <Col>
-          <Button
-            type="primary"
-            onClick={() => handleAddCustomerCoupon(form.getFieldsValue(true))}
-            // disabled={!form.isFieldsTouched()}
-          >
-            Add Coupon
           </Button>
         </Col>
       </Row>
@@ -703,6 +1027,16 @@ class CustomerDetail extends PureComponent {
     isAbleToAddCoupon: false,
     customerDetail: null,
     customerRides: null,
+    customerRidesTotalSize:null,
+    // customerRidesPagination:{
+    //     page: 0,
+    //     pageSize: 10,
+    //     sort:{
+    //       sortBy:'start',
+    //       direction:'desc'
+    //     }
+    //   },
+    customerRidesCurrent:1,
     isEndRideVisible: false,
     selectedRide: null,
     customerMembership: null,
@@ -1011,21 +1345,27 @@ class CustomerDetail extends PureComponent {
 
   handleGetCustomerRides = customerId => {
     const { dispatch } = this.props;
-
     dispatch({
       type: "rides/getCustomerRides",
-      customerId: customerId,
-      onSuccess: response => {
+      payload:{
+        customerId,
+        pagination:{
+          page: 0,
+          pageSize: 10,
+          sort:{
+            sortBy:'start',
+            direction:'desc'
+          }
+        }
+      },
+      onSuccess: (response,totalSize,total) => {
         //group ride to calculate active date
-
         const activeDate = {}
-
         response.map(ride => {
-
           const day = moment(ride.start).format("YYYY-MM-DD") ;
           activeDate[day] = true; 
         })
-        this.setState({ customerRides: response, customerActiveDays: Object.keys(activeDate).length });
+        this.setState({ customerRides: response,customerRidesTotalSize:totalSize,customerRidesCurrent:total, customerActiveDays: Object.keys(activeDate).length });
       }
     });
   };
@@ -1128,6 +1468,8 @@ class CustomerDetail extends PureComponent {
       customerDetail,
       customerPayments,
       customerRides,
+      customerRidesCurrent,
+      customerRidesTotalSize,
       isEndRideVisible,
       selectedRide,
       customerMembership,
@@ -1161,400 +1503,34 @@ class CustomerDetail extends PureComponent {
       handleRefundReasonChange: this.handleRefundReasonChange,
       handleNeedPickupFee: this.handleNeedPickupFee
     };
-    const EndRideForm = (props => {
-      const {
-        isEndRideVisible,
-        handleEndRide,
-        handleEndRideVisible,
-        ride
-      } = props;
-      const [form] = Form.useForm()
-      const okHandle = () => {
-
-          handleEndRide(ride.id, form.getFieldsValue(true));
-      };
-    
-      const minutes = Math.round((new Date() - new Date(ride.start)) / 60000); // This will give difference in milliseconds
-    
-      return (
-        <Modal
-          destroyOnClose
-          title="End Ride"
-          visible={isEndRideVisible}
-          onOk={okHandle}
-          forceRender
-          onCancel={() => handleEndRideVisible(false)}
-        >
-          <Form>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Minutes"
-            name='minutes'
-          >
-            <InputNumber placeholder="Please Input" />
-          </FormItem>
-          </Form>
-        </Modal>
-      );
-    });
-    const UpdateForm = (props => {
-      const { handleUpdate, areas, record, customerActiveDays, customerApprovedViolationCount } = props;
-      const [form] = Form.useForm()
-      form.setFieldsValue(record)
-      const okHandle = () => {
-            handleUpdate(record.id, form.getFieldsValue(true));
-      };
-    
-      const checkMoneyFormat = (rule, value, callback) => {
-        if (isNumberRegex.test(value)) {
-          callback();
-          return;
-        }
-        callback("Credit Must be Number!");
-      };
-    
-      const checkEmailFormat = (rule, value, callback) => {
-        if (value === null || value === "" || isEmailRegex.test(value)) {
-          callback();
-          return;
-        }
-        callback("Please input correct email format");
-      };
-    
-    
-      return (
-        <div>
-          <Form form={form}>
-          <FormItem labelCol={{ span: 10}} wrapperCol={{ span: 10 }} label="Balance (Deposit + Ride Credit)">
-            <span> {record.deposit + record.rideCredit} </span>
-          </FormItem>
-        
-          <FormItem
-            labelCol={{ span: 10 }}
-            wrapperCol={{ span: 10 }}
-            label="Ride Credit Amount"
-            name='rideCredit'
-            rules={[{ validator: checkMoneyFormat }]}
-          >
-            <Input placeholder="Please Input" />
-          </FormItem>
-    
-          <FormItem
-            labelCol={{ span: 10 }}
-            wrapperCol={{ span: 10 }}
-            label="Deposit Amount"
-            name='deposit'
-            rules={[{ validator: checkMoneyFormat }]}
-          >
-            <Input placeholder="Please Input" />
-          </FormItem>
-    
-    
-    
-          
-          <FormItem
-            labelCol={{ span: 10}}
-            wrapperCol={{ span: 10 }}
-            label="FULL NAME"
-            name='fullName'
-          >
-           <Input placeholder="Please Input" />
-          </FormItem>
-          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Email" name='email' rules={[{ validator: checkEmailFormat }]}>
-            <Input placeholder="Please Input" />
-          </FormItem>
-          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Email Status" name='emailStatus' >
-            <Select placeholder="select" style={{ width: "100%" }}>
-              <Option key={2} value={2}>
-                Educational
-              </Option>
-              <Option key={1} value={1}>
-                Normal
-              </Option>
-              <Option key={0} value={0}>
-                Unverified
-              </Option>
-            </Select>
-          </FormItem>
-          {/* <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Migrated" name='migrated'>
-            <Select placeholder="select" style={{ width: "100%" }}>
-              <Option key={1} value={true}>
-                Yes
-              </Option>
-              <Option key={0} value={false}>
-                No
-              </Option>
-            </Select>
-          </FormItem> */}
-    
-          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Low Income" name='lowIncome'>
-            <Select placeholder="select" style={{ width: "100%" }}>
-              <Option key={1} value={true}>
-                Yes
-              </Option>
-              <Option key={0} value={false}>
-                No
-              </Option>
-            </Select>
-          </FormItem>
-    
-          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Auto Reload" name='autoReloaded'>
-            <Select placeholder="select" style={{ width: "100%" }}>
-              <Option key={1} value={true}>
-                Yes
-              </Option>
-              <Option key={0} value={false}>
-                No
-              </Option>
-            </Select>
-          </FormItem>
-    
-          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Education Mode Activated" name='isEducationModeActivated'>
-            <Select placeholder="select" style={{ width: "100%" }}>
-              <Option key={1} value={true}>
-                Yes
-              </Option>
-              <Option key={0} value={false}>
-                No
-              </Option>
-            </Select>
-          </FormItem>
-    
-          {customerStatus && (
-            <FormItem
-              labelCol={{ span: 10 }}
-              wrapperCol={{ span: 10 }}
-              label="Status"
-              name='status'
-              rules={
-                [
-                  {
-                    required: true,
-                    message: "You have pick a status"
-                  }
-                ]
-              }
-            >
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  {customerStatus.map((status, index) => (
-                    <Option key={index} value={index}>
-                      {customerStatus[index]}
-                    </Option>
-                  ))}
-                </Select>
-            </FormItem>
-          )}
-    
-          {areas && (
-            <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Area" name='areaId' 
-              rules={
-                [
-                  {
-                    required: true,
-                    message: "You have pick a area"
-                  }
-                ]
-              }
-            >
-            
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  {areas.map(area => (
-                    <Option key={area.id} value={area.id}>
-                      {area.name}
-                    </Option>
-                  ))}
-                </Select>
-            </FormItem>
-          )}
-    
-          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Notes" name='notes'>
-            <TextArea placeholder="Please Input" />
-          </FormItem>
-    
-          <FormItem
-            labelCol={{ span: 10 }}
-            wrapperCol={{ span: 10 }}
-            label="Is Age Verified"
-            name='ageValidated'
-          >
-            <Select>
-                <Option value={true}>Verified</Option>
-                <Option value={false}>Not Verified</Option>
-               </Select>
-          </FormItem>
-    
-          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10}} label="Phone Model">
-            <span> {record.phoneModel} </span>
-          </FormItem>
-          <FormItem labelCol={{ span: 10}} wrapperCol={{ span: 10 }} label="App Version">
-            <span> {record.appVersion} </span>
-          </FormItem>
-    
-          <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Register Date">
-            <span> { moment(record.created).format("YYYY/MM/DD hh:mm:ss")} </span>
-          </FormItem>
-    
-            <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Active Days">
-              <span> {customerActiveDays} </span>
-            </FormItem> 
-    
-    
-    
-              <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Customer Approved Violation Count">
-                <span> {customerApprovedViolationCount} </span>
-              </FormItem> 
-          
-    
-          <Row>
-            <Col>
-              <Button
-                type="primary"
-                onClick={okHandle}
-              >
-                Update Customer
-              </Button>
-            </Col>
-          </Row>
-          </Form>
-        </div>
-      );
-    });
-    
-    const MembershipForm = (props => {
-      const { memberships, handleBuyMembership } = props;
-      const [form] = Form.useForm();
-      
-      const activeMembership = memberships.filter(m => m.activated).reduce((o , m) => m, null);
-
-      const [allowToBuy, setAllowToBuy] = useState(false); 
-
-      const [isLoading, setIsLoading] = useState(false);
-
-
-      const okHandle = () => {
-        let fieldsValue = form.getFieldsValue(true)
-        if(!fieldsValue.selectedMembership) return false
-        
-        setIsLoading(true);
-        const setNotLoadiing = () => setIsLoading(false);
-        handleBuyMembership(fieldsValue.selectedMembership, setNotLoadiing);
-    };
-
-      return (
-        <div>
-          {isLoading ?
-            <Spin size="large" />
-            :
-            <Form form={form}>
-            {memberships && (
-              <FormItem
-                labelCol={{ span: 5 }}
-                wrapperCol={{ span: 15 }}
-                label="Membership"
-                name='selectedMembership'
-              >
-                  <Select 
-                      placeholder="select" style={{ width: "100%" }} 
-                      defaultValue ={activeMembership ? activeMembership.id : undefined}
-                      onChange={val => setAllowToBuy(!activeMembership && !!val)}    
-                      disabled={!!activeMembership}            
-                  >
-                    { (activeMembership ? [activeMembership] : memberships).map((membership, index) => (
-                      <Option key={index} value={membership.id}>
-                        { membership.name + "," + membership.description}
-                      </Option>
-                    ))}
-                  </Select>
-              </FormItem>
-            )}
-      
-      
-            <Row>
-              <Col>
-                <Button
-                  type="primary"
-                  onClick={okHandle}
-                  disabled={!allowToBuy}
-                >
-                  Buy Membership
-                </Button>
-              </Col>
-            </Row>
-            </Form>
-          }         
-        </div>
-      );
-    });
-    
-    const AddCouponForm = (props => {
-      const { coupons, handleAddCustomerCoupon } = props;
-      const [form]= Form.useForm();
-      return (
-        <div>
-          <Form form={form}>
-          {coupons && (
-            <FormItem
-              labelCol={{ span: 5 }}
-              wrapperCol={{ span: 15 }}
-              label="Coupon"
-              name='couponId'
-              rules={
-                [
-                  {
-                    required: true,
-                    message: "You have pick a coupon to add"
-                  }
-                ]
-              }
-            >
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  {coupons.map(coupon => (
-                    <Option key={coupon.id} value={coupon.id}>
-                      Name: <b> {coupon.name} </b> free minutes:{" "}
-                      {coupon.freeMinutes} Valid days: <b> {coupon.days} </b>
-                    </Option>
-                  ))}
-                </Select>
-            </FormItem>
-          )}
-    
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Start Time"
-            name='start'
-            rules={
-              [
-                {
-                  required: true,
-                  message: "You have to pick a time to start!"
-                }
-              ]
+    const customerRidesPagination = (value)=>{
+      const { dispatch } = this.props;
+      dispatch({
+        type: "rides/getCustomerRides",
+        payload:{
+          customerId: this.props.customerId,
+          pagination:{
+            page: value.current-1,
+            pageSize: value.pageSize || 10 ,
+            sort:{
+              sortBy:'start',
+              direction:'desc'
             }
-          >
-              <DatePicker
-                showTime
-                format="YYYY-MM-DD HH:mm:ss"
-                placeholder="Select Start Time"
-              />
-          </FormItem>
-    
-          <Row>
-            <Col>
-              <Button
-                type="primary"
-                onClick={() => handleAddCustomerCoupon(form.getFieldsValue(true))}
-                // disabled={!form.isFieldsTouched()}
-              >
-                Add Coupon
-              </Button>
-            </Col>
-          </Row>
-          </Form>
-        </div>
-      );
-    });
+          }
+        },
+        // customerId: customerId,
+        onSuccess: (response,totalSize,total) => {
+          //group ride to calculate active date
+          const activeDate = {}
+          response.map(ride => {
+  
+            const day = moment(ride.start).format("YYYY-MM-DD") ;
+            activeDate[day] = true; 
+          })
+          this.setState({ customerRides: response,customerRidesTotalSize:totalSize,customerRidesCurrent:total, customerActiveDays: Object.keys(activeDate).length });
+        }
+      });
+    }
     return (
       <Modal
         destroyOnClose
@@ -1594,12 +1570,16 @@ class CustomerDetail extends PureComponent {
 
             {
             <Card title="Customer Rides" style={{ marginTop: "2em" }}>
-              {customerRides && <div style={{marginBottom: "1em"}}> count : {customerRides.length}</div>  }
+              {customerRides && <div style={{marginBottom: "1em"}}> count : {customerRidesTotalSize}</div>  }
             
               <Table
                 dataSource={customerRides}
                 columns={this.customerRideColumns}
                 scroll={{ x: 1300 }}
+                onChange={customerRidesPagination}
+                pagination={
+                  { current: customerRidesCurrent,total:customerRidesTotalSize }
+                }
               />
 
               {isEndRideVisible && (
@@ -1632,7 +1612,7 @@ class CustomerDetail extends PureComponent {
               )}
             </Card>}
 
-            {(
+            {/* {(
               <Card title="Customer Coupons" style={{ marginTop: "2em" }}>
                 <Row>
                   <Col>
@@ -1654,7 +1634,7 @@ class CustomerDetail extends PureComponent {
                   />
                 )}
               </Card>
-            )}
+            )} */}
 
             {availableMemberships &&  
               <Card title="Membership" style={{ marginTop: "2em" }}>

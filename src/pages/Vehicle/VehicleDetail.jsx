@@ -63,6 +63,47 @@ const lockOperationWay = ["GPRS", "BLUETOOTH"];
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const vehicleOrders = ["", "sign in", "heart", "unlock", "lock", "location", "info", "find", "version", "ip", "error", "alert", "heart period", "iccid", "shut down", "ok", "mac info", "connect", "disconnect", "version update", "Report", "External Device"];
+const EndRideForm = (props => {
+  const {
+    isEndRideVisible,
+    handleEndRide,
+    handleEndRideVisible,
+    ride
+  } = props;
+  const [form] = Form.useForm()
+  const okHandle = () => {
+    form.submit()
+    // form.validateFields((err, fieldsValue) => {
+    //   if (err) return;
+    //   form.resetFields();
+    //   handleEndRide(ride.id, fieldsValue);
+    // });
+  };
+
+  const minutes = Math.round((new Date() - new Date(ride.start)) / 60000); // This will give difference in milliseconds
+
+  return (
+    <Modal
+      destroyOnClose
+      title="End Ride"
+      visible={isEndRideVisible}
+      forceRender
+      onOk={okHandle}
+      onCancel={() => handleEndRideVisible(false)}
+    >
+      <Form form={form} onFinish={()=>{handleEndRide(ride.id, form.getFieldsValue(true));}}>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Minutes"
+        name='minutes'
+      >
+        <InputNumber placeholder="Please Input" />
+      </FormItem>
+      </Form>
+    </Modal>
+  );
+});
 const VehicleControlForm = (props => {
   const okHandle = () => {
     form.submit()
@@ -509,7 +550,9 @@ class VehicleDetail extends PureComponent {
     selectedRide: null,
     vehicleOrders: [],
     orderTablePagination: null,
-    voiceVisible:'none'
+    voiceVisible:'none',
+    vehicelRidesCurrent:1,
+    vehicleRidesTotalSize:null
   };
 
   vehicleRideColumns = [
@@ -801,11 +844,22 @@ class VehicleDetail extends PureComponent {
 
   handleGetVehicleRides = vehicleId => {
     const { dispatch } = this.props;
-
       dispatch({
         type: "rides/getVehicleRides",
-        vehicleId: vehicleId,
-        onSuccess: response => this.setState({ vehicleRides: response })
+        payload:{
+          vehicleId,
+          pagination:{
+            page: 0,
+            pageSize: 10,
+            sort:{
+              sortBy:'start',
+              direction:'desc'
+            }
+          }
+        },
+        onSuccess: (response,totalSize,current) => this.setState({ 
+          vehicleRides: response,vehicleRidesTotalSize:totalSize,vehicelRidesCurrent:current
+         })
       });
   };
 
@@ -910,10 +964,11 @@ class VehicleDetail extends PureComponent {
       isEndRideVisible,
       vehicleOrders,
       selectedRide,
+      vehicelRidesCurrent,
+      vehicleRidesTotalSize,
       record,
       orderTablePagination
     } = this.state;
-
     const {
       areas,
       coupons,
@@ -927,50 +982,26 @@ class VehicleDetail extends PureComponent {
       handleEndRide: this.handleEndRide,
       handleEndRideVisible: this.handleEndRideVisible
     };
-    const EndRideForm = (props => {
-      const {
-        isEndRideVisible,
-        handleEndRide,
-        handleEndRideVisible,
-        ride
-      } = props;
-      const [form] = Form.useForm()
-      const okHandle = () => {
-        form.submit()
-        // form.validateFields((err, fieldsValue) => {
-        //   if (err) return;
-        //   form.resetFields();
-        //   handleEndRide(ride.id, fieldsValue);
-        // });
-      };
-    
-      const minutes = Math.round((new Date() - new Date(ride.start)) / 60000); // This will give difference in milliseconds
-    
-      return (
-        <Modal
-          destroyOnClose
-          title="End Ride"
-          visible={isEndRideVisible}
-          forceRender
-          onOk={okHandle}
-          onCancel={() => handleEndRideVisible(false)}
-        >
-          <Form form={form} onFinish={()=>{handleEndRide(ride.id, form.getFieldsValue(true));}}>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Minutes"
-            name='minutes'
-          >
-            <InputNumber placeholder="Please Input" />
-          </FormItem>
-          </Form>
-        </Modal>
-      );
-    });
-    
-    
-    
+    const customerRidesPagination = (value)=>{
+      const { dispatch } = this.props;
+      dispatch({
+        type: "rides/getVehicleRides",
+        payload:{
+          vehicleId:this.props.vehicleId,
+          pagination:{
+            page: value.current-1,
+            pageSize: value.pageSize || 10 ,
+            sort:{
+              sortBy:'start',
+              direction:'desc'
+            }
+          }
+        },
+        onSuccess: (response,totalSize,current) => this.setState({
+          vehicleRides: response,vehicleRidesTotalSize:totalSize,vehicelRidesCurrent:current
+         })
+      });
+    }
     return (
       <Modal
         destroyOnClose
@@ -1012,6 +1043,10 @@ class VehicleDetail extends PureComponent {
                 dataSource={vehicleRides}
                 columns={this.vehicleRideColumns}
                 scroll={{ x: 1300 }}
+                onChange={customerRidesPagination}
+                pagination={
+                  { current: vehicelRidesCurrent+1,total:vehicleRidesTotalSize }
+                }
               />
 
               {isEndRideVisible && (
@@ -1024,7 +1059,7 @@ class VehicleDetail extends PureComponent {
             </Card>
           }
 
-          {/* {authority.includes("get.vehicle.orders") && */
+          {/* {
             <Card title="Vehicle Orders" style={{ marginTop: "2em" }}>
               <Table
                 dataSource={vehicleOrders}
@@ -1035,7 +1070,7 @@ class VehicleDetail extends PureComponent {
               />
             </Card>
           }
-          {/* {authority.includes("vehicle.control") && */
+          {
           <Card title="Control Vehicle">
             {record &&
               <div>
@@ -1051,7 +1086,7 @@ class VehicleDetail extends PureComponent {
               </div>
             }
           </Card>
-          }
+          } */}
         </div>
       </Modal>
     );
