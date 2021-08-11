@@ -36,26 +36,14 @@ const getValue = obj =>
     .join(",");
 
 const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "COSMO"];
-const RenderSimpleForm=()=> {
+const RenderSimpleForm=(props)=> {
   // const {
   //   form: { getFieldDecorator }
   // } = this.props;
   const [form] = Form.useForm();
-
-  const handleSearch = e => {
-    e.preventDefault();
-    form.submit()
-
-  };
   const handleFormReset = () => {
     form.resetFields();
-
-    this.setState(
-      {
-        filterCriteria: {}
-      },
-      () => this.handleGetPromos()
-    );
+    props.handleSearch()
   };
   const onFinish=(value)=>{
     const { filterCriteria } = this.state;
@@ -70,7 +58,7 @@ const RenderSimpleForm=()=> {
   }
   // const areas = this.props.areas.data;
   return (
-    <Form onSubmit={handleSearch} layout="inline" form={form} onFinish={onFinish} >
+    <Form layout="inline" form={form} onFinish={onFinish} >
       <Row gutter={{ md: 8, lg: 24, xl: 18 }}>
         <Col md={16} sm={24}>
           <FormItem label="Keywords" name='name'>
@@ -79,7 +67,7 @@ const RenderSimpleForm=()=> {
         </Col>
         <Col md={8} sm={24}>
           <span className={styles.submitButtons}>
-            <Button type="primary" htmlType="submit">
+            <Button onClick={()=>{props.handleSearch(form.getFieldsValue(true))}}>
               Search
             </Button>
             <Button style={{ marginLeft: 8 }} onClick={handleFormReset}>
@@ -456,7 +444,7 @@ class Promo extends PureComponent {
     const { filterCriteria } = this.state;
       dispatch({
         type: "promos/get",
-        payload: selectedAreaId ? Object.assign({}, filterCriteria, {areaIds: [selectedAreaId]}) :  null
+        payload: selectedAreaId ? Object.assign({}, filterCriteria, {areaIds: [selectedAreaId]}) :  Object.assign({}, filterCriteria) 
       });
   };
 
@@ -473,29 +461,35 @@ class Promo extends PureComponent {
     const params = {
       ...filterCriteria
     };
-
     this.setState({ filterCriteria: params }, () => this.handleGetPromos());
   };
 
 
-  handleSearch = e => {
-    e.preventDefault();
-
+  handleSearch = value => {
     const { dispatch, form } = this.props;
     const { filterCriteria } = this.state;
-
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-
-      const values = Object.assign({}, filterCriteria, fieldsValue);
-
+    if(value){
+      const values = Object.assign({}, filterCriteria, value);
       this.setState(
         {
           filterCriteria: values
         },
-        () => this.handleGetPromos()
+        function(){
+          this.handleGetPromos()
+        }
       );
-    });
+    }else{
+      this.setState(
+        {
+          filterCriteria:{
+            pagination:filterCriteria.pagination
+          }
+        },
+        function(){
+          this.handleGetPromos()
+        }
+      );
+    }
   };
 
   handleCreateModalVisible = flag => {
@@ -575,7 +569,6 @@ class Promo extends PureComponent {
       generateCodePromoVisible,
       filterCriteria
     } = this.state;
-
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleCreateModalVisible
@@ -593,7 +586,7 @@ class Promo extends PureComponent {
       defaultCurrent: 1,
       current: filterCriteria.pagination.page + 1,
       pageSize: filterCriteria.pagination.pageSize,
-      // total: vehicles.total
+      total: filterCriteria.pagination.total
     };
     return (
       <PageHeaderWrapper title="Promo List">
@@ -601,7 +594,7 @@ class Promo extends PureComponent {
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>
               <RenderSimpleForm
-              
+              handleSearch = {this.handleSearch}
               />
             </div>
             <div className={styles.tableListOperator}>

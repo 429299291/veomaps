@@ -830,7 +830,7 @@ class Ride extends PureComponent {
           }
         }
       });
-      selectedAreaId ? values.areaIds= [selectedAreaId] : values.areaIds = []
+      selectedAreaId ? values.areaIds= [selectedAreaId] : null
       this.setState(
         {
           filterCriteria: values
