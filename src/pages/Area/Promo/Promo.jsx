@@ -375,13 +375,14 @@ class Promo extends PureComponent {
     updateModalVisible: false,
     generateCodePromoVisible: false,
     expandForm: false,
+    promosData:[],
     selectedRows: [],
+    pagination:{},
     filterCriteria:{pagination: {page: 0, pageSize: 10,
       sort:{
       direction:'desc',
       sortBy:'created'
-    }
-  }},
+    }}},
     selectedRecord: {}
   };
 
@@ -446,7 +447,13 @@ class Promo extends PureComponent {
     const { filterCriteria } = this.state;
       dispatch({
         type: "promos/get",
-        payload: selectedAreaId ? Object.assign({}, filterCriteria, {areaIds: [selectedAreaId]}) :  Object.assign({}, filterCriteria) 
+        payload: selectedAreaId ? Object.assign({}, filterCriteria, {areaIds: [selectedAreaId]}) :  Object.assign({}, filterCriteria) ,
+        onSuccess: (response,totalSize,current) => this.setState({ 
+          promosData: response,pagination:{
+              page:current,
+              total:totalSize
+          }
+         })
       });
   };
 
@@ -569,7 +576,8 @@ class Promo extends PureComponent {
       updateModalVisible,
       selectedRecord,
       generateCodePromoVisible,
-      filterCriteria
+      filterCriteria,
+      pagination
     } = this.state;
     const parentMethods = {
       handleAdd: this.handleAdd,
@@ -584,11 +592,11 @@ class Promo extends PureComponent {
       handleModalVisible: this.handleGenerateCodePromoModalVisible,
       handleGeneratePromoWithCode: this.handleGeneratePromoWithCode
     };
-    const pagination = {
+    const paginationData = {
       defaultCurrent: 1,
-      current: filterCriteria.pagination.page + 1,
-      pageSize: filterCriteria.pagination.pageSize,
-      total: filterCriteria.pagination.total
+      current:pagination.page + 1,
+      pageSize:pagination.pageSize || 10,
+      total:pagination.total || 10
     };
     return (
       <PageHeaderWrapper title="Promo List">
@@ -612,7 +620,7 @@ class Promo extends PureComponent {
             </div>
             <StandardTable
               loading={loading}
-              data={{ list: promos.data, pagination: pagination }}
+              data={{ list: promos.data, pagination: paginationData }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />
