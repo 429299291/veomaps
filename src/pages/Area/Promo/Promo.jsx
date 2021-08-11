@@ -388,7 +388,7 @@ class Promo extends PureComponent {
     generateCodePromoVisible: false,
     expandForm: false,
     selectedRows: [],
-    filterCriteria:{pagination: {page: 0, pagSize: 10,
+    filterCriteria:{pagination: {page: 0, pageSize: 10,
       sort:{
       direction:'desc',
       sortBy:'created'
