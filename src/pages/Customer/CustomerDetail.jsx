@@ -1179,6 +1179,11 @@ class CustomerDetail extends PureComponent {
       render: val =>  <span>{  Math.round(val * 100 ) / 100  } </span>
     },
     {
+      title: "Meta Data",
+      dataIndex: "metaData",
+      // render: val =>  <span>{  Math.round(val * 100 ) / 100  } </span>
+    },
+    {
       title: "Created",
       dataIndex: "created",
       render: value =>  <span>{ moment(value).format("YYYY-MM-DD HH:mm:ss")} </span>
@@ -1429,7 +1434,17 @@ class CustomerDetail extends PureComponent {
 
     dispatch({
       type: "customers/getTransactions",
-      customerId: customerId,
+      payload:{
+        customerId,
+        // pagination:{
+        //   page:0,
+        //   pageSize:10,
+        //   sort:{
+        //     direction:'desc',
+        //     sortBy:'created'
+        //   }
+        // }
+      },
       onSuccess: response => {
         this.setState({customerTransactions: response})
       }

@@ -16,8 +16,164 @@ import {
   
     effects: {
       *get({ payload }, { call, put }) {
-        const response = yield call(getAdminPromos, payload);
-  
+        let response = yield call(getAdminPromos, payload);
+        response = response.content
+        response = [
+          {
+            "id": 2,
+            "name": "Promo Create Test",
+            "days": 7,
+            "amount": 15,
+            "areaId": 2,
+            "redeemCount": 0,
+            "promoType": 1,
+            "created": "2019-04-24T03:41:53.000+0000",
+            "updated": "2021-08-11T03:19:39.000+0000"
+        },
+        {
+          "id": 2,
+          "name": "Promo Create Test",
+          "days": 7,
+          "amount": 15,
+          "areaId": 2,
+          "redeemCount": 0,
+          "promoType": 1,
+          "created": "2019-04-24T03:41:53.000+0000",
+          "updated": "2021-08-11T03:19:39.000+0000"
+      },
+      {
+        "id": 2,
+        "name": "Promo Create Test",
+        "days": 7,
+        "amount": 15,
+        "areaId": 2,
+        "redeemCount": 0,
+        "promoType": 1,
+        "created": "2019-04-24T03:41:53.000+0000",
+        "updated": "2021-08-11T03:19:39.000+0000"
+    },
+    {
+      "id": 2,
+      "name": "Promo Create Test",
+      "days": 7,
+      "amount": 15,
+      "areaId": 2,
+      "redeemCount": 0,
+      "promoType": 1,
+      "created": "2019-04-24T03:41:53.000+0000",
+      "updated": "2021-08-11T03:19:39.000+0000"
+  },
+  {
+    "id": 2,
+    "name": "Promo Create Test",
+    "days": 7,
+    "amount": 15,
+    "areaId": 2,
+    "redeemCount": 0,
+    "promoType": 1,
+    "created": "2019-04-24T03:41:53.000+0000",
+    "updated": "2021-08-11T03:19:39.000+0000"
+},
+{
+  "id": 2,
+  "name": "Promo Create Test",
+  "days": 7,
+  "amount": 15,
+  "areaId": 2,
+  "redeemCount": 0,
+  "promoType": 1,
+  "created": "2019-04-24T03:41:53.000+0000",
+  "updated": "2021-08-11T03:19:39.000+0000"
+},
+{
+  "id": 2,
+  "name": "Promo Create Test",
+  "days": 7,
+  "amount": 15,
+  "areaId": 2,
+  "redeemCount": 0,
+  "promoType": 1,
+  "created": "2019-04-24T03:41:53.000+0000",
+  "updated": "2021-08-11T03:19:39.000+0000"
+},
+{
+  "id": 2,
+  "name": "Promo Create Test",
+  "days": 7,
+  "amount": 15,
+  "areaId": 2,
+  "redeemCount": 0,
+  "promoType": 1,
+  "created": "2019-04-24T03:41:53.000+0000",
+  "updated": "2021-08-11T03:19:39.000+0000"
+},
+{
+  "id": 2,
+  "name": "Promo Create Test",
+  "days": 7,
+  "amount": 15,
+  "areaId": 2,
+  "redeemCount": 0,
+  "promoType": 1,
+  "created": "2019-04-24T03:41:53.000+0000",
+  "updated": "2021-08-11T03:19:39.000+0000"
+},
+{
+  "id": 2,
+  "name": "Promo Create Test",
+  "days": 7,
+  "amount": 15,
+  "areaId": 2,
+  "redeemCount": 0,
+  "promoType": 1,
+  "created": "2019-04-24T03:41:53.000+0000",
+  "updated": "2021-08-11T03:19:39.000+0000"
+},
+{
+  "id": 2,
+  "name": "Promo Create Test",
+  "days": 7,
+  "amount": 15,
+  "areaId": 2,
+  "redeemCount": 0,
+  "promoType": 1,
+  "created": "2019-04-24T03:41:53.000+0000",
+  "updated": "2021-08-11T03:19:39.000+0000"
+},
+{
+  "id": 2,
+  "name": "Promo Create Test",
+  "days": 7,
+  "amount": 15,
+  "areaId": 2,
+  "redeemCount": 0,
+  "promoType": 1,
+  "created": "2019-04-24T03:41:53.000+0000",
+  "updated": "2021-08-11T03:19:39.000+0000"
+},
+{
+  "id": 2,
+  "name": "Promo Create Test",
+  "days": 7,
+  "amount": 15,
+  "areaId": 2,
+  "redeemCount": 0,
+  "promoType": 1,
+  "created": "2019-04-24T03:41:53.000+0000",
+  "updated": "2021-08-11T03:19:39.000+0000"
+},
+{
+  "id": 2,
+  "name": "Promo Create Test",
+  "days": 7,
+  "amount": 15,
+  "areaId": 2,
+  "redeemCount": 0,
+  "promoType": 1,
+  "created": "2019-04-24T03:41:53.000+0000",
+  "updated": "2021-08-11T03:19:39.000+0000"
+},
+]
         if (Array.isArray(response)) {
           response.map(promo => (promo.key = promo.id));
         }
