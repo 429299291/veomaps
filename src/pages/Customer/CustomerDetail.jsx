@@ -1036,6 +1036,11 @@ class CustomerDetail extends PureComponent {
     //       direction:'desc'
     //     }
     //   },
+    transactionPagination :{
+      page:0,
+      pageSize:10,
+      total:50
+    },
     customerRidesCurrent:1,
     isEndRideVisible: false,
     selectedRide: null,
@@ -1177,6 +1182,11 @@ class CustomerDetail extends PureComponent {
       title: "Payment Charge",
       dataIndex: "paymentCharge",
       render: val =>  <span>{  Math.round(val * 100 ) / 100  } </span>
+    },
+    {
+      title: "Meta Data",
+      dataIndex: "metaData",
+      // render: val =>  <span>{  Math.round(val * 100 ) / 100  } </span>
     },
     {
       title: "Created",
@@ -1429,9 +1439,24 @@ class CustomerDetail extends PureComponent {
 
     dispatch({
       type: "customers/getTransactions",
-      customerId: customerId,
-      onSuccess: response => {
+      payload:{
+        customerId,
+        pagination:{
+          page:0,
+          pageSize:10,
+          sort:{
+            direction:'desc',
+            sortBy:'created'
+          }
+        }
+      },
+      onSuccess: (response,total) => {
         this.setState({customerTransactions: response})
+        this.setState({
+          transactionPagination : {
+            total:total
+          }
+        })
       }
     });
   };
@@ -1481,7 +1506,8 @@ class CustomerDetail extends PureComponent {
       customerActiveDays,
       customerTransactions,
       refundReason,
-      customerApprovedViolationCount
+      customerApprovedViolationCount,
+      transactionPagination
     } = this.state;
     const {
       areas,
@@ -1490,12 +1516,37 @@ class CustomerDetail extends PureComponent {
       handleDetailVisible,
       customer
     } = this.props;
-
     const endRideMethod = {
       handleEndRide: this.handleEndRide,
       handleEndRideVisible: this.handleEndRideVisible
     };
-
+    const TransactionsPaginationChange =(page)=>{
+      const { dispatch, customerId } = this.props;
+      dispatch({
+        type: "customers/getTransactions",
+        payload:{
+          customerId,
+          pagination:{
+            page:page.current-1,
+            pageSize:page.pageSize,
+            sort:{
+              direction:'desc',
+              sortBy:'created'
+            }
+          }
+        },
+        onSuccess: (response,total) => {
+          this.setState({customerTransactions: response})
+          this.setState({
+            transactionPagination :{
+              page:page.current,
+              pageSize:page.pageSize,
+              total:total
+            }
+          })
+        }
+      });
+    }
     const refundMethod = {
       handleRefundFormVisible: this.handleRefundFormVisible,
       handleRefund: this.handleRefund,
@@ -1561,7 +1612,9 @@ class CustomerDetail extends PureComponent {
 
               <Table
                 dataSource={customerTransactions}
+                onChange = {TransactionsPaginationChange}
                 columns={this.customerTransactionColumn}
+                pagination={transactionPagination}
                 scroll={{ x: 1300 }}
               />
 

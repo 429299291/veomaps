@@ -320,14 +320,24 @@ const UpdateForm = (props => {
   const { handleUpdate, areas, record, changeLockStatus, updateLocation, alertVehicle, getVehicleStatus, restartVehicle,handleVoice } = props;
   const [form] = Form.useForm()
   let voiceType = null
+  const [voiceVisible, setVoiceVisible] = useState(false);
   const onChangeVoice =(value)=>{
     voiceType = value.target.value
+  }
+  const handleVoiceVisible = ()=>{
+    setVoiceVisible(true)
   }
   form.setFieldsValue(record)
   const okHandle = () => {
     form.submit()
   };
-
+  const voiceHandleCancel = ()=>{
+    setVoiceVisible(false)
+  }
+  const voiceHandleOk =()=>{
+    setVoiceVisible(false)
+      handleVoice(voiceType)
+  }
   return (
     <div>
       <Form form={form} onFinish={()=>{handleUpdate(record.id, form.getFieldsValue(true))}}>
@@ -510,22 +520,24 @@ const UpdateForm = (props => {
           </Button>
           <Button
             type="primary"
-            onClick={()=>{handleVoice(voiceType)}}
+            onClick={handleVoiceVisible}
             // disabled={!form.isFieldsTouched() && !authority.includes("get.status")}
             style={{ marginRight: "1em", marginTop: "0.5em" }}
           >
             Voice
           </Button>
-          <Radio.Group onChange={onChangeVoice} style={{display:props.voiceVisible}}>
-            <Radio value={0}>SELF ALERT</Radio>
-            <Radio value={1}>INVALID PARKING</Radio>
-            <Radio value={2}>SLOW SPEED ZONE</Radio>
-            <Radio value={3}>DO NOT SHAKE</Radio>
-            <Radio value={4}>START RIDE</Radio>
-            <Radio value={5}>END RIDE</Radio>
-            <Radio value={6}>NO RIDE ZONE</Radio>
-            <Radio value={7}>LOW BATTERY</Radio>
-          </Radio.Group>
+          <Modal title="Voice type" visible={voiceVisible} onOk={voiceHandleOk} onCancel={voiceHandleCancel}>
+            <Radio.Group onChange={onChangeVoice}>
+              <Radio value={0}>SELF ALERT</Radio>
+              <Radio value={1}>INVALID PARKING</Radio>
+              <Radio value={2}>SLOW SPEED ZONE</Radio>
+              <Radio value={3}>DO NOT SHAKE</Radio>
+              <Radio value={4}>START RIDE</Radio>
+              <Radio value={5}>END RIDE</Radio>
+              <Radio value={6}>NO RIDE ZONE</Radio>
+              <Radio value={7}>LOW BATTERY</Radio>
+            </Radio.Group>
+          </Modal>
           {/* <Button
             icon="plus"
             type="primary"
@@ -550,7 +562,7 @@ class VehicleDetail extends PureComponent {
     selectedRide: null,
     vehicleOrders: [],
     orderTablePagination: null,
-    voiceVisible:'none',
+    // voiceVisible:false,
     vehicelRidesCurrent:1,
     vehicleRidesTotalSize:null
   };
@@ -786,7 +798,7 @@ class VehicleDetail extends PureComponent {
   }
   handleVoice = (value) => {
     const { dispatch, vehicleId,voiceVisible } = this.props;
-    if(value){
+    if(value !== null){
       dispatch({
         type: "vehicles/controlVoice",
         payload: {
@@ -795,9 +807,7 @@ class VehicleDetail extends PureComponent {
           repeated:false
         }
       });
-      this.setState({voiceVisible:'none'})
     }else{
-      this.setState({voiceVisible:'block'})
     }
   }
   restartVehicle = () => {
@@ -1019,7 +1029,6 @@ class VehicleDetail extends PureComponent {
             {record && <UpdateForm
               areas={areas.data}
               record={record}
-              voiceVisible = {this.state.voiceVisible}
               handleUpdate={this.handleUpdate}
               changeLockStatus={this.changeLockStatus}
               updateLocation={this.updateLocation}

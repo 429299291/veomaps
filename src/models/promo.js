@@ -16,8 +16,8 @@ import {
   
     effects: {
       *get({ payload }, { call, put }) {
-        const response = yield call(getAdminPromos, payload);
-  
+        let response = yield call(getAdminPromos, payload);
+        response = response.content
         if (Array.isArray(response)) {
           response.map(promo => (promo.key = promo.id));
         }
