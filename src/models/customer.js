@@ -68,10 +68,10 @@ export default {
         message.error(`Fail!`);
       }
     },
-    *getTransactions({ customerId, onSuccess }, { call, put }) {
+    *getTransactions({ payload, onSuccess }, { call, put }) {
 
-      const data = yield call(getCustomerTransactions, customerId);
-
+      let data = yield call(getCustomerTransactions, payload);
+      data = data.content
       if (data) {
         onSuccess && onSuccess(data);
       } else {

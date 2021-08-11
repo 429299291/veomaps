@@ -70,11 +70,7 @@ const RenderSimpleForm=(props)=> {
     props.handleFormReset()
     form.resetFields()
   }
-  // setTimeout(() => {
-  //   props.filterCriteria.timeRange = [moment('2015-01-01T12:22:22', dateFormat), moment('2021-05-01T12:33:33', dateFormat)] 
-  // }, 20);
   if(props.filterCriteria.timeRange){
-    // console.log(this.state.filterCriteria.timeRange.start);
     if(props.filterCriteria.timeRange.start){
       setTimeout(() => {
         const start = props.filterCriteria.timeRange.start;
@@ -756,7 +752,6 @@ class Ride extends PureComponent {
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
-
     const params = {
       ...filterCriteria
     };
@@ -768,13 +763,14 @@ class Ride extends PureComponent {
         direction:'desc'
       }
     }
-
     if (sorter.field) {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
-
+    params.vehicleNumber ? null : delete params.vehicleNumber
+    params.notEnded === 0 ? delete params.notEnded  : null
+    params.lockMethod === null ? delete params.lockMethod : null
+    params.unlockMethod === null ? delete params.unlockMethod : null
     this.setState({ filterCriteria: params });
-
     dispatch({
       type: "rides/get",
       payload: params
@@ -805,7 +801,6 @@ class Ride extends PureComponent {
   };
 
   handleSearch = fieldsValue => {
-    console.log(fieldsValue);
     const { selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
     if (fieldsValue) {
@@ -835,7 +830,7 @@ class Ride extends PureComponent {
           }
         }
       });
-      selectedAreaId ? values.areaIds= [selectedAreaId] : null
+      selectedAreaId ? values.areaIds= [selectedAreaId] : values.areaIds = []
       this.setState(
         {
           filterCriteria: values
