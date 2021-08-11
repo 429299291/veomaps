@@ -71,9 +71,10 @@ export default {
     *getTransactions({ payload, onSuccess }, { call, put }) {
 
       let data = yield call(getCustomerTransactions, payload);
+      const total = data.totalSize
       data = data.content
       if (data) {
-        onSuccess && onSuccess(data);
+        onSuccess && onSuccess(data,total);
       } else {
         message.error("Get Transactions Fail!");
       }

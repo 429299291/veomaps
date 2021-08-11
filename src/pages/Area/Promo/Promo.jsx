@@ -454,12 +454,10 @@ class Promo extends PureComponent {
   handleGetPromos = () => {
     const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
-    if(selectedAreaId){
       dispatch({
         type: "promos/get",
-        payload: selectedAreaId ? Object.assign({}, filterCriteria, {areaIds: [selectedAreaId]}) :  filterCriteria
+        payload: selectedAreaId ? Object.assign({}, filterCriteria, {areaIds: [selectedAreaId]}) :  null
       });
-    }
   };
 
   handleStandardTableChange = (page, sorter) => {
