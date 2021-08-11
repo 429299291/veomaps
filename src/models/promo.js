@@ -15,13 +15,15 @@ import {
     },
   
     effects: {
-      *get({ payload }, { call, put }) {
-        const response = yield call(getAdminPromos, payload);
-  
+      *get({ payload,onSuccess }, { call, put }) {
+        let response = yield call(getAdminPromos, payload);
+        const current = response.page
+        const total = response.totalSize
+        response = response.content
         if (Array.isArray(response)) {
           response.map(promo => (promo.key = promo.id));
         }
-  
+        onSuccess && onSuccess(response,total,current);
         yield put({
           type: "save",
           payload: Array.isArray(response) ? response : []

@@ -21,9 +21,17 @@ export async function getCustomerPayments(customerId) {
   });
 }
 
-export async function getCustomerTransactions(customerId) {
-  return request(`/admins/customers/${customerId}/transactions`, {
-    method: "GET"
+// export async function getCustomerTransactions(customerId) {
+//   return request(`/admins/customers/${customerId}/transactions`, {
+//     method: "GET"
+//   });
+// }
+export async function getCustomerTransactions(params) {
+  return request(`/api/admins/customers/transactions/search`, {
+    method: "POST",
+    body:{
+      ...params
+    }
   });
 }
 

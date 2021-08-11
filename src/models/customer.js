@@ -68,12 +68,13 @@ export default {
         message.error(`Fail!`);
       }
     },
-    *getTransactions({ customerId, onSuccess }, { call, put }) {
+    *getTransactions({ payload, onSuccess }, { call, put }) {
 
-      const data = yield call(getCustomerTransactions, customerId);
-
+      let data = yield call(getCustomerTransactions, payload);
+      const total = data.totalSize
+      data = data.content
       if (data) {
-        onSuccess && onSuccess(data);
+        onSuccess && onSuccess(data,total);
       } else {
         message.error("Get Transactions Fail!");
       }

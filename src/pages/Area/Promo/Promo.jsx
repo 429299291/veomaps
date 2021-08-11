@@ -36,7 +36,338 @@ const getValue = obj =>
     .join(",");
 
 const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "COSMO"];
+const RenderSimpleForm=(props)=> {
+  // const {
+  //   form: { getFieldDecorator }
+  // } = this.props;
+  const [form] = Form.useForm();
+  const handleFormReset = () => {
+    form.resetFields();
+    props.handleSearch()
+  };
+  const onFinish=(value)=>{
+    const { filterCriteria } = this.state;
+    const values = Object.assign({}, filterCriteria, value);
+    this.setState(
+      {
+        filterCriteria: values
+      },
+      () => this.handleGetPromos()
+    );
 
+  }
+  // const areas = this.props.areas.data;
+  return (
+    <Form layout="inline" form={form} onFinish={onFinish} >
+      <Row gutter={{ md: 8, lg: 24, xl: 18 }}>
+        <Col md={16} sm={24}>
+          <FormItem label="Keywords" name='name'>
+            <Input placeholder="name"/>
+          </FormItem>
+        </Col>
+        <Col md={8} sm={24}>
+          <span className={styles.submitButtons}>
+            <Button onClick={()=>{props.handleSearch(form.getFieldsValue(true))}}>
+              Search
+            </Button>
+            <Button style={{ marginLeft: 8 }} onClick={handleFormReset}>
+              Reset
+            </Button>
+          </span>
+        </Col>
+      </Row>
+    </Form>
+  );
+}
+const CreateForm = (props => {
+  const {
+    modalVisible,
+    // form,
+    handleAdd,
+    handleModalVisible,
+    promos,
+    areas
+  } = props;
+  const [form] = Form.useForm();
+  const okHandle = () => {
+    form.submit()
+  };
+  return (
+    <Modal
+      destroyOnClose
+      forceRender
+      title="Add"
+      visible={modalVisible}
+      onOk={okHandle}
+      onCancel={() => handleModalVisible()}
+    >
+      <Form onFinish={()=>handleAdd(form.getFieldsValue(true))} form={form}>
+      <FormItem labelCol={{ span: 5 }} 
+        name='name'
+        rules={
+          [
+            {
+              required: true,
+              message: "name is required",
+              min: 1
+            }
+          ]
+        }
+        wrapperCol={{ span: 15 }} label="NAME">
+        <Input placeholder="Please Input" />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        name='days'
+        rules={
+          [
+            {
+              required: true
+            }
+          ]
+        }
+        label="Valid Days"
+      >
+        <InputNumber placeholder="Please Input" />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        name='amount'
+        rules={
+          [
+            {
+              required: true
+            }
+          ]
+        }
+        label="Ride Credits"
+      >
+       <InputNumber placeholder="Please Input" />
+      </FormItem>
+      {areas && (
+        <FormItem labelCol={{ span: 5 }} 
+          name='areaId'
+          rules={
+            [
+              {
+                required: true
+              }
+            ]
+          }
+          wrapperCol={{ span: 15 }} label="Area">
+
+            <Select placeholder="select" style={{ width: "100%" }}>
+              {areas.map(area => (
+                <Option key={area.id} value={area.id}>
+                  {area.name}
+                </Option>
+              ))}
+            </Select>
+        </FormItem>
+      )}
+      </Form>
+    </Modal>
+  );
+});
+const UpdateForm = (props => {
+  const {
+    modalVisible,
+    handleUpdate,
+    handleModalVisible,
+    record,
+    areas
+  } = props;
+  const [form] = Form.useForm();
+  form.setFieldsValue(record)
+  const okHandle = () => {
+    form.submit()
+    // if (form.isFieldsTouched())
+    //   form.validateFields((err, fieldsValue) => {
+    //     if (err) return;
+    //     form.resetFields();
+
+    //     handleUpdate(record.id, fieldsValue);
+    //   });
+    // else handleModalVisible();
+  };
+
+  return (
+    <Modal
+      destroyOnClose
+      forceRender
+      title="Update"
+      visible={modalVisible}
+      onOk={okHandle}
+      onCancel={() => handleModalVisible()}
+    >
+      <Form form={form} onFinish={()=>{handleUpdate(record.id, form.getFieldsValue(true))}}>
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="NAME"
+        name='name' 
+        rules={
+          [
+            {
+              required: true,
+              message: "name is required",
+              min: 1
+            }
+          ]
+        }
+        >
+       <Input placeholder="Please Input" />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        name='days'
+        rules={
+          [
+            {
+              required: true
+            }
+          ]
+        }
+        label="Valid Days"
+      >
+        <InputNumber placeholder="Please Input" />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        name='amount'
+        rules={
+          [
+            {
+              required: true
+            }
+          ]
+        }
+        label="Ride Credits"
+      >
+        <InputNumber placeholder="Please Input" />
+      </FormItem>
+      {areas && (
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area"
+          name='areaId'
+          rules={
+            [
+              {
+                required: true
+              }
+            ]
+          }
+          >
+            <Select placeholder="select" style={{ width: "100%" }}>
+              {areas.map(area => (
+                <Option key={area.id} value={area.id}>
+                  {area.name}
+                </Option>
+              ))}
+            </Select>
+        </FormItem>
+      )}
+      </Form>
+    </Modal>
+  );
+});
+const GeneratePromoWithCodeForm = (props => {
+  const {
+    modalVisible,
+    handleGeneratePromoWithCode,
+    handleModalVisible,
+    record
+  } = props;
+  const [form] = Form.useForm()
+  form.setFieldsValue(record)
+  const okHandle = () => {
+    form.submit()
+    // if (form.isFieldsTouched())
+    //   form.validateFields((err, fieldsValue) => {
+    //     if (err) return;
+    //     form.resetFields();
+
+    //     handleGeneratePromoWithCode(record.id, fieldsValue);
+    //   });
+    // else handleModalVisible();
+  };
+
+  // const checkAmount = (rule, value, callback) => {
+  //   if (value > 0) {
+  //     callback();
+  //     return;
+  //   }
+
+  //   callback("Amount must be larger than zero.");
+  // };
+
+  return (
+    <Modal
+      destroyOnClose
+      title="Generate Promo with Code"
+      visible={modalVisible}
+      forceRender
+      onOk={okHandle}
+      onCancel={() => handleModalVisible()}
+    >
+      <Form form={form} onFinish={()=>{handleGeneratePromoWithCode(record.id, form.getFieldsValue(true));}}>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        name='start'
+        rules={
+          [
+            {
+              required: true,
+              message: "You have to pick a time to start!"
+            }
+          ]
+        }
+        label="Start Time"
+      >
+          <DatePicker
+            showTime
+            format="YYYY-MM-DD HH:mm:ss"
+            placeholder="Select Start Time"
+          />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Amount"
+        name='amount'
+        rules={
+          [
+            {
+              required: true
+            },
+            // {
+            //   validator: checkAmount
+            // }
+          ]
+        }
+      >
+        <InputNumber placeholder="Please Input" />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Code"
+        name='code'
+        rules={
+          [
+            {
+              required: true
+            }
+          ]
+        }
+      >
+     <Input placeholder="Please Input" />
+      </FormItem>
+      </Form>
+    </Modal>
+  );
+});
 /* eslint react/no-multi-comp:0 */
 class Promo extends PureComponent {
   state = {
@@ -44,8 +375,14 @@ class Promo extends PureComponent {
     updateModalVisible: false,
     generateCodePromoVisible: false,
     expandForm: false,
+    promosData:[],
     selectedRows: [],
-    filterCriteria: {},
+    pagination:{},
+    filterCriteria:{pagination: {page: 0, pageSize: 10,
+      sort:{
+      direction:'desc',
+      sortBy:'created'
+    }}},
     selectedRecord: {}
   };
 
@@ -69,7 +406,9 @@ class Promo extends PureComponent {
     {
       title: "Area",
       dataIndex: "areaId",
-      render: areaId => <span>{this.props.areas.areaNames[areaId]}</span>
+      render: areaId => {
+        this.props.areas.areaNames ? <span>{this.props.areas.areaNames[areaId]}</span> : <span></span>
+      }
     },
     {
       title: "Operation",
@@ -106,47 +445,60 @@ class Promo extends PureComponent {
   handleGetPromos = () => {
     const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
-    if(selectedAreaId){
       dispatch({
         type: "promos/get",
-        payload: selectedAreaId ? Object.assign({}, filterCriteria, {areaIds: [selectedAreaId]}) :  filterCriteria
+        payload: selectedAreaId ? Object.assign({}, filterCriteria, {areaIds: [selectedAreaId]}) :  Object.assign({}, filterCriteria) ,
+        onSuccess: (response,totalSize,current) => this.setState({ 
+          promosData: response,pagination:{
+              page:current,
+              total:totalSize
+          }
+         })
       });
-    }
   };
 
-  handleStandardTableChange = (filtersArg, sorter) => {
-    const {   } = this.state;
-
+  handleStandardTableChange = (page, sorter) => {
+    const { filterCriteria } = this.state;
+    filterCriteria.pagination={
+      page:page.current-1,
+      pageSize:page.pageSize,
+      sort:{
+        direction:'desc',
+        sortBy:'created'
+      }
+    }
     const params = {
       ...filterCriteria
     };
-
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
-
     this.setState({ filterCriteria: params }, () => this.handleGetPromos());
   };
 
 
-  handleSearch = e => {
-    e.preventDefault();
-
+  handleSearch = value => {
     const { dispatch, form } = this.props;
     const { filterCriteria } = this.state;
-
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-
-      const values = Object.assign({}, filterCriteria, fieldsValue);
-
+    if(value){
+      const values = Object.assign({}, filterCriteria, value);
       this.setState(
         {
           filterCriteria: values
         },
-        () => this.handleGetPromos()
+        function(){
+          this.handleGetPromos()
+        }
       );
-    });
+    }else{
+      this.setState(
+        {
+          filterCriteria:{
+            pagination:filterCriteria.pagination
+          }
+        },
+        function(){
+          this.handleGetPromos()
+        }
+      );
+    }
   };
 
   handleCreateModalVisible = flag => {
@@ -175,7 +527,8 @@ class Promo extends PureComponent {
     const { dispatch } = this.props;
 
     dispatch({
-      type: "promos/generateCodePromo",
+      // type: "promos/generateCodePromo",
+      type: "promos/update",
       payload: payload,
       id: id
     });
@@ -222,9 +575,10 @@ class Promo extends PureComponent {
       createModalVisible,
       updateModalVisible,
       selectedRecord,
-      generateCodePromoVisible
+      generateCodePromoVisible,
+      filterCriteria,
+      pagination
     } = this.state;
-
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleCreateModalVisible
@@ -238,357 +592,19 @@ class Promo extends PureComponent {
       handleModalVisible: this.handleGenerateCodePromoModalVisible,
       handleGeneratePromoWithCode: this.handleGeneratePromoWithCode
     };
-    const RenderSimpleForm=()=> {
-      // const {
-      //   form: { getFieldDecorator }
-      // } = this.props;
-      const [form] = Form.useForm();
-
-      const handleSearch = e => {
-        e.preventDefault();
-        form.submit()
-    
-      };
-      const handleFormReset = () => {
-        form.resetFields();
-    
-        this.setState(
-          {
-            filterCriteria: {}
-          },
-          () => this.handleGetPromos()
-        );
-      };
-      const onFinish=(value)=>{
-        const { filterCriteria } = this.state;
-        const values = Object.assign({}, filterCriteria, value);
-        this.setState(
-          {
-            filterCriteria: values
-          },
-          () => this.handleGetPromos()
-        );
-
-      }
-      const areas = this.props.areas.data;
-      return (
-        <Form onSubmit={handleSearch} layout="inline" form={form} onFinish={onFinish} >
-          <Row gutter={{ md: 8, lg: 24, xl: 18 }}>
-            <Col md={16} sm={24}>
-              <FormItem label="Keywords" name='name'>
-                <Input placeholder="name"/>
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <span className={styles.submitButtons}>
-                <Button type="primary" htmlType="submit">
-                  Search
-                </Button>
-                <Button style={{ marginLeft: 8 }} onClick={handleFormReset}>
-                  Reset
-                </Button>
-              </span>
-            </Col>
-          </Row>
-        </Form>
-      );
-    }
-    const CreateForm = (props => {
-      const {
-        modalVisible,
-        // form,
-        handleAdd,
-        handleModalVisible,
-        promos,
-        areas
-      } = props;
-      const [form] = Form.useForm();
-      const okHandle = () => {
-        form.submit()
-      };
-      return (
-        <Modal
-          destroyOnClose
-          forceRender
-          title="Add"
-          visible={modalVisible}
-          onOk={okHandle}
-          onCancel={() => handleModalVisible()}
-        >
-          <Form onFinish={()=>handleAdd(form.getFieldsValue(true))} form={form}>
-          <FormItem labelCol={{ span: 5 }} 
-            name='name'
-            rules={
-              [
-                {
-                  required: true,
-                  message: "name is required",
-                  min: 1
-                }
-              ]
-            }
-            wrapperCol={{ span: 15 }} label="NAME">
-            <Input placeholder="Please Input" />
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            name='days'
-            rules={
-              [
-                {
-                  required: true
-                }
-              ]
-            }
-            label="Valid Days"
-          >
-            <InputNumber placeholder="Please Input" />
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            name='amount'
-            rules={
-              [
-                {
-                  required: true
-                }
-              ]
-            }
-            label="Ride Credits"
-          >
-           <InputNumber placeholder="Please Input" />
-          </FormItem>
-          {areas && (
-            <FormItem labelCol={{ span: 5 }} 
-              name='areaId'
-              rules={
-                [
-                  {
-                    required: true
-                  }
-                ]
-              }
-              wrapperCol={{ span: 15 }} label="Area">
-
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  {areas.map(area => (
-                    <Option key={area.id} value={area.id}>
-                      {area.name}
-                    </Option>
-                  ))}
-                </Select>
-            </FormItem>
-          )}
-          </Form>
-        </Modal>
-      );
-    });
-    const UpdateForm = (props => {
-      const {
-        modalVisible,
-        handleUpdate,
-        handleModalVisible,
-        record,
-        areas
-      } = props;
-      const [form] = Form.useForm();
-      form.setFieldsValue(record)
-      const okHandle = () => {
-        form.submit()
-        // if (form.isFieldsTouched())
-        //   form.validateFields((err, fieldsValue) => {
-        //     if (err) return;
-        //     form.resetFields();
-    
-        //     handleUpdate(record.id, fieldsValue);
-        //   });
-        // else handleModalVisible();
-      };
-    
-      return (
-        <Modal
-          destroyOnClose
-          forceRender
-          title="Update"
-          visible={modalVisible}
-          onOk={okHandle}
-          onCancel={() => handleModalVisible()}
-        >
-          <Form form={form} onFinish={()=>{handleUpdate(record.id, form.getFieldsValue(true))}}>
-          <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="NAME"
-            name='name' 
-            rules={
-              [
-                {
-                  required: true,
-                  message: "name is required",
-                  min: 1
-                }
-              ]
-            }
-            >
-           <Input placeholder="Please Input" />
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            name='days'
-            rules={
-              [
-                {
-                  required: true
-                }
-              ]
-            }
-            label="Valid Days"
-          >
-            <InputNumber placeholder="Please Input" />
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            name='amount'
-            rules={
-              [
-                {
-                  required: true
-                }
-              ]
-            }
-            label="Ride Credits"
-          >
-            <InputNumber placeholder="Please Input" />
-          </FormItem>
-          {areas && (
-            <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area"
-              name='areaId'
-              rules={
-                [
-                  {
-                    required: true
-                  }
-                ]
-              }
-              >
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  {areas.map(area => (
-                    <Option key={area.id} value={area.id}>
-                      {area.name}
-                    </Option>
-                  ))}
-                </Select>
-            </FormItem>
-          )}
-          </Form>
-        </Modal>
-      );
-    });
-    const GeneratePromoWithCodeForm = (props => {
-      const {
-        modalVisible,
-        handleGeneratePromoWithCode,
-        handleModalVisible,
-        record
-      } = props;
-      const [form] = Form.useForm()
-      form.setFieldsValue(record)
-      const okHandle = () => {
-        form.submit()
-        // if (form.isFieldsTouched())
-        //   form.validateFields((err, fieldsValue) => {
-        //     if (err) return;
-        //     form.resetFields();
-    
-        //     handleGeneratePromoWithCode(record.id, fieldsValue);
-        //   });
-        // else handleModalVisible();
-      };
-    
-      // const checkAmount = (rule, value, callback) => {
-      //   if (value > 0) {
-      //     callback();
-      //     return;
-      //   }
-    
-      //   callback("Amount must be larger than zero.");
-      // };
-    
-      return (
-        <Modal
-          destroyOnClose
-          title="Generate Promo with Code"
-          visible={modalVisible}
-          forceRender
-          onOk={okHandle}
-          onCancel={() => handleModalVisible()}
-        >
-          <Form form={form} onFinish={()=>{handleGeneratePromoWithCode(record.id, form.getFieldsValue(true));}}>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            name='start'
-            rules={
-              [
-                {
-                  required: true,
-                  message: "You have to pick a time to start!"
-                }
-              ]
-            }
-            label="Start Time"
-          >
-              <DatePicker
-                showTime
-                format="YYYY-MM-DD HH:mm:ss"
-                placeholder="Select Start Time"
-              />
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Amount"
-            name='amount'
-            rules={
-              [
-                {
-                  required: true
-                },
-                // {
-                //   validator: checkAmount
-                // }
-              ]
-            }
-          >
-            <InputNumber placeholder="Please Input" />
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Code"
-            name='code'
-            rules={
-              [
-                {
-                  required: true
-                }
-              ]
-            }
-          >
-         <Input placeholder="Please Input" />
-          </FormItem>
-          </Form>
-        </Modal>
-      );
-    });
+    const paginationData = {
+      defaultCurrent: 1,
+      current:pagination.page + 1,
+      pageSize:pagination.pageSize || 10,
+      total:pagination.total || 10
+    };
     return (
       <PageHeaderWrapper title="Promo List">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>
               <RenderSimpleForm
-              
+              handleSearch = {this.handleSearch}
               />
             </div>
             <div className={styles.tableListOperator}>
@@ -604,7 +620,7 @@ class Promo extends PureComponent {
             </div>
             <StandardTable
               loading={loading}
-              data={{ list: promos.data, pagination: {} }}
+              data={{ list: promos.data, pagination: paginationData }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

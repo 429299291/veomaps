@@ -103,7 +103,7 @@ const RenderSimpleForm=(props)=> {
                         return;
                       }
                   
-                      callback("Must be a valid phone number");
+                      callback("Phone number error");
                     }
                   }
               ]
