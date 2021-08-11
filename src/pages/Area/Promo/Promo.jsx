@@ -405,7 +405,9 @@ class Promo extends PureComponent {
     {
       title: "Area",
       dataIndex: "areaId",
-      render: areaId => <span>{this.props.areas.areaNames[areaId]}</span>
+      render: areaId => {
+        this.props.areas.areaNames ? <span>{this.props.areas.areaNames[areaId]}</span> : <span></span>
+      }
     },
     {
       title: "Operation",
