@@ -298,171 +298,6 @@ const UpdateForm = (props => {
   );
 });
 
-const CouponForm = (props => {
-  const {
-    couponModalVisible,
-    handleCouponModalVisible,
-    handleGetCustomerCoupons,
-    coupons,
-    customerCoupons,
-    handleDeleteCoupon,
-    customer,
-    dispatch
-  } = props;
-  const [form] = Form.useForm()
-  const okHandle = () => {
-    handleCouponModalVisible();
-  };
-
-  const couponColumns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name"
-    },
-    {
-      title: "Free Minutes",
-      dataIndex: "freeMinutes",
-      key: "freeMinutes"
-    },
-    {
-      title: "Free Minutes",
-      dataIndex: "freeMinutes",
-      key: "freeMinutes"
-    },
-    {
-      title: "Start",
-      dataIndex: "start",
-      key: "start",
-      render: start => moment(start).format("YYYY/MM/DD hh:mm:ss")
-    },
-    {
-      title: "End",
-      dataIndex: "end",
-      key: "end",
-      render: end => moment(end).format("YYYY/MM/DD hh:mm:ss")
-    },
-    {
-      title: "Operation",
-      render: (text, record) => (
-        <Fragment>
-          <Popconfirm
-            title="Are you sure？"
-            icon={<Icon type="question-circle-o" style={{ color: "red" }} />}
-            onConfirm={() => handleDeleteCoupon(record.id)}
-          >
-            <a href="#" style={{ color: "red" }}>
-              Delete
-            </a>
-          </Popconfirm>
-        </Fragment>
-      )
-    }
-  ];
-
-  const handleAddCustomerCoupon = () => {
-    if (form.isFieldsTouched())
-      form.validateFields((err, fieldsValue) => {
-        if (err) return;
-        form.resetFields();
-
-        const start = fieldsValue.start.toDate();
-
-        dispatch({
-          type: "coupons/addCouponToCustomer",
-          couponId: fieldsValue.couponId,
-          customerId: customer.id,
-          onSuccess: handleGetCustomerCoupons,
-          start: start
-        });
-      });
-  };
-
-  let isAddEnabled = false;
-
-  return (
-    <Modal
-      destroyOnClose
-      title="Add Coupon to Customer"
-      visible={couponModalVisible}
-      onOk={okHandle}
-      forceRender
-      onCancel={() => handleCouponModalVisible()}
-      width={"95%"}
-    >
-      <Row>
-        <Col>
-          <Table
-            dataSource={customerCoupons}
-            columns={couponColumns}
-            scroll={{ x: 1300 }}
-          />
-        </Col>
-      </Row>
-
-      {coupons && (
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="Coupon"
-        >
-          {form.getFieldDecorator("couponId", {
-            rules: [
-              {
-                required: true,
-                message: "You have pick a coupon to add"
-              }
-            ]
-          })(
-            <Select placeholder="select" style={{ width: "100%" }}>
-              {coupons.map(coupon => (
-                <Option key={coupon.id} value={coupon.id}>
-                  Name: <b> {coupon.name} </b> free minutes:{" "}
-                  {coupon.freeMinutes} Valid days: <b> {coupon.days} </b>
-                </Option>
-              ))}
-            </Select>
-          )}
-        </FormItem>
-      )}
-
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Start Time"
-      >
-        {form.getFieldDecorator("start", {
-          rules: [
-            {
-              required: true,
-              message: "You have to pick a time to start!"
-            }
-          ]
-        })(
-          <DatePicker
-            showTime
-            format="YYYY-MM-DD HH:mm:ss"
-            placeholder="Select Start Time"
-          />
-        )}
-      </FormItem>
-
-      <Row>
-        <Col>
-          <Button
-            icon="plus"
-            type="primary"
-            onClick={handleAddCustomerCoupon}
-            disabled={!form.isFieldsTouched()}
-          >
-            Add Coupon
-          </Button>
-        </Col>
-      </Row>
-    </Modal>
-  );
-});
-
 /* eslint react/no-multi-comp:0 */
 class Customer extends PureComponent {
   state = {
@@ -537,10 +372,10 @@ class Customer extends PureComponent {
 
   handleGetCoupons = () => {
     const { dispatch, selectedAreaId } = this.props;
-    dispatch({
-      type: "coupons/get",
-      payload: { areaId: selectedAreaId }
-    });
+    // dispatch({
+    //   type: "coupons/get",
+    //   payload: { areaId: selectedAreaId }
+    // });
   };
 
   handleGetCustomers = () => {
@@ -557,11 +392,11 @@ class Customer extends PureComponent {
 
   handleGetCustomerCoupons = customerId => {
     const { dispatch } = this.props;
-    dispatch({
-      type: "coupons/getCustomerCoupons",
-      payload: customerId,
-      onSuccess: response => this.setState({ customerCoupons: response })
-    });
+    // dispatch({
+    //   type: "coupons/getCustomerCoupons",
+    //   payload: customerId,
+    //   onSuccess: response => this.setState({ customerCoupons: response })
+    // });
   };
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -704,12 +539,12 @@ class Customer extends PureComponent {
 
   handleDeleteCoupon = customerCouponId => {
     const { dispatch } = this.props;
-    dispatch({
-      type: "coupons/removeCustomerCoupon",
-      id: customerCouponId,
-      onSuccess: () =>
-        this.handleGetCustomerCoupons(this.state.selectedRecord.id)
-    });
+    // dispatch({
+    //   type: "coupons/removeCustomerCoupon",
+    //   id: customerCouponId,
+    //   onSuccess: () =>
+    //     this.handleGetCustomerCoupons(this.state.selectedRecord.id)
+    // });
   };
 
   formatCsvData = customers => {
@@ -922,11 +757,10 @@ class Customer extends PureComponent {
     );
   }
 }
-const mapStateToProps = ({ customers, areas, coupons, loading }) => {
+const mapStateToProps = ({ customers, areas, loading }) => {
   return {
     customers,
     areas,
-    coupons,
     selectedAreaId: areas.selectedAreaId,
     areaNames: areas.areaNames,
     loading: loading.models.customers

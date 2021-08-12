@@ -129,12 +129,12 @@ const CreateForm = (props => {
         }
         label="Valid Days"
       >
-        <InputNumber placeholder="Please Input" />
+        <InputNumber placeholder="Please Input" min={1}/>
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
-        name='amount'
+        name='rideCredit'
         rules={
           [
             {
@@ -144,7 +144,7 @@ const CreateForm = (props => {
         }
         label="Ride Credits"
       >
-       <InputNumber placeholder="Please Input" />
+       <InputNumber placeholder="Please Input" min={0}/>
       </FormItem>
       {areas && (
         <FormItem labelCol={{ span: 5 }} 
@@ -181,16 +181,9 @@ const UpdateForm = (props => {
   } = props;
   const [form] = Form.useForm();
   form.setFieldsValue(record)
+  console.log(form.getFieldsValue(true));
   const okHandle = () => {
     form.submit()
-    // if (form.isFieldsTouched())
-    //   form.validateFields((err, fieldsValue) => {
-    //     if (err) return;
-    //     form.resetFields();
-
-    //     handleUpdate(record.id, fieldsValue);
-    //   });
-    // else handleModalVisible();
   };
 
   return (
@@ -230,12 +223,12 @@ const UpdateForm = (props => {
         }
         label="Valid Days"
       >
-        <InputNumber placeholder="Please Input" />
+        <InputNumber placeholder="Please Input" min={1}/>
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
-        name='amount'
+        name='rideCredit'
         rules={
           [
             {
@@ -245,9 +238,9 @@ const UpdateForm = (props => {
         }
         label="Ride Credits"
       >
-        <InputNumber placeholder="Please Input" />
+        <InputNumber placeholder="Please Input" min={0}/>
       </FormItem>
-      {areas && (
+      {/* {areas && (
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area"
           name='areaId'
           rules={
@@ -266,7 +259,7 @@ const UpdateForm = (props => {
               ))}
             </Select>
         </FormItem>
-      )}
+      )} */}
       </Form>
     </Modal>
   );
@@ -340,14 +333,11 @@ const GeneratePromoWithCodeForm = (props => {
           [
             {
               required: true
-            },
-            // {
-            //   validator: checkAmount
-            // }
+            }
           ]
         }
       >
-        <InputNumber placeholder="Please Input" />
+        <InputNumber placeholder="Please Input" min={1} max={10000}/>
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
@@ -357,7 +347,7 @@ const GeneratePromoWithCodeForm = (props => {
         rules={
           [
             {
-              required: true
+              required: true,max:20
             }
           ]
         }
@@ -397,7 +387,7 @@ class Promo extends PureComponent {
     },
     {
       title: "Ride Credit",
-      dataIndex: "amount"
+      dataIndex: "rideCredit"
     },
     {
       title: "Redeem Count",
@@ -406,9 +396,9 @@ class Promo extends PureComponent {
     {
       title: "Area",
       dataIndex: "areaId",
-      render: areaId => {
-        this.props.areas.areaNames ? <span>{this.props.areas.areaNames[areaId]}</span> : <span></span>
-      }
+      render: areaId => (
+          <span>{this.props.areas.areaNames[areaId]}</span>
+      )
     },
     {
       title: "Operation",
@@ -528,11 +518,14 @@ class Promo extends PureComponent {
 
     dispatch({
       // type: "promos/generateCodePromo",
-      type: "promos/update",
-      payload: payload,
-      id: id
+      type: "promos/generateCodePromo",
+      payload: {
+        start:payload.start,
+        amount:payload.amount,
+        code:payload.code,
+        promoId: id
+      }
     });
-
     this.handleGenerateCodePromoModalVisible();
   };
 
@@ -557,7 +550,11 @@ class Promo extends PureComponent {
 
   handleUpdate = (id, fields) => {
     const { dispatch } = this.props;
-
+    fields = {
+      name:fields.name,
+      days:fields.days,
+      rideCredit:fields.rideCredit
+    }
     dispatch({
       type: "promos/update",
       payload: fields,
@@ -618,12 +615,21 @@ class Promo extends PureComponent {
               }
 
             </div>
-            <StandardTable
+            {
+              areas.areaNames && promos.data &&
+              <StandardTable
               loading={loading}
               data={{ list: promos.data, pagination: paginationData }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />
+            }
+            {/* <StandardTable
+              loading={loading}
+              data={{ list: promos.data, pagination: paginationData }}
+              columns={this.columns}
+              onChange={this.handleStandardTableChange}
+            /> */}
           </div>
         </Card>
         <CreateForm

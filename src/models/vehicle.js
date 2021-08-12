@@ -53,7 +53,6 @@ export default {
       });
     },
     *controlVoice({ payload }, { call, put }) {
-      console.log(payload);
       //const total = yield call(countVehicles, payload);
       const result = yield call(controlVoice, payload);
     },
