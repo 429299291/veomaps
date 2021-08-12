@@ -129,7 +129,7 @@ const CreateForm = (props => {
         }
         label="Valid Days"
       >
-        <InputNumber placeholder="Please Input" />
+        <InputNumber placeholder="Please Input" min={1}/>
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
@@ -144,7 +144,7 @@ const CreateForm = (props => {
         }
         label="Ride Credits"
       >
-       <InputNumber placeholder="Please Input" />
+       <InputNumber placeholder="Please Input" min={0}/>
       </FormItem>
       {areas && (
         <FormItem labelCol={{ span: 5 }} 
@@ -223,7 +223,7 @@ const UpdateForm = (props => {
         }
         label="Valid Days"
       >
-        <InputNumber placeholder="Please Input" />
+        <InputNumber placeholder="Please Input" min={1}/>
       </FormItem>
       <FormItem
         labelCol={{ span: 5 }}
@@ -238,7 +238,7 @@ const UpdateForm = (props => {
         }
         label="Ride Credits"
       >
-        <InputNumber placeholder="Please Input" />
+        <InputNumber placeholder="Please Input" min={0}/>
       </FormItem>
       {/* {areas && (
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area"
