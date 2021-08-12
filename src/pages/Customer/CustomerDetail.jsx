@@ -61,74 +61,74 @@ const REFUND_REASON = ["first timer forgot to lock", "first timer locked outside
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     
-const AddCouponForm = (props => {
-  const { coupons, handleAddCustomerCoupon } = props;
-  const [form]= Form.useForm();
-  return (
-    <div>
-      <Form form={form}>
-      {coupons && (
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="Coupon"
-          name='couponId'
-          rules={
-            [
-              {
-                required: true,
-                message: "You have pick a coupon to add"
-              }
-            ]
-          }
-        >
-            <Select placeholder="select" style={{ width: "100%" }}>
-              {coupons.map(coupon => (
-                <Option key={coupon.id} value={coupon.id}>
-                  Name: <b> {coupon.name} </b> free minutes:{" "}
-                  {coupon.freeMinutes} Valid days: <b> {coupon.days} </b>
-                </Option>
-              ))}
-            </Select>
-        </FormItem>
-      )}
+// const AddCouponForm = (props => {
+//   const { coupons } = props;
+//   const [form]= Form.useForm();
+//   return (
+//     <div>
+//       <Form form={form}>
+//       {coupons && (
+//         <FormItem
+//           labelCol={{ span: 5 }}
+//           wrapperCol={{ span: 15 }}
+//           label="Coupon"
+//           name='couponId'
+//           rules={
+//             [
+//               {
+//                 required: true,
+//                 message: "You have pick a coupon to add"
+//               }
+//             ]
+//           }
+//         >
+//             <Select placeholder="select" style={{ width: "100%" }}>
+//               {coupons.map(coupon => (
+//                 <Option key={coupon.id} value={coupon.id}>
+//                   Name: <b> {coupon.name} </b> free minutes:{" "}
+//                   {coupon.freeMinutes} Valid days: <b> {coupon.days} </b>
+//                 </Option>
+//               ))}
+//             </Select>
+//         </FormItem>
+//       )}
 
-      <FormItem
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 15 }}
-        label="Start Time"
-        name='start'
-        rules={
-          [
-            {
-              required: true,
-              message: "You have to pick a time to start!"
-            }
-          ]
-        }
-      >
-          <DatePicker
-            showTime
-            format="YYYY-MM-DD HH:mm:ss"
-            placeholder="Select Start Time"
-          />
-      </FormItem>
+//       <FormItem
+//         labelCol={{ span: 5 }}
+//         wrapperCol={{ span: 15 }}
+//         label="Start Time"
+//         name='start'
+//         rules={
+//           [
+//             {
+//               required: true,
+//               message: "You have to pick a time to start!"
+//             }
+//           ]
+//         }
+//       >
+//           <DatePicker
+//             showTime
+//             format="YYYY-MM-DD HH:mm:ss"
+//             placeholder="Select Start Time"
+//           />
+//       </FormItem>
 
-      <Row>
-        <Col>
-          <Button
-            type="primary"
-            onClick={() => handleAddCustomerCoupon(form.getFieldsValue(true))}
-            // disabled={!form.isFieldsTouched()}
-          >
-            Add Coupon
-          </Button>
-        </Col>
-      </Row>
-      </Form>
-    </div>
-  );
-});
+//       <Row>
+//         <Col>
+//           <Button
+//             type="primary"
+//             onClick={() => handleAddCustomerCoupon(form.getFieldsValue(true))}
+//             // disabled={!form.isFieldsTouched()}
+//           >
+//             Add Coupon
+//           </Button>
+//         </Col>
+//       </Row>
+//       </Form>
+//     </div>
+//   );
+// });
 // const MembershipForm = (props => {
 //   const { memberships, handleBuyMembership } = props;
 //   const [form] = Form.useForm();
@@ -1169,7 +1169,7 @@ class CustomerDetail extends PureComponent {
     {
       title: "Type",
       dataIndex: "type",
-      render: (value, record) =>  <span>{ transactionType[value] + (value === 0 && record.metaData ? `(${JSON.parse(record.metaData).adminEmail})` : "") } </span>
+      render: (value, record) =>  <span>{ transactionType[value] } </span>
     },
     {
       title: "Deposit Change",
@@ -1261,8 +1261,6 @@ class CustomerDetail extends PureComponent {
   componentDidMount = () => {
     const {customerId} = this.props;
 
-    this.handleGetCoupons();
-    this.handleGetCustomerCoupons(customerId);
     this.handleGetCustomerDetail(customerId);
     this.handleGetCustomerRides(customerId);
     this.handleGetCustomerPayments(customerId);
@@ -1288,11 +1286,11 @@ class CustomerDetail extends PureComponent {
   }
 
   handleGetCoupons = () => {
-    const {dispatch} = this.props;
-    dispatch({
-      type: "coupons/get",
-      payload: {}
-    });
+    // const {dispatch} = this.props;
+    // dispatch({
+    //   type: "coupons/get",
+    //   payload: {}
+    // });
   }
 
   handleEndRide = (rideId, minutes) => {
@@ -1309,31 +1307,21 @@ class CustomerDetail extends PureComponent {
     this.handleEndRideVisible();
   };
 
-  handleAddCustomerCoupon = fieldsValue => {
-    const { dispatch, customerId } = this.props;
-    if(fieldsValue.start&&fieldsValue.couponId){
-      const start = fieldsValue.start.toDate();
-      dispatch({
-        type: "coupons/addCouponToCustomer",
-        couponId: fieldsValue.couponId,
-        customerId: customerId,
-        onSuccess: this.handleGetCustomerCoupons,
-        start: start
-      });
-    }else{
-      return false
-    }
-  };
-
-  handleGetCustomerCoupons = customerId => {
-    const { dispatch } = this.props;
-
-    dispatch({
-      type: "coupons/getCustomerCoupons",
-      payload: customerId,
-      // onSuccess: response => this.setState({ customerCoupons: response })
-    });
-  };
+  // handleAddCustomerCoupon = fieldsValue => {
+  //   const { dispatch, customerId } = this.props;
+  //   if(fieldsValue.start&&fieldsValue.couponId){
+  //     const start = fieldsValue.start.toDate();
+  //     dispatch({
+  //       type: "coupons/addCouponToCustomer",
+  //       couponId: fieldsValue.couponId,
+  //       customerId: customerId,
+  //       onSuccess: this.handleGetCustomerCoupons,
+  //       start: start
+  //     });
+  //   }else{
+  //     return false
+  //   }
+  // };
 
   handleGetCustomerPayments = customerId => {
     const { dispatch } = this.props;
@@ -1396,16 +1384,6 @@ class CustomerDetail extends PureComponent {
       }
     });
   };
-
-  handleDeleteCoupon = customerCouponId => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: "coupons/removeCustomerCoupon",
-      id: customerCouponId,
-      onSuccess: () => this.handleGetCustomerCoupons(this.props.customerId)
-    });
-  };
-
   // filterCouponsByAreaId = (coupons, areaId) => {
   //   return coupons.filter(coupon => coupon.areaId === areaId);
   // };
@@ -1454,9 +1432,8 @@ class CustomerDetail extends PureComponent {
         }
       },
       onSuccess: (response,total) => {
-        this.setState({customerTransactions: response})
         console.log(response);
-        console.log(total);
+        this.setState({customerTransactions: response})
         this.setState({
           transactionPagination : {
             total:total
@@ -1516,7 +1493,6 @@ class CustomerDetail extends PureComponent {
     } = this.state;
     const {
       areas,
-      coupons,
       isVisible,
       handleDetailVisible,
       customer
@@ -1710,12 +1686,11 @@ class CustomerDetail extends PureComponent {
     );
   }
 }
-const mapStateToProps = ({ coupons, areas, loading, customers }) => {
+const mapStateToProps = ({ areas, loading, customers }) => {
   return {
     areas,
-    coupons,
     customers,
-    loading: loading.models.customers && loading.models.coupons && loading.models.areas
+    loading: loading.models.customers && loading.models.areas
       }
 }
 export default connect(mapStateToProps)(CustomerDetail) 
