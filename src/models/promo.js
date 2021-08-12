@@ -40,9 +40,9 @@ import {
           onError && onError();
         }
       },
-      *generateCodePromo({ id, payload }, { call, put }) {
+      *generateCodePromo({ payload }, { call, put }) {
 
-        const response = yield call(generatePromoWithCode, id, payload); // gen code
+        const response = yield call(generatePromoWithCode, payload); // gen code
   
         if (response) {
           message.success(`Successfully add promo with code`);
