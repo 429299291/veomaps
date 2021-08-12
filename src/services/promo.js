@@ -16,16 +16,16 @@ export async function getAdminPromos(params) {
 }
 
 export async function updatePromo(id, params) {
-    return request(`/api/admins/promos/${id}`, {
-      method: "PATCH",
-      body: {
-        ...params
-      }
-    });
-  }
+  return request(`/api/admins/promos/${id}`, {
+    method: "PATCH",
+    body: {
+      ...params
+    }
+  });
+}
 
 export async function createPromo(promo) {
-  return request(`/admins/promos`, {
+  return request(`/api/admins/promos`, {
     method: "POST",
     body: {
       ...promo
@@ -33,14 +33,21 @@ export async function createPromo(promo) {
   });
 }
 
-export async function generatePromoWithCode(id, payload) {
-  return request(`/admins/promos/${id}/code`, {
+// export async function generatePromoWithCode(id, payload) {
+//   return request(`/admins/promos/${id}/code`, {
+//     method: "POST",
+//     body: {
+//       ...payload
+//     }
+//   });
+// }
+export async function generatePromoWithCode(params) {
+  return request(`/api/admins/customers/promos`, {
     method: "POST",
     body: {
-      ...payload
+      ...params
     }
   });
 }
-
 
 
