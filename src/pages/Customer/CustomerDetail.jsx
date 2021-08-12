@@ -228,7 +228,7 @@ const MembershipForm = (props => {
           >
               <Select 
                   placeholder="select" style={{ width: "100%" }} 
-                  defaultValue ={activeMembership ? activeMembership.id : undefined}
+                  // defaultValue ={activeMembership ? activeMembership.id : undefined}
                   onChange={val => setAllowToBuy(!activeMembership && !!val)}    
                   disabled={!!activeMembership}            
               >
@@ -521,10 +521,14 @@ const UpdateForm = (props => {
   const { handleUpdate, areas, record, customerActiveDays, customerApprovedViolationCount } = props;
   const [form] = Form.useForm()
   form.setFieldsValue(record)
+  let formOnchange = false
   const okHandle = () => {
-        handleUpdate(record.id, form.getFieldsValue(true));
+    if(formOnchange){
+      handleUpdate(record.id, form.getFieldsValue(true))
+    }else{
+      message.error('No information was modified')
+    }
   };
-
   const checkMoneyFormat = (rule, value, callback) => {
     if (isNumberRegex.test(value)) {
       callback();
@@ -540,11 +544,9 @@ const UpdateForm = (props => {
     }
     callback("Please input correct email format");
   };
-
-
   return (
     <div>
-      <Form form={form}>
+      <Form form={form} onFinish={okHandle} onValuesChange={()=>{formOnchange = true}}	>
       <FormItem labelCol={{ span: 10}} wrapperCol={{ span: 10 }} label="Balance (Deposit + Ride Credit)">
         <span> {record.deposit + record.rideCredit} </span>
       </FormItem>
@@ -729,7 +731,8 @@ const UpdateForm = (props => {
         <Col>
           <Button
             type="primary"
-            onClick={okHandle}
+            htmlType='submit'
+            // onClick={okHandle}
           >
             Update Customer
           </Button>
@@ -1023,7 +1026,7 @@ const RefundForm = (props => {
 });
 class CustomerDetail extends PureComponent {
   state = {
-    customerCoupons: null,
+    // customerCoupons: null,
     isAbleToAddCoupon: false,
     customerDetail: null,
     customerRides: null,
@@ -1055,48 +1058,48 @@ class CustomerDetail extends PureComponent {
     customerApprovedViolationCount: "Loading"
   };
 
-  customerCouponColumns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name"
-    },
-    {
-      title: "Free Minutes",
-      dataIndex: "freeMinutes",
-      key: "freeMinutes"
-    },
-    {
-      title: "Start",
-      dataIndex: "start",
-      key: "start",
-      render: start => moment(start).format("YYYY/MM/DD hh:mm:ss")
-    },
-    {
-      title: "End",
-      dataIndex: "end",
-      key: "end",
-      render: end => moment(end).format("YYYY/MM/DD hh:mm:ss")
-    },
-    {
-      title: "Operation",
-      render: (text, record) => (
-        <Fragment>
-          <Popconfirm
-            title="Are you sure？"
-            icon={<Icon type="question-circle-o" style={{ color: "red" }} />}
-            onConfirm={() => this.handleDeleteCoupon(record.id)}
-          >
-            {/* {authority.includes("") && ( */}
-              <a href="#" style={{ color: "red" }}>
-                Delete
-              </a>
-            {/* )} */}
-          </Popconfirm>
-        </Fragment>
-      )
-    }
-  ];
+  // customerCouponColumns = [
+  //   {
+  //     title: "Name",
+  //     dataIndex: "name",
+  //     key: "name"
+  //   },
+  //   {
+  //     title: "Free Minutes",
+  //     dataIndex: "freeMinutes",
+  //     key: "freeMinutes"
+  //   },
+  //   {
+  //     title: "Start",
+  //     dataIndex: "start",
+  //     key: "start",
+  //     render: start => moment(start).format("YYYY/MM/DD hh:mm:ss")
+  //   },
+  //   {
+  //     title: "End",
+  //     dataIndex: "end",
+  //     key: "end",
+  //     render: end => moment(end).format("YYYY/MM/DD hh:mm:ss")
+  //   },
+  //   {
+  //     title: "Operation",
+  //     render: (text, record) => (
+  //       <Fragment>
+  //         <Popconfirm
+  //           title="Are you sure？"
+  //           icon={<Icon type="question-circle-o" style={{ color: "red" }} />}
+  //           onConfirm={() => this.handleDeleteCoupon(record.id)}
+  //         >
+  //           {/* {authority.includes("") && ( */}
+  //             <a href="#" style={{ color: "red" }}>
+  //               Delete
+  //             </a>
+  //           {/* )} */}
+  //         </Popconfirm>
+  //       </Fragment>
+  //     )
+  //   }
+  // ];
 
   customerRideColumns = [
     {
@@ -1328,7 +1331,7 @@ class CustomerDetail extends PureComponent {
     dispatch({
       type: "coupons/getCustomerCoupons",
       payload: customerId,
-      onSuccess: response => this.setState({ customerCoupons: response })
+      // onSuccess: response => this.setState({ customerCoupons: response })
     });
   };
 
@@ -1403,9 +1406,9 @@ class CustomerDetail extends PureComponent {
     });
   };
 
-  filterCouponsByAreaId = (coupons, areaId) => {
-    return coupons.filter(coupon => coupon.areaId === areaId);
-  };
+  // filterCouponsByAreaId = (coupons, areaId) => {
+  //   return coupons.filter(coupon => coupon.areaId === areaId);
+  // };
 
   handleUpdate = (id, fields) => {
     const { dispatch, customerId, handleGetCustomers } = this.props;
@@ -1452,6 +1455,8 @@ class CustomerDetail extends PureComponent {
       },
       onSuccess: (response,total) => {
         this.setState({customerTransactions: response})
+        console.log(response);
+        console.log(total);
         this.setState({
           transactionPagination : {
             total:total
@@ -1489,7 +1494,7 @@ class CustomerDetail extends PureComponent {
 
   render() {
     const {
-      customerCoupons,
+      // customerCoupons,
       customerDetail,
       customerPayments,
       customerRides,
