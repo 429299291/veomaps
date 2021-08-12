@@ -320,6 +320,7 @@ const UpdateForm = (props => {
   const { handleUpdate, areas, record, changeLockStatus, updateLocation, alertVehicle, getVehicleStatus, restartVehicle,handleVoice } = props;
   const [form] = Form.useForm()
   let voiceType = null
+  let times = null
   const [voiceVisible, setVoiceVisible] = useState(false);
   const onChangeVoice =(value)=>{
     voiceType = value.target.value
@@ -335,8 +336,17 @@ const UpdateForm = (props => {
     setVoiceVisible(false)
   }
   const voiceHandleOk =()=>{
-    setVoiceVisible(false)
-      handleVoice(voiceType)
+      if(!times){
+        message.error('times select')
+      }else if(!voiceType){
+        message.error('voiceType select')
+      }else{
+        handleVoice(voiceType,times)
+        setVoiceVisible(false)
+      }
+  }
+  const timesOnChange = (value)=>{
+    times = value
   }
   return (
     <div>
@@ -526,16 +536,20 @@ const UpdateForm = (props => {
           >
             Voice
           </Button>
-          <Modal title="Voice type" visible={voiceVisible} onOk={voiceHandleOk} onCancel={voiceHandleCancel}>
+          <Modal title="Voice type" visible={voiceVisible} onOk={voiceHandleOk} onCancel={voiceHandleCancel} centered={true}>
+            times:<InputNumber min={1} max={100} onChange={timesOnChange} />
             <Radio.Group onChange={onChangeVoice}>
               <Radio value={0}>SELF ALERT</Radio>
-              <Radio value={1}>INVALID PARKING</Radio>
+              <Radio value={12}>Help Alarm</Radio>
+              <Radio value={13}>Ayuda Alarm</Radio>
+              <Radio value={14}>Warning</Radio>
+              {/* <Radio value={1}>INVALID PARKING</Radio>
               <Radio value={2}>SLOW SPEED ZONE</Radio>
               <Radio value={3}>DO NOT SHAKE</Radio>
               <Radio value={4}>START RIDE</Radio>
               <Radio value={5}>END RIDE</Radio>
               <Radio value={6}>NO RIDE ZONE</Radio>
-              <Radio value={7}>LOW BATTERY</Radio>
+              <Radio value={7}>LOW BATTERY</Radio> */}
             </Radio.Group>
           </Modal>
           {/* <Button
@@ -762,7 +776,7 @@ class VehicleDetail extends PureComponent {
 
   componentDidMount = () => {
     this.handleGetVehicle(this.props.vehicleId);
-    this.handleGetVehicleOrders(this.props.vehicleId);
+    // this.handleGetVehicleOrders(this.props.vehicleId);
     this.handleGetVehicleRides(this.props.vehicleId);
   };
 
@@ -796,7 +810,7 @@ class VehicleDetail extends PureComponent {
       }
     });
   }
-  handleVoice = (value) => {
+  handleVoice = (value,times) => {
     const { dispatch, vehicleId,voiceVisible } = this.props;
     if(value !== null){
       dispatch({
@@ -804,7 +818,7 @@ class VehicleDetail extends PureComponent {
         payload: {
           vehicleId:vehicleId,
           type:value,
-          repeated:false
+          times
         }
       });
     }else{
@@ -841,16 +855,16 @@ class VehicleDetail extends PureComponent {
     this.handleEndRideVisible();
   };
 
-  handleGetVehicleOrders = id => {
-    const { dispatch } = this.props;
+  // handleGetVehicleOrders = id => {
+  //   const { dispatch } = this.props;
 
     
-      dispatch({
-        type: "vehicles/getOrders",
-        id: id,
-        onSuccess: response => this.setState({ vehicleOrders: response, orderTablePagination: { current: Math.round((response.length / 10) + 1) } })
-      });
-  };
+  //     // dispatch({
+  //     //   type: "vehicles/getOrders",
+  //     //   id: id,
+  //     //   onSuccess: response => this.setState({ vehicleOrders: response, orderTablePagination: { current: Math.round((response.length / 10) + 1) } })
+  //     // });
+  // };
 
   handleGetVehicleRides = vehicleId => {
     const { dispatch } = this.props;
@@ -961,9 +975,9 @@ class VehicleDetail extends PureComponent {
       type: "vehicles/updateLocation",
       id: vehicleId,
       onSuccess: () => {
-        setTimeout(() => {
-          this.handleGetVehicleOrders(vehicleId);
-        }, 3000)
+        // setTimeout(() => {
+        //   this.handleGetVehicleOrders(vehicleId);
+        // }, 3000)
       }
     });
   }

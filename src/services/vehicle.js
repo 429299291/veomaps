@@ -33,11 +33,11 @@ export async function getVehicles(params) {
 // }
 
 //null data
-export async function getVehicleOrders(vehicleId) {
-  return request(`/admins/vehicles/${vehicleId}/orders`, {
-    method: "GET"
-  });
-}
+// export async function getVehicleOrders(vehicleId) {
+//   return request(`/admins/vehicles/${vehicleId}/orders`, {
+//     method: "GET"
+//   });
+// }
 
 export async function countVehicles(params) {
   return request(
@@ -225,8 +225,8 @@ export async function controlVoice(params) {
   return request(`/api/admins/vehicles/${params.vehicleId}/voice`, {
     method: "POST",
     body: {
-      repeated:params.repeated,
-      type:params.type
+      type:params.type,
+      times:params.times
     }
   });
 }
