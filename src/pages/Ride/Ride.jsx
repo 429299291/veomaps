@@ -98,14 +98,14 @@ return (
             <InputNumber placeholder="Phone"  style={{width:'100%'}} maxlength='10'/>
         </FormItem>
       </Col>
-      <Col span={5}>
+      <Col span={6}>
         <FormItem label="Vehicle Number" name='vehicleNumber' rules={[
           {message: 'Vehicle Number Error!',type:'number'},
         ]}>
             <InputNumber placeholder="Vehicle Number" style={{width:'100%'}}/>
         </FormItem>
       </Col>
-      <Col span={4}>
+      <Col span={5}>
         <FormItem label="In Use" name='notEnded'>
             <Select placeholder="select" style={{ width: "100%" }}>
               {rideType.map((status, index) => (
@@ -115,6 +115,18 @@ return (
               ))}
               {/* <Option value={null}>All</Option> */}
             </Select>
+        </FormItem>
+      </Col>
+      <Col span={7}>
+        <FormItem
+          label="Time"
+          name='timeRange'
+        >
+            <RangePicker
+              // style={{ width: "90%" }}
+              format="YYYY-MM-DDTHH:mm:ss"
+              showTime
+            />
         </FormItem>
       </Col>
       <Col span={5}>
@@ -129,7 +141,7 @@ return (
             </Select>
         </FormItem>
       </Col>
-      <Col span={5}>
+      <Col span={6}>
         <FormItem label="Unlock Method" name='unlockMethod'>
             <Select placeholder="select" style={{ width: "100%" }}>
               {lockOperationWay.map((status, index) => (
@@ -141,20 +153,7 @@ return (
             </Select>
         </FormItem>
       </Col>
-    {/* <Row gutter={{ md: 8, lg: 24, xl: 48 }}> */}
-      <Col span={6}>
-        <FormItem
-          label="Time"
-          name='timeRange'
-        >
-            <RangePicker
-              // style={{ width: "90%" }}
-              format="YYYY-MM-DDTHH:mm:ss"
-              showTime
-            />
-        </FormItem>
-      </Col>
-      <Col span={4}>
+      <Col span={5}>
         <FormItem
           label="Vehicle Type"
           name='vehicleType'
@@ -169,13 +168,9 @@ return (
             </Select>
         </FormItem>
       </Col>
-    {/* </Row> */}
     </Row>
 
-    <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-      <Col span={3}>
-        {`count: ${props.total}`}
-      </Col>
+    <Row gutter={{ md: 16, lg: 24, xl: 48 }}>
       <Col span={10}>
         <span className={styles.submitButtons} >
           <Button  onClick={()=>{props.handleSearch(form.getFieldsValue(true))}}>
@@ -185,6 +180,9 @@ return (
             Reset
           </Button>
         </span>
+      </Col>
+      <Col span={3} offset={11}>
+        {`count: ${props.total}`}
       </Col>
     </Row>
   </Form>

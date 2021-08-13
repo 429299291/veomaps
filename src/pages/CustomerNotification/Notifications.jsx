@@ -95,11 +95,10 @@ const MessageAreaSender = (props => {
     };
   
     return (
-        <div style={{marginBottom: "10em"}}>
+        <div style={{marginBottom: "3rem"}}>
           <Form form={form}>
-            <Row gutter={{ md: 8, lg: 24, xl: 48 }} style={{marginBottom: "2em"}}>
+            <Row gutter={{ md: 8, lg: 24, xl: 48 }} style={{marginBottom: "1rem"}}>
                     <Col md={8} sm={24}>
-                        Message: 
                         <FormItem name='message'
                           rules={
                             [
@@ -114,12 +113,7 @@ const MessageAreaSender = (props => {
                         <TextArea autosize={{minRows: 20, maxRows: 23}} />
                         </FormItem>
                     </Col>
-            </Row>
-
-
-            <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-
-                <Col md={4} sm={24}>
+                    <Col span={5}>
                   <FormItem rules='type'
                   name='type'
                     rules={
@@ -147,7 +141,6 @@ const MessageAreaSender = (props => {
                     Send
                     </Button>
                 </Col>
-
             </Row>
             </Form>
         </div  >

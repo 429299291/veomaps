@@ -85,12 +85,10 @@ const RenderSimpleForm=(props)=> {
   // const areas = this.props.areas.data;
   return (
     // <Form onSubmit={e => {typeof e === 'object' && e.preventDefault(); this.getViolations();}} layout="inline">
-    <Form form={form} layout="inline">
+    <Form form={form} >
       <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
+          <Col span={6}>
             <FormItem
-              labelCol={{ span: 12 }}
-              wrapperCol={{ span: 12 }}
               label="Customer Phone"
               name='phone'
               rules={
@@ -113,7 +111,7 @@ const RenderSimpleForm=(props)=> {
                 <InputNumber placeholder="Please Phone Number" style={{width: "100%"}}/>
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          <Col span={7}>
             <FormItem
               labelCol={{ span: 12 }}
               wrapperCol={{ span: 12 }}
@@ -129,14 +127,14 @@ const RenderSimpleForm=(props)=> {
               </Select>
             </FormItem>
           </Col>
-          <Col  md={8} sm={24}>
+          <Col span={11}>
             <FormItem label="Time" labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} name='timeRange'>
                 <RangePicker style={{width: "90%"}} format="YYYY-MM-DD HH:mm:ss" showTime />
             </FormItem>
           </Col>
           </Row>
           <Row>
-          <Col md={8} sm={24}>
+          <Col span={5}>
             <span className={styles.submitButtons}>
               <Button onClick={()=>{props.getViolations(form.getFieldsValue(true))}}>
                 Search
