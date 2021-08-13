@@ -249,18 +249,6 @@ const RenderAdvancedForm=(props)=> {
               </Select>
           </FormItem>
           </Col>
-      {/* </Row>
-
-      <Row > */}
-      {/* <Col span={8}>
-          <FormItem label="Is Using" name='isUsing'>
-              <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value={true}>Yes</Option>
-                <Option value={false}>No</Option>
-                <Option value={null}>All</Option>
-              </Select>
-          </FormItem>
-        </Col> */}
         <Col span={8}>
           <FormItem label="Vehicle Battery" name='vehicleBattery'>
               <Select placeholder="select" style={{ width: "100%" }}>
@@ -282,31 +270,15 @@ const RenderAdvancedForm=(props)=> {
               }
               >
 
-             <InputNumber placeholder="Please Input" style={{ marginLeft: "1em" }} />
+             <InputNumber placeholder="Please Input" style={{width:'100%' }} />
         </FormItem>
         </Col>
-      {/* </Row>
-
-      <Row gutter={{ md: 8, lg: 24, xl: 48 }}> */}
-      {/* <Col md={8} sm={24}>
-          <FormItem label="Is Reported" name='isReported'>
-              <Select placeholder="select" style={{ width: "100%" }}>
-                <Option value={true}>Yes</Option>
-                <Option value={false}>No</Option>
-                <Option value={null}>All</Option>
-              </Select>
-          </FormItem>
-        </Col> */}
-        <Col md={12} sm={24}>
+        <Col span={8}>
           <FormItem label="Custom Vehicle Battery" name='vehiclePowerCustom'>
               <Input placeholder="power" suffix="%"/>
           </FormItem>
         </Col>
       </Row>
-
-     
-      
-
       <div style={{ overflow: "hidden" }}>
         <div style={{ marginBottom: 24 }}>
           <Button  onClick={()=>{props.handleSearch(form.getFieldsValue(true))}}>
@@ -1638,28 +1610,23 @@ handleShowingVehicles = val => {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
-            <div className={styles.tableListOperator}>
+            <div className={styles.tableListOperator} style={{display:'flex',justifyContent:'space-between'}}>
               <Button
                 type="primary"
                 onClick={() => this.handleModalVisible(true)}
               >
                 Add
               </Button>
-
-
-            {selectedAreaId >= 1 && authority.includes("vehicle") && 
+            {/* {selectedAreaId >= 1 && authority.includes("vehicle") && 
                 <Button
                 type="primary"
                 onClick={() => this.handleUpdateAllLocations()}
               >
                 Update All Locations
               </Button>
-            }
-              
-
-              <span style={{marginLeft: "1em"}}>
-              {/* {`count: ${selectedTab === "1" ? vehicles.total : vehicleLocations.length}`} */}
-              {vehicles.total}
+            } */}
+              <span style={{width:'7rem'}}>
+              total:{vehicles.total}
               </span>
             </div>
             <Tabs defaultActiveKey="1" onChange={this.hadnleTabChange}>

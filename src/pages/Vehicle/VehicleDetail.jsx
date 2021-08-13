@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment, useState } from "react";
+import React, { PureComponent, Fragment, useState,useEffect } from "react";
 import { connect } from "dva";
 import moment from "moment";
 import {
@@ -321,12 +321,19 @@ const UpdateForm = (props => {
   const { handleUpdate, areas, record, changeLockStatus, updateLocation, alertVehicle, getVehicleStatus, restartVehicle,handleVoice } = props;
   const [form] = Form.useForm()
   const [formT] = Form.useForm()
-  let voiceType = null
-  let times = null
+  let voiceTypeChange = null
+  let timesChange = null
   const [voiceVisible, setVoiceVisible] = useState(false);
-  const onChangeVoice =(value)=>{
-    voiceType = value.target.value
-  }
+  const [voiceSubmit, setVoiceSubmit] = useState(true);
+  // const {times,voiceType} = formT.getFieldsValue(true)
+  useEffect(()=>{
+    const {times,voiceType} = formT.getFieldsValue(true)
+    if(times && voiceType){
+      setVoiceSubmit(false)
+    }else{
+      setVoiceSubmit(true)
+    }
+  },[])
   const handleVoiceVisible = ()=>{
     setVoiceVisible(true)
   }
@@ -339,17 +346,16 @@ const UpdateForm = (props => {
   }
   const voiceHandleOk =()=>{
     const {times,voiceType} = formT.getFieldsValue(true)
-      if(!times){
-        message.error('Time error')
-      }else if(voiceType === null){
-        message.error('voiceType error')
-      }else{
-        handleVoice(voiceType,times)
-        setVoiceVisible(false)
-      }
+    handleVoice(voiceType,times)
+    setVoiceVisible(false)
   }
   const timesOnChange = (value)=>{
-    times = value
+    timesChange = value
+    if(timesChange && voiceTypeChange >= 0) {setVoiceSubmit(false)}
+  }
+  const onChangeVoice =(value)=>{
+    voiceTypeChange = value.target.value
+    if(timesChange && voiceTypeChange >= 0) {setVoiceSubmit(false)}
   }
   return (
     <div>
@@ -539,7 +545,15 @@ const UpdateForm = (props => {
           >
             Voice
           </Button>
-          <Modal title="Voice type" visible={voiceVisible} onOk={voiceHandleOk} onCancel={voiceHandleCancel} centered={true}>
+          <Modal title="Voice type" visible={voiceVisible} onOk={voiceHandleOk} onCancel={voiceHandleCancel} centered={true} 
+          footer={
+            [<Button key="back" onClick={voiceHandleCancel}>
+            Cancel
+          </Button>,
+          <Button disabled = {voiceSubmit} onClick={voiceHandleOk}>
+            Submit
+          </Button>]
+          }>
             <Form form={formT}>
             <FormItem
                 label="Times"
