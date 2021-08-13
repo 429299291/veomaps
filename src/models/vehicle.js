@@ -55,6 +55,11 @@ export default {
     *controlVoice({ payload }, { call, put }) {
       //const total = yield call(countVehicles, payload);
       const result = yield call(controlVoice, payload);
+      if(result == true){
+        message.success('voice success')
+      }else{
+        message.error('voice error')
+      }
     },
     
     *getVehicleSnapshot({ payload, onSuccess }, { call, put }) {

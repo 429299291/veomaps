@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment, useState } from "react";
+import React, { PureComponent, Fragment, useState,useEffect } from "react";
 import { connect } from "dva";
 import moment from "moment";
 import {
@@ -316,15 +316,24 @@ const VehicleControlExtensionForm = (props => {
     </div>
   )
 });
+
 const UpdateForm = (props => {
   const { handleUpdate, areas, record, changeLockStatus, updateLocation, alertVehicle, getVehicleStatus, restartVehicle,handleVoice } = props;
   const [form] = Form.useForm()
-  let voiceType = null
-  let times = null
+  const [formT] = Form.useForm()
+  let voiceTypeChange = null
+  let timesChange = null
   const [voiceVisible, setVoiceVisible] = useState(false);
-  const onChangeVoice =(value)=>{
-    voiceType = value.target.value
-  }
+  const [voiceSubmit, setVoiceSubmit] = useState(true);
+  // const {times,voiceType} = formT.getFieldsValue(true)
+  useEffect(()=>{
+    const {times,voiceType} = formT.getFieldsValue(true)
+    if(times && voiceType){
+      setVoiceSubmit(false)
+    }else{
+      setVoiceSubmit(true)
+    }
+  },[])
   const handleVoiceVisible = ()=>{
     setVoiceVisible(true)
   }
@@ -336,17 +345,17 @@ const UpdateForm = (props => {
     setVoiceVisible(false)
   }
   const voiceHandleOk =()=>{
-      if(!times){
-        message.error('times select')
-      }else if(!voiceType){
-        message.error('voiceType select')
-      }else{
-        handleVoice(voiceType,times)
-        setVoiceVisible(false)
-      }
+    const {times,voiceType} = formT.getFieldsValue(true)
+    handleVoice(voiceType,times)
+    setVoiceVisible(false)
   }
   const timesOnChange = (value)=>{
-    times = value
+    timesChange = value
+    if(timesChange && voiceTypeChange >= 0) {setVoiceSubmit(false)}
+  }
+  const onChangeVoice =(value)=>{
+    voiceTypeChange = value.target.value
+    if(timesChange && voiceTypeChange >= 0) {setVoiceSubmit(false)}
   }
   return (
     <div>
@@ -536,32 +545,35 @@ const UpdateForm = (props => {
           >
             Voice
           </Button>
-          <Modal title="Voice type" visible={voiceVisible} onOk={voiceHandleOk} onCancel={voiceHandleCancel} centered={true}>
-            times:<InputNumber min={1} max={100} onChange={timesOnChange} />
-            <Radio.Group onChange={onChangeVoice}>
-              <Radio value={0}>SELF ALERT</Radio>
-              <Radio value={12}>Help Alarm</Radio>
-              <Radio value={13}>Ayuda Alarm</Radio>
-              <Radio value={14}>Warning</Radio>
-              {/* <Radio value={1}>INVALID PARKING</Radio>
-              <Radio value={2}>SLOW SPEED ZONE</Radio>
-              <Radio value={3}>DO NOT SHAKE</Radio>
-              <Radio value={4}>START RIDE</Radio>
-              <Radio value={5}>END RIDE</Radio>
-              <Radio value={6}>NO RIDE ZONE</Radio>
-              <Radio value={7}>LOW BATTERY</Radio> */}
-            </Radio.Group>
+          <Modal title="Voice type" visible={voiceVisible} onOk={voiceHandleOk} onCancel={voiceHandleCancel} centered={true} 
+          footer={
+            [<Button key="back" onClick={voiceHandleCancel}>
+            Cancel
+          </Button>,
+          <Button disabled = {voiceSubmit} onClick={voiceHandleOk}>
+            Submit
+          </Button>]
+          }>
+            <Form form={formT}>
+            <FormItem
+                label="Times"
+                name='times'
+              >
+                <InputNumber min={1} max={100} onChange={timesOnChange} defaultValue={0}/>
+              </FormItem>
+              <FormItem
+                label="Voice Type"
+                name='voiceType'
+              >
+                <Radio.Group onChange={onChangeVoice}>
+                  <Radio value={0}>SELF ALERT</Radio>
+                  <Radio value={12}>Help Alarm</Radio>
+                  <Radio value={13}>Ayuda Alarm</Radio>
+                  <Radio value={14}>Warning</Radio>
+                </Radio.Group>
+              </FormItem>
+            </Form>
           </Modal>
-          {/* <Button
-            icon="plus"
-            type="primary"
-            onClick={restartVehicle}
-            disabled={!form.isFieldsTouched() && !authority.includes("restart.vehicle")}
-            style={{marginRight: "1em", marginTop: "0.5em"}}
-          >
-            Restart
-          </Button> */}
-
         </Col>
 
       </Row>

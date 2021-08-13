@@ -237,7 +237,7 @@ const Areas = (props) => {
         <Geo handleEditCenterData ={handleEditCenterData}></Geo>
         <Drawer
           title={formStatus+" Feature"}
-          width={'30vw'}
+          width={'40vw'}
           onClose={onClose}
           visible={isDrawerVisible}
           bodyStyle={{ paddingBottom: 80 }}
