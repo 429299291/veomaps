@@ -228,7 +228,7 @@ const MembershipForm = (props => {
           >
               <Select 
                   placeholder="select" style={{ width: "100%" }} 
-                  // defaultValue ={activeMembership ? activeMembership.id : undefined}
+                  defaultValue ={activeMembership ? activeMembership.id : undefined}
                   onChange={val => setAllowToBuy(!activeMembership && !!val)}    
                   disabled={!!activeMembership}            
               >
