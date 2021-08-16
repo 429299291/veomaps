@@ -160,7 +160,6 @@ const Areas = (props) => {
         violationFees:violationFineDatas
       },
     }
-    console.log(newFormDatas.feature.areaAvailability.weekDay.start);
     if(!areas.selectedAreaId){
       dispatch({
         type: "areas/addArea",

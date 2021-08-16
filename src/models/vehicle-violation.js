@@ -60,7 +60,8 @@ export default {
             } 
         },
         *updateRevert({ payload, id, onSuccess }, {call, put }) {
-            const response = yield call(updateViolationRevert, id, payload);
+            // const response = yield call(updateViolationRevert, id, payload);
+            const response = 'yield call(updateViolationRevert, id, payload);'
             if (response) {
                 message.success("Successfully Update the Status of Violation: " + id);
                 onSuccess && onSuccess();
