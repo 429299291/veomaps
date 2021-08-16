@@ -769,6 +769,12 @@ class Ride extends PureComponent {
     params.lockMethod === null ? delete params.lockMethod : null
     params.unlockMethod === null ? delete params.unlockMethod : null
     this.setState({ filterCriteria: params });
+    if(params.timeRange){
+      params.timeRange ={
+        start:moment(params.timeRange[0]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss"),
+        end:moment(params.timeRange[1]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss")
+      }
+  }
     dispatch({
       type: "rides/get",
       payload: params
@@ -997,16 +1003,12 @@ class Ride extends PureComponent {
     const [form] = Form.useForm()
     const fieldsValue = form.getFieldsValue(true)
     // form.validateFields((err, fieldsValue) => {
-
-      // if (fieldsValue.timeRange) {
-      //   fieldsValue.rideStart = moment(fieldsValue.timeRange[0])
-      //     .utcOffset(0)
-      //     .format("YYYY-MM-DDTHH:mm:ss");
-      //   fieldsValue.rideEnd = moment(fieldsValue.timeRange[1])
-      //     .utcOffset(0)
-      //     .format("YYYY-MM-DDTHH:mm:ss");
-      //   fieldsValue.timeRange = undefined;
-      // }
+    //   if(fieldsValue.timeRange){
+    //     fieldsValue.timeRange ={
+    //       start:moment(fieldsValue.timeRange[0]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss"),
+    //       end:moment(fieldsValue.timeRange[1]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss")
+    //     }
+    // }
 
       const values = Object.assign(
         {},

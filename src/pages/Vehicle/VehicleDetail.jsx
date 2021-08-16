@@ -321,19 +321,19 @@ const UpdateForm = (props => {
   const { handleUpdate, areas, record, changeLockStatus, updateLocation, alertVehicle, getVehicleStatus, restartVehicle,handleVoice } = props;
   const [form] = Form.useForm()
   const [formT] = Form.useForm()
-  let voiceTypeChange = null
-  let timesChange = null
   const [voiceVisible, setVoiceVisible] = useState(false);
   const [voiceSubmit, setVoiceSubmit] = useState(true);
+  const [voiceTypeChange, setVoiceTypeChange] = useState(null);
+  const [timesChange, setTimesChange] = useState(null);
   // const {times,voiceType} = formT.getFieldsValue(true)
   useEffect(()=>{
     const {times,voiceType} = formT.getFieldsValue(true)
-    if(times && voiceType){
+    if(voiceTypeChange !== null && timesChange !== null){
       setVoiceSubmit(false)
     }else{
       setVoiceSubmit(true)
     }
-  },[])
+  },[voiceTypeChange,timesChange])
   const handleVoiceVisible = ()=>{
     setVoiceVisible(true)
   }
@@ -350,12 +350,10 @@ const UpdateForm = (props => {
     setVoiceVisible(false)
   }
   const timesOnChange = (value)=>{
-    timesChange = value
-    if(timesChange && voiceTypeChange !== null) {setVoiceSubmit(false)}
+    setTimesChange(value)
   }
   const onChangeVoice =(value)=>{
-    voiceTypeChange = value.target.value
-    if(timesChange && voiceTypeChange >= 0) {setVoiceSubmit(false)}
+    setVoiceTypeChange(value.target.value)
   }
   return (
     <div>
