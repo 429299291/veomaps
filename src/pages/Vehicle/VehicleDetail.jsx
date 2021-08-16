@@ -351,7 +351,7 @@ const UpdateForm = (props => {
   }
   const timesOnChange = (value)=>{
     timesChange = value
-    if(timesChange && voiceTypeChange >= 0) {setVoiceSubmit(false)}
+    if(timesChange && voiceTypeChange !== null) {setVoiceSubmit(false)}
   }
   const onChangeVoice =(value)=>{
     voiceTypeChange = value.target.value

@@ -105,6 +105,7 @@ const Areas = (props) => {
     setIsDrawerVisible(false);
   };
   const onFinish = (values) => {
+    console.log(values);
     let newFormDatas = {
       name:values.name,
       description:values.description,
@@ -126,12 +127,15 @@ const Areas = (props) => {
           isOpen:values.feature.areaAvailability.isOpen == 'null'? null:values.feature.areaAvailability.isOpen,
           timeZone:values.feature.areaAvailability.isOpen == 'null'?values.feature.areaAvailability.timeZone:null,
           weekDay:{
-            start:values.feature.areaAvailability.isOpen == 'null' ? values.feature.areaAvailability.weekDay ? `${values.feature.areaAvailability.weekDay[0]._d.getHours()}:${values.feature.areaAvailability.weekDay[0]._d.getMinutes()}`:'0:0':'0:0',
-            end:values.feature.areaAvailability.isOpen == 'null' ? values.feature.areaAvailability.weekDay ?   `${values.feature.areaAvailability.weekDay[1]._d.getHours()}:${values.feature.areaAvailability.weekDay[1]._d.getMinutes()}` :'0:0' :'0:0',
+            start:values.feature.areaAvailability.isOpen == 'null' ? values.feature.areaAvailability.weekDay ? `${values.feature.areaAvailability.weekDay[0]._i}`:'0:0':'0:0',
+            // end:values.feature.areaAvailability.isOpen == 'null' ? values.feature.areaAvailability.weekDay ?   `${values.feature.areaAvailability.weekDay[1]._d.getHours()}:${values.feature.areaAvailability.weekDay[1]._d.getMinutes()}` :'0:0' :'0:0',
+            end:values.feature.areaAvailability.isOpen == 'null' ? values.feature.areaAvailability.weekDay ?   `${values.feature.areaAvailability.weekDay[1]._i}` :'0:0' :'0:0',
           },
           weekend:{
-            start:values.feature.areaAvailability.isOpen == 'null' ? values.feature.areaAvailability.weekend ?  `${values.feature.areaAvailability.weekend[0]._d.getHours()}:${values.feature.areaAvailability.weekend[0]._d.getMinutes()}` :'0:0' :'0:0',
-            end:values.feature.areaAvailability.isOpen == 'null'? values.feature.areaAvailability.weekend ?  `${values.feature.areaAvailability.weekend[1]._d.getHours()}:${values.feature.areaAvailability.weekend[1]._d.getMinutes()}` :'0:0' :'0:0',
+            // start:values.feature.areaAvailability.isOpen == 'null' ? values.feature.areaAvailability.weekend ?  `${values.feature.areaAvailability.weekend[0]._d.getHours()}:${values.feature.areaAvailability.weekend[0]._d.getMinutes()}` :'0:0' :'0:0',
+            // end:values.feature.areaAvailability.isOpen == 'null'? values.feature.areaAvailability.weekend ?  `${values.feature.areaAvailability.weekend[1]._d.getHours()}:${values.feature.areaAvailability.weekend[1]._d.getMinutes()}` :'0:0' :'0:0',
+            start:values.feature.areaAvailability.isOpen == 'null' ? values.feature.areaAvailability.weekend ?  `${values.feature.areaAvailability.weekend[0]._i}` :'0:0' :'0:0',
+            end:values.feature.areaAvailability.isOpen == 'null'? values.feature.areaAvailability.weekend ?  `${values.feature.areaAvailability.weekend[1]._i}` :'0:0' :'0:0',
           },
           description:values.feature.areaAvailability.description,
         },
@@ -156,6 +160,7 @@ const Areas = (props) => {
         violationFees:violationFineDatas
       },
     }
+    console.log(newFormDatas.feature.areaAvailability.weekDay.start);
     if(!areas.selectedAreaId){
       dispatch({
         type: "areas/addArea",
@@ -186,7 +191,13 @@ const Areas = (props) => {
   }
 
   const format = 'HH:mm';
-
+  const setTimePickerDialogZero = (time,timeString)=>{
+    console.log(time);
+    console.log(timeString);
+    time[0]._i = timeString[0]
+    time[1]._i = timeString[1]
+    console.log(time);
+  }
   //components functions
   const getViolationFineDatas=(msg)=>{
     setViolationFineDatas(msg)
@@ -425,7 +436,7 @@ const Areas = (props) => {
                   label="Weekday"
                   rules={[{ required: false, message: 'Please choose the dateTime' }]}
                 >
-                  <TimePicker.RangePicker  bordered={false} size="small"  disabled={!areaAvailabilityIsOpenEnabled} format={format}/>
+                  <TimePicker.RangePicker  bordered={false} size="small"  disabled={!areaAvailabilityIsOpenEnabled} format={format} onChange = {setTimePickerDialogZero}/>
                 </Form.Item>
               </Col>
               <Col span={12} offset={1}>
@@ -434,7 +445,7 @@ const Areas = (props) => {
                   label="Weekend"
                   rules={[{ required: false, message: 'Please choose the dateTime' }]}
                 >
-                  <TimePicker.RangePicker size="small" bordered={false} disabled={!areaAvailabilityIsOpenEnabled} format={format}/>
+                  <TimePicker.RangePicker size="small" bordered={false} disabled={!areaAvailabilityIsOpenEnabled} format={format} onChange = {setTimePickerDialogZero}/>
                 </Form.Item>
               </Col>
               <Col span={24}>

@@ -117,14 +117,14 @@ return (
             </Select>
         </FormItem>
       </Col>
-      <Col span={7}>
+      <Col span={8}>
         <FormItem
           label="Time"
           name='timeRange'
         >
             <RangePicker
               // style={{ width: "90%" }}
-              format="YYYY-MM-DDTHH:mm:ss"
+              format="YYYY-MM-DD HH:mm:ss"
               showTime
             />
         </FormItem>
