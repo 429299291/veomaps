@@ -731,6 +731,10 @@ class Ride extends PureComponent {
   handleGetRides = () => {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
+    filterCriteria.vehicleNumber ? null : delete filterCriteria.vehicleNumber
+    filterCriteria.notEnded === 0 ? delete filterCriteria.notEnded  : null
+    filterCriteria.lockMethod === null ? delete filterCriteria.lockMethod : null
+    filterCriteria.unlockMethod === null ? delete filterCriteria.unlockMethod : null
     dispatch({
       type: "rides/get",
       payload: filterCriteria
@@ -818,10 +822,10 @@ class Ride extends PureComponent {
     //     fieldsValue.phone = fieldsValue.phone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
     //     fieldsValue.phone == '' ? delete fieldsValue.phone : null
     // }
-    fieldsValue.vehicleNumber ? null : delete fieldsValue.vehicleNumber
-    fieldsValue.notEnded === 0 ? delete fieldsValue.notEnded  : null
-    fieldsValue.lockMethod === null ? delete fieldsValue.lockMethod : null
-    fieldsValue.unlockMethod === null ? delete fieldsValue.unlockMethod : null
+    // fieldsValue.vehicleNumber ? null : delete fieldsValue.vehicleNumber
+    // fieldsValue.notEnded === 0 ? delete fieldsValue.notEnded  : null
+    // fieldsValue.lockMethod === null ? delete fieldsValue.lockMethod : null
+    // fieldsValue.unlockMethod === null ? delete fieldsValue.unlockMethod : null
   }
 
       let values = Object.assign({}, fieldsValue, {
@@ -928,7 +932,7 @@ class Ride extends PureComponent {
     dispatch({
       type: "rides/endRide",
       rideId: rideId,
-      minutes: minutes,
+      minutes: minutes.minutes,
       onSuccess: this.handleGetRides
     });
     this.handleEndRideVisible();

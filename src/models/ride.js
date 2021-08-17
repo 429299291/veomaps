@@ -139,7 +139,6 @@ export default {
     },
     *endRide({ rideId, minutes, onSuccess }, { call, put }) {
       const response = yield call(endRide, rideId, minutes); // put
-
       response && onSuccess(response);
     },
     *update({ id, payload, onSuccess }, { call, put }) {
