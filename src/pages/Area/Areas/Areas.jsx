@@ -105,7 +105,6 @@ const Areas = (props) => {
     setIsDrawerVisible(false);
   };
   const onFinish = (values) => {
-    console.log(values);
     let newFormDatas = {
       name:values.name,
       description:values.description,
@@ -191,11 +190,8 @@ const Areas = (props) => {
 
   const format = 'HH:mm';
   const setTimePickerDialogZero = (time,timeString)=>{
-    console.log(time);
-    console.log(timeString);
     time[0]._i = timeString[0]
     time[1]._i = timeString[1]
-    console.log(time);
   }
   //components functions
   const getViolationFineDatas=(msg)=>{
