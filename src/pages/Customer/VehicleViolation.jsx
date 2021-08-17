@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent, Fragment,useEffect } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 import {
@@ -380,7 +380,7 @@ class VehicleViolation extends PureComponent {
     updateModalVisible: false,
     filterCriteria: {
       pagination:{
-        page: 1, 
+        page: 0,
         pageSize: 10,
         sort:{
           direction:'desc',
@@ -392,7 +392,6 @@ class VehicleViolation extends PureComponent {
     selectedRecordDetail: {},
     searchOldData:{}
   };
-
   columns = [
     {
       title: "Customer Phone",
@@ -517,7 +516,6 @@ class VehicleViolation extends PureComponent {
           filterCriteria.phone = null;
       }
       if (fieldsValue.timeRange) {
-      
         // fieldsValue.timeRange.start = moment(fieldsValue.timeRange[0]).utcOffset(0).format(
         //   "MM-DD-YYYY HH:mm:ss"
         // );
@@ -536,20 +534,21 @@ class VehicleViolation extends PureComponent {
       }
       }
       let values = Object.assign({}, {
-        pagination:{
-          page: 1,
-          pageSize: 10,
-          sort:{
-            direction:'desc',
-            sortBy:"created"
-          }
-        }
+        // pagination:{
+        //   page: 0,
+        //   pageSize: 10,
+        //   sort:{
+        //     direction:'desc',
+        //     sortBy:"created"
+        //   }
+        // }
       }, 
       filterCriteria, 
       this.state.searchOldData,
       fieldsValue);
       selectedAreaId ? values = {...values,areaIds:[selectedAreaId]} : null
-      values.pagination.page-1<0 ?values.pagination.page = 0 : values.pagination.page = values.pagination.page-1
+      values.pagination.page-1<0 ? values.pagination.page = 0 : values.pagination.page = values.pagination.page-1
+      fieldsValue === null ? values.pagination.page = values.pagination.page+1 : null
     dispatch({
         type: 'vehicleViolations/get',
         payload: values,
@@ -596,7 +595,7 @@ class VehicleViolation extends PureComponent {
       type: 'vehicleViolations/updateRevert',
       payload: fields,
       id,
-      onSuccess: this.getViolations,
+      onSuccess: ()=>{this.getViolations(null)},
     });
 
     this.handleUpdateModalVisible();
@@ -608,7 +607,7 @@ class VehicleViolation extends PureComponent {
       type: 'vehicleViolations/updateReject',
       payload: fields,
       id,
-      onSuccess: this.getViolations,
+      onSuccess: ()=>{this.getViolations(null)},
     });
 
     this.handleUpdateModalVisible();
@@ -619,7 +618,7 @@ class VehicleViolation extends PureComponent {
       type: 'vehicleViolations/updateApprove',
       payload: fields,
       id,
-      onSuccess: this.getViolations,
+      onSuccess: ()=>{this.getViolations(null)},
     });
 
     this.handleUpdateModalVisible();
@@ -695,7 +694,7 @@ class VehicleViolation extends PureComponent {
       handleUpdateReject : this.handleUpdateReject,
       handleUpdateRevert : this.handleUpdateRevert
     };
-
+    
     const pagination = {
         defaultCurrent: 1,
         current: filterCriteria.pagination.page+1,
@@ -710,12 +709,14 @@ class VehicleViolation extends PureComponent {
           <div className={styles.tableList}>
             <div className={styles.tableListForm}><RenderSimpleForm getViolations={this.getViolations} handleFormReset={this.handleFormReset} /></div> 
             <div>Count: {total}</div>
-            <StandardTable
-              loading={loading}
-              data={{ list: violations, pagination: pagination }}
-              columns={this.columns}
-              onChange={this.handleStandardTableChange}
-            />
+            {areas && areas.areaNames &&
+                          <StandardTable
+                          loading={loading}
+                          data={{ list: violations, pagination: pagination }}
+                          columns={this.columns}
+                          onChange={this.handleStandardTableChange}
+                        />
+            }
           </div>
         </Card>
 

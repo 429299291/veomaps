@@ -120,7 +120,6 @@ export default {
     },
     *getVehicleRides({ payload, onSuccess }, { call, put }) {
       let rides = yield call(getAdminRides,payload);
-      console.log(rides);
       const totalSize = rides.totalSize
       const current = rides.page
       rides = rides.content
@@ -139,8 +138,9 @@ export default {
     },
     *endRide({ rideId, minutes, onSuccess }, { call, put }) {
       const response = yield call(endRide, rideId, minutes); // put
-
-      response && onSuccess(response);
+      response && setTimeout(()=>{
+        onSuccess(response)
+      },3000) ;
     },
     *update({ id, payload, onSuccess }, { call, put }) {
       const response = yield call(updateRide, id, payload); // put
