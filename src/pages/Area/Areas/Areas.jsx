@@ -105,7 +105,6 @@ const Areas = (props) => {
     setIsDrawerVisible(false);
   };
   const onFinish = (values) => {
-    console.log(values);
     let newFormDatas = {
       name:values.name,
       description:values.description,
@@ -191,11 +190,8 @@ const Areas = (props) => {
 
   const format = 'HH:mm';
   const setTimePickerDialogZero = (time,timeString)=>{
-    console.log(time);
-    console.log(timeString);
     time[0]._i = timeString[0]
     time[1]._i = timeString[1]
-    console.log(time);
   }
   //components functions
   const getViolationFineDatas=(msg)=>{
@@ -435,7 +431,7 @@ const Areas = (props) => {
                   label="Weekday"
                   rules={[{ required: false, message: 'Please choose the dateTime' }]}
                 >
-                  <TimePicker.RangePicker  bordered={false} size="small"  disabled={!areaAvailabilityIsOpenEnabled} format={format} onChange = {setTimePickerDialogZero}/>
+                  <TimePicker.RangePicker  bordered={false} size="small" order={false}  disabled={!areaAvailabilityIsOpenEnabled} format={format} onChange = {setTimePickerDialogZero}/>
                 </Form.Item>
               </Col>
               <Col span={12} offset={1}>
@@ -444,7 +440,7 @@ const Areas = (props) => {
                   label="Weekend"
                   rules={[{ required: false, message: 'Please choose the dateTime' }]}
                 >
-                  <TimePicker.RangePicker size="small" bordered={false} disabled={!areaAvailabilityIsOpenEnabled} format={format} onChange = {setTimePickerDialogZero}/>
+                  <TimePicker.RangePicker size="small" order={false} bordered={false} disabled={!areaAvailabilityIsOpenEnabled} format={format} onChange = {setTimePickerDialogZero}/>
                 </Form.Item>
               </Col>
               <Col span={24}>
