@@ -435,7 +435,7 @@ const Areas = (props) => {
                   label="Weekday"
                   rules={[{ required: false, message: 'Please choose the dateTime' }]}
                 >
-                  <TimePicker.RangePicker  bordered={false} size="small"  disabled={!areaAvailabilityIsOpenEnabled} format={format} onChange = {setTimePickerDialogZero}/>
+                  <TimePicker.RangePicker  bordered={false} size="small" order={false}  disabled={!areaAvailabilityIsOpenEnabled} format={format} onChange = {setTimePickerDialogZero}/>
                 </Form.Item>
               </Col>
               <Col span={12} offset={1}>
@@ -444,7 +444,7 @@ const Areas = (props) => {
                   label="Weekend"
                   rules={[{ required: false, message: 'Please choose the dateTime' }]}
                 >
-                  <TimePicker.RangePicker size="small" bordered={false} disabled={!areaAvailabilityIsOpenEnabled} format={format} onChange = {setTimePickerDialogZero}/>
+                  <TimePicker.RangePicker size="small" order={false} bordered={false} disabled={!areaAvailabilityIsOpenEnabled} format={format} onChange = {setTimePickerDialogZero}/>
                 </Form.Item>
               </Col>
               <Col span={24}>
