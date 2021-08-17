@@ -557,7 +557,7 @@ const UpdateForm = (props => {
                 label="Times"
                 name='times'
               >
-                <InputNumber min={1} max={100} onChange={timesOnChange} defaultValue={0}/>
+                <InputNumber min={1} max={30} onChange={timesOnChange} defaultValue={0}/>
               </FormItem>
               <FormItem
                 label="Voice Type"
