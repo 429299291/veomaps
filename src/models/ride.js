@@ -140,7 +140,7 @@ export default {
       const response = yield call(endRide, rideId, minutes); // put
       response && setTimeout(()=>{
         onSuccess(response)
-      },900) ;
+      },3000) ;
     },
     *update({ id, payload, onSuccess }, { call, put }) {
       const response = yield call(updateRide, id, payload); // put
