@@ -253,13 +253,6 @@ class Dashboard extends Component {
 
     const { rangePickerValue} = this.state;
 
-
-     if (!authority.includes("get.total.refund")) {
-       return;
-     }
-
-
-
     dispatch({
       type: "dashboard/fetchTotalRefund",
       params: { 
@@ -423,6 +416,14 @@ getRangeEnd(end) {
     });
   }
 
+  clear() {
+    const { dispatch } = this.props;
+
+    dispatch({
+      type: "dashboard/clear"
+    });
+  }
+
   fetchCustomerCount() {
     const { dispatch, selectedAreaId } = this.props;
 
@@ -567,6 +568,7 @@ getRangeEnd(end) {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if ((prevProps.selectedAreaId !== this.props.selectedAreaId)) {
+      this.clear();
       this.loadBarCharData();
       this.loadDailyRideCount();
       this.loadWeeklyBatteryStatus();
@@ -738,7 +740,7 @@ getRangeEnd(end) {
 
       } else {
 
-        return "unknown";
+        return "loading";
 
       }
 
@@ -1123,7 +1125,7 @@ getRangeEnd(end) {
                         (dashboard.totalRideRevenue && Array.isArray(dashboard.totalRideRevenue))  ? 
                         dashboard.totalRideRevenue.map(result => `${vehicleType[result.vehicleType]} : ${round2Decimal(result.rideRevenue)}, ` )  :
                         
-                        "unknown"
+                        "loading"
                         } </div>
                         
                       <div style={{marginLeft: "1em"}}> Total Refund to Card: {round2Decimal(dashboard.totalRefund.refundToCard)} </div>
