@@ -33,10 +33,15 @@ const { Option } = Select;
 const FormItem = Form.Item;
 const RenderSimpleForm=(props)=> {
   const [form] = Form.useForm()
+  const formData = {
+    name:props.filterCriteria.phone || props.filterCriteria.email || props.filterCriteria.name,
+    status:props.filterCriteria.status
+  }
+  form.setFieldsValue(formData)
   const handleChangetype= (value)=>{
   }
   return (
-    <Form onSubmit={()=>{props.handleSearch(form.getFieldsValue(true))}} form={form} initialValues={{ status: 0 }}>
+    <Form form={form} initialValues={{ status: 0 }}>
     <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
       <Col span={5}>
         <FormItem label="" name='name'>
@@ -450,7 +455,9 @@ class Technician extends PureComponent {
       }
 
     }else{
-      // values = {}
+      values.name = ''
+      delete(values.email)
+      delete(values.phone)
     }
     this.setState({ filterCriteria: values },()=>{
       this.handleGetTechnicians()
@@ -484,7 +491,7 @@ class Technician extends PureComponent {
     return (
       <PageHeaderWrapper title="Technician List">
         <Card bordered={false}>
-            <RenderSimpleForm handleSearch={this.handleSearch} handlePhoneRegisterModalVisible={this.handlePhoneRegisterModalVisible} />
+            <RenderSimpleForm handleSearch={this.handleSearch} handlePhoneRegisterModalVisible={this.handlePhoneRegisterModalVisible} filterCriteria={this.state.filterCriteria}/>
           <PhoneRegisterForm
             {...phoneRegisterMethods}
             modalVisible={registerPhoneModalVisible}
