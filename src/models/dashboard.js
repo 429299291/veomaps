@@ -325,9 +325,10 @@ export default {
     },
 
     *fetchTotalRideRevenue({params}, { call, put }) {
-      const response = yield call(getTotalRideRevenue, params);
+        
+      
+       const response = yield call(getTotalRideRevenue, params);
 
-     
         yield put({
           type: "save",
           payload: {
@@ -347,8 +348,7 @@ export default {
           }
         });
       
-    }
-
+    },
 
 
   },
@@ -385,8 +385,7 @@ export default {
         stripeNetRefund: undefined,
         stripeNetCharge: undefined,
         promoSummary: undefined,
-        totalRideRevenue: "loading",
-        
+        totalRideRevenue: undefined,
         
       };
     }
