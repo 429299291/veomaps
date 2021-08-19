@@ -338,7 +338,7 @@ const UpdateForm = ((props) => {
             {<span>{record.adminNote}</span>}
         </FormItem>
       }
-      { isReviewEditable && <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12 }} style={{marginTop: "160px"}} label="Reject/Revert Note" name='adminNote'>
+      { isReviewEditable && <FormItem labelCol={{ span: 8 }} wrapperCol={{ span: 12 }} style={{marginTop: "160px"}} label="Reject/Revert Note" name='adminNote' rules={[{ required: true }]} >
         <TextArea placeholder="Please Input" />
       </FormItem> }
         

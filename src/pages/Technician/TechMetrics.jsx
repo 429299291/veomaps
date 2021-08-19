@@ -105,32 +105,32 @@ class TechMetrics extends Component {
     },
     {
       title: 'Battery Swap Pickups',
-      dataIndex: 'actionData.batterySwapPickUpCount',
+      dataIndex: ['actionData','batterySwapPickUpCount'],
       sorter: true,
     },
     {
       title: 'Battery Swap Dropoffs',
-      dataIndex: 'actionData.batterySwapDropOffCount',
+      dataIndex: ['actionData','batterySwapDropOffCount'],
       sorter: true,
     },
     {
       title: 'Maintenance Pickups',
-      dataIndex: 'actionData.maintenancePickUpCount',
+      dataIndex: ['actionData','maintenancePickUpCount'],
       sorter: true,
     },
     {
       title: 'Maintenance Dropoffs',
-      dataIndex: 'actionData.maintenanceDropOffCount',
+      dataIndex: ['actionData','maintenanceDropOffCount'],
       sorter: true,
     },
     {
       title: 'Rebalance Pickups',
-      dataIndex: 'actionData.rebalancePickUpCount',
+      dataIndex: ['actionData','rebalancePickUpCount'],
       sorter: true,
     },
     {
       title: 'Rebalance Dropoffs',
-      dataIndex: 'actionData.rebalanceDropOffCount',
+      dataIndex: ['actionData','rebalanceDropOffCount'],
       sorter: true,
     },
   ];
