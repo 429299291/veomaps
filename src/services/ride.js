@@ -40,7 +40,9 @@ export async function getRideRoute(rideId) {
 export async function endRide(rideId, minutes) {
   return request(`/api/admins/rides/${rideId}/end`, {
     method: "POST",
-    body: minutes
+    body: {
+      minutes
+    }
   });
 }
 

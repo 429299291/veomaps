@@ -117,14 +117,14 @@ return (
             </Select>
         </FormItem>
       </Col>
-      <Col span={7}>
+      <Col span={8}>
         <FormItem
           label="Time"
           name='timeRange'
         >
             <RangePicker
               // style={{ width: "90%" }}
-              format="YYYY-MM-DDTHH:mm:ss"
+              format="YYYY-MM-DD HH:mm:ss"
               showTime
             />
         </FormItem>
@@ -731,6 +731,10 @@ class Ride extends PureComponent {
   handleGetRides = () => {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
+    filterCriteria.vehicleNumber ? null : delete filterCriteria.vehicleNumber
+    filterCriteria.notEnded === 0 ? delete filterCriteria.notEnded  : null
+    filterCriteria.lockMethod === null ? delete filterCriteria.lockMethod : null
+    filterCriteria.unlockMethod === null ? delete filterCriteria.unlockMethod : null
     dispatch({
       type: "rides/get",
       payload: filterCriteria
@@ -769,6 +773,12 @@ class Ride extends PureComponent {
     params.lockMethod === null ? delete params.lockMethod : null
     params.unlockMethod === null ? delete params.unlockMethod : null
     this.setState({ filterCriteria: params });
+    if(params.timeRange){
+      params.timeRange ={
+        start:moment(params.timeRange[0]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss"),
+        end:moment(params.timeRange[1]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss")
+      }
+  }
     dispatch({
       type: "rides/get",
       payload: params
@@ -812,10 +822,10 @@ class Ride extends PureComponent {
     //     fieldsValue.phone = fieldsValue.phone.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
     //     fieldsValue.phone == '' ? delete fieldsValue.phone : null
     // }
-    fieldsValue.vehicleNumber ? null : delete fieldsValue.vehicleNumber
-    fieldsValue.notEnded === 0 ? delete fieldsValue.notEnded  : null
-    fieldsValue.lockMethod === null ? delete fieldsValue.lockMethod : null
-    fieldsValue.unlockMethod === null ? delete fieldsValue.unlockMethod : null
+    // fieldsValue.vehicleNumber ? null : delete fieldsValue.vehicleNumber
+    // fieldsValue.notEnded === 0 ? delete fieldsValue.notEnded  : null
+    // fieldsValue.lockMethod === null ? delete fieldsValue.lockMethod : null
+    // fieldsValue.unlockMethod === null ? delete fieldsValue.unlockMethod : null
   }
 
       let values = Object.assign({}, fieldsValue, {
@@ -922,7 +932,7 @@ class Ride extends PureComponent {
     dispatch({
       type: "rides/endRide",
       rideId: rideId,
-      minutes: minutes,
+      minutes: minutes.minutes,
       onSuccess: this.handleGetRides
     });
     this.handleEndRideVisible();
@@ -997,16 +1007,12 @@ class Ride extends PureComponent {
     const [form] = Form.useForm()
     const fieldsValue = form.getFieldsValue(true)
     // form.validateFields((err, fieldsValue) => {
-
-      // if (fieldsValue.timeRange) {
-      //   fieldsValue.rideStart = moment(fieldsValue.timeRange[0])
-      //     .utcOffset(0)
-      //     .format("YYYY-MM-DDTHH:mm:ss");
-      //   fieldsValue.rideEnd = moment(fieldsValue.timeRange[1])
-      //     .utcOffset(0)
-      //     .format("YYYY-MM-DDTHH:mm:ss");
-      //   fieldsValue.timeRange = undefined;
-      // }
+    //   if(fieldsValue.timeRange){
+    //     fieldsValue.timeRange ={
+    //       start:moment(fieldsValue.timeRange[0]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss"),
+    //       end:moment(fieldsValue.timeRange[1]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss")
+    //     }
+    // }
 
       const values = Object.assign(
         {},
