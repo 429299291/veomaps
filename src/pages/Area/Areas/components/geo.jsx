@@ -1138,7 +1138,7 @@ class geo extends PureComponent {
                   name="avatar"
                   listType="picture-card"
                   className="avatar-uploader"
-                  action="https://admin.veoride.com:444/area/geo-management"
+                  // action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                   showUploadList={false}                          
                   beforeUpload={this.beforeUpload}
                   onChange={this.handleChange}
