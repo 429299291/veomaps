@@ -472,7 +472,7 @@ const CreateFenceForm = (props => {
                   </Select.Option>
                 </Select>
             </FormItem>
-            ) : console.log('fenceType')
+            ) : null
           }
         </Form.Item>
         <Form.Item
@@ -823,20 +823,19 @@ class geo extends PureComponent {
   }
 
   handleChange = info => {
-
-
     if (info.file.status === 'uploading') {
       this.setState({ hubUploadLoading: true });
       return;
     }
     if (info.file.status === 'done') {
       // Get this url from response in real world.
-      this.getBase64(info.file.originFileObj, hubUploadImageUrl =>
+      this.getBase64(info.file.originFileObj, hubUploadImageUrl =>{
         this.setState({
           hubUploadImageUrl,
           hubUploadLoading: false,
           uploadFileData: info.file.originFileObj
-        }),
+        })
+      }
       );
     }
   };
@@ -907,9 +906,7 @@ class geo extends PureComponent {
 
     const {dispatch, selectedAreaId, geo} = this.props;
     const {selectedExistedPrimeLocation} = this.state;
-
     this.setState({hubImageLoading: true});
-
     dispatch({
       type: "areas/getHubUploadUrl",
       hubId: selectedExistedPrimeLocation.id,
@@ -1141,6 +1138,7 @@ class geo extends PureComponent {
                   name="avatar"
                   listType="picture-card"
                   className="avatar-uploader"
+                  action="http://localhost:8000/area/area-managements"
                   showUploadList={false}                          
                   beforeUpload={this.beforeUpload}
                   onChange={this.handleChange}
