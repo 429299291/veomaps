@@ -1138,6 +1138,7 @@ class geo extends PureComponent {
                   name="avatar"
                   listType="picture-card"
                   className="avatar-uploader"
+                  action="https://admin.veoride.com:444/area/geo-management"
                   showUploadList={false}                          
                   beforeUpload={this.beforeUpload}
                   onChange={this.handleChange}
