@@ -1138,7 +1138,6 @@ class geo extends PureComponent {
                   name="avatar"
                   listType="picture-card"
                   className="avatar-uploader"
-                  action="http://localhost:8000/area/area-managements"
                   showUploadList={false}                          
                   beforeUpload={this.beforeUpload}
                   onChange={this.handleChange}
