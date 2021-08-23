@@ -830,6 +830,7 @@ class geo extends PureComponent {
     if (info.file.status === 'done') {
       // Get this url from response in real world.
       this.getBase64(info.file.originFileObj, hubUploadImageUrl =>{
+        console.log(info);
         this.setState({
           hubUploadImageUrl,
           hubUploadLoading: false,
