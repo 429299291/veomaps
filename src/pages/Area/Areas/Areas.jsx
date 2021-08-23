@@ -211,7 +211,7 @@ const Areas = (props) => {
             <Space size='middle'>
               <Button
                 type="primary"
-                disabled = {formStatus == 'Edit Area'}
+                // disabled = {formStatus == 'Edit Area'}
                 onClick={showDrawer}
               >
               <BorderInnerOutlined style={areas.selectedAreaId?{display:'none'}:{display:'inline-block'}}/><RadiusUprightOutlined style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}/> {formStatus}
