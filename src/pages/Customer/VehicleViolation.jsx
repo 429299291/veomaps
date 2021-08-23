@@ -111,10 +111,8 @@ const RenderSimpleForm=(props)=> {
                 <InputNumber placeholder="Please Phone Number" style={{width: "100%"}}/>
             </FormItem>
           </Col>
-          <Col span={7}>
+          <Col span={5}>
             <FormItem
-              labelCol={{ span: 12 }}
-              wrapperCol={{ span: 12 }}
               label="Status"
               name='status'
             >
@@ -127,7 +125,7 @@ const RenderSimpleForm=(props)=> {
               </Select>
             </FormItem>
           </Col>
-          <Col span={11}>
+          <Col span={12}>
             <FormItem label="Time" labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} name='timeRange'>
                 <RangePicker style={{width: "90%"}} format="YYYY-MM-DD HH:mm:ss" showTime />
             </FormItem>

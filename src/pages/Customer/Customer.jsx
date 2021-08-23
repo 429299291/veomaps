@@ -90,7 +90,7 @@ const RenderSimpleForm=(props)=> {
               <Input placeholder="PHONE or EMAIL" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
           </FormItem>
         </Col>
-        <Col span={5} style={{padding: '0 18px'}}>
+        <Col span={4} style={{padding: '0 18px'}}>
           <FormItem label="Status" name='status'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 {queryStatus.map((status, index) => (
@@ -101,14 +101,14 @@ const RenderSimpleForm=(props)=> {
               </Select>
           </FormItem>
         </Col>
-        <Col span={6}>
+        <Col span={8}>
           <FormItem label="Registered" name='created'>
             <RangePicker />
           </FormItem>
         </Col>
-        <Col span={3}>
+        {/* <Col span={3} style = {{paddingLeft:'6rem'}}>
           {`count: ${props.customerTotal}`}
-        </Col>
+        </Col> */}
         <Col span={6}>
           <span className={styles.submitButtons} style={{ float: "right" }}>
 
@@ -683,8 +683,13 @@ class Customer extends PureComponent {
       defaultCurrent: 1,
       current: filterCriteria.pagination.page+1,
       pageSize: filterCriteria.pagination.pageSize,
-      total: customers.total
+      total: customers.total,
+      showTotal: ((total) => {
+        return `count: ${total} `;
+      }),
+
     };
+    console.log(pagination);
     return (
       <PageHeaderWrapper title="Customer List">
         <Card bordered={false}>
