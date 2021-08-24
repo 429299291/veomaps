@@ -164,7 +164,6 @@ export default {
     },
     *getCenter({ areaId }, { call, put }) {
       const response = yield call(getAreaCenterByAreaId, areaId);
-      console.log(response);
       yield put({
         type: "saveCenter",
         payload: response
