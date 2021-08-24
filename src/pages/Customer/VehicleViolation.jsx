@@ -534,6 +534,7 @@ class VehicleViolation extends PureComponent {
         filterCriteria, 
         this.state.searchOldData,
         fieldsValue);  
+        //other page search   for    8,9page
         values.pagination.page = 0 
       }else{
         let values = Object.assign({},
