@@ -72,20 +72,21 @@ const RenderSimpleForm=(props)=> {
   }
   let formData = props.filterCriteria
   console.log(formData);
+  //render error
   if(formData.timeRange){
     if(formData.timeRange.start){
-      // setTimeout(() => {
+      setTimeout(() => {
         const start = props.filterCriteria.timeRange.start;
         const end = props.filterCriteria.timeRange.end;
         start ? formData.timeRange = [moment(start, dateFormat), moment(end, dateFormat)] : null
-      // }, 20);
+      }, 20);
     }
   }
-  // setTimeout(() => {
+  setTimeout(() => {
     formData.hasOwnProperty('notEnded') ? null : formData.notEnded = 0
     formData.hasOwnProperty('lockMethod') ? null : formData.lockMethod = null
     formData.hasOwnProperty('unlockMethod') ? null : formData.unlockMethod = null
-  // }, 20);
+  }, 20);
   form.setFieldsValue(formData)
 return (
   <Form form={form} initialValues={{
