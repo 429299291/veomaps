@@ -70,22 +70,23 @@ const RenderSimpleForm=(props)=> {
     props.handleFormReset()
     form.resetFields()
   }
-  if(props.filterCriteria.timeRange){
-    if(props.filterCriteria.timeRange.start){
-      setTimeout(() => {
+  let formData = props.filterCriteria
+  console.log(formData);
+  if(formData.timeRange){
+    if(formData.timeRange.start){
+      // setTimeout(() => {
         const start = props.filterCriteria.timeRange.start;
         const end = props.filterCriteria.timeRange.end;
-        start? props.filterCriteria.timeRange = [moment(start, dateFormat), moment(end, dateFormat)] : null
-        // props.filterCriteria.timeRange = [moment('2015-01-01T12:22:22', dateFormat), moment('2021-05-01T12:33:33', dateFormat)] 
-      }, 20);
+        start ? formData.timeRange = [moment(start, dateFormat), moment(end, dateFormat)] : null
+      // }, 20);
     }
   }
-  setTimeout(() => {
-    props.filterCriteria.hasOwnProperty('notEnded') ? null : props.filterCriteria.notEnded = 0
-    props.filterCriteria.hasOwnProperty('lockMethod') ? null : props.filterCriteria.lockMethod = null
-    props.filterCriteria.hasOwnProperty('unlockMethod') ? null : props.filterCriteria.unlockMethod = null
-  }, 20);
-  form.setFieldsValue(props.filterCriteria)
+  // setTimeout(() => {
+    formData.hasOwnProperty('notEnded') ? null : formData.notEnded = 0
+    formData.hasOwnProperty('lockMethod') ? null : formData.lockMethod = null
+    formData.hasOwnProperty('unlockMethod') ? null : formData.unlockMethod = null
+  // }, 20);
+  form.setFieldsValue(formData)
 return (
   <Form form={form} initialValues={{
     notEnded: 0,
@@ -95,7 +96,7 @@ return (
         <FormItem label="Phone" name='phone' rules={[
           {message: 'PHONE Error!',type:'number'},
         ]}>
-            <InputNumber placeholder="Phone"  style={{width:'100%'}} maxlength='10'/>
+            <InputNumber placeholder="Phone"  style={{width:'100%'}} maxLength='10'/>
         </FormItem>
       </Col>
       <Col span={6}>

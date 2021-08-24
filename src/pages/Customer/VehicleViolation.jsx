@@ -545,8 +545,8 @@ class VehicleViolation extends PureComponent {
       this.state.searchOldData,
       fieldsValue);
       selectedAreaId ? values = {...values,areaIds:[selectedAreaId]} : null
-      values.pagination.page-1<0 ? values.pagination.page = 0 : values.pagination.page = values.pagination.page-1
-      fieldsValue === null ? values.pagination.page = values.pagination.page+1 : null
+      // values.pagination.page-1<0 ? values.pagination.page = 0 : values.pagination.page = values.pagination.page-1
+      // fieldsValue === null ? values.pagination.page = values.pagination.page+1 : null
     dispatch({
         type: 'vehicleViolations/get',
         payload: values,
@@ -695,7 +695,7 @@ class VehicleViolation extends PureComponent {
     
     const pagination = {
         defaultCurrent: 1,
-        current: filterCriteria.pagination.page+1,
+        current: filterCriteria.pagination.page ? filterCriteria.pagination.page : 1,
         pageSize: filterCriteria.pagination.pageSize,
         total: total
       };

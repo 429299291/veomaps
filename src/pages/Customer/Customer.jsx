@@ -106,9 +106,9 @@ const RenderSimpleForm=(props)=> {
             <RangePicker />
           </FormItem>
         </Col>
-        {/* <Col span={3} style = {{paddingLeft:'6rem'}}>
+        <Col span={3} style = {{paddingLeft:'6rem'}}>
           {`count: ${props.customerTotal}`}
-        </Col> */}
+        </Col>
         <Col span={6}>
           <span className={styles.submitButtons} style={{ float: "right" }}>
 
@@ -684,12 +684,11 @@ class Customer extends PureComponent {
       current: filterCriteria.pagination.page+1,
       pageSize: filterCriteria.pagination.pageSize,
       total: customers.total,
-      showTotal: ((total) => {
-        return `count: ${total} `;
-      }),
+      // showTotal: ((total) => {
+      //   return `count: ${total} `;
+      // }),
 
     };
-    console.log(pagination);
     return (
       <PageHeaderWrapper title="Customer List">
         <Card bordered={false}>
