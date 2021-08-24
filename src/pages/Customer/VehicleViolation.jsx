@@ -530,23 +530,25 @@ class VehicleViolation extends PureComponent {
           )
         }
       }
+      let values = Object.assign({},
+        filterCriteria, 
+        this.state.searchOldData,
+        fieldsValue);  
+        values.pagination.page = 0 
+      }else{
+        let values = Object.assign({},
+          filterCriteria, 
+          this.state.searchOldData,
+          fieldsValue);  
       }
-      let values = Object.assign({}, {
-        // pagination:{
-        //   page: 0,
-        //   pageSize: 10,
-        //   sort:{
-        //     direction:'desc',
-        //     sortBy:"created"
-        //   }
-        // }
-      }, 
+      let values = Object.assign({},
       filterCriteria, 
       this.state.searchOldData,
       fieldsValue);
       selectedAreaId ? values = {...values,areaIds:[selectedAreaId]} : null
       // values.pagination.page-1<0 ? values.pagination.page = 0 : values.pagination.page = values.pagination.page-1
       // fieldsValue === null ? values.pagination.page = values.pagination.page+1 : null
+      selectedAreaId ? values = {...values,areaIds:[selectedAreaId]} : null
     dispatch({
         type: 'vehicleViolations/get',
         payload: values,
