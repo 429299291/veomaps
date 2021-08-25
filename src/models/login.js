@@ -4,7 +4,7 @@ import { fakeAccountLogin, getFakeCaptcha } from "@/services/api";
 import { setAuthority } from "@/utils/authority";
 import { getPageQuery } from "@/utils/utils";
 import { reloadAuthorized } from "@/utils/Authorized";
-import { notification } from "antd";
+import { notification,message } from "antd";
 import { accountLogin, updateToken, verifyPhoneNumber} from "../services/user";
 import { ACCESS_TOKEN, TOKEN_CREATE_DATE } from "../utils/request";
 
@@ -18,9 +18,10 @@ export default {
   effects: {
     *login({ payload, onSuccess }, { call, put }) {
       const response = yield call(accountLogin, payload);
-
       if (response) {
         onSuccess(response);
+      }else{
+        message.error('incorrect email or password')
       }
     },
     *phoneVerification({ payload , onSuccess, onFail }, { call, put }) {
@@ -42,10 +43,10 @@ export default {
 
         yield put(routerRedux.replace("/"));
       } else {
-        notification.error({
-          message: "Login Failed",
-          description: "wrong password or username"
-        });
+        // notification.error({
+        //   message: "Login Failed",
+        //   description: "wrong password or username"
+        // });
 
         onFail();
       }
