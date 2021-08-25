@@ -12,14 +12,17 @@ import {
     },
   
     effects: {
-      *getForCustomer({ payload }, { call, put }) {
+      *getForCustomer({ payload,onSuccess }, { call, put }) {
   
-        const data = yield call(getNotifications, payload);
+        let data = yield call(getNotifications, payload);
+        const total = data.totalSize
+        const page = data.page
+        data = data.content
   
         if (Array.isArray(data)) {
           data.map(bike => (bike.key = bike.id));
         }
-  
+        data && onSuccess && onSuccess(data,total,page) 
         yield put({
           type: "save",
           data: Array.isArray(data) ? data : []
