@@ -205,10 +205,8 @@ class Notifications extends PureComponent {
     const { filterCriteria } = this.state;
     filterCriteria.pagination.page ? filterCriteria.pagination.page = filterCriteria.pagination.page-1 : null
     filterCriteria.pagination.sort={
-      sort:{
         direction:'desc',
         sortBy:'created'
-      }
     }
     dispatch({
       type: "notifications/getForCustomer",
@@ -320,7 +318,7 @@ class Notifications extends PureComponent {
                     handleSendNotifications={this.handleSendNotifications}
                 />
               
-              <RenderSimpleForm handleFormReset={this.handleFormReset} handleSearch={this.handleSearch} />
+              {/* <RenderSimpleForm handleFormReset={this.handleFormReset} handleSearch={this.handleSearch} /> */}
              
             </div>
           
