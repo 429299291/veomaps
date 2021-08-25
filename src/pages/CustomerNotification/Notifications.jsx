@@ -12,7 +12,7 @@ import {
   Button,
   Modal,
   Steps,
-  Radio, Divider, Popconfirm, Dropdown, DatePicker
+  Radio, Divider, Popconfirm, Dropdown, DatePicker, message
 } from "antd";
 import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
@@ -88,9 +88,13 @@ const MessageAreaSender = (props => {
     const [form] = Form.useForm()
     const okHandle = () => {
           const fieldsValue = form.getFieldsValue(true)
-          if(fieldsValue.message&&fieldsValue.type){
+          if(fieldsValue.message&&fieldsValue.type === 0){
             handleSendNotifications(fieldsValue.message, fieldsValue.type);
             form.resetFields()
+          }else if(!fieldsValue.message){
+            message.error('Please select message')
+          }else{
+            message.error('Please select type')
           }
     };
   
@@ -110,7 +114,7 @@ const MessageAreaSender = (props => {
                             ]
                           }
                         >
-                        <TextArea autosize={{minRows: 20, maxRows: 23}} />
+                        <TextArea autosize={{minRows: 5, maxRows: 23}} placeholder="message:"/>
                         </FormItem>
                     </Col>
                     <Col span={5}>
@@ -126,7 +130,7 @@ const MessageAreaSender = (props => {
                     }
                   >
                     <Select placeholder="select" style={{ width: "100%" }}>
-                        <Option value="0">Push Notification</Option>
+                        <Option value={0}>Push Notification</Option>
                         {/* <Option value="1">SMS Message</Option> */}
                     </Select>
                     </FormItem>
@@ -156,7 +160,17 @@ class Notifications extends PureComponent {
     detailModalVisible: false,
     expandForm: false,
     selectedRows: [],
-    filterCriteria: {},
+    filterCriteria: {
+      pagination:{
+        page:1,
+        pageSize:10,
+        sort:{
+          direction:'desc',
+          sortBy:'created'
+        }
+      }
+    },
+    total:null,
     selectedRecord: {}
   };
 
@@ -189,11 +203,28 @@ class Notifications extends PureComponent {
   handleGetSentNotifications = () => {
     const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
-
+    filterCriteria.pagination.page ? filterCriteria.pagination.page = filterCriteria.pagination.page-1 : null
+    filterCriteria.pagination.sort={
+      sort:{
+        direction:'desc',
+        sortBy:'created'
+      }
+    }
     dispatch({
       type: "notifications/getForCustomer",
-      payload: selectedAreaId ? Object.assign({},filterCriteria, {areaIds: [selectedAreaId]}, ) : filterCriteria,
-      onSuccess: () => this.setState({selectedRows: []})
+      payload: selectedAreaId ? Object.assign(filterCriteria, {areaId: selectedAreaId}, ) : filterCriteria,
+      onSuccess: (data,total,page) => {
+        this.setState({selectedRows:data})
+        this.setState({total:total})
+        this.setState({
+          filterCriteria:{
+            pagination:{
+              page:page,
+              ...filterCriteria.pagination
+            }
+          }
+        })
+    }
     });
   };
 
@@ -201,16 +232,16 @@ class Notifications extends PureComponent {
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { filterCriteria } = this.state;
-
-    const params = {
-      ...filterCriteria
-    };
-
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
+    const paginationData={
+      page:pagination.current,
+      pageSize:pagination.pageSize
     }
-
-    this.setState({ filterCriteria: params }, () => this.handleGetSentNotifications());
+    // if (sorter.field) {
+    //   params.sorter = `${sorter.field}_${sorter.order}`;
+    // }
+    this.setState({ filterCriteria:{
+      pagination:paginationData
+    } }, () => this.handleGetSentNotifications());
   };
 
   handleFormReset = () => {
@@ -264,7 +295,9 @@ class Notifications extends PureComponent {
       vehicleDetailModalVisible,
       selectedVehicleId,
       customerDetailModalVisible,
-      selectedCustomerId
+      selectedCustomerId,
+      filterCriteria,
+      total
     } = this.state;
 
     const parentMethods = {
@@ -293,7 +326,13 @@ class Notifications extends PureComponent {
           
             <StandardTable
               loading={loading}
-              data={{ list: notifications, pagination: {}}}
+              data={{ list: notifications, pagination: {
+                current:filterCriteria.pagination.page +1,
+                total:total,
+                showTotal: ((total) => {
+                  return `count: ${total}`;
+                })
+              }}}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
               scroll={{x:1300}}
