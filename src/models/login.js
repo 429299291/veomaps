@@ -21,7 +21,7 @@ export default {
       if (response) {
         onSuccess(response);
       }else{
-        message.error('incorrect email or password')
+        // message.error('incorrect email or password')
       }
     },
     *phoneVerification({ payload , onSuccess, onFail }, { call, put }) {
@@ -43,12 +43,7 @@ export default {
 
         yield put(routerRedux.replace("/"));
       } else {
-        // notification.error({
-        //   message: "Login Failed",
-        //   description: "wrong password or username"
-        // });
-
-        onFail();
+        // onFail();
       }
     },
     *updateToken({ payload }, { call, put }) {
