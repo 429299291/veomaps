@@ -12,7 +12,7 @@ import {
   Button,
   Modal,
   Steps,
-  Radio, Divider, Popconfirm, Dropdown, DatePicker
+  Radio, Divider, Popconfirm, Dropdown, DatePicker, message
 } from "antd";
 import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
@@ -88,9 +88,11 @@ const MessageAreaSender = (props => {
     const [form] = Form.useForm()
     const okHandle = () => {
           const fieldsValue = form.getFieldsValue(true)
-          if(fieldsValue.message&&fieldsValue.type){
-            handleSendNotifications(fieldsValue.message, fieldsValue.type);
+          if(fieldsValue.message){
+            handleSendNotifications(fieldsValue.message,0);
             form.resetFields()
+          }else{
+            message.error('Please input message')
           }
     };
   
@@ -98,7 +100,7 @@ const MessageAreaSender = (props => {
         <div style={{marginBottom: "3rem"}}>
           <Form form={form}>
             <Row gutter={{ md: 8, lg: 24, xl: 48 }} style={{marginBottom: "1rem"}}>
-                    <Col md={8} sm={24}>
+                    <Col span={8}>
                         <FormItem name='message'
                           rules={
                             [
@@ -110,10 +112,10 @@ const MessageAreaSender = (props => {
                             ]
                           }
                         >
-                        <TextArea autosize={{minRows: 20, maxRows: 23}} />
+                        <TextArea autosize={{minRows: 5, maxRows: 23}} placeholder="message:" maxLength={250}/>
                         </FormItem>
                     </Col>
-                    <Col span={5}>
+                    {/* <Col span={5}>
                   <FormItem rules='type'
                   name='type'
                     rules={
@@ -126,11 +128,10 @@ const MessageAreaSender = (props => {
                     }
                   >
                     <Select placeholder="select" style={{ width: "100%" }}>
-                        <Option value="0">Push Notification</Option>
-                        {/* <Option value="1">SMS Message</Option> */}
+                        <Option value={0}>Push Notification</Option>
                     </Select>
                     </FormItem>
-                </Col>
+                </Col> */}
                 <Col md={4} sm={24}>
                     <Button 
                         type="primary"
@@ -156,14 +157,24 @@ class Notifications extends PureComponent {
     detailModalVisible: false,
     expandForm: false,
     selectedRows: [],
-    filterCriteria: {},
+    filterCriteria: {
+      pagination:{
+        page:1,
+        pageSize:10,
+        sort:{
+          direction:'desc',
+          sortBy:'created'
+        }
+      }
+    },
+    total:null,
     selectedRecord: {}
   };
 
   columns = [
     {
       title: "Sender",
-      dataIndex: "adminEmail"
+      dataIndex: "email"
     },
     {
       title: "Content",
@@ -189,11 +200,26 @@ class Notifications extends PureComponent {
   handleGetSentNotifications = () => {
     const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
-
+    filterCriteria.pagination.page ? filterCriteria.pagination.page = filterCriteria.pagination.page-1 : null
+    filterCriteria.pagination.sort={
+        direction:'desc',
+        sortBy:'created'
+    }
     dispatch({
       type: "notifications/getForCustomer",
-      payload: selectedAreaId ? Object.assign({},filterCriteria, {areaIds: [selectedAreaId]}, ) : filterCriteria,
-      onSuccess: () => this.setState({selectedRows: []})
+      payload: selectedAreaId ? Object.assign(filterCriteria, {areaId: selectedAreaId}, ) : filterCriteria,
+      onSuccess: (data,total,page) => {
+        this.setState({selectedRows:data})
+        this.setState({total:total})
+        this.setState({
+          filterCriteria:{
+            pagination:{
+              page:page,
+              ...filterCriteria.pagination
+            }
+          }
+        })
+    }
     });
   };
 
@@ -201,16 +227,16 @@ class Notifications extends PureComponent {
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
     const { filterCriteria } = this.state;
-
-    const params = {
-      ...filterCriteria
-    };
-
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
+    const paginationData={
+      page:pagination.current,
+      pageSize:pagination.pageSize
     }
-
-    this.setState({ filterCriteria: params }, () => this.handleGetSentNotifications());
+    // if (sorter.field) {
+    //   params.sorter = `${sorter.field}_${sorter.order}`;
+    // }
+    this.setState({ filterCriteria:{
+      pagination:paginationData
+    } }, () => this.handleGetSentNotifications());
   };
 
   handleFormReset = () => {
@@ -264,7 +290,9 @@ class Notifications extends PureComponent {
       vehicleDetailModalVisible,
       selectedVehicleId,
       customerDetailModalVisible,
-      selectedCustomerId
+      selectedCustomerId,
+      filterCriteria,
+      total
     } = this.state;
 
     const parentMethods = {
@@ -287,13 +315,19 @@ class Notifications extends PureComponent {
                     handleSendNotifications={this.handleSendNotifications}
                 />
               
-              <RenderSimpleForm handleFormReset={this.handleFormReset} handleSearch={this.handleSearch} />
+              {/* <RenderSimpleForm handleFormReset={this.handleFormReset} handleSearch={this.handleSearch} /> */}
              
             </div>
           
             <StandardTable
               loading={loading}
-              data={{ list: notifications, pagination: {}}}
+              data={{ list: notifications, pagination: {
+                current:filterCriteria.pagination.page +1,
+                total:total,
+                showTotal: ((total) => {
+                  return `count: ${total}`;
+                })
+              }}}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
               scroll={{x:1300}}

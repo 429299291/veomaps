@@ -111,10 +111,8 @@ const RenderSimpleForm=(props)=> {
                 <InputNumber placeholder="Please Phone Number" style={{width: "100%"}}/>
             </FormItem>
           </Col>
-          <Col span={7}>
+          <Col span={5}>
             <FormItem
-              labelCol={{ span: 12 }}
-              wrapperCol={{ span: 12 }}
               label="Status"
               name='status'
             >
@@ -127,7 +125,7 @@ const RenderSimpleForm=(props)=> {
               </Select>
             </FormItem>
           </Col>
-          <Col span={11}>
+          <Col span={12}>
             <FormItem label="Time" labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} name='timeRange'>
                 <RangePicker style={{width: "90%"}} format="YYYY-MM-DD HH:mm:ss" showTime />
             </FormItem>
@@ -165,7 +163,7 @@ const UpdateForm = ((props) => {
   const validateFormAndUpdate = newState => {
     // newState   2:approve  1:reject
       const fieldsValue = form.getFieldsValue(true)
-        // fieldsValue.type = newState;
+      if(fieldsValue.adminNote){
         if(newState == 1){
           handleUpdateReject(record.id, fieldsValue)
         }else if(newState == 2){
@@ -176,6 +174,9 @@ const UpdateForm = ((props) => {
         // newState == 1 ? handleUpdateReject(record.id, fieldsValue) : handleUpdateApprove(record.id, fieldsValue)
         form.resetFields();
         handleModalVisible();
+      }else{
+        message.error("input Reject/Revert Note")
+      }
   };
 
   const cancelUpdate = () => {
@@ -532,23 +533,26 @@ class VehicleViolation extends PureComponent {
           )
         }
       }
+      let values = Object.assign({},
+        filterCriteria, 
+        this.state.searchOldData,
+        fieldsValue);  
+        //other page search   for    8,9page
+        values.pagination.page = 0 
+      }else{
+        let values = Object.assign({},
+          filterCriteria, 
+          this.state.searchOldData,
+          fieldsValue);  
       }
-      let values = Object.assign({}, {
-        // pagination:{
-        //   page: 0,
-        //   pageSize: 10,
-        //   sort:{
-        //     direction:'desc',
-        //     sortBy:"created"
-        //   }
-        // }
-      }, 
+      let values = Object.assign({},
       filterCriteria, 
       this.state.searchOldData,
       fieldsValue);
       selectedAreaId ? values = {...values,areaIds:[selectedAreaId]} : null
-      values.pagination.page-1<0 ? values.pagination.page = 0 : values.pagination.page = values.pagination.page-1
-      fieldsValue === null ? values.pagination.page = values.pagination.page+1 : null
+      // values.pagination.page-1<0 ? values.pagination.page = 0 : values.pagination.page = values.pagination.page-1
+      // fieldsValue === null ? values.pagination.page = values.pagination.page+1 : null
+      selectedAreaId ? values = {...values,areaIds:[selectedAreaId]} : null
     dispatch({
         type: 'vehicleViolations/get',
         payload: values,
@@ -697,7 +701,7 @@ class VehicleViolation extends PureComponent {
     
     const pagination = {
         defaultCurrent: 1,
-        current: filterCriteria.pagination.page+1,
+        current: filterCriteria.pagination.page ? filterCriteria.pagination.page : 1,
         pageSize: filterCriteria.pagination.pageSize,
         total: total
       };
