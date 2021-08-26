@@ -112,7 +112,7 @@ const MessageAreaSender = (props => {
                             ]
                           }
                         >
-                        <TextArea autosize={{minRows: 5, maxRows: 23}} placeholder="message:"/>
+                        <TextArea autosize={{minRows: 5, maxRows: 23}} placeholder="message:" maxLength={250}/>
                         </FormItem>
                     </Col>
                     {/* <Col span={5}>

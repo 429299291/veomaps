@@ -163,7 +163,6 @@ const UpdateForm = ((props) => {
   const validateFormAndUpdate = newState => {
     // newState   2:approve  1:reject
       const fieldsValue = form.getFieldsValue(true)
-      console.log(fieldsValue);
       if(fieldsValue.adminNote){
         if(newState == 1){
           handleUpdateReject(record.id, fieldsValue)
