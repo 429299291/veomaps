@@ -520,7 +520,7 @@ const Areas = (props) => {
                  Cancel
               </Button>
               <Form.Item {...tailLayout}>
-                <Button type="primary" htmlType="submit">
+                <Button type="primary" htmlType="submit" disabled={true}>
                   Submit
                 </Button>
               </Form.Item>
