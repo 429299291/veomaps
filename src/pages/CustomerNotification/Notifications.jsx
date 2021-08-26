@@ -88,13 +88,11 @@ const MessageAreaSender = (props => {
     const [form] = Form.useForm()
     const okHandle = () => {
           const fieldsValue = form.getFieldsValue(true)
-          if(fieldsValue.message&&fieldsValue.type === 0){
-            handleSendNotifications(fieldsValue.message, fieldsValue.type);
+          if(fieldsValue.message){
+            handleSendNotifications(fieldsValue.message,0);
             form.resetFields()
-          }else if(!fieldsValue.message){
-            message.error('Please select message')
           }else{
-            message.error('Please select type')
+            message.error('Please input message')
           }
     };
   
@@ -117,7 +115,7 @@ const MessageAreaSender = (props => {
                         <TextArea autosize={{minRows: 5, maxRows: 23}} placeholder="message:"/>
                         </FormItem>
                     </Col>
-                    <Col span={5}>
+                    {/* <Col span={5}>
                   <FormItem rules='type'
                   name='type'
                     rules={
@@ -131,10 +129,9 @@ const MessageAreaSender = (props => {
                   >
                     <Select placeholder="select" style={{ width: "100%" }}>
                         <Option value={0}>Push Notification</Option>
-                        {/* <Option value="1">SMS Message</Option> */}
                     </Select>
                     </FormItem>
-                </Col>
+                </Col> */}
                 <Col md={4} sm={24}>
                     <Button 
                         type="primary"
@@ -177,7 +174,7 @@ class Notifications extends PureComponent {
   columns = [
     {
       title: "Sender",
-      dataIndex: "adminEmail"
+      dataIndex: "email"
     },
     {
       title: "Content",
