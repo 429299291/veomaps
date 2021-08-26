@@ -101,17 +101,16 @@ const RenderSimpleForm=(props)=> {
               </Select>
           </FormItem>
         </Col>
-        <Col span={8}>
+        <Col span={10}>
           <FormItem label="Registered" name='created'>
             <RangePicker />
           </FormItem>
         </Col>
-        <Col span={3} style = {{paddingLeft:'6rem'}}>
+        <Col span={5} style = {{paddingLeft:'2rem'}}>
           {`count: ${props.customerTotal}`}
         </Col>
-        <Col span={6}>
-          <span className={styles.submitButtons} style={{ float: "right" }}>
-
+        <Col span={8}>
+          <span className={styles.submitButtons}>
           {<Button type="primary" onClick={() => props.handleGenTempCodeModalVisible(true)}>
                 Generate Verification Code
             </Button> }
