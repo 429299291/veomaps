@@ -100,7 +100,7 @@ const MessageAreaSender = (props => {
         <div style={{marginBottom: "3rem"}}>
           <Form form={form}>
             <Row gutter={{ md: 8, lg: 24, xl: 48 }} style={{marginBottom: "1rem"}}>
-                    <Col md={8} sm={24}>
+                    <Col span={8}>
                         <FormItem name='message'
                           rules={
                             [
