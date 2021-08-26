@@ -240,26 +240,6 @@ const UpdateForm = (props => {
       >
         <InputNumber placeholder="Please Input" min={0}/>
       </FormItem>
-      {/* {areas && (
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Area"
-          name='areaId'
-          rules={
-            [
-              {
-                required: true
-              }
-            ]
-          }
-          >
-            <Select placeholder="select" style={{ width: "100%" }}>
-              {areas.map(area => (
-                <Option key={area.id} value={area.id}>
-                  {area.name}
-                </Option>
-              ))}
-            </Select>
-        </FormItem>
-      )} */}
       </Form>
     </Modal>
   );
@@ -275,25 +255,7 @@ const GeneratePromoWithCodeForm = (props => {
   form.setFieldsValue(record)
   const okHandle = () => {
     form.submit()
-    // if (form.isFieldsTouched())
-    //   form.validateFields((err, fieldsValue) => {
-    //     if (err) return;
-    //     form.resetFields();
-
-    //     handleGeneratePromoWithCode(record.id, fieldsValue);
-    //   });
-    // else handleModalVisible();
   };
-
-  // const checkAmount = (rule, value, callback) => {
-  //   if (value > 0) {
-  //     callback();
-  //     return;
-  //   }
-
-  //   callback("Amount must be larger than zero.");
-  // };
-
   return (
     <Modal
       destroyOnClose

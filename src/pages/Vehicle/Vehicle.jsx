@@ -847,7 +847,6 @@ class Vehicle extends PureComponent {
         page: 0,
         pageSize: 10 
     }
-
     this.setState({ filterCriteria: params });
 
     dispatch({
@@ -1124,7 +1123,13 @@ class Vehicle extends PureComponent {
   handleGetListVehicles = () => {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
-
+    filterCriteria.idleQuery === null ? delete filterCriteria.idleQuery : null
+    filterCriteria.imei === null ? delete filterCriteria.imei : null
+    filterCriteria.vehicleNumber === null ? delete filterCriteria.vehicleNumber : null
+    filterCriteria.areaIds === null ? delete filterCriteria.areaIds : null
+    filterCriteria.vehicleTypes === null ? delete filterCriteria.vehicleTypes : null
+    filterCriteria.iotBattery === null ? delete filterCriteria.iotBattery : null
+    filterCriteria.connected === null ? delete filterCriteria.connected : null
     dispatch({
       type: "vehicles/get",
       payload: filterCriteria
@@ -1274,6 +1279,7 @@ class Vehicle extends PureComponent {
     //     vehicleTypes: null
     //   }
     // }
+      console.log(values);
       this.setState(
         {
           filterCriteria: values

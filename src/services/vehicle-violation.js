@@ -10,23 +10,14 @@ import request from "@/utils/request";
 export async function getViolations(params) {
     return request(`/api/admins/violations/search`, {
         method: "POST",
-        body:params
-        // body:params.areaId?{
-        //     currentPage:params.currentPage,
-        //     pageSize:params.pageSize,
-        //     areaIds:[params.areaId],
-        //     timeRange:{
-        //         start:params.start,
-        //         end:params.end
-        //     }
-        // }:{
-        //     currentPage:params.currentPage,
-        //     pageSize:params.pageSize,
-        //     timeRange:{
-        //         start:params.start,
-        //         end:params.end
-        //     }
-        // }
+        body:{
+            ...params,
+            pagination:{
+                page:(params.pagination.page>0) ? params.pagination.page-1 : 0,
+                pageSize:params.pagination.pageSize,
+                sort:params.pagination.sort,
+            }
+        }
     })
 }
 

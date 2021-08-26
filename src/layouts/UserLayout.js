@@ -71,7 +71,7 @@ class UserLayout extends React.PureComponent {
             dispatch({
               type: "user/fetchCurrent"
             }),
-          onFail: () => this.setState({phone: null, code: null,PhoneVerficationEnabled:false})
+          // onFail: () => this.setState({phone: null, code: null,PhoneVerficationEnabled:false})
         });
       }
     };

@@ -445,12 +445,14 @@ class Deposit extends PureComponent {
                 </Button>
 
             </div>
-            <StandardTable
+            { deposits.data && areas && areas.areaNames && 
+              <StandardTable
               loading={loading}
               data={{ list: deposits.data, pagination: {} }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />
+            }
           </div>
         </Card>
         <CreateForm

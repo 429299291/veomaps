@@ -35,7 +35,7 @@ export async function createArea(area) {
   });
 }
 
-export async function removeArea(id) {
+export async function removeArea(id) {getHubUploadUrl
   return request(`/admins/areas/${id}`, {
     method: "DELETE"
   });
