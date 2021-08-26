@@ -163,7 +163,8 @@ const UpdateForm = ((props) => {
   const validateFormAndUpdate = newState => {
     // newState   2:approve  1:reject
       const fieldsValue = form.getFieldsValue(true)
-        // fieldsValue.type = newState;
+      console.log(fieldsValue);
+      if(fieldsValue.adminNote){
         if(newState == 1){
           handleUpdateReject(record.id, fieldsValue)
         }else if(newState == 2){
@@ -174,6 +175,9 @@ const UpdateForm = ((props) => {
         // newState == 1 ? handleUpdateReject(record.id, fieldsValue) : handleUpdateApprove(record.id, fieldsValue)
         form.resetFields();
         handleModalVisible();
+      }else{
+        message.error("input Reject/Revert Note")
+      }
   };
 
   const cancelUpdate = () => {
