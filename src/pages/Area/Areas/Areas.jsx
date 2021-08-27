@@ -22,8 +22,6 @@ const Areas = (props) => {
     const [freeRideEnabled, setFreeRideEnabled] = useState(false);
     //geo
     const [handleEditCenterData, setHandleEditCenterData] = useState(false);
-
-
     const [violationFineDatas, setViolationFineDatas] = useState([]);
     const [regulationDatas, setRegulationDatas] = useState({
       regulations:[],
@@ -35,10 +33,10 @@ const Areas = (props) => {
     useEffect(() => {
       if(areas.selectedAreaId){
         setFormStatus('Edit Area')
-        // dispatch({
-        //   type: "areas/getAreasAll",
-        //   payload: {areaId:areas.selectedAreaId},
-        // });
+        dispatch({
+          type: "areas/getAreasAll",
+          payload: {areaId:areas.selectedAreaId},
+        });
         
       }else{
         setFormDatas(null)
