@@ -725,12 +725,11 @@ class geo extends PureComponent {
 
     if (isEditingCenter) {
       if (geo.area) {
-        const newArea = Object.assign({}, geo.area);
+        const newArea = Object.assign({}, geo.area,{areaId:selectedAreaId});
         newArea.center = editingCenter;
         dispatch({
           type: "geo/updateCenter",
           payload: newArea,
-          id: geo.area.id,
           onSuccess: this.getAreaGeoInfo,
           onError: this.cancelEditing
         });
@@ -746,7 +745,6 @@ class geo extends PureComponent {
 
     if (isEditingFence) {
       editingFence.fenceCoordinates.push(editingFence.fenceCoordinates[0]);
-
       dispatch({
         type: "geo/addFence",
         payload: Object.assign({}, editingFence, {areaId: selectedAreaId}) ,
@@ -798,7 +796,6 @@ class geo extends PureComponent {
 
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-
     if (prevProps.selectedAreaId !== this.props.selectedAreaId && this.props.selectedAreaId) {
         this.getAreaGeoInfo();
     }
@@ -830,7 +827,6 @@ class geo extends PureComponent {
     if (info.file.status === 'done') {
       // Get this url from response in real world.
       this.getBase64(info.file.originFileObj, hubUploadImageUrl =>{
-        console.log(info);
         this.setState({
           hubUploadImageUrl,
           hubUploadLoading: false,

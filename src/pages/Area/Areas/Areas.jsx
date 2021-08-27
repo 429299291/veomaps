@@ -211,7 +211,6 @@ const Areas = (props) => {
             <Space size='middle'>
               <Button
                 type="primary"
-                // disabled = {formStatus == 'Edit Area'}
                 onClick={showDrawer}
               >
               <BorderInnerOutlined style={areas.selectedAreaId?{display:'none'}:{display:'inline-block'}}/><RadiusUprightOutlined style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}/> {formStatus}
@@ -241,7 +240,10 @@ const Areas = (props) => {
             <img src="https://www.veoride.com/wp-content/uploads/2020/03/veo-world-website.png" alt="" style={{width:'100%',opacity:'0.4'}}/>
           </Card>
         </Card>
-        <Geo handleEditCenterData ={handleEditCenterData}></Geo>
+        {
+          areas.selectedAreaId && 
+          <Geo handleEditCenterData ={handleEditCenterData}></Geo>
+        }
         <Drawer
           title={formStatus+" Feature"}
           width={'40vw'}
@@ -521,7 +523,7 @@ const Areas = (props) => {
               </Button>
               <Form.Item {...tailLayout}>
                 <Button type="primary" htmlType="submit" 
-                disabled={true}
+                // disabled={true}
                 >
                   Submit
                 </Button>
