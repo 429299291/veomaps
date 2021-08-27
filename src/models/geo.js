@@ -163,12 +163,13 @@ export default {
       }
     },
     *getCenter({ areaId }, { call, put }) {
-      let response = yield call(getAreaCenterByAreaId, areaId);
-      response = response.feature
-      yield put({
-        type: "saveCenter",
-        payload: response
-      });
+      // api for handler agin
+      // let response = yield call(getAreaCenterByAreaId, areaId);
+      // response = response.feature
+      // yield put({
+      //   type: "saveCenter",
+      //   payload: response
+      // });
     },
     *fetchGeoObject({ areaId, lat, lng, onNewGeoObject }, { call, put }) {
       const response = yield call(getGeoObject, areaId, lat, lng);
