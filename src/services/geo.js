@@ -61,22 +61,23 @@ export async function getFencesByAreaId(areaId) {
 
 
 
-export async function createFence(fence) {
-  return request(`/admins/geo/fences`, {
-    method: "POST",
-    body: {
-      ...fence
-    }
-  });
-}
 // export async function createFence(fence) {
-//   return request(`/api/admins/areas/fences`, {
+//   return request(`/admins/geo/fences`, {
 //     method: "POST",
 //     body: {
 //       ...fence
 //     }
 //   });
 // }
+export async function createFence(fence) {
+  console.log(fence);
+  return request(`/api/admins/areas/fences`, {
+    method: "POST",
+    body: {
+      ...fence
+    }
+  });
+}
 
 
 
@@ -101,16 +102,16 @@ export async function deleteFence(id) {
   });
 }
 
-export async function getAreaCenterByAreaId(areaId) {
-  return request(`/admins/geo/area_center?areaId=${areaId}`, {
-    method: "GET"
-  });
-}
 // export async function getAreaCenterByAreaId(areaId) {
-//   return request(`/api/admins/areas/${areaId}/fences`, {
+//   return request(`/admins/geo/area_center?areaId=${areaId}`, {
 //     method: "GET"
 //   });
 // }
+export async function getAreaCenterByAreaId(areaId) {
+  return request(`/api/admins/areas/${areaId}`, {
+    method: "GET"
+  });
+}
 
 export async function createAreaCenter(center) {
   return request(`/admins/geo/area_center`, {
@@ -121,11 +122,26 @@ export async function createAreaCenter(center) {
   });
 }
 
-export async function updateAreaCenter(centerId, center) {
-  return request(`/admins/geo/area_center/${centerId}`, {
-    method: "PUT",
+// export async function updateAreaCenter(centerId, center) {
+//   return request(`/admins/geo/area_center/${centerId}`, {
+//     method: "PUT",
+//     body: {
+//       ...center
+//     }
+//   });
+// }
+export async function updateAreaCenter( center) {
+  console.log(center);
+  return request(`/api/admins/areas/${center.areaId}`, {
+    method: "PATCH",
     body: {
-      ...center
+      feature:{
+        id:center.id,
+        center:{
+          lat:center.center.lat,
+          lng:center.center.lng
+        }
+      }
     }
   });
 }

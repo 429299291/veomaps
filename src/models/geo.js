@@ -163,7 +163,9 @@ export default {
       }
     },
     *getCenter({ areaId }, { call, put }) {
-      const response = yield call(getAreaCenterByAreaId, areaId);
+      let response = yield call(getAreaCenterByAreaId, areaId);
+      response = response.feature
+      console.log(response);
       yield put({
         type: "saveCenter",
         payload: response
@@ -188,14 +190,14 @@ export default {
     *removeCenter({ id }, { call, put }) {
       const response = yield call(deleteAreaCenter, id); // post
     },
-    *updateCenter({ id, payload, onSuccess, onError }, { call, put }) {
-      const response = yield call(updateAreaCenter, id, payload); // put
+    *updateCenter({ payload, onSuccess, onError }, { call, put }) {
+      const response = yield call(updateAreaCenter, payload); // put
 
       response ? onSuccess(response) : onError();
 
       if (response) {
         message.success(`Update Success!`);
-        onSuccess && onSuccess();
+        // onSuccess && onSuccess();
       } else {
         message.error(`Update Fail.`);
         onError && onError();
