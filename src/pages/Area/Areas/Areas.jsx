@@ -35,10 +35,10 @@ const Areas = (props) => {
     useEffect(() => {
       if(areas.selectedAreaId){
         setFormStatus('Edit Area')
-        dispatch({
-          type: "areas/getAreasAll",
-          payload: {areaId:areas.selectedAreaId},
-        });
+        // dispatch({
+        //   type: "areas/getAreasAll",
+        //   payload: {areaId:areas.selectedAreaId},
+        // });
         
       }else{
         setFormDatas(null)
