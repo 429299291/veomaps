@@ -520,7 +520,6 @@ class geo extends PureComponent {
   };
 
   componentDidMount() {
-    console.log('-----');
     if (this.props.selectedAreaId){
       this.getAreaGeoInfo();
     }
@@ -797,7 +796,6 @@ class geo extends PureComponent {
 
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    console.log('===');
     if (prevProps.selectedAreaId !== this.props.selectedAreaId && this.props.selectedAreaId) {
         this.getAreaGeoInfo();
     }

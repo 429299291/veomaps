@@ -70,7 +70,6 @@ export async function getFencesByAreaId(areaId) {
 //   });
 // }
 export async function createFence(fence) {
-  console.log(fence);
   return request(`/api/admins/areas/fences`, {
     method: "POST",
     body: {
@@ -131,7 +130,6 @@ export async function createAreaCenter(center) {
 //   });
 // }
 export async function updateAreaCenter( center) {
-  console.log(center);
   return request(`/api/admins/areas/${center.areaId}`, {
     method: "PATCH",
     body: {
