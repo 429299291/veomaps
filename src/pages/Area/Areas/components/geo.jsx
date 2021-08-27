@@ -521,24 +521,19 @@ class geo extends PureComponent {
 
   componentDidMount() {
     if (this.props.selectedAreaId){
-      this.getAreaGeoInfo();
+      this.getAreaGeoInfoFirst();
     }
   }
 
   getAreaGeoInfo = () => {
     const areaId = this.props.selectedAreaId;
-
-    const { dispatch } = this.props;
-
+    const { dispatch,areas } = this.props;
     this.cancelEditing();
-
-   
-
     dispatch({
-      type: "geo/getCenter",
-      areaId: areaId
+      type: "areas/getAreasAll",
+      // areaId: areaId
+      payload: {areaId},
     });
-
     dispatch({
       type: "geo/getFences",
       areaId: areaId
@@ -549,8 +544,15 @@ class geo extends PureComponent {
     //   areaId: areaId
     // });
   };
-
-
+  getAreaGeoInfoFirst = () => {
+    const areaId = this.props.selectedAreaId;
+    const { dispatch,areas } = this.props;
+    this.cancelEditing();
+    dispatch({
+      type: "geo/getFences",
+      areaId: areaId
+    });
+  };
   checkParking = newPoint => {
     const {
       isParkingCheckStart
@@ -721,16 +723,15 @@ class geo extends PureComponent {
       editingPrimeLocation,
       selectedExistedPrimeLocation,
     } = this.state;
-    const { dispatch, geo, selectedAreaId } = this.props;
+    const { dispatch, areaFeature, selectedAreaId } = this.props;
 
     if (isEditingCenter) {
-      if (geo.area) {
-        const newArea = Object.assign({}, geo.area);
+      if (areaFeature) {
+        const newArea = Object.assign({}, areaFeature,{areaId:selectedAreaId});
         newArea.center = editingCenter;
         dispatch({
           type: "geo/updateCenter",
           payload: newArea,
-          id: geo.area.id,
           onSuccess: this.getAreaGeoInfo,
           onError: this.cancelEditing
         });
@@ -746,7 +747,6 @@ class geo extends PureComponent {
 
     if (isEditingFence) {
       editingFence.fenceCoordinates.push(editingFence.fenceCoordinates[0]);
-
       dispatch({
         type: "geo/addFence",
         payload: Object.assign({}, editingFence, {areaId: selectedAreaId}) ,
@@ -798,7 +798,6 @@ class geo extends PureComponent {
 
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-
     if (prevProps.selectedAreaId !== this.props.selectedAreaId && this.props.selectedAreaId) {
         this.getAreaGeoInfo();
     }
@@ -830,7 +829,6 @@ class geo extends PureComponent {
     if (info.file.status === 'done') {
       // Get this url from response in real world.
       this.getBase64(info.file.originFileObj, hubUploadImageUrl =>{
-        console.log(info);
         this.setState({
           hubUploadImageUrl,
           hubUploadLoading: false,
@@ -1257,6 +1255,7 @@ class geo extends PureComponent {
       areas: { data: areas },
       loading,
       selectedAreaId,
+      areaFeature,
       handleEditCenterData
     } = this.props;
     const {
@@ -1337,7 +1336,7 @@ class geo extends PureComponent {
               handleExistedFenceClick={this.handleExistedFenceClick}
               handleExistedPrimeLocationClick={this.handleExistedPrimeLocationClick}
               {...this.state}
-              center={geo.area && geo.area.center}
+              center={areaFeature && areaFeature.center}
               fences={geo.fences}
               primeLocations={geo.primeLocations}
               setCircleRef={this.setCircleRef}
@@ -1386,6 +1385,7 @@ class geo extends PureComponent {
 const mapStateToProps = ({ geo, areas, loading }) => {
     return {
         geo,
+        areaFeature:areas.newArea.feature,
         areas,
         selectedAreaId: areas.selectedAreaId,
         loading: loading.models.geo
