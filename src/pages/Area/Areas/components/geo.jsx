@@ -1258,8 +1258,6 @@ class geo extends PureComponent {
       areaFeature,
       handleEditCenterData
     } = this.props;
-    console.log(geo);
-    console.log(areaFeature);
     const {
       addFenceModalVisible,
       updateFenceModalVisible,
