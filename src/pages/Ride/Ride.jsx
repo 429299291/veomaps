@@ -71,7 +71,6 @@ const RenderSimpleForm=(props)=> {
     form.resetFields()
   }
   let formData = props.filterCriteria
-  console.log(formData);
   //render error
   if(formData.timeRange){
     if(formData.timeRange.start){
@@ -801,7 +800,7 @@ class Ride extends PureComponent {
         }
       }
     }
-    this.props.selectedAreaId ? params.areaIds= [this.props.selectedAreaId] : null
+    this.props.selectedAreaId ? params.areaIds= [this.props.selectedAreaId] : delete params.areaIds
     this.setState(
       {
         filterCriteria: params
@@ -840,7 +839,7 @@ class Ride extends PureComponent {
           }
         }
       });
-      selectedAreaId ? values.areaIds= [selectedAreaId] : null
+      selectedAreaId ? values.areaIds= [selectedAreaId] : delete values.areaIds
       this.setState(
         {
           filterCriteria: values
