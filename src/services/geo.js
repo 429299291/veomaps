@@ -106,11 +106,11 @@ export async function deleteFence(id) {
 //     method: "GET"
 //   });
 // }
-export async function getAreaCenterByAreaId(areaId) {
-  return request(`/api/admins/areas/${areaId}`, {
-    method: "GET"
-  });
-}
+// export async function getAreaCenterByAreaId(areaId) {
+//   return request(`/api/admins/areas/${areaId}`, {
+//     method: "GET"
+//   });
+// }
 
 export async function createAreaCenter(center) {
   return request(`/admins/geo/area_center`, {
