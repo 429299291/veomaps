@@ -162,15 +162,15 @@ export default {
         message.error(`Update Fail.`);
       }
     },
-    // *getCenter({ areaId }, { call, put }) {
-    //   // api for handler agin
-    //   // let response = yield call(getAreaCenterByAreaId, areaId);
-    //   // response = response.feature
-    //   // yield put({
-    //   //   type: "saveCenter",
-    //   //   payload: response
-    //   // });
-    // },
+    *getCenter({ areaId }, { call, put }) {
+      // api for handler agin
+      let response = yield call(getAreaCenterByAreaId, areaId);
+      response = response.feature
+      yield put({
+        type: "saveCenter",
+        payload: response
+      });
+    },
     *fetchGeoObject({ areaId, lat, lng, onNewGeoObject }, { call, put }) {
       const response = yield call(getGeoObject, areaId, lat, lng);
 
