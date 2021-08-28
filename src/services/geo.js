@@ -107,7 +107,6 @@ export async function deleteFence(id) {
 //   });
 // }
 export async function getAreaCenterByAreaId(areaId) {
-  console.log('geo===');
   return request(`/api/admins/areas/${areaId}`, {
     method: "GET"
   });
