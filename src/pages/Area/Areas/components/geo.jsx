@@ -529,11 +529,11 @@ class geo extends PureComponent {
     const areaId = this.props.selectedAreaId;
     const { dispatch,areas } = this.props;
     this.cancelEditing();
-    dispatch({
-      type: "areas/getAreasAll",
-      // areaId: areaId
-      payload: {areaId},
-    });
+    // dispatch({
+    //   type: "areas/getAreasAll",
+    //   // areaId: areaId
+    //   payload: {areaId},
+    // });
     dispatch({
       type: "geo/getFences",
       areaId: areaId
