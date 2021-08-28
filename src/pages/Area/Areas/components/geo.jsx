@@ -111,8 +111,6 @@ class DynamicFenceConfigForm extends PureComponent {
                 format="HH:mm" 
               />
   }
-
-
   render = () => {
     const {value, onChange} = this.props;
     return <div>
@@ -799,7 +797,8 @@ class geo extends PureComponent {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.selectedAreaId !== this.props.selectedAreaId && this.props.selectedAreaId) {
-        this.getAreaGeoInfo();
+        // this.getAreaGeoInfo();
+        this.getAreaGeoInfoFirst()
     }
   }
 
