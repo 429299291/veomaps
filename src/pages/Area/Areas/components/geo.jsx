@@ -63,22 +63,14 @@ const defaultCenter = { lat: 41.879658, lng: -87.629769 };
 
 
 class DynamicFenceConfigForm extends PureComponent {
-
-
-
    onRangePickerChange = timeRange => {
     triggerChange({timeRange});
    }
-
-
   onCheckboxChange = index => {
-
   }
-
   onTimezoneChange = timeRange => { 
     this.triggerChange({timeRange});
   }
-
   triggerChange = changedValue => {
     const { onChange, value } = this.props;
     if (onChange) {
@@ -91,8 +83,6 @@ class DynamicFenceConfigForm extends PureComponent {
 
   getTimePicker = (field, subField) => {
       const {value} = this.props;
-
-
       return <TimePicker  
                 placeholder={subField}
                 onChange={
@@ -114,7 +104,6 @@ class DynamicFenceConfigForm extends PureComponent {
   render = () => {
     const {value, onChange} = this.props;
     return <div>
-
               <Row> 
                     <Col span={4}> 
                         Weekday: 
@@ -142,9 +131,6 @@ class DynamicFenceConfigForm extends PureComponent {
                     </Col> 
                 
               </Row>
-
-  
-
               <Row> 
               <Col span={6}> Time Zone: </Col>
               <Col span={12}> 
@@ -158,13 +144,8 @@ class DynamicFenceConfigForm extends PureComponent {
                   </Select>
 
               </Col>  
-
-
               </Row>
             </div>
-
-  
-  
     ;
   }
 
@@ -294,11 +275,11 @@ const MyMapComponent = compose(
           onClick={onMapClick}
           options={{
             strokeColor: fenceTypeColor[fence.fenceType],
-            strokeOpacity: fence.fenceType === 5 ? 0 : (fence.turnedOn ? 0.75 : 0.2),
+            strokeOpacity: fence.fenceType === 5 ? 0 : (fence.turnedOn ? 0.75 : 0.4),
             strokeWeight: fence.fenceType === 5 ? 0 : 2,
             fillColor: fenceTypeColor[fence.fenceType],
             fillOpacity:
-              fence.fenceType === 0 || fence.fenceType === 5 ? 0 : (fence.turnedOn ? 0.35 : 0.1) 
+              fence.fenceType === 0 || fence.fenceType === 5 ? 0 : (fence.turnedOn ? 0.35 : 0.3) 
           }}
         />
       ))}

@@ -260,7 +260,7 @@ const RenderAdvancedForm=(props)=> {
         </Col>
         <Col span={8}>
             <FormItem label="Idle Days"
-              name='idleDays'
+              name={['idleQuery','idleDays']}
               rules={
                 [
                   {
@@ -730,7 +730,10 @@ class Vehicle extends PureComponent {
     expandForm: false,
     selectedRows: [],
     vehicleLocations: [],
-    filterCriteria: {pagination: {page: 0, pagSize: 10}},
+    filterCriteria: {pagination: {page: 0, pagSize: 10,sort:{
+      direction:'desc',
+      sortBy:'created'
+    }}},
     selectedRecord: {},
     selectedMarker: null,
     selectedTab: "1",
@@ -845,7 +848,11 @@ class Vehicle extends PureComponent {
 
     params.pagination = {
         page: 0,
-        pageSize: 10 
+        pageSize: 10,
+        sort:{
+          direction:'desc',
+          sortBy:'created'
+        }
     }
     this.setState({ filterCriteria: params });
 
@@ -1150,15 +1157,15 @@ class Vehicle extends PureComponent {
 
     params.pagination.pageSize = pagination.pageSize;
 
-    if (sorter.field) {
+    // if (sorter.field) {
 
-      params.pagination.sort = {};
+    //   params.pagination.sort = {};
 
-      params.pagination.sort.direction = sorter.order.startsWith("desc") ? "desc" : "asc";
+    //   params.pagination.sort.direction = sorter.order.startsWith("desc") ? "desc" : "asc";
 
-      params.pagination.sort.sortBy = sorter.field;
+    //   params.pagination.sort.sortBy = sorter.field;
       
-    }
+    // }
 
     this.setState({ filterCriteria: params }, 
       () => dispatch({
@@ -1169,10 +1176,23 @@ class Vehicle extends PureComponent {
   };
 
   handleFormReset = () => {
-    const { form, dispatch } = this.props;
+    const { form, dispatch,selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
-
-    this.handleSearch();
+    console.log(filterCriteria);
+    this.setState({
+      filterCriteria:{
+        areaIds: selectedAreaId ? [selectedAreaId] : null,
+        pagination: {
+          page: 0,
+          pageSize: 10,
+          sort:{
+            direction:'desc',
+            sortBy:'created'
+          }
+      }
+      }
+    },this.handleSearch())
+    // this.handleSearch();
   };
 
   toggleForm = () => {
@@ -1209,7 +1229,11 @@ class Vehicle extends PureComponent {
        values = Object.assign({}, filterCriteria, fieldsValue, {
           pagination: {
               page: 0,
-              pageSize: 10
+              pageSize: 10,
+              sort:{
+                direction:'desc',
+                sortBy:'created'
+              }
           },
           areaIds: selectedAreaId ? [selectedAreaId] : null
         });
@@ -1227,11 +1251,11 @@ class Vehicle extends PureComponent {
           values.vehicleNumber = null;
         }
         values.vehicleTypes = values.vehicleType ? [values.vehicleType] : null;
-        if (values.idleDays) {
-          values.idleQuery = {idleDays: values.idleDays};
-        } else {
-          values.idleQuery = null;
-        }
+        // if (values.idleQuery.idleDays) {
+        //   values.idleQuery = {idleDays: values.idleDays};
+        // } else {
+        //   values.idleQuery = null;
+        // }
         if(fieldsValue){
           if (fieldsValue.vehiclePowerCustom) {
             values.vehicleBattery =  fieldsValue.vehiclePowerCustom;
@@ -1265,9 +1289,8 @@ class Vehicle extends PureComponent {
         if (fieldsValue&&fieldsValue.vehiclePowerCustom) {
           values.vehiclePower =  fieldsValue.vehiclePowerCustom;
         }   
-        selectedAreaId ? values.locationCriteria={} : null
+        // selectedAreaId ? values.locationCriteria={} : null
         selectedAreaId ? values.pagination.pageSize = vehicles.total : null
-    
       }
     // if(!fieldsValue){
     //   values={
