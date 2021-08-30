@@ -1178,7 +1178,6 @@ class Vehicle extends PureComponent {
   handleFormReset = () => {
     const { form, dispatch,selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
-    console.log(filterCriteria);
     this.setState({
       filterCriteria:{
         areaIds: selectedAreaId ? [selectedAreaId] : null,
@@ -1302,7 +1301,6 @@ class Vehicle extends PureComponent {
     //     vehicleTypes: null
     //   }
     // }
-      console.log(values);
       this.setState(
         {
           filterCriteria: values
