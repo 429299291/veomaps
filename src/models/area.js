@@ -193,7 +193,6 @@ export default {
       };
     },
     newSave(state,action){
-      console.log(action);
       return {
         ...state,
         newArea:action.payload
