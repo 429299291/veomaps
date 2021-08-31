@@ -261,7 +261,7 @@ const MyMapComponent = compose(
             strokeOpacity: 0.75,
             strokeWeight: 2,
             fillColor: fenceTypeColor[editingFence.fenceType],
-            fillOpacity: editingFence.fenceType == 0 ? 0 : 0.35,
+            fillOpacity: editingFence.fenceType == 0 ? 0 : 0.5,
             zIndex: 0
           }}
         />
@@ -279,7 +279,7 @@ const MyMapComponent = compose(
             strokeWeight: fence.fenceType === 5 ? 0 : 2,
             fillColor: fenceTypeColor[fence.fenceType],
             fillOpacity:
-              fence.fenceType === 0 || fence.fenceType === 5 ? 0 : (fence.turnedOn ? 0.35 : 0.3) 
+              fence.fenceType === 0 || fence.fenceType === 5 ? 0 : (fence.turnedOn ? 0.5 : 0.5) 
           }}
         />
       ))}
@@ -726,6 +726,10 @@ class geo extends PureComponent {
 
     if (isEditingFence) {
       editingFence.fenceCoordinates.push(editingFence.fenceCoordinates[0]);
+      delete editingFence.turnedOn
+      editingFence.activeTimeRange.weekDayDTO.start ? null : delete editingFence.activeTimeRange.weekDayDTO
+      editingFence.activeTimeRange.weekendDTO.start ? null : delete editingFence.activeTimeRange.weekendDTO
+      !editingFence.activeTimeRange.weekDayDTO && !editingFence.activeTimeRange.weekendDTO ? delete editingFence.activeTimeRange : null
       dispatch({
         type: "geo/addFence",
         payload: Object.assign({}, editingFence, {areaId: selectedAreaId}) ,

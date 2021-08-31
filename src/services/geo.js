@@ -61,22 +61,23 @@ export async function getFencesByAreaId(areaId) {
 
 
 
-export async function createFence(fence) {
-  return request(`/admins/geo/fences`, {
-    method: "POST",
-    body: {
-      ...fence
-    }
-  });
-}
 // export async function createFence(fence) {
-//   return request(`/api/admins/areas/fences`, {
+//   return request(`/admins/geo/fences`, {
 //     method: "POST",
 //     body: {
 //       ...fence
 //     }
 //   });
 // }
+export async function createFence(fence) {
+  console.log(fence);
+  return request(`/api/admins/areas/fences`, {
+    method: "POST",
+    body: {
+      ...fence
+    }
+  });
+}
 
 
 
