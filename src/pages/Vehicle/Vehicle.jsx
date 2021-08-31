@@ -172,6 +172,8 @@ const RenderSimpleForm=(props)=> {
 }
 const RenderAdvancedForm=(props)=> {
   const [form] = Form.useForm()
+  console.log(props);
+  // form.setFieldsValue()
   // const { areas }= this.props;
 
 
@@ -1220,8 +1222,20 @@ class Vehicle extends PureComponent {
       ) {
         fieldsValue.numberOrImei = fieldsValue.numberOrImei.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
       }
+      if (fieldsValue.numberOrImei) {
+        if (fieldsValue.numberOrImei.toString().length > 12) {
+          fieldsValue.vehicleNumber = null
+          fieldsValue.imei = fieldsValue.numberOrImei;
+        } else {
+          fieldsValue.imei = null
+          fieldsValue.vehicleNumber = fieldsValue.numberOrImei;  
+        }
+        fieldsValue.numberOrImei = undefined;
+      }  else {
+        fieldsValue.imei = null;
+        fieldsValue.vehicleNumber = null;
+      }
     }
-    
       let values;
 
       if (selectedTab == 1) {
@@ -1236,19 +1250,19 @@ class Vehicle extends PureComponent {
           },
           areaIds: selectedAreaId ? [selectedAreaId] : null
         });
-        if (values.numberOrImei) {
-          if (values.numberOrImei.toString().length > 12) {
-            values.vehicleNumber = null
-            values.imei = values.numberOrImei;
-          } else {
-            values.imei = null
-            values.vehicleNumber = values.numberOrImei;  
-          }
-          values.numberOrImei = undefined;
-        }  else {
-          values.imei = null;
-          values.vehicleNumber = null;
-        }
+        // if (values.numberOrImei) {
+        //   if (values.numberOrImei.toString().length > 12) {
+        //     values.vehicleNumber = null
+        //     values.imei = values.numberOrImei;
+        //   } else {
+        //     values.imei = null
+        //     values.vehicleNumber = values.numberOrImei;  
+        //   }
+        //   values.numberOrImei = undefined;
+        // }  else {
+        //   values.imei = null;
+        //   values.vehicleNumber = null;
+        // }
         values.vehicleTypes = values.vehicleType ? [values.vehicleType] : null;
         // if (values.idleQuery.idleDays) {
         //   values.idleQuery = {idleDays: values.idleDays};
@@ -1260,6 +1274,7 @@ class Vehicle extends PureComponent {
             values.vehicleBattery =  fieldsValue.vehiclePowerCustom;
           }    
         }
+        delete values.locationCriteria
         
       } else {
         values = Object.assign({}, filterCriteria, fieldsValue);
@@ -1288,7 +1303,10 @@ class Vehicle extends PureComponent {
         if (fieldsValue&&fieldsValue.vehiclePowerCustom) {
           values.vehiclePower =  fieldsValue.vehiclePowerCustom;
         }   
-        // selectedAreaId ? values.locationCriteria={} : null
+        //location api
+        selectedAreaId ? values.locationCriteria={} : null
+        //total = 0 api 500
+        vehicles.total === 0 ? vehicles.total = 1 : null
         selectedAreaId ? values.pagination.pageSize = vehicles.total : null
       }
     // if(!fieldsValue){
