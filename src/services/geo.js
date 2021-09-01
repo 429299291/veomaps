@@ -87,9 +87,17 @@ export async function examineParking(areaId, imei, lat, lng) {
   });
 }
 
+// export async function updateFence(fenceId, area) {
+//   return request(`/admins/geo/fences/${fenceId}`, {
+//     method: "PUT",
+//     body: {
+//       ...area
+//     }
+//   });
+// }
 export async function updateFence(fenceId, area) {
-  return request(`/admins/geo/fences/${fenceId}`, {
-    method: "PUT",
+  return request(`/api/admins/areas/fences/${fenceId}`, {
+    method: "PATCH",
     body: {
       ...area
     }
