@@ -726,9 +726,12 @@ class geo extends PureComponent {
 
     if (isEditingFence) {
       editingFence.fenceCoordinates.push(editingFence.fenceCoordinates[0]);
-      delete editingFence.turnedOn
-      editingFence.activeTimeRange.weekDayDTO.start ? null : delete editingFence.activeTimeRange.weekDayDTO
-      editingFence.activeTimeRange.weekendDTO.start ? null : delete editingFence.activeTimeRange.weekendDTO
+      if(editingFence.activeTimeRange.weekDayDTO){
+        editingFence.activeTimeRange.weekDayDTO.start ? null : delete editingFence.activeTimeRange.weekDayDTO
+      }
+      if(editingFence.activeTimeRange.weekendDTO){
+        editingFence.activeTimeRange.weekendDTO.start ? null : delete editingFence.activeTimeRange.weekendDTO
+      }
       !editingFence.activeTimeRange.weekDayDTO && !editingFence.activeTimeRange.weekendDTO ? delete editingFence.activeTimeRange : null
       dispatch({
         type: "geo/addFence",
