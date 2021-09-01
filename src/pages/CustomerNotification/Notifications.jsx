@@ -36,7 +36,7 @@ const FormItem = Form.Item;
 
 const TextArea = Input.TextArea;
 
-const messageTypes = ["push notification", "sms message"];
+const messageTypes = ["0", "sms notification","push notification","email notification"];
 const RenderSimpleForm=(props)=> {
   const [form] = Form.useForm()
   return (
@@ -88,11 +88,11 @@ const MessageAreaSender = (props => {
     const [form] = Form.useForm()
     const okHandle = () => {
           const fieldsValue = form.getFieldsValue(true)
-          if(fieldsValue.message && fieldsValue.type){
-            handleSendNotifications(fieldsValue.message,fieldsValue.type);
+          if(fieldsValue.message){
+            handleSendNotifications(fieldsValue.message,2);
             form.resetFields()
           }else{
-            message.error('Please select')
+            message.error('Please input message')
           }
     };
   
@@ -115,7 +115,7 @@ const MessageAreaSender = (props => {
                         <TextArea autosize={{minRows: 5, maxRows: 23}} placeholder="message:" maxLength={250}/>
                         </FormItem>
                     </Col>
-                    <Col span={5}>
+                    {/* <Col span={5}>
                   <FormItem rules='type'
                   name='type'
                     rules={
@@ -128,12 +128,10 @@ const MessageAreaSender = (props => {
                     }
                   >
                     <Select placeholder="select" style={{ width: "100%" }}>
-                    <Option value={1}>SMS Notification</Option>
-                    <Option value={2}>Push Notification</Option>
-                    <Option value={3}>Email Notification</Option>
+                        <Option value={0}>Push Notification</Option>
                     </Select>
                     </FormItem>
-                </Col>
+                </Col> */}
                 <Col md={4} sm={24}>
                     <Button 
                         type="primary"
