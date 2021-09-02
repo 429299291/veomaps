@@ -330,6 +330,7 @@ const CreateFenceForm = (props => {
   selectedExistedFence ?  form.setFieldsValue(selectedExistedFence):null
   const okHandle = () => {
       const fieldsValue = form.getFieldsValue(true)
+      form.validateFields()
       if (Array.isArray(fieldsValue.vehicleTypes) && fieldsValue.vehicleTypes.length === 0 ) {
         fieldsValue.vehicleTypes = undefined;
       }
@@ -337,21 +338,21 @@ const CreateFenceForm = (props => {
       if (Array.isArray(fieldsValue.forceVehicleTypes) && fieldsValue.forceVehicleTypes.length === 0) {
         fieldsValue.forceVehicleTypes = undefined;
       }
-
+      if(!fieldsValue.name || !fieldsValue.fenceType){
+        return false
+      }
       handleNext(fieldsValue);
   };
+  const okModal = () =>{
+
+  }
   // let isGeoFence = currFenceType === 0 || currFenceType === 5;
   const fenceHandleChange = (value) =>{
     // setCurrFenceType(value)
-
   }
-
   const fence = selectedExistedFence ? selectedExistedFence : editingFence;
-
   // const currFenceType = form.getFieldValue("fenceType");
-
   const nullToUndefined = value => value ? value : undefined;
-
   return (
     <Modal
       destroyOnClose
