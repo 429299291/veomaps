@@ -335,7 +335,7 @@ const CreateFenceForm = (props => {
       if (Array.isArray(fieldsValue.forceVehicleTypes) && fieldsValue.forceVehicleTypes.length === 0) {
         fieldsValue.forceVehicleTypes = undefined;
       }
-      if(!fieldsValue.name || !fieldsValue.fenceType){
+      if(!fieldsValue.name || !fieldsValue.fenceType || fieldsValue.turnedOn == null){
         return false
       }
       handleNext(fieldsValue);
@@ -732,13 +732,13 @@ class geo extends PureComponent {
 
     if (isEditingFence) {
       editingFence.fenceCoordinates.push(editingFence.fenceCoordinates[0]);
-      if(editingFence.activeTimeRange.weekDayDTO){
-        editingFence.activeTimeRange.weekDayDTO.start ? null : delete editingFence.activeTimeRange.weekDayDTO
-      }
-      if(editingFence.activeTimeRange.weekendDTO){
-        editingFence.activeTimeRange.weekendDTO.start ? null : delete editingFence.activeTimeRange.weekendDTO
-      }
-      !editingFence.activeTimeRange.weekDayDTO && !editingFence.activeTimeRange.weekendDTO ? delete editingFence.activeTimeRange : null
+      // if(editingFence.activeTimeRange.weekDayDTO){
+      //   editingFence.activeTimeRange.weekDayDTO.start ? null : delete editingFence.activeTimeRange.weekDayDTO
+      // }
+      // if(editingFence.activeTimeRange.weekendDTO){
+      //   editingFence.activeTimeRange.weekendDTO.start ? null : delete editingFence.activeTimeRange.weekendDTO
+      // }
+      // !editingFence.activeTimeRange.weekDayDTO && !editingFence.activeTimeRange.weekendDTO ? delete editingFence.activeTimeRange : null
       dispatch({
         type: "geo/addFence",
         payload: Object.assign({}, editingFence, {areaId: selectedAreaId}) ,
