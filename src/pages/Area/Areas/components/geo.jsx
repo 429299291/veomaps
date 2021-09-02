@@ -102,7 +102,7 @@ class DynamicFenceConfigForm extends PureComponent {
     const {value, onChange} = this.props;
     return <div>
               <Row> 
-                    <Col span={4}> 
+                    <Col span={4} style={{marginBottom:'15px'}}> 
                         Weekday: 
                     </Col> 
                     <Col span={8}> 
@@ -116,7 +116,7 @@ class DynamicFenceConfigForm extends PureComponent {
               </Row>
 
               <Row>
-                    <Col span={4}> 
+                    <Col span={4} style={{marginBottom:'15px'}}> 
                         Weekend: 
                     </Col> 
                     <Col span={8}> 
