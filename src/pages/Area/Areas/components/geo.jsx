@@ -376,6 +376,14 @@ const CreateFenceForm = (props => {
         <Input placeholder="Please Input" />
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Activated"
+              rules={
+                [
+                  {
+                    required: true,
+                    message: "You have pick a Activa!",
+                  }
+                ]
+              }
         name='turnedOn'
       >
         <Select placeholder="select" style={{ width: "100%" }}>
