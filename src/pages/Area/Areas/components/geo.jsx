@@ -86,11 +86,8 @@ class DynamicFenceConfigForm extends PureComponent {
       return <TimePicker  
                 placeholder={subField}
                 onChange={
-                 
                   val =>  {
-
                     const newFeildVal = {};
-                    
                     newFeildVal[field] = value[field];
                         console.log('---'+value[field]);
                     newFeildVal[field][subField] = val ? val.format("HH:mm") : null;
