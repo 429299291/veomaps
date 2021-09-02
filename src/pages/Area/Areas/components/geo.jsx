@@ -129,8 +129,8 @@ class DynamicFenceConfigForm extends PureComponent {
                 
               </Row>
               <Row> 
-              <Col span={6}> Time Zone: </Col>
-              <Col span={12}> 
+              <Col span={5}> Time Zone: </Col>
+              <Col span={15}> 
                   <Select 
                   // defaultValue={value.timeZone ? value.timeZone : undefined} 
                   onChange={val => this.triggerChange({timeZone: val})} style={{width: "100%"}}>
@@ -465,13 +465,14 @@ const CreateFenceForm = (props => {
           shouldUpdate={(prevValues, currentValues) => prevValues.fenceType !== currentValues.fenceType}
         >
           {({ getFieldValue }) =>
-                <FormItem
+          (getFieldValue('fenceType') ||  getFieldValue('fenceType') == 0 ) ? 
+                (<FormItem
                 labelCol={{ span: 10 }}
                 wrapperCol={{ span: 10 }}
                 name={(getFieldValue('fenceType') == 0 || getFieldValue('fenceType') == 5) ? "forceVehicleTypes" : "vehicleTypes"}
                 label={((getFieldValue('fenceType') == 0 || getFieldValue('fenceType') == 5)? "Force " : "") + "Vehicle Type"}
               >
-                  <Select placeholder="select" style={{ width: "100%" }} mode="multiple">
+                  <Select placeholder="select" style={{ width: "100%" }}>
                     <Option value={0}>Bike</Option>
                     <Option value={1}>Scooter</Option>
                     <Option value={2}>E-Bike</Option>
@@ -481,7 +482,7 @@ const CreateFenceForm = (props => {
                     <Option value={2}>E-Bike</Option>
                     <Option value={3}>COSMO</Option> */}
                   </Select>
-              </FormItem>
+              </FormItem>) :null
             }
           </Form.Item>
       </Form>
