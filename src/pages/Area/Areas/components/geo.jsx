@@ -335,7 +335,7 @@ const CreateFenceForm = (props => {
       if (Array.isArray(fieldsValue.forceVehicleTypes) && fieldsValue.forceVehicleTypes.length === 0) {
         fieldsValue.forceVehicleTypes = undefined;
       }
-      if(!fieldsValue.name || !fieldsValue.fenceType || fieldsValue.turnedOn == null){
+      if(!fieldsValue.name || fieldsValue.fenceType == null || fieldsValue.turnedOn == null){
         return false
       }
       handleNext(fieldsValue);
