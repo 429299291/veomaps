@@ -86,11 +86,8 @@ class DynamicFenceConfigForm extends PureComponent {
       return <TimePicker  
                 placeholder={subField}
                 onChange={
-                 
                   val =>  {
-
                     const newFeildVal = {};
-                    
                     newFeildVal[field] = value[field];
                         console.log('---'+value[field]);
                     newFeildVal[field][subField] = val ? val.format("HH:mm") : null;
@@ -379,6 +376,14 @@ const CreateFenceForm = (props => {
         <Input placeholder="Please Input" />
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Activated"
+              rules={
+                [
+                  {
+                    required: true,
+                    message: "You have pick a Activa!",
+                  }
+                ]
+              }
         name='turnedOn'
       >
         <Select placeholder="select" style={{ width: "100%" }}>
