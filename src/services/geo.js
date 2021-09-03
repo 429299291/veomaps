@@ -61,22 +61,23 @@ export async function getFencesByAreaId(areaId) {
 
 
 
-export async function createFence(fence) {
-  return request(`/admins/geo/fences`, {
-    method: "POST",
-    body: {
-      ...fence
-    }
-  });
-}
 // export async function createFence(fence) {
-//   return request(`/api/admins/areas/fences`, {
+//   return request(`/admins/geo/fences`, {
 //     method: "POST",
 //     body: {
 //       ...fence
 //     }
 //   });
 // }
+export async function createFence(fence) {
+  console.log(fence);
+  return request(`/api/admins/areas/fences`, {
+    method: "POST",
+    body: {
+      ...fence
+    }
+  });
+}
 
 
 
@@ -86,9 +87,17 @@ export async function examineParking(areaId, imei, lat, lng) {
   });
 }
 
+// export async function updateFence(fenceId, area) {
+//   return request(`/admins/geo/fences/${fenceId}`, {
+//     method: "PUT",
+//     body: {
+//       ...area
+//     }
+//   });
+// }
 export async function updateFence(fenceId, area) {
-  return request(`/admins/geo/fences/${fenceId}`, {
-    method: "PUT",
+  return request(`/api/admins/areas/fences/${fenceId}`, {
+    method: "PATCH",
     body: {
       ...area
     }
@@ -107,7 +116,6 @@ export async function deleteFence(id) {
 //   });
 // }
 export async function getAreaCenterByAreaId(areaId) {
-  console.log('geo===');
   return request(`/api/admins/areas/${areaId}`, {
     method: "GET"
   });

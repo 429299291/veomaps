@@ -36,7 +36,7 @@ const FormItem = Form.Item;
 
 const TextArea = Input.TextArea;
 
-const messageTypes = ["push notification", "sms message"];
+const messageTypes = ["0", "sms notification","push notification","email notification"];
 const RenderSimpleForm=(props)=> {
   const [form] = Form.useForm()
   return (
@@ -89,7 +89,7 @@ const MessageAreaSender = (props => {
     const okHandle = () => {
           const fieldsValue = form.getFieldsValue(true)
           if(fieldsValue.message){
-            handleSendNotifications(fieldsValue.message,0);
+            handleSendNotifications(fieldsValue.message,2);
             form.resetFields()
           }else{
             message.error('Please input message')
@@ -270,9 +270,7 @@ class Notifications extends PureComponent {
   }
 
   handleSendNotifications = (content, messageType) => {
-
     const { dispatch, selectedAreaId } = this.props;
-    
     dispatch({
         type: "notifications/sendForCustomers",
         payload:  content,
