@@ -63,22 +63,14 @@ const defaultCenter = { lat: 41.879658, lng: -87.629769 };
 
 
 class DynamicFenceConfigForm extends PureComponent {
-
-
-
    onRangePickerChange = timeRange => {
     triggerChange({timeRange});
    }
-
-
   onCheckboxChange = index => {
-
   }
-
   onTimezoneChange = timeRange => { 
     this.triggerChange({timeRange});
   }
-
   triggerChange = changedValue => {
     const { onChange, value } = this.props;
     if (onChange) {
@@ -91,16 +83,11 @@ class DynamicFenceConfigForm extends PureComponent {
 
   getTimePicker = (field, subField) => {
       const {value} = this.props;
-
-
       return <TimePicker  
                 placeholder={subField}
                 onChange={
-                 
                   val =>  {
-
                     const newFeildVal = {};
-                    
                     newFeildVal[field] = value[field];
                         console.log('---'+value[field]);
                     newFeildVal[field][subField] = val ? val.format("HH:mm") : null;
@@ -114,9 +101,8 @@ class DynamicFenceConfigForm extends PureComponent {
   render = () => {
     const {value, onChange} = this.props;
     return <div>
-
               <Row> 
-                    <Col span={4}> 
+                    <Col span={4} style={{marginBottom:'15px'}}> 
                         Weekday: 
                     </Col> 
                     <Col span={8}> 
@@ -130,7 +116,7 @@ class DynamicFenceConfigForm extends PureComponent {
               </Row>
 
               <Row>
-                    <Col span={4}> 
+                    <Col span={4} style={{marginBottom:'15px'}}> 
                         Weekend: 
                     </Col> 
                     <Col span={8}> 
@@ -142,12 +128,9 @@ class DynamicFenceConfigForm extends PureComponent {
                     </Col> 
                 
               </Row>
-
-  
-
               <Row> 
-              <Col span={6}> Time Zone: </Col>
-              <Col span={12}> 
+              <Col span={5}> Time Zone: </Col>
+              <Col span={15}> 
                   <Select 
                   // defaultValue={value.timeZone ? value.timeZone : undefined} 
                   onChange={val => this.triggerChange({timeZone: val})} style={{width: "100%"}}>
@@ -158,13 +141,8 @@ class DynamicFenceConfigForm extends PureComponent {
                   </Select>
 
               </Col>  
-
-
               </Row>
             </div>
-
-  
-  
     ;
   }
 
@@ -280,7 +258,7 @@ const MyMapComponent = compose(
             strokeOpacity: 0.75,
             strokeWeight: 2,
             fillColor: fenceTypeColor[editingFence.fenceType],
-            fillOpacity: editingFence.fenceType == 0 ? 0 : 0.35,
+            fillOpacity: editingFence.fenceType == 0 ? 0 : 0.5,
             zIndex: 0
           }}
         />
@@ -294,11 +272,11 @@ const MyMapComponent = compose(
           onClick={onMapClick}
           options={{
             strokeColor: fenceTypeColor[fence.fenceType],
-            strokeOpacity: fence.fenceType === 5 ? 0 : (fence.turnedOn ? 0.75 : 0.2),
+            strokeOpacity: fence.fenceType === 5 ? 0 : (fence.turnedOn ? 0.75 : 0.4),
             strokeWeight: fence.fenceType === 5 ? 0 : 2,
             fillColor: fenceTypeColor[fence.fenceType],
             fillOpacity:
-              fence.fenceType === 0 || fence.fenceType === 5 ? 0 : (fence.turnedOn ? 0.35 : 0.1) 
+              fence.fenceType === 0 || fence.fenceType === 5 ? 0 : (fence.turnedOn ? 0.5 : 0.5) 
           }}
         />
       ))}
@@ -349,6 +327,7 @@ const CreateFenceForm = (props => {
   selectedExistedFence ?  form.setFieldsValue(selectedExistedFence):null
   const okHandle = () => {
       const fieldsValue = form.getFieldsValue(true)
+      form.validateFields()
       if (Array.isArray(fieldsValue.vehicleTypes) && fieldsValue.vehicleTypes.length === 0 ) {
         fieldsValue.vehicleTypes = undefined;
       }
@@ -356,21 +335,21 @@ const CreateFenceForm = (props => {
       if (Array.isArray(fieldsValue.forceVehicleTypes) && fieldsValue.forceVehicleTypes.length === 0) {
         fieldsValue.forceVehicleTypes = undefined;
       }
-
+      if(!fieldsValue.name || fieldsValue.fenceType == null || fieldsValue.turnedOn == null){
+        return false
+      }
       handleNext(fieldsValue);
   };
+  const okModal = () =>{
+
+  }
   // let isGeoFence = currFenceType === 0 || currFenceType === 5;
   const fenceHandleChange = (value) =>{
     // setCurrFenceType(value)
-
   }
-
   const fence = selectedExistedFence ? selectedExistedFence : editingFence;
-
   // const currFenceType = form.getFieldValue("fenceType");
-
   const nullToUndefined = value => value ? value : undefined;
-
   return (
     <Modal
       destroyOnClose
@@ -397,6 +376,14 @@ const CreateFenceForm = (props => {
         <Input placeholder="Please Input" />
       </FormItem>
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Activated"
+              rules={
+                [
+                  {
+                    required: true,
+                    message: "You have pick a Activa!",
+                  }
+                ]
+              }
         name='turnedOn'
       >
         <Select placeholder="select" style={{ width: "100%" }}>
@@ -478,7 +465,8 @@ const CreateFenceForm = (props => {
           shouldUpdate={(prevValues, currentValues) => prevValues.fenceType !== currentValues.fenceType}
         >
           {({ getFieldValue }) =>
-                <FormItem
+          (getFieldValue('fenceType') ||  getFieldValue('fenceType') == 0 ) ? 
+                (<FormItem
                 labelCol={{ span: 10 }}
                 wrapperCol={{ span: 10 }}
                 name={(getFieldValue('fenceType') == 0 || getFieldValue('fenceType') == 5) ? "forceVehicleTypes" : "vehicleTypes"}
@@ -494,7 +482,7 @@ const CreateFenceForm = (props => {
                     <Option value={2}>E-Bike</Option>
                     <Option value={3}>COSMO</Option> */}
                   </Select>
-              </FormItem>
+              </FormItem>) :null
             }
           </Form.Item>
       </Form>
@@ -745,6 +733,13 @@ class geo extends PureComponent {
 
     if (isEditingFence) {
       editingFence.fenceCoordinates.push(editingFence.fenceCoordinates[0]);
+      // if(editingFence.activeTimeRange.weekDayDTO){
+      //   editingFence.activeTimeRange.weekDayDTO.start ? null : delete editingFence.activeTimeRange.weekDayDTO
+      // }
+      // if(editingFence.activeTimeRange.weekendDTO){
+      //   editingFence.activeTimeRange.weekendDTO.start ? null : delete editingFence.activeTimeRange.weekendDTO
+      // }
+      // !editingFence.activeTimeRange.weekDayDTO && !editingFence.activeTimeRange.weekendDTO ? delete editingFence.activeTimeRange : null
       dispatch({
         type: "geo/addFence",
         payload: Object.assign({}, editingFence, {areaId: selectedAreaId}) ,

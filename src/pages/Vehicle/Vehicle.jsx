@@ -172,6 +172,8 @@ const RenderSimpleForm=(props)=> {
 }
 const RenderAdvancedForm=(props)=> {
   const [form] = Form.useForm()
+  console.log(props);
+  // form.setFieldsValue()
   // const { areas }= this.props;
 
 
@@ -260,7 +262,7 @@ const RenderAdvancedForm=(props)=> {
         </Col>
         <Col span={8}>
             <FormItem label="Idle Days"
-              name='idleDays'
+              name={['idleQuery','idleDays']}
               rules={
                 [
                   {
@@ -662,7 +664,7 @@ const UpdateForm = (props => {
             <Option value={1}>Lock</Option>
           </Select>
       </FormItem>
-      <FormItem
+      {/* <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="Error Status"
@@ -675,7 +677,7 @@ const UpdateForm = (props => {
               </Option>
             ))}
           </Select>
-      </FormItem>
+      </FormItem> */}
 
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Type"
         name='vehicleType'
@@ -730,7 +732,10 @@ class Vehicle extends PureComponent {
     expandForm: false,
     selectedRows: [],
     vehicleLocations: [],
-    filterCriteria: {pagination: {page: 0, pagSize: 10}},
+    filterCriteria: {pagination: {page: 0, pagSize: 10,sort:{
+      direction:'desc',
+      sortBy:'created'
+    }}},
     selectedRecord: {},
     selectedMarker: null,
     selectedTab: "1",
@@ -845,7 +850,11 @@ class Vehicle extends PureComponent {
 
     params.pagination = {
         page: 0,
-        pageSize: 10 
+        pageSize: 10,
+        sort:{
+          direction:'desc',
+          sortBy:'created'
+        }
     }
     this.setState({ filterCriteria: params });
 
@@ -1150,15 +1159,15 @@ class Vehicle extends PureComponent {
 
     params.pagination.pageSize = pagination.pageSize;
 
-    if (sorter.field) {
+    // if (sorter.field) {
 
-      params.pagination.sort = {};
+    //   params.pagination.sort = {};
 
-      params.pagination.sort.direction = sorter.order.startsWith("desc") ? "desc" : "asc";
+    //   params.pagination.sort.direction = sorter.order.startsWith("desc") ? "desc" : "asc";
 
-      params.pagination.sort.sortBy = sorter.field;
+    //   params.pagination.sort.sortBy = sorter.field;
       
-    }
+    // }
 
     this.setState({ filterCriteria: params }, 
       () => dispatch({
@@ -1169,10 +1178,22 @@ class Vehicle extends PureComponent {
   };
 
   handleFormReset = () => {
-    const { form, dispatch } = this.props;
+    const { form, dispatch,selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
-
-    this.handleSearch();
+    this.setState({
+      filterCriteria:{
+        areaIds: selectedAreaId ? [selectedAreaId] : null,
+        pagination: {
+          page: 0,
+          pageSize: 10,
+          sort:{
+            direction:'desc',
+            sortBy:'created'
+          }
+      }
+      }
+    },this.handleSearch())
+    // this.handleSearch();
   };
 
   toggleForm = () => {
@@ -1201,42 +1222,59 @@ class Vehicle extends PureComponent {
       ) {
         fieldsValue.numberOrImei = fieldsValue.numberOrImei.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'').trim().replace(/\s*/g,"")
       }
+      if (fieldsValue.numberOrImei) {
+        if (fieldsValue.numberOrImei.toString().length > 12) {
+          fieldsValue.vehicleNumber = null
+          fieldsValue.imei = fieldsValue.numberOrImei;
+        } else {
+          fieldsValue.imei = null
+          fieldsValue.vehicleNumber = fieldsValue.numberOrImei;  
+        }
+        fieldsValue.numberOrImei = undefined;
+      }  else {
+        fieldsValue.imei = null;
+        fieldsValue.vehicleNumber = null;
+      }
     }
-    
       let values;
 
       if (selectedTab == 1) {
        values = Object.assign({}, filterCriteria, fieldsValue, {
           pagination: {
               page: 0,
-              pageSize: 10
+              pageSize: 10,
+              sort:{
+                direction:'desc',
+                sortBy:'created'
+              }
           },
           areaIds: selectedAreaId ? [selectedAreaId] : null
         });
-        if (values.numberOrImei) {
-          if (values.numberOrImei.toString().length > 12) {
-            values.vehicleNumber = null
-            values.imei = values.numberOrImei;
-          } else {
-            values.imei = null
-            values.vehicleNumber = values.numberOrImei;  
-          }
-          values.numberOrImei = undefined;
-        }  else {
-          values.imei = null;
-          values.vehicleNumber = null;
-        }
+        // if (values.numberOrImei) {
+        //   if (values.numberOrImei.toString().length > 12) {
+        //     values.vehicleNumber = null
+        //     values.imei = values.numberOrImei;
+        //   } else {
+        //     values.imei = null
+        //     values.vehicleNumber = values.numberOrImei;  
+        //   }
+        //   values.numberOrImei = undefined;
+        // }  else {
+        //   values.imei = null;
+        //   values.vehicleNumber = null;
+        // }
         values.vehicleTypes = values.vehicleType ? [values.vehicleType] : null;
-        if (values.idleDays) {
-          values.idleQuery = {idleDays: values.idleDays};
-        } else {
-          values.idleQuery = null;
-        }
+        // if (values.idleQuery.idleDays) {
+        //   values.idleQuery = {idleDays: values.idleDays};
+        // } else {
+        //   values.idleQuery = null;
+        // }
         if(fieldsValue){
           if (fieldsValue.vehiclePowerCustom) {
             values.vehicleBattery =  fieldsValue.vehiclePowerCustom;
           }    
         }
+        delete values.locationCriteria
         
       } else {
         values = Object.assign({}, filterCriteria, fieldsValue);
@@ -1265,9 +1303,11 @@ class Vehicle extends PureComponent {
         if (fieldsValue&&fieldsValue.vehiclePowerCustom) {
           values.vehiclePower =  fieldsValue.vehiclePowerCustom;
         }   
+        //location api
         selectedAreaId ? values.locationCriteria={} : null
+        //total = 0 api 500
+        vehicles.total === 0 ? vehicles.total = 1 : null
         selectedAreaId ? values.pagination.pageSize = vehicles.total : null
-    
       }
     // if(!fieldsValue){
     //   values={
@@ -1279,7 +1319,6 @@ class Vehicle extends PureComponent {
     //     vehicleTypes: null
     //   }
     // }
-      console.log(values);
       this.setState(
         {
           filterCriteria: values
