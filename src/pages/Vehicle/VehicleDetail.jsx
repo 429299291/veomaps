@@ -390,7 +390,7 @@ const UpdateForm = (props => {
 
                 <Option value={1} >Error</Option>
 
-                <Option disabled={true} value={3} >Deativated</Option>
+                <Option value={3} >Deativated</Option>
 
                 <Option disabled={true} value={5} >Rebalance</Option>
 
