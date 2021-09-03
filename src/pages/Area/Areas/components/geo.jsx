@@ -472,7 +472,7 @@ const CreateFenceForm = (props => {
                 name={(getFieldValue('fenceType') == 0 || getFieldValue('fenceType') == 5) ? "forceVehicleTypes" : "vehicleTypes"}
                 label={((getFieldValue('fenceType') == 0 || getFieldValue('fenceType') == 5)? "Force " : "") + "Vehicle Type"}
               >
-                  <Select placeholder="select" style={{ width: "100%" }}>
+                  <Select placeholder="select" style={{ width: "100%" }} mode="multiple">
                     <Option value={0}>Bike</Option>
                     <Option value={1}>Scooter</Option>
                     <Option value={2}>E-Bike</Option>
