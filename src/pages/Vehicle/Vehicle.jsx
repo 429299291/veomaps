@@ -664,7 +664,7 @@ const UpdateForm = (props => {
             <Option value={1}>Lock</Option>
           </Select>
       </FormItem>
-      <FormItem
+      {/* <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
         label="Error Status"
@@ -677,7 +677,7 @@ const UpdateForm = (props => {
               </Option>
             ))}
           </Select>
-      </FormItem>
+      </FormItem> */}
 
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Type"
         name='vehicleType'
