@@ -7,6 +7,8 @@ import NoticeIcon from "../NoticeIcon";
 import HeaderSearch from "../HeaderSearch";
 import SelectLang from "../SelectLang";
 import styles from "./index.less";
+import {SettingOutlined,LogoutOutlined} from '@ant-design/icons';
+
 
 export default class GlobalHeaderRight extends PureComponent {
   getNoticeData() {
@@ -52,7 +54,7 @@ export default class GlobalHeaderRight extends PureComponent {
     const menu = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
         <Menu.Item key="userinfo">
-          <Icon type="setting" />
+          <SettingOutlined />
           <FormattedMessage
             id="menu.account.settings"
             defaultMessage="account settings"
@@ -60,7 +62,7 @@ export default class GlobalHeaderRight extends PureComponent {
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="logout">
-          <Icon type="logout" />
+          <LogoutOutlined />
           <FormattedMessage id="menu.account.logout" defaultMessage="logout" />
         </Menu.Item>
       </Menu>
