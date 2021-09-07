@@ -172,7 +172,6 @@ const RenderSimpleForm=(props)=> {
 }
 const RenderAdvancedForm=(props)=> {
   const [form] = Form.useForm()
-  console.log(props);
   // form.setFieldsValue()
   // const { areas }= this.props;
 
@@ -1910,7 +1909,7 @@ handleShowingVehicles = val => {
           title="Purpose for Unlock"
         >
           {
-            [5,6,7].map(vehicleStatus => <Row style={{textAlign: "center", marginTop: "2em"}}>
+            [5,6,7].map(vehicleStatus => <Row key={vehicleStatus} style={{textAlign: "center", marginTop: "2em"}}>
             <Button 
               style={{width: "80vw"}}
               type="primary"

@@ -307,5 +307,5 @@ export default {
   'menu.Technician Management.Technician Management':'Technician Management',
   'menu.Technician Management.Violation Management':'Violation Management',
   'menu.Technician Management.Tech Metrics':'Tech Metrics',
-  // 'menu':'',
+  'menu.account.settings':'settings',
 };
