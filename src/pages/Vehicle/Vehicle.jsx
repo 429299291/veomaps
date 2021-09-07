@@ -189,12 +189,12 @@ const RenderAdvancedForm=(props)=> {
   return (
     <Form  layout="inline" form= {form}>
       <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-        <Col span={8}>
+        <Col span={6}>
           <FormItem label="Keywords" name='numberOrImei'>
               <Input className="number_or_imei_input"  placeholder="number or imei" />
           </FormItem>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <FormItem label="IOT Battery" name='iotBattery'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 <Option value={35}>Low Battery(35%)</Option>
@@ -204,7 +204,7 @@ const RenderAdvancedForm=(props)=> {
           </FormItem>
         </Col>
 
-        <Col span={8}>
+        <Col span={6}>
           <FormItem label="Connected" name='connected'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 <Option value={false}>false</Option>
@@ -216,7 +216,7 @@ const RenderAdvancedForm=(props)=> {
         
       {/* </Row>
       <Row> */}
-      <Col span={8}>
+      <Col span={6}>
           <FormItem label="Locked" name='locked'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 <Option value={false}>false</Option>
@@ -225,7 +225,7 @@ const RenderAdvancedForm=(props)=> {
               </Select>
           </FormItem>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <FormItem label="Vehicle Type" name='vehicleType'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 <Option value="0">Bike</Option>
@@ -236,7 +236,7 @@ const RenderAdvancedForm=(props)=> {
               </Select>
           </FormItem>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <FormItem label="Status" name='statuses'>
               <Select
                 mode="multiple"
@@ -251,7 +251,7 @@ const RenderAdvancedForm=(props)=> {
               </Select>
           </FormItem>
           </Col>
-        <Col span={8}>
+        <Col span={6}>
           <FormItem label="Vehicle Battery" name='vehicleBattery'>
               <Select placeholder="select" style={{ width: "100%" }}>
               <Option value={35}>Low Battery(35%)</Option>
@@ -260,7 +260,7 @@ const RenderAdvancedForm=(props)=> {
             </Select>
           </FormItem>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
             <FormItem label="Idle Days"
               name={['idleQuery','idleDays']}
               rules={
@@ -275,9 +275,18 @@ const RenderAdvancedForm=(props)=> {
              <InputNumber placeholder="Please Input" style={{width:'100%' }} />
         </FormItem>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <FormItem label="Custom Vehicle Battery" name='vehiclePowerCustom'>
               <Input placeholder="power" suffix="%"/>
+          </FormItem>
+        </Col>
+        <Col span={6}>
+          <FormItem label="Provider" name='provider'>
+              <Select placeholder="select" style={{ width: "100%" }}>
+              <Option value={0}>Omni</Option>
+              <Option value={1}>Meige</Option>
+              <Option value={null}>All</Option>
+            </Select>
           </FormItem>
         </Col>
       </Row>
@@ -1139,6 +1148,7 @@ class Vehicle extends PureComponent {
     filterCriteria.vehicleTypes === null ? delete filterCriteria.vehicleTypes : null
     filterCriteria.iotBattery === null ? delete filterCriteria.iotBattery : null
     filterCriteria.connected === null ? delete filterCriteria.connected : null
+    filterCriteria.provider === null ? delete filterCriteria.provider : null
     dispatch({
       type: "vehicles/get",
       payload: filterCriteria

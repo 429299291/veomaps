@@ -28,7 +28,7 @@ import {
 
 import reqwest from "reqwest";
 
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { LoadingOutlined, PlusOutlined,WarningOutlined } from '@ant-design/icons';
 
 
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
@@ -1266,7 +1266,6 @@ class geo extends PureComponent {
       selectedExistedPrimeLocation,
       isDeleteModalVisible
     } = this.state;
-
     const isEditing = isEditingCenter || isEditingFence || isEditingPrimeLocation;
 
 
@@ -1368,8 +1367,10 @@ class geo extends PureComponent {
           okType="danger"
         >
           <p style={{fontSize: "2em"}}>
-          <Icon type="warning"  />
-            {`  Area you sure you want to delete ${selectedExistedFence ? "fence: " + selectedExistedFence.name : "this circle"} ?`}
+          <WarningOutlined style={{color:'#ffb74d'}}/>
+            {`Area you sure 
+             you want to delete \n  ${selectedExistedFence ? `fence:   ${selectedExistedFence.name} \n
+            type:  ${fenceType[selectedExistedFence.fenceType]}` : "this circle"} ?`}
           </p>
         </Modal>
       </PageHeaderWrapper>
