@@ -72,7 +72,6 @@ class StandardTable extends PureComponent {
       selectedRows,
       ...rest
     } = this.props;
-
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: true,
@@ -119,7 +118,7 @@ class StandardTable extends PureComponent {
           )}
         </div>
         <Table
-          rowKey={rowKey || "key"}
+          rowKey={rowKey || "id"}
           rowSelection={selectedRows === undefined ? undefined : rowSelection}
           dataSource={list}
           pagination={paginationProps}
