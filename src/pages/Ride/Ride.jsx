@@ -274,6 +274,11 @@ const lockStatus = ["Unlock", "lock"];
 // const rideType = ["True", "False"];
 const rideType = [{name:"True",value:true},{name:"False",value:false},{name:"All",value:0}];
 const vehicleType = ["Bicycle", "Scooter", "E-Bike", "COSMO"];
+import Bicycle from "../../assets/bike_mark_lock.png";
+import scooter from "../../assets/scooter-pin-lockedbackend.png";
+import EBike from "../../assets/pedal-bike-pinbackend.png";
+import COSMO from "../../assets/cosmo_normal.png";
+const vehicleTypeIcon = [Bicycle, scooter,EBike,COSMO];
 const lockOperationWay = [
   "GPRS",
   "BLUETOOTH",
@@ -629,7 +634,7 @@ class Ride extends PureComponent {
     {
       title: "Vehicle Type",
       dataIndex: "vehicleType",
-      render: val => <span>{vehicleType[val]}</span>
+      render: val => <span>{vehicleType[val]}<img src={vehicleTypeIcon[val]} alt="" style={{width:"15px"}}/></span>
     },
     {
       // title: "Lock Way",
