@@ -814,7 +814,8 @@ class Vehicle extends PureComponent {
       title: "Vehicle Power",
       dataIndex: "vehicleBattery",
       render(val) {
-        return <p>{`${val}%`}</p>;
+        // return <p>{`${val}%`}</p>;
+        return val !== null ? <p>{`${val}%`}</p> : 'null'
       }
     },
     {
@@ -865,7 +866,6 @@ class Vehicle extends PureComponent {
         }
     }
     this.setState({ filterCriteria: params });
-
     dispatch({
       type: "vehicles/get",
       payload: params
@@ -1161,9 +1161,6 @@ class Vehicle extends PureComponent {
     const params = {
       ...filterCriteria
     };
-
-    params.pagination = {};
-
     params.pagination.page = pagination.current - 1;
 
     params.pagination.pageSize = pagination.pageSize;
@@ -1177,7 +1174,6 @@ class Vehicle extends PureComponent {
     //   params.pagination.sort.sortBy = sorter.field;
       
     // }
-
     this.setState({ filterCriteria: params }, 
       () => dispatch({
       type: "vehicles/get",
