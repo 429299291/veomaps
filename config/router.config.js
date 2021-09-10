@@ -21,7 +21,8 @@ export default [
     path: "/",
     component: "../layouts/BasicLayout",
     Routes: ["src/pages/Authorized"],
-    authority: ["area", "admin"],
+    // authority: ["area", "admin","me"],
+    authority: ["me"],
     routes: [
       {
         path: "/dashboard",
