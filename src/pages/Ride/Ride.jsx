@@ -59,10 +59,8 @@ import {
   withGoogleMap,
   withScriptjs
 } from "react-google-maps";
-
-import { getAuthority } from "@/utils/authority";
-
-const authority = getAuthority();
+// import { getAuthority } from "@/utils/authority";
+// const authority = getAuthority();
 const RenderSimpleForm=(props)=> {
   const [form] = Form.useForm()
   const dateFormat = 'YYYY-MM-DDTHH:mm:ss'

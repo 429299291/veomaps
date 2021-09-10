@@ -12,7 +12,7 @@ export async function getRoleDetail(id) {
 }
 
 export async function createRole(role) {
-  return request(`/admins/roles`, {
+  return request(`/api/admins/roles`, {
     method: "POST",
     body: {
       ...role

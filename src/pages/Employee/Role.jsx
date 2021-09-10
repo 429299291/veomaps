@@ -17,7 +17,7 @@ import {
 } from "antd";
 import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
-
+import { PlusOutlined } from '@ant-design/icons';
 import { getAuthority } from "@/utils/authority";
 
 const authority = getAuthority();
@@ -33,7 +33,6 @@ const getValue = obj =>
   Object.keys(obj)
     .map(key => obj[key])
     .join(",");
-
 const CreateForm = (props => {
   const { modalVisible, handleAdd, handleModalVisible, roles } = props;
   const [form] = Form.useForm()
@@ -62,7 +61,7 @@ const CreateForm = (props => {
       onCancel={() => handleModalVisible()}
     >
       <Form form={form}>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="NAME"
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 10 }} label="NAME"
         name='name'
         rules={
           [
@@ -75,6 +74,24 @@ const CreateForm = (props => {
         }
       >
         <Input placeholder="Please Input" />
+      </FormItem>
+      <FormItem label="Level" labelCol={{ span: 5 }} wrapperCol={{ span: 10 }} 
+        name='level'
+        rules={
+          [
+            {
+              required: true,
+              message: "level is required",
+            }
+          ]
+        }
+      >
+        <Select defaultValue="me">
+          <Option value={0}>me</Option>
+          <Option value={1}>dashboard</Option>
+          <Option value={2}>me</Option>
+          <Option value={3}>me</Option>
+        </Select>
       </FormItem>
       </Form>
     </Modal>
@@ -305,15 +322,13 @@ class Role extends PureComponent {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
-              {authority.includes("add.role") && (
                 <Button
-                  icon="plus"
                   type="primary"
                   onClick={() => this.handleModalVisible(true)}
                 >
+                  <PlusOutlined />
                   Add
                 </Button>
-              )}
             </div>
             <StandardTable
               loading={loading}
