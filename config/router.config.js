@@ -22,7 +22,7 @@ export default [
     component: "../layouts/BasicLayout",
     Routes: ["src/pages/Authorized"],
     // authority: ["area", "admin","me"],
-    authority: ["me"],
+    authority: ["admin","me"],
     routes: [
       {
         path: "/dashboard",
