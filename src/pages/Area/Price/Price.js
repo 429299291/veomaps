@@ -43,7 +43,17 @@ class Price extends PureComponent {
     detailModalVisible: false,
     expandForm: false,
     selectedRows: [],
-    filterCriteria: {},
+    filterCriteria: {
+      pagination:{
+        page:0,
+        pageSize:10,
+        sort:{
+          direction:'desc',
+          sortBy:'created'
+        }
+      }
+    },
+    total:0,
     selectedRecord: {}
   };
 
@@ -111,29 +121,45 @@ class Price extends PureComponent {
 
     dispatch({
       type: "price/get",
-      payload: Object.assign({}, filterCriteria, {areaId: selectedAreaId})
+      payload: Object.assign({}, filterCriteria,selectedAreaId ? {areaId: selectedAreaId} : null),
+      onSuccess: (data,total,page) => {
+        this.setState({selectedRows:data})
+        this.setState({total:total})
+        this.setState({
+          filterCriteria:{
+            pagination:{
+              page:page,
+              ...filterCriteria.pagination
+            }
+          }
+        })
+    }
     });
   };
 
   handleGetUpdatedAreas = () => {
     const { dispatch } = this.props;
     const { filterCriteria } = this.state;
-
     dispatch({
       type: "price/getUpdated",
       payload: filterCriteria
     });
   };
 
-  handleStandardTableChange = (filtersArg, sorter) => {
+  handleStandardTableChange = (pagination, sorter) => {
     const { filterCriteria } = this.state;
     const params = {
-      ...filterCriteria
+      ...filterCriteria,
+      pagination:{
+        ...filterCriteria.pagination,
+        page:pagination.current-1,
+        pageSize:pagination.pageSize,
+      }
     };
 
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
+    // if (sorter.field) {
+    //   params.sorter = `${sorter.field}_${sorter.order}`;
+    // }
 
     this.setState({ filterCriteria: params }, () => this.handleGetPrices());
   };
@@ -292,7 +318,9 @@ class Price extends PureComponent {
       createModalVisible,
       updateModalVisible,
       detailModalVisible,
-      selectedRecord
+      selectedRecord,
+      total,
+      filterCriteria
     } = this.state;
 
     const parentMethods = {
@@ -351,7 +379,8 @@ class Price extends PureComponent {
             </FormItem>
           )}
           <FormItem labelCol={{ span: 5 }} 
-            name='chargeAmount'
+            // name='chargeAmount'
+            name='price'
             rules={
               [
                 {required:true,message:'price is required'}
@@ -363,11 +392,11 @@ class Price extends PureComponent {
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
-            label="Charge Unit"
-            name='chargeUnit'
+            label="Frequency"
+            name='frequency'
             rules={
               [
-                {required:true,message:'unit is required'}
+                {required:true,message:'frequency is required'}
               ]
             }
           >
@@ -376,13 +405,13 @@ class Price extends PureComponent {
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
-            name='chargeInitial'
+            name='unlockFee'
             rules={
               [
-                {required:true,message:'Initial charge is required'}
+                {required:true,message:'unlockFee is required'}
               ]
             }
-            label="Initial Charge"
+            label="UnlockFee"
           >
             <InputNumber placeholder="Please Input" />
           </FormItem>
@@ -440,7 +469,7 @@ class Price extends PureComponent {
           onCancel={() => handleModalVisible()}
         >
           <Form form={form} onFinish={()=>{handleUpdate(record.id, form.getFieldsValue(true))}}>
-          {areas && (
+          {/* {areas && (
             <FormItem labelCol={{ span: 5 }} 
               name='areaId'
               rules={
@@ -457,9 +486,10 @@ class Price extends PureComponent {
                   ))}
                 </Select>
             </FormItem>
-          )}
+          )} */}
           <FormItem labelCol={{ span: 5 }} 
-            name='chargeAmount'
+            // name='chargeAmount'
+            name='price'
             rules={
               [
                 {required:true,message:'price is required'}
@@ -471,11 +501,11 @@ class Price extends PureComponent {
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
-            label="Charge Unit"
-            name='chargeUnit'
+            label="Frequency"
+            name='frequency'
             rules={
               [
-                {required:true,message:'unit is required'}
+                {required:true,message:'frequency is required'}
               ]
             }
           >
@@ -484,11 +514,11 @@ class Price extends PureComponent {
           <FormItem
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 15 }}
-            label="Initial Charge"
-            name='chargeInitial'
+            label="UnlockFee"
+            name='unlockFee'
             rules={
               [
-                {required:true,message:'Initial charge is required'}
+                {required:true,message:'unlockFee is required'}
               ]
             }
           >
@@ -532,7 +562,13 @@ class Price extends PureComponent {
             </div>
             <StandardTable
               loading={loading}
-              data={{ list: price.areaPrice, pagination: {} }}
+              data={{ list: price.areaPrice,pagination: {
+                current:filterCriteria.pagination.page +1,
+                total:total,
+                showTotal: ((total) => {
+                  return `count: ${total}`;
+                })
+              }}}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />
