@@ -1148,6 +1148,7 @@ class Vehicle extends PureComponent {
     filterCriteria.iotBattery === null ? delete filterCriteria.iotBattery : null
     filterCriteria.connected === null ? delete filterCriteria.connected : null
     filterCriteria.provider === null ? delete filterCriteria.provider : null
+    delete filterCriteria.vehicleType
     dispatch({
       type: "vehicles/get",
       payload: filterCriteria
