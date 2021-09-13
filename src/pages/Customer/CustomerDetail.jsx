@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment,useState } from "react";
+import React, { PureComponent, Fragment,useState,useEffect } from "react";
 import { connect } from "dva";
 import moment from "moment";
 import {
@@ -520,7 +520,9 @@ const EndRideForm = (props => {
 const UpdateForm = (props => {
   const { handleUpdate, areas, record, customerActiveDays, customerApprovedViolationCount } = props;
   const [form] = Form.useForm()
-  form.setFieldsValue(record)
+  useEffect(()=>{
+    form.setFieldsValue(record)
+  },[record])
   let formOnchange = false
   const okHandle = () => {
     if(formOnchange){
