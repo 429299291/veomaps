@@ -86,11 +86,11 @@ const CreateForm = (props => {
           ]
         }
       >
-        <Select defaultValue="me">
-          <Option value={0}>me</Option>
-          <Option value={1}>dashboard</Option>
-          <Option value={2}>me</Option>
-          <Option value={3}>me</Option>
+        <Select defaultValue={0}>
+          <Option value={0}>0</Option>
+          <Option value={1}>1</Option>
+          <Option value={2}>2</Option>
+          <Option value={3}>3</Option>
         </Select>
       </FormItem>
       </Form>
