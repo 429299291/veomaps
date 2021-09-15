@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment,useState } from "react";
+import React, { PureComponent, Fragment,useState,useEffect } from "react";
 import { connect } from "dva";
 import moment from "moment";
 import {
@@ -228,7 +228,7 @@ const MembershipForm = (props => {
           >
               <Select 
                   placeholder="select" style={{ width: "100%" }} 
-                  defaultValue ={activeMembership ? activeMembership.id : undefined}
+                  // defaultValue ={activeMembership ? activeMembership.id : undefined}
                   onChange={val => setAllowToBuy(!activeMembership && !!val)}    
                   disabled={!!activeMembership}            
               >
@@ -520,7 +520,9 @@ const EndRideForm = (props => {
 const UpdateForm = (props => {
   const { handleUpdate, areas, record, customerActiveDays, customerApprovedViolationCount } = props;
   const [form] = Form.useForm()
-  form.setFieldsValue(record)
+  useEffect(()=>{
+    form.setFieldsValue(record)
+  },[record])
   let formOnchange = false
   const okHandle = () => {
     if(formOnchange){
@@ -1042,6 +1044,10 @@ class CustomerDetail extends PureComponent {
     transactionPagination :{
       page:0,
       pageSize:10,
+      sort:{
+        direction:'desc',
+        sortBy:'created'
+      },
       total:50
     },
     customerRidesCurrent:1,
@@ -1467,8 +1473,6 @@ class CustomerDetail extends PureComponent {
       onFail: callback
     });
   }
-
-
   render() {
     const {
       // customerCoupons,
@@ -1522,7 +1526,11 @@ class CustomerDetail extends PureComponent {
             transactionPagination :{
               page:page.current,
               pageSize:page.pageSize,
-              total:total
+              total:total,
+              sort:{
+                sortBy:'start',
+                direction:'desc'
+              }
             }
           })
         }
@@ -1678,8 +1686,6 @@ class CustomerDetail extends PureComponent {
                   />
               </Card>
             }
-          
-            
           </div>
         )}
       </Modal>

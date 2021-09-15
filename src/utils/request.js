@@ -109,11 +109,11 @@ export default function request(url, options) {
         // window.g_app._store.dispatch({
         //   type: "login/logout"
         // });
-        // localStorage.removeItem(ACCESS_TOKEN);
-        // localStorage.removeItem(TOKEN_CREATE_DATE);
-        // localStorage.removeItem("veoride-authority");
-        // router.push("/user/login");
-        // return;
+        localStorage.removeItem(ACCESS_TOKEN);
+        localStorage.removeItem(TOKEN_CREATE_DATE);
+        localStorage.removeItem("veoride-authority");
+        router.push("/user/login");
+        return;
       }
       // environment should not be used
       if (status === 403) {

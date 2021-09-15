@@ -14,28 +14,29 @@ export default {
   },
 
   effects: {
-    *get({ payload }, { call, put }) {
-      const response = yield call(getAdminPrice, payload);
-
+    *get({ payload,onSuccess }, { call, put }) {
+      let response = yield call(getAdminPrice, payload);
+      const total = response.totalSize
+      const page = response.page
+      response = response.content
       if (Array.isArray(response)) {
         response.map(area => (area.key = area.id));
       }
       var tmp = response;
-      if (payload.areaId) {
-        tmp = response.filter(function(itm) {
-          return itm.areaId == payload.areaId;
-        });
-      }
-
+      // if (payload.areaId) {
+      //   tmp = response.filter(function(itm) {
+      //     return itm.areaId == payload.areaId;
+      //   });
+      // }
+      onSuccess && onSuccess(response,total,page);
       yield put({
         type: "save",
         payload: Array.isArray(tmp) ? tmp : []
       });
     },
     *update({ id, payload, onSuccess, onError }, { call, put }) {
-      payload["updated"] = new Date().toUTCString();
+      console.log(payload);
       const response = yield call(updatePrice, id, payload); // put
-
       if (response) {
         message.success(`Add Success, ID : ${response}`);
         onSuccess && onSuccess();
@@ -56,11 +57,7 @@ export default {
       }
     },
     *add({ payload, onSuccess, onError }, { call, put }) {
-      payload["created"] = new Date().toUTCString();
-      payload["updated"] = new Date().toUTCString();
-
       const response = yield call(createPrice, payload); // delete
-
       if (response) {
         message.success(`Add Success, ID : ${response}`);
         onSuccess && onSuccess();

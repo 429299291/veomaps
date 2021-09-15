@@ -28,7 +28,7 @@ import {
 
 import reqwest from "reqwest";
 
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { LoadingOutlined, PlusOutlined,WarningOutlined,PlusSquareOutlined } from '@ant-design/icons';
 
 
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
@@ -977,6 +977,7 @@ class geo extends PureComponent {
       const uploadButton = (
         <div>
           <Icon type={this.state.loading ? 'loading' : 'plus'} />
+          {this.state.loading ? <LoadingOutlined /> : <PlusSquareOutlined /> }
           <div className="ant-upload-text">Upload</div>
         </div>
       );
@@ -1266,7 +1267,6 @@ class geo extends PureComponent {
       selectedExistedPrimeLocation,
       isDeleteModalVisible
     } = this.state;
-
     const isEditing = isEditingCenter || isEditingFence || isEditingPrimeLocation;
 
 
@@ -1368,8 +1368,14 @@ class geo extends PureComponent {
           okType="danger"
         >
           <p style={{fontSize: "2em"}}>
-          <Icon type="warning"  />
-            {`  Area you sure you want to delete ${selectedExistedFence ? "fence: " + selectedExistedFence.name : "this circle"} ?`}
+          <WarningOutlined style={{color:'#ffb74d'}}/>
+          Area you sure you want to delete
+          <p style={{color:'#f00'}}>
+          {`${selectedExistedFence ? `fence:   ${selectedExistedFence.name} \n
+            with type:  ${fenceType[selectedExistedFence.fenceType]}` : "this circle"} ?`}
+          </p>
+            {/* {`Area you sure you want to delete \n  ${selectedExistedFence ? `fence:   ${selectedExistedFence.name} \n
+            with type:  ${fenceType[selectedExistedFence.fenceType]}` : "this circle"} ?`} */}
           </p>
         </Modal>
       </PageHeaderWrapper>
