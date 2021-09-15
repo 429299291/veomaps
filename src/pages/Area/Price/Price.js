@@ -113,7 +113,7 @@ const CreateForm = (props => {
             {required:true,message:'unlockFee is required'}
           ]
         }
-        label="UnlockFee"
+        label="Unlock Fee"
       >
         <InputNumber placeholder="Please Input" />
       </FormItem>
@@ -129,9 +129,6 @@ const CreateForm = (props => {
                 {type}
               </Option>
             ))}
-            <Option key={-1} value={null}>
-              General
-            </Option>
           </Select>
       </FormItem>
       </Form>
