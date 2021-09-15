@@ -75,7 +75,7 @@ export async function getAreaFeatures() {
 }
 
 export async function getHubImageUploadUrl(hubId) {
-  return request(`/admins/areas/hubs/${hubId}/upload-url`, {
+  return request(`/api/admins/areas/hubs/${hubId}/upload-url`, {
     method: "GET"
   });
 }
