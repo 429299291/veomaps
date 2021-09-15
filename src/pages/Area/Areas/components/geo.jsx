@@ -1368,8 +1368,13 @@ class geo extends PureComponent {
         >
           <p style={{fontSize: "2em"}}>
           <WarningOutlined style={{color:'#ffb74d'}}/>
-            {`Area you sure you want to delete \n  ${selectedExistedFence ? `fence:   ${selectedExistedFence.name} \n
-            type:  ${fenceType[selectedExistedFence.fenceType]}` : "this circle"} ?`}
+          Area you sure you want to delete
+          <p style={{color:'#f00'}}>
+          {`${selectedExistedFence ? `fence:   ${selectedExistedFence.name} \n
+            with type:  ${fenceType[selectedExistedFence.fenceType]}` : "this circle"} ?`}
+          </p>
+            {/* {`Area you sure you want to delete \n  ${selectedExistedFence ? `fence:   ${selectedExistedFence.name} \n
+            with type:  ${fenceType[selectedExistedFence.fenceType]}` : "this circle"} ?`} */}
           </p>
         </Modal>
       </PageHeaderWrapper>

@@ -166,7 +166,7 @@ export const UpdatePasswordForm = (props => {
         {
           title: "Operation",
           render: (text, record) =>(
-          record.role ?  record.role.name === 'Super Admin'? (<span>Super administrator cannot modify</span>) :
+          record.role ?  record.role.name === 'Super Admin1'? (<span>Super administrator cannot modify</span>) :
           (
             //other permissions
               <Fragment>

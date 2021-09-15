@@ -33,7 +33,262 @@ const getValue = obj =>
     .join(",");
 
 const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "COSMO"];
+const CreateForm = (props => {
+  const {
+    modalVisible,
+    handleAdd,
+    handleModalVisible,
+    areas,
+    areaPrice
+  } = props;
+  const [form] = Form.useForm()
+  const okHandle = () => {
+    form.submit()
+    // form.validateFields((err, fieldsValue) => {
+    //   if (err) return;
+    //   form.resetFields();
 
+    //   handleAdd(fieldsValue);
+    // });
+  };
+  return (
+    <Modal
+      destroyOnClose
+      forceRender
+      title="Add"
+      visible={modalVisible}
+      onOk={okHandle}
+      onCancel={() => handleModalVisible()}
+    >
+      <Form form={form} onFinish={()=>{handleAdd(form.getFieldsValue(true))}}>
+      {areas && (
+        <FormItem labelCol={{ span: 5 }} 
+          name='areaId'
+          rules={
+            [
+              {required:true}
+            ]
+          }
+          wrapperCol={{ span: 15 }} label="Area">
+          
+            <Select placeholder="select" style={{ width: "100%" }}>
+              {areas.map(area => (
+                <Option key={area.id} value={area.id}>
+                  {area.name}
+                </Option>
+              ))}
+            </Select>
+        </FormItem>
+      )}
+      <FormItem labelCol={{ span: 5 }} 
+        // name='chargeAmount'
+        name='price'
+        rules={
+          [
+            {required:true,message:'price is required'}
+          ]
+        }
+        wrapperCol={{ span: 15 }} label="Price">
+        <InputNumber placeholder="Please Input" />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Frequency"
+        name='frequency'
+        rules={
+          [
+            {required:true,message:'frequency is required'}
+          ]
+        }
+      >
+       <InputNumber placeholder="Please Input" />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        name='unlockFee'
+        rules={
+          [
+            {required:true,message:'unlockFee is required'}
+          ]
+        }
+        label="UnlockFee"
+      >
+        <InputNumber placeholder="Please Input" />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Vehicle Type"
+        name='vehicleType'
+      >
+          <Select placeholder="select" style={{ width: "100%" }}>
+            {vehicleType.map((type, index) => (
+              <Option key={index} value={index}>
+                {type}
+              </Option>
+            ))}
+            <Option key={-1} value={null}>
+              General
+            </Option>
+          </Select>
+      </FormItem>
+      </Form>
+    </Modal>
+  );
+});
+
+const UpdateForm = (props => {
+  const {
+    areas,
+    areaPrice,
+    modalVisible,
+    handleUpdate,
+    handleModalVisible,
+    record
+  } = props;
+  const [form] = Form.useForm()
+  form.setFieldsValue(record)
+  const okHandle = () => {
+    form.submit()
+    // if (form.isFieldsTouched())
+    //   form.validateFields((err, fieldsValue) => {
+    //     if (err) return;
+    //     form.resetFields();
+    //     handleUpdate(record.id, fieldsValue);
+    //   });
+    // else handleModalVisible();
+  };
+
+  return (
+    <Modal
+      destroyOnClose
+      title="Update"
+      visible={modalVisible}
+      forceRender
+      onOk={okHandle}
+      onCancel={() => handleModalVisible()}
+    >
+      <Form form={form} onFinish={()=>{handleUpdate(record.id, form.getFieldsValue(true))}}>
+      {/* {areas && (
+        <FormItem labelCol={{ span: 5 }} 
+          name='areaId'
+          rules={
+            [
+              {required:true}
+            ]
+          }
+          wrapperCol={{ span: 15 }} label="Area">
+            <Select placeholder="select" style={{ width: "100%" }}>
+              {areas.map(area => (
+                <Option key={area.id} value={area.id}>
+                  {area.name}
+                </Option>
+              ))}
+            </Select>
+        </FormItem>
+      )} */}
+      <FormItem labelCol={{ span: 5 }} 
+        // name='chargeAmount'
+        name='price'
+        rules={
+          [
+            {required:true,message:'price is required'}
+          ]
+        }
+        wrapperCol={{ span: 15 }} label="Price">
+        <InputNumber placeholder="Please Input" />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Frequency"
+        name='frequency'
+        rules={
+          [
+            {required:true,message:'frequency is required'}
+          ]
+        }
+      >
+        <InputNumber placeholder="Please Input" />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="UnlockFee"
+        name='unlockFee'
+        rules={
+          [
+            {required:true,message:'unlockFee is required'}
+          ]
+        }
+      >
+        <InputNumber placeholder="Please Input" />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Vehicle Type"
+        name='vehicleType'
+      >
+          <Select placeholder="select" style={{ width: "100%" }}>
+            {vehicleType.map((type, index) => (
+              <Option key={index} value={index}>
+                {type}
+              </Option>
+            ))}
+            <Option key={-1} value={null}>
+              General
+            </Option>
+          </Select>
+      </FormItem>
+      </Form>
+    </Modal>
+  );
+});
+const RenderSimpleForm = (props)=> {
+  const {
+    form: { getFieldDecorator }
+  } = props;
+
+  const areas = this.props.areas.data;
+  return (
+    <Form onSubmit={this.handleSearch} layout="inline">
+      <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+        {areas && (
+          <Col md={8} sm={24}>
+            <FormItem
+              labelCol={{ span: 5 }}
+              wrapperCol={{ span: 15 }}
+              label="Area"
+            >
+              {getFieldDecorator("areaId")(
+                <Select placeholder="select" style={{ width: "100%" }}>
+                  {areas.map(area => (
+                    <Option key={area.id} value={area.id}>
+                      {area.name}
+                    </Option>
+                  ))}
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+        )}
+        <Col md={8} sm={24}>
+          <span className={styles.submitButtons}>
+            <Button type="primary" htmlType="submit">
+              Search
+            </Button>
+            <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+              Reset
+            </Button>
+          </span>
+        </Col>
+      </Row>
+    </Form>
+  );
+}
 /* eslint react/no-multi-comp:0 */
 class Price extends PureComponent {
   state = {
@@ -64,12 +319,12 @@ class Price extends PureComponent {
       render: areaId => <span>{this.props.areas.areaNames[areaId]}</span>
     },
     {
-      title: "Charge Amount",
-      dataIndex: "chargeAmount"
+      title: "Price",
+      dataIndex: "price"
     },
     {
-      title: "Charge Unit",
-      dataIndex: "chargeUnit"
+      title: "Frequency",
+      dataIndex: "frequency"
     },
     {
       title: "Vehicle Type",
@@ -77,8 +332,8 @@ class Price extends PureComponent {
       render: data => <span>{vehicleType[data]}</span>
     },
     {
-      title: "Initial Charge",
-      dataIndex: "chargeInitial"
+      title: "Unlock Fee",
+      dataIndex: "unlockFee"
     },
     {
       title: "Operation",
@@ -115,10 +370,11 @@ class Price extends PureComponent {
     this.handleGetPrices();
   }
 
-  handleGetPrices = () => {
+  handleGetPrices = (vehicleType) => {
     const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
-
+    vehicleType == null ? delete filterCriteria.vehicleType : filterCriteria.vehicleType = vehicleType
+    vehicleType !== null && vehicleType ? filterCriteria.pagination.page = 0 : null
     dispatch({
       type: "price/get",
       payload: Object.assign({}, filterCriteria,selectedAreaId ? {areaId: selectedAreaId} : null),
@@ -243,59 +499,17 @@ class Price extends PureComponent {
 
     this.handleUpdateModalVisible();
   };
-
+  vehicleTypeChange=(value)=>{
+    this.handleGetPrices(value)
+  }
   handleDelete = id => {
     const { dispatch } = this.props;
-
     dispatch({
       type: "price/remove",
       id: id,
       onSuccess: this.handleGetPrices
     });
   };
-
-  renderSimpleForm() {
-    const {
-      form: { getFieldDecorator }
-    } = this.props;
-
-    const areas = this.props.areas.data;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          {areas && (
-            <Col md={8} sm={24}>
-              <FormItem
-                labelCol={{ span: 5 }}
-                wrapperCol={{ span: 15 }}
-                label="Area"
-              >
-                {getFieldDecorator("areaId")(
-                  <Select placeholder="select" style={{ width: "100%" }}>
-                    {areas.map(area => (
-                      <Option key={area.id} value={area.id}>
-                        {area.name}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-          )}
-          <Col md={8} sm={24}>
-            <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
-                Search
-              </Button>
-              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-                Reset
-              </Button>
-            </span>
-          </Col>
-        </Row>
-      </Form>
-    );
-  }
 
   filterAreaPrice(prices, areas) {
 
@@ -331,228 +545,21 @@ class Price extends PureComponent {
       handleModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate
     };
-    const CreateForm = (props => {
-      const {
-        modalVisible,
-        handleAdd,
-        handleModalVisible,
-        areas,
-        areaPrice
-      } = props;
-      const [form] = Form.useForm()
-      const okHandle = () => {
-        form.submit()
-        // form.validateFields((err, fieldsValue) => {
-        //   if (err) return;
-        //   form.resetFields();
-    
-        //   handleAdd(fieldsValue);
-        // });
-      };
-      return (
-        <Modal
-          destroyOnClose
-          forceRender
-          title="Add"
-          visible={modalVisible}
-          onOk={okHandle}
-          onCancel={() => handleModalVisible()}
-        >
-          <Form form={form} onFinish={()=>{handleAdd(form.getFieldsValue(true))}}>
-          {areas && (
-            <FormItem labelCol={{ span: 5 }} 
-              name='areaId'
-              rules={
-                [
-                  {required:true}
-                ]
-              }
-              wrapperCol={{ span: 15 }} label="Area">
-              
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  {areas.map(area => (
-                    <Option key={area.id} value={area.id}>
-                      {area.name}
-                    </Option>
-                  ))}
-                </Select>
-            </FormItem>
-          )}
-          <FormItem labelCol={{ span: 5 }} 
-            // name='chargeAmount'
-            name='price'
-            rules={
-              [
-                {required:true,message:'price is required'}
-              ]
-            }
-            wrapperCol={{ span: 15 }} label="Price">
-            <InputNumber placeholder="Please Input" />
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Frequency"
-            name='frequency'
-            rules={
-              [
-                {required:true,message:'frequency is required'}
-              ]
-            }
-          >
-           <InputNumber placeholder="Please Input" />
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            name='unlockFee'
-            rules={
-              [
-                {required:true,message:'unlockFee is required'}
-              ]
-            }
-            label="UnlockFee"
-          >
-            <InputNumber placeholder="Please Input" />
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Vehicle Type"
-            name='vehicleType'
-          >
-              <Select placeholder="select" style={{ width: "100%" }}>
-                {vehicleType.map((type, index) => (
-                  <Option key={index} value={index}>
-                    {type}
-                  </Option>
-                ))}
-                <Option key={-1} value={null}>
-                  General
-                </Option>
-              </Select>
-          </FormItem>
-          </Form>
-        </Modal>
-      );
-    });
-    
-    const UpdateForm = (props => {
-      const {
-        areas,
-        areaPrice,
-        modalVisible,
-        handleUpdate,
-        handleModalVisible,
-        record
-      } = props;
-      const [form] = Form.useForm()
-      form.setFieldsValue(record)
-      const okHandle = () => {
-        form.submit()
-        // if (form.isFieldsTouched())
-        //   form.validateFields((err, fieldsValue) => {
-        //     if (err) return;
-        //     form.resetFields();
-        //     handleUpdate(record.id, fieldsValue);
-        //   });
-        // else handleModalVisible();
-      };
-    
-      return (
-        <Modal
-          destroyOnClose
-          title="Update"
-          visible={modalVisible}
-          forceRender
-          onOk={okHandle}
-          onCancel={() => handleModalVisible()}
-        >
-          <Form form={form} onFinish={()=>{handleUpdate(record.id, form.getFieldsValue(true))}}>
-          {/* {areas && (
-            <FormItem labelCol={{ span: 5 }} 
-              name='areaId'
-              rules={
-                [
-                  {required:true}
-                ]
-              }
-              wrapperCol={{ span: 15 }} label="Area">
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  {areas.map(area => (
-                    <Option key={area.id} value={area.id}>
-                      {area.name}
-                    </Option>
-                  ))}
-                </Select>
-            </FormItem>
-          )} */}
-          <FormItem labelCol={{ span: 5 }} 
-            // name='chargeAmount'
-            name='price'
-            rules={
-              [
-                {required:true,message:'price is required'}
-              ]
-            }
-            wrapperCol={{ span: 15 }} label="Price">
-            <InputNumber placeholder="Please Input" />
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Frequency"
-            name='frequency'
-            rules={
-              [
-                {required:true,message:'frequency is required'}
-              ]
-            }
-          >
-            <InputNumber placeholder="Please Input" />
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="UnlockFee"
-            name='unlockFee'
-            rules={
-              [
-                {required:true,message:'unlockFee is required'}
-              ]
-            }
-          >
-            <InputNumber placeholder="Please Input" />
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Vehicle Type"
-            name='vehicleType'
-          >
-              <Select placeholder="select" style={{ width: "100%" }}>
-                {vehicleType.map((type, index) => (
-                  <Option key={index} value={index}>
-                    {type}
-                  </Option>
-                ))}
-                <Option key={-1} value={null}>
-                  General
-                </Option>
-              </Select>
-          </FormItem>
-          </Form>
-        </Modal>
-      );
-    });
     return (
       <PageHeaderWrapper title="Price List">
         <Card bordered={false}>
           <div className={styles.tableList}>
-            {/*<div className={styles.tableListForm}>*/}
-              {/*{this.renderSimpleForm()}*/}
-            {/*</div>*/}
+            <div className={styles.tableListForm}>
+              {/* <RenderSimpleForm/> */}
+            </div>
             <div className={styles.tableListOperator}>
+            <Select defaultValue={null} style={{ width: 120,margin:'0 30px 0 0'}} onChange={this.vehicleTypeChange}>
+                <Option value={0}>Bicycle</Option>
+                <Option value={1}>Scooter</Option>
+                <Option value={2}>E-Vehicle</Option>
+                <Option value={3}>COSMO</Option>
+                <Option value={null}>All</Option>
+              </Select>
               <Button
                 type="primary"
                 onClick={() => this.handleCreateModalVisible(true)}
