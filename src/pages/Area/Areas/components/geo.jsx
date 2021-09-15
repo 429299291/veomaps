@@ -28,7 +28,7 @@ import {
 
 import reqwest from "reqwest";
 
-import { LoadingOutlined, PlusOutlined,WarningOutlined } from '@ant-design/icons';
+import { LoadingOutlined, PlusOutlined,WarningOutlined,PlusSquareOutlined } from '@ant-design/icons';
 
 
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
@@ -977,6 +977,7 @@ class geo extends PureComponent {
       const uploadButton = (
         <div>
           <Icon type={this.state.loading ? 'loading' : 'plus'} />
+          {this.state.loading ? <LoadingOutlined /> : <PlusSquareOutlined /> }
           <div className="ant-upload-text">Upload</div>
         </div>
       );
