@@ -20,6 +20,7 @@ import {
   Space ,
   Tag,
   Divider,
+  InputNumber,
   message,
   Popconfirm
 } from "antd";
@@ -597,13 +598,11 @@ export const UpdatePasswordForm = (props => {
                             {
                             required: true,
                             message: "The phone number must be ten digits",
-                            min: 10,
-                            max:13
                             }
                         ]
                     }
                 >
-                    <Input placeholder="Please Input" />
+                    <InputNumber placeholder="Please Input" min={1000000000} max={9999999999} style={{width:'100%'}} />
                 </FormItem>
                 <FormItem
                     labelCol={{ span: 7 }}

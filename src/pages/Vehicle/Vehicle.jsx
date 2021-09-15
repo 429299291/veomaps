@@ -172,7 +172,6 @@ const RenderSimpleForm=(props)=> {
 }
 const RenderAdvancedForm=(props)=> {
   const [form] = Form.useForm()
-  console.log(props);
   // form.setFieldsValue()
   // const { areas }= this.props;
 
@@ -189,12 +188,12 @@ const RenderAdvancedForm=(props)=> {
   return (
     <Form  layout="inline" form= {form}>
       <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-        <Col span={8}>
+        <Col span={6}>
           <FormItem label="Keywords" name='numberOrImei'>
               <Input className="number_or_imei_input"  placeholder="number or imei" />
           </FormItem>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <FormItem label="IOT Battery" name='iotBattery'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 <Option value={35}>Low Battery(35%)</Option>
@@ -204,7 +203,7 @@ const RenderAdvancedForm=(props)=> {
           </FormItem>
         </Col>
 
-        <Col span={8}>
+        <Col span={6}>
           <FormItem label="Connected" name='connected'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 <Option value={false}>false</Option>
@@ -216,7 +215,7 @@ const RenderAdvancedForm=(props)=> {
         
       {/* </Row>
       <Row> */}
-      <Col span={8}>
+      <Col span={6}>
           <FormItem label="Locked" name='locked'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 <Option value={false}>false</Option>
@@ -225,7 +224,7 @@ const RenderAdvancedForm=(props)=> {
               </Select>
           </FormItem>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <FormItem label="Vehicle Type" name='vehicleType'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 <Option value="0">Bike</Option>
@@ -236,7 +235,7 @@ const RenderAdvancedForm=(props)=> {
               </Select>
           </FormItem>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <FormItem label="Status" name='statuses'>
               <Select
                 mode="multiple"
@@ -251,7 +250,7 @@ const RenderAdvancedForm=(props)=> {
               </Select>
           </FormItem>
           </Col>
-        <Col span={8}>
+        <Col span={6}>
           <FormItem label="Vehicle Battery" name='vehicleBattery'>
               <Select placeholder="select" style={{ width: "100%" }}>
               <Option value={35}>Low Battery(35%)</Option>
@@ -260,7 +259,7 @@ const RenderAdvancedForm=(props)=> {
             </Select>
           </FormItem>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
             <FormItem label="Idle Days"
               name={['idleQuery','idleDays']}
               rules={
@@ -275,9 +274,18 @@ const RenderAdvancedForm=(props)=> {
              <InputNumber placeholder="Please Input" style={{width:'100%' }} />
         </FormItem>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <FormItem label="Custom Vehicle Battery" name='vehiclePowerCustom'>
               <Input placeholder="power" suffix="%"/>
+          </FormItem>
+        </Col>
+        <Col span={6}>
+          <FormItem label="Provider" name='provider'>
+              <Select placeholder="select" style={{ width: "100%" }}>
+              <Option value={0}>Omni</Option>
+              <Option value={1}>Meige</Option>
+              <Option value={null}>All</Option>
+            </Select>
           </FormItem>
         </Col>
       </Row>
@@ -806,7 +814,8 @@ class Vehicle extends PureComponent {
       title: "Vehicle Power",
       dataIndex: "vehicleBattery",
       render(val) {
-        return <p>{`${val}%`}</p>;
+        // return <p>{`${val}%`}</p>;
+        return val !== null ? <p>{`${val}%`}</p> : 'null'
       }
     },
     {
@@ -857,7 +866,6 @@ class Vehicle extends PureComponent {
         }
     }
     this.setState({ filterCriteria: params });
-
     dispatch({
       type: "vehicles/get",
       payload: params
@@ -1139,6 +1147,8 @@ class Vehicle extends PureComponent {
     filterCriteria.vehicleTypes === null ? delete filterCriteria.vehicleTypes : null
     filterCriteria.iotBattery === null ? delete filterCriteria.iotBattery : null
     filterCriteria.connected === null ? delete filterCriteria.connected : null
+    filterCriteria.provider === null ? delete filterCriteria.provider : null
+    delete filterCriteria.vehicleType
     dispatch({
       type: "vehicles/get",
       payload: filterCriteria
@@ -1152,9 +1162,6 @@ class Vehicle extends PureComponent {
     const params = {
       ...filterCriteria
     };
-
-    params.pagination = {};
-
     params.pagination.page = pagination.current - 1;
 
     params.pagination.pageSize = pagination.pageSize;
@@ -1168,7 +1175,6 @@ class Vehicle extends PureComponent {
     //   params.pagination.sort.sortBy = sorter.field;
       
     // }
-
     this.setState({ filterCriteria: params }, 
       () => dispatch({
       type: "vehicles/get",
@@ -1900,7 +1906,7 @@ handleShowingVehicles = val => {
           title="Purpose for Unlock"
         >
           {
-            [5,6,7].map(vehicleStatus => <Row style={{textAlign: "center", marginTop: "2em"}}>
+            [5,6,7].map(vehicleStatus => <Row key={vehicleStatus} style={{textAlign: "center", marginTop: "2em"}}>
             <Button 
               style={{width: "80vw"}}
               type="primary"

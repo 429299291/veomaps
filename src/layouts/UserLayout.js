@@ -7,6 +7,7 @@ import GlobalFooter from "@/components/GlobalFooter";
 import SelectLang from "@/components/SelectLang";
 import styles from "./UserLayout.less";
 import logo from "../assets/veo_black.png";
+import {CopyrightOutlined} from '@ant-design/icons';
 
 const links = [
   {
@@ -28,7 +29,7 @@ const links = [
 
 const copyright = (
   <Fragment>
-    Copyright <Icon type="copyright" /> brought to you by VeoRide 2018
+    Copyright <CopyrightOutlined/> brought to you by VeoRide 2018
   </Fragment>
 );
 

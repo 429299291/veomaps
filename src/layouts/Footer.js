@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import { Layout, Icon } from "antd";
 import GlobalFooter from "@/components/GlobalFooter";
+import {CopyrightOutlined} from '@ant-design/icons';
 
 const { Footer } = Layout;
 const FooterView = () => (
@@ -16,8 +17,8 @@ const FooterView = () => (
       ]}
       copyright={
         <Fragment>
-          Copyright <Icon type="copyright" />
-          brought to you by VeoRide
+          Copyright <CopyrightOutlined />
+          brought to you by VeoRide 
         </Fragment>
       }
     />

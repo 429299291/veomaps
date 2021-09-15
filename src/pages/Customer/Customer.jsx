@@ -76,6 +76,17 @@ const queryStatus = ["NORMAL","FROZEN",'ALL'];
 const authority = getAuthority();
 const RenderSimpleForm=(props)=> {
   const [form] = Form.useForm()
+  // props.filterCriteria.timeRange ? form.setFieldsValue({
+  //   created: [moment(props.filterCriteria.timeRange.start, 'YYYY-MM-DD HH:mm:ss'), moment(props.filterCriteria.timeRange.end, 'YYYY-MM-DD HH:mm:ss')]
+  // }) : null
+  //error
+  if(props.filterCriteria.timeRange){
+    const start = props.filterCriteria.timeRange.start
+    const end = props.filterCriteria.timeRange.end
+    form.setFieldsValue({
+      created: [moment(start, 'YYYY-MM-DD HH:mm:ss'), moment(end, 'YYYY-MM-DD HH:mm:ss')]
+    })
+  }
   const handleFormReset = ()=>{
     props.handleFormReset()
     form.resetFields()
@@ -309,7 +320,12 @@ class Customer extends PureComponent {
     customerCoupons: null,
     filterCriteria: { 
         pagination:{
-          page: 1, pageSize: 10
+          page: 1, 
+          pageSize: 10,
+          sort:{
+            sortBy:'created',
+            direction:'desc'
+          }
       } 
     },
     selectedRecord: {},
@@ -693,7 +709,7 @@ class Customer extends PureComponent {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>
-              <RenderSimpleForm handleGenTempCodeModalVisible={this.handleGenTempCodeModalVisible} customerTotal={this.props.customers.total} handleSearch={this.handleSearch} handleFormReset={this.handleFormReset} />
+              <RenderSimpleForm handleGenTempCodeModalVisible={this.handleGenTempCodeModalVisible} customerTotal={this.props.customers.total} handleSearch={this.handleSearch} handleFormReset={this.handleFormReset} filterCriteria={this.state.filterCriteria}/>
             </div>
             <StandardTable
               loading={loading}

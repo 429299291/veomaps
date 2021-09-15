@@ -9,6 +9,8 @@ iframe: 400
 ````jsx
 import GlobalFooter from 'ant-design-pro/lib/GlobalFooter';
 import { Icon } from 'antd';
+import {GithubOutlined,CopyrightOutlined} from '@ant-design/icons';
+
 
 const links = [{
   key: '帮助',
@@ -16,7 +18,7 @@ const links = [{
   href: '',
 }, {
   key: 'github',
-  title: <Icon type="github" />,
+  title: <GithubOutlined />,
   href: 'https://github.com/ant-design/ant-design-pro',
   blankTarget: true,
 }, {
@@ -26,7 +28,7 @@ const links = [{
   blankTarget: true,
 }];
 
-const copyright = <div>Copyright <Icon type="copyright" /> 2017 蚂蚁金服体验技术部出品</div>;
+const copyright = <div>Copyright <CopyrightOutlined /> 2017 蚂蚁金服体验技术部出品</div>;
 
 ReactDOM.render(
   <div style={{ background: '#f5f5f5', overflow: 'hidden' }}>

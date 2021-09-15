@@ -14,8 +14,8 @@ import {
   Select,
   Divider,
   Popconfirm,
-  DatePicker
-
+  DatePicker,
+  InputNumber
 } from "antd";
 const { Search,TextAdmin } = Input;
 
@@ -162,12 +162,11 @@ const PhoneRegisterForm = (props => {
             {
               required: true,
               message: "Phone can't be empty",
-              min: 1
             }
           ]
         }
       >
-        <Input placeholder="Phone Number" />
+        <InputNumber placeholder="Phone Number" min={1000000000} max={9999999999} style={{width:'100%'}} />
       </FormItem>
       <FormItem labelCol={{ span: 7 }} wrapperCol={{ span: 15 }} label="Area"
         name='areaId'
