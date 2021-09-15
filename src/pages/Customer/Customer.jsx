@@ -320,7 +320,12 @@ class Customer extends PureComponent {
     customerCoupons: null,
     filterCriteria: { 
         pagination:{
-          page: 1, pageSize: 10
+          page: 1, 
+          pageSize: 10,
+          sort:{
+            sortBy:'created',
+            direction:'desc'
+          }
       } 
     },
     selectedRecord: {},

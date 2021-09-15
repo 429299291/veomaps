@@ -228,7 +228,7 @@ const MembershipForm = (props => {
           >
               <Select 
                   placeholder="select" style={{ width: "100%" }} 
-                  defaultValue ={activeMembership ? activeMembership.id : undefined}
+                  // defaultValue ={activeMembership ? activeMembership.id : undefined}
                   onChange={val => setAllowToBuy(!activeMembership && !!val)}    
                   disabled={!!activeMembership}            
               >
@@ -1044,6 +1044,10 @@ class CustomerDetail extends PureComponent {
     transactionPagination :{
       page:0,
       pageSize:10,
+      sort:{
+        direction:'desc',
+        sortBy:'created'
+      },
       total:50
     },
     customerRidesCurrent:1,
@@ -1469,8 +1473,6 @@ class CustomerDetail extends PureComponent {
       onFail: callback
     });
   }
-
-
   render() {
     const {
       // customerCoupons,
@@ -1524,7 +1526,11 @@ class CustomerDetail extends PureComponent {
             transactionPagination :{
               page:page.current,
               pageSize:page.pageSize,
-              total:total
+              total:total,
+              sort:{
+                sortBy:'start',
+                direction:'desc'
+              }
             }
           })
         }
@@ -1680,8 +1686,6 @@ class CustomerDetail extends PureComponent {
                   />
               </Card>
             }
-          
-            
           </div>
         )}
       </Modal>

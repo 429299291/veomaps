@@ -105,7 +105,7 @@ export async function updateFence(fenceId, area) {
 }
 
 export async function deleteFence(id) {
-  return request(`/admins/geo/fences/${id}`, {
+  return request(`/api/admins/areas/fences/${id}`, {
     method: "DELETE"
   });
 }
