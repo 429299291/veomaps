@@ -61,7 +61,7 @@ const CreateForm = (props => {
       onCancel={() => handleModalVisible()}
     >
       <Form form={form} onFinish={()=>{handleAdd(form.getFieldsValue(true))}}>
-      {areas && (
+      {/* {areas && (
         <FormItem labelCol={{ span: 5 }} 
           name='areaId'
           rules={
@@ -79,7 +79,7 @@ const CreateForm = (props => {
               ))}
             </Select>
         </FormItem>
-      )}
+      )} */}
       <FormItem labelCol={{ span: 5 }} 
         // name='chargeAmount'
         name='price'
@@ -475,7 +475,8 @@ class Price extends PureComponent {
   };
 
   handleAdd = fields => {
-    const { dispatch } = this.props;
+    const { dispatch,selectedAreaId } = this.props;
+    fields.areaId = selectedAreaId
     dispatch({
       type: "price/add",
       payload: fields,
@@ -523,7 +524,7 @@ class Price extends PureComponent {
   }
 
   render() {
-    const { areas, areaPrice, loading, price } = this.props;
+    const { areas, areaPrice, loading, price,selectedAreaId } = this.props;
     const {
       modalVisible,
       createModalVisible,
@@ -557,12 +558,15 @@ class Price extends PureComponent {
                 <Option value={3}>COSMO</Option>
                 <Option value={null}>All</Option>
               </Select>
-              <Button
+              {
+                selectedAreaId && 
+                <Button
                 type="primary"
                 onClick={() => this.handleCreateModalVisible(true)}
               >
                 Add
               </Button>
+              }
             </div>
             <StandardTable
               loading={loading}
