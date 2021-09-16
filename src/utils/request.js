@@ -104,7 +104,6 @@ export default function request(url, options) {
     )
     .catch(e => {
       const status = e.name;
-
       if (status === 401) {
         // window.g_app._store.dispatch({
         //   type: "login/logout"
