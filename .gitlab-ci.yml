@@ -41,6 +41,8 @@ services-build:
 
 services-deploy:
   stage: deploy
+  before_script:
+    - apk update && apk add bash
   script:
     - /bin/bash ./k8s/deploy.sh
   only:
