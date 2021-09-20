@@ -39,12 +39,10 @@ services-build:
     - develop
     - master
 
-
-
 services-deploy:
   stage: deploy
   script:
-     - /bin/bash ./k8s/deploy.sh
+    - /bin/bash ./k8s/deploy.sh
   only:
     refs:
     - develop
