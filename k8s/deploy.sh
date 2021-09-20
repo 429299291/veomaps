@@ -11,9 +11,9 @@ set -e
 
 if [ "$CI_COMMIT_REF_NAME" == "master" ];
 then
-    KUBE_NAMESPACE="prod"
+  KUBE_NAMESPACE="prod"
 else
-    KUBE_NAMESPACE="dev"
+  KUBE_NAMESPACE="dev"
 fi
 
 export KUBE_NAMESPACE="$KUBE_NAMESPACE"
