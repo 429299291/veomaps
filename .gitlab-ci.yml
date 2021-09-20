@@ -43,9 +43,6 @@ services-build:
 
 services-deploy:
   stage: deploy
-  cache:
-    paths:
-      - /usr/local/bin/kubectl
   script:
      - /bin/bash ./k8s/deploy.sh
   only:
