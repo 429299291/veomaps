@@ -95,6 +95,7 @@ export default {
       }
     },
     *getadminsdata({ payload, saveState,savepagenations }, { put, call }) {
+      console.log(payload);
       const response = yield call(getAdmins, payload);
       yield put({
         type: "newSave",
