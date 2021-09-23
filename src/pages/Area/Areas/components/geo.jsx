@@ -502,7 +502,8 @@ class geo extends PureComponent {
     isEditingFenceModalVisible: false,
     selectedExistedFence: null,
     isDeleteModalVisible: false,
-    isParkingCheckStart: false
+    isParkingCheckStart: false,
+    uploadImgUrl:''
   };
 
   componentDidMount() {
@@ -816,6 +817,15 @@ class geo extends PureComponent {
   }
 
   handleChange = info => {
+    const { dispatch } = this.props;
+    const {selectedExistedPrimeLocation} = this.state
+    dispatch({
+      type: "geo/uploadImg",
+      hubsId: selectedExistedPrimeLocation.id,
+      onSuccess:url => {
+        this.setState({uploadImgUrl:url})
+      }
+    });
     if (info.file.status === 'uploading') {
       this.setState({ hubUploadLoading: true });
       return;
@@ -1132,7 +1142,7 @@ class geo extends PureComponent {
                   name="avatar"
                   listType="picture-card"
                   className="avatar-uploader"
-                  // action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                  // action=""
                   showUploadList={false}                          
                   beforeUpload={this.beforeUpload}
                   onChange={this.handleChange}

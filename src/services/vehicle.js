@@ -174,11 +174,11 @@ export async function unlockVehicle(id) {
   });
 }
 
-export async function getRef(id) {
-  return request(`/admins/vehicles/${id}/location/reference`, {
-    method: "GET"
-  });
-}
+// export async function getRef(id) {
+//   return request(`/admins/vehicles/${id}/location/reference`, {
+//     method: "GET"
+//   });
+// }
 
 export async function lockVehicle(id) {
   return request(`/api/admins/vehicles/${id}/lock`, {

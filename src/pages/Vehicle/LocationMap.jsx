@@ -335,7 +335,7 @@ const MapComponent = compose(
 
         this.handleGetVehicleDetail(record.id);
         this.getAreaGeoInfo(record.areaId);
-        this.getRef(record.id);
+        // this.getRef(record.id);
 
       };
 
@@ -355,17 +355,17 @@ const MapComponent = compose(
 
       };
 
-      getRef = vehicleId => {
-        const { dispatch, geo } = this.props;
+      // getRef = vehicleId => {
+      //   const { dispatch, geo } = this.props;
     
-        dispatch({
-            type: "vehicles/getRef",
-            id: vehicleId,
-            onSuccess: response => this.setState({vehicleRef: response})
-         });
+      //   dispatch({
+      //       type: "vehicles/getRef",
+      //       id: vehicleId,
+      //       onSuccess: response => this.setState({vehicleRef: response})
+      //    });
         
 
-      };
+      // };
 
       shouldComponentUpdate(nextProps, nextState) {
 
