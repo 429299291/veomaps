@@ -13,7 +13,8 @@ import {
   deletePrimeLocation,
   updateHub,
   handleCheckPrimeLocation,
-  getGeoObject
+  getGeoObject,
+  uploadImg
 } from "@/services/geo";
 
 import {parkingViolationType} from "@/constant";
@@ -170,6 +171,11 @@ export default {
         type: "saveCenter",
         payload: response
       });
+    },
+    *uploadImg({ hubsId,onSuccess }, { call, put }) {
+      // api for handler agin
+      let response = yield call(uploadImg, hubsId);
+      response ? onSuccess(response) : null;
     },
     *fetchGeoObject({ areaId, lat, lng, onNewGeoObject }, { call, put }) {
       const response = yield call(getGeoObject, areaId, lat, lng);

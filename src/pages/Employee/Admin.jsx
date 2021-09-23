@@ -134,7 +134,7 @@ export const UpdatePasswordForm = (props => {
         search:'',
         activated:null,
         searchValue:{
-          activated:0,
+          activated:true,
           pagination: {
             page:0,
             pageSize: 10,
@@ -322,7 +322,7 @@ export const UpdatePasswordForm = (props => {
     
       renderSimpleForm() {
         return (
-          <Form initialValues={{ status: 0 }}>
+          <Form initialValues={{ isActivated: true }}>
             <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
               <Col span={6}>
                 <Search
@@ -332,11 +332,11 @@ export const UpdatePasswordForm = (props => {
                 />
               </Col>
               <Col span={4}>
-              <FormItem label="" name='status'>
+              <FormItem label="" name='isActivated'>
                 <Select onChange = {this.activatedChange}>
-                    <Select.Option value={0}>activated</Select.Option>
-                    <Select.Option value={1}>deactivated</Select.Option>
-                    <Select.Option value={2}>all</Select.Option>
+                    <Select.Option value={true}>activated</Select.Option>
+                    <Select.Option value={false}>deactivated</Select.Option>
+                    <Select.Option value={null}>all</Select.Option>
                 </Select>
               </FormItem>
               </Col>

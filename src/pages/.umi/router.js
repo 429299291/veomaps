@@ -64,31 +64,6 @@ let routes = [
         ]
       },
       {
-        "path": "/shop-management",
-        "icon": "shop",
-        "name": "Shop Management",
-        "authority": [
-          "shop"
-        ],
-        "routes": [
-          {
-            "path": "/shop-management/order",
-            "name": "Order",
-            "component": dynamic({ loader: () => import('../Shop/Order'), loading: require('/Users/zhudongdong/Desktop/home/src/components/PageLoading/index').default }),
-            "exact": true
-          },
-          {
-            "path": "/shop-management/listing",
-            "name": "Listing",
-            "component": dynamic({ loader: () => import('../Shop/Listing'), loading: require('/Users/zhudongdong/Desktop/home/src/components/PageLoading/index').default }),
-            "exact": true
-          },
-          {
-            "component": () => React.createElement(require('/Users/zhudongdong/Desktop/home/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })
-          }
-        ]
-      },
-      {
         "path": "/ride/",
         "name": "Riding Management",
         "component": dynamic({ loader: () => import('../Ride/Ride'), loading: require('/Users/zhudongdong/Desktop/home/src/components/PageLoading/index').default }),
@@ -213,12 +188,6 @@ let routes = [
             "exact": true
           },
           {
-            "path": "/employee-management/privilege",
-            "name": "Privilege Management",
-            "component": dynamic({ loader: () => import('../Employee/Privilege'), loading: require('/Users/zhudongdong/Desktop/home/src/components/PageLoading/index').default }),
-            "exact": true
-          },
-          {
             "path": "/employee-management/admin",
             "name": "Admin Management",
             "component": dynamic({ loader: () => import('../Employee/Admin'), loading: require('/Users/zhudongdong/Desktop/home/src/components/PageLoading/index').default }),
@@ -249,15 +218,6 @@ let routes = [
             "component": dynamic({ loader: () => import('../Technician/Violation'), loading: require('/Users/zhudongdong/Desktop/home/src/components/PageLoading/index').default }),
             "authority": [
               "technician.violation"
-            ],
-            "exact": true
-          },
-          {
-            "path": "/technician-management/techmetrics",
-            "name": "Tech Metrics",
-            "component": dynamic({ loader: () => import('../Technician/TechMetrics'), loading: require('/Users/zhudongdong/Desktop/home/src/components/PageLoading/index').default }),
-            "authority": [
-              "technician.metric"
             ],
             "exact": true
           },
