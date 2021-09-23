@@ -872,8 +872,6 @@ class geo extends PureComponent {
   handleExistedPrimeLocationClick = (event, primeLocation) => {
     const { isEditingCenter, isEditingFence, isEditingPrimeLocation} = this.state;
     const {dispatch } = this.props;
-
-
     if (!isEditingCenter && !isEditingFence && !isEditingPrimeLocation) {
 
       this.setState({ 
@@ -914,8 +912,6 @@ class geo extends PureComponent {
       type: "areas/getHubUploadUrl",
       hubId: selectedExistedPrimeLocation.id,
       onSuccess: url => {
-      
-
         reqwest({
           url: url,
           method: 'put',
@@ -1142,7 +1138,7 @@ class geo extends PureComponent {
                   name="avatar"
                   listType="picture-card"
                   className="avatar-uploader"
-                  // action=""
+                  action={this.state.uploadImgUrl}
                   showUploadList={false}                          
                   beforeUpload={this.beforeUpload}
                   onChange={this.handleChange}
