@@ -228,7 +228,7 @@ const MembershipForm = (props => {
           >
               <Select 
                   placeholder="select" style={{ width: "100%" }} 
-                  // defaultValue ={activeMembership ? activeMembership.id : undefined}
+                  defaultValue ={activeMembership ? activeMembership.id : undefined}
                   onChange={val => setAllowToBuy(!activeMembership && !!val)}    
                   disabled={!!activeMembership}            
               >
@@ -1190,6 +1190,11 @@ class CustomerDetail extends PureComponent {
     {
       title: "Payment Charge",
       dataIndex: "paymentCharge",
+      render: val =>  <span>{  Math.round(val * 100 ) / 100  } </span>
+    },
+    {
+      title: "Pre-auth Captured",
+      dataIndex: "holdCapture",
       render: val =>  <span>{  Math.round(val * 100 ) / 100  } </span>
     },
     {
