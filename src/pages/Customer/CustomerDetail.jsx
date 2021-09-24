@@ -719,16 +719,15 @@ const UpdateForm = (props => {
       </FormItem>
 
         <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Active Days">
-          <span> {customerActiveDays} </span>
+        <span> {customerActiveDays} </span>
         </FormItem> 
 
 
 
           <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Customer Approved Violation Count">
-            <span> {customerApprovedViolationCount} </span>
+          {/* <span> {customerApprovedViolationCount} </span> */}
+          <span> {record.violationCount} </span>
           </FormItem> 
-      
-
       <Row>
         <Col>
           <Button
@@ -1277,7 +1276,7 @@ class CustomerDetail extends PureComponent {
     this.handleGetCustomerPayments(customerId);
     this.handleGetAvailableCustomerMemberships();
     this.handleGetCustomerTransactions(customerId);
-    this.handleGetCustomerApprovedViolationCount(customerId);
+    // this.handleGetCustomerApprovedViolationCount(customerId);
   };
 
   handleEndRideVisible = (flag, record) => {
