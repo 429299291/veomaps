@@ -158,5 +158,8 @@ export async function deleteAreaCenter(id) {
     method: "DELETE"
   });
 }
-
-
+export async function uploadImg(id) {
+  return request(`/api/admins/areas/hubs/${id}/upload-url`, {
+    method: "GET"
+  });
+}

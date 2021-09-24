@@ -228,7 +228,7 @@ const MembershipForm = (props => {
           >
               <Select 
                   placeholder="select" style={{ width: "100%" }} 
-                  // defaultValue ={activeMembership ? activeMembership.id : undefined}
+                  defaultValue ={activeMembership ? activeMembership.id : undefined}
                   onChange={val => setAllowToBuy(!activeMembership && !!val)}    
                   disabled={!!activeMembership}            
               >
@@ -719,16 +719,15 @@ const UpdateForm = (props => {
       </FormItem>
 
         <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Active Days">
-          <span> {customerActiveDays} </span>
+        <span> {customerActiveDays} </span>
         </FormItem> 
 
 
 
           <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Customer Approved Violation Count">
-            <span> {customerApprovedViolationCount} </span>
+          {/* <span> {customerApprovedViolationCount} </span> */}
+          <span> {record.violationCount} </span>
           </FormItem> 
-      
-
       <Row>
         <Col>
           <Button
@@ -1193,6 +1192,11 @@ class CustomerDetail extends PureComponent {
       render: val =>  <span>{  Math.round(val * 100 ) / 100  } </span>
     },
     {
+      title: "Pre-auth Captured",
+      dataIndex: "holdCapture",
+      render: val =>  <span>{  Math.round(val * 100 ) / 100  } </span>
+    },
+    {
       title: "Meta Data",
       dataIndex: "metaData",
       // render: val =>  <span>{  Math.round(val * 100 ) / 100  } </span>
@@ -1272,7 +1276,7 @@ class CustomerDetail extends PureComponent {
     this.handleGetCustomerPayments(customerId);
     this.handleGetAvailableCustomerMemberships();
     this.handleGetCustomerTransactions(customerId);
-    this.handleGetCustomerApprovedViolationCount(customerId);
+    // this.handleGetCustomerApprovedViolationCount(customerId);
   };
 
   handleEndRideVisible = (flag, record) => {

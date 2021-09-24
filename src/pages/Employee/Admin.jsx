@@ -131,7 +131,19 @@ export const UpdatePasswordForm = (props => {
         registerEmailModalVisible: false,
         areasAll: [],
         filteredAdmins: [],
-        search:''
+        search:'',
+        activated:null,
+        searchValue:{
+          activated:true,
+          pagination: {
+            page:0,
+            pageSize: 10,
+            sort:{
+              direction:'desc',
+              sortBy:'created'
+            }
+          }
+        }
       };
       columns = [
         {
@@ -267,19 +279,15 @@ export const UpdatePasswordForm = (props => {
       saveState = response => {
         this.setState({ filteredAdmins: response});
       };
-      handleGetAdmins = () => {
+      handleGetAdmins = (value) => {
         const { dispatch,admins } = this.props;
         const { filterCriteria } = this.state;
-    
         dispatch({
-          type: "admins/get",
+          type: "admins/getadminsdata",
+          saveState: this.saveState,
           payload:{
-            pagination: {
-              page:0,
-              pageSize: 10,
-            }
+            ...this.state.searchValue
           },
-          onSuccess: this.handleSearch
         });
       };
     
@@ -292,38 +300,47 @@ export const UpdatePasswordForm = (props => {
     
       handleStandardTableChange = (page) => {
         const { dispatch, admins } = this.props;
-        if(this.state.search){
-          this.handleSearch({
-            value:this.state.search,
-            page: page.current-1,
-          })
-        }else{
-          dispatch({
-            type: "admins/getadminsdata",
-            saveState:this.saveState,
-            payload: {
-              pagination: {
-                page: page.current >0 ?page.current-1 :0,
-                pageSize: page.pageSize,
-              }
-            }
-          });
-        }
-    
+        this.setState({
+          searchValue:{
+            ...this.state.searchValue,
+            pagination:{
+              ...this.state.searchValue.pagination,
+              page:page.current >0 ? page.current-1 : 0,
+              pageSize:page.pageSize,
+            },
+          }
+        },()=>{this.handleGetAdmins()})
       };
+      activatedChange = (value) =>{
+        this.setState({
+          searchValue:{
+            ...this.state.searchValue,
+            activated:value
+          }
+        },()=>{this.handleGetAdmins()})
+      }
     
       renderSimpleForm() {
         return (
-          <Form layout="inline">
+          <Form initialValues={{ isActivated: true }}>
             <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-              <Col span={16}>
+              <Col span={6}>
                 <Search
                   placeholder="name, phone or email"
                   onSearch={this.handleSearch}
                   enterButton
                 />
               </Col>
-              <Col span={8}>
+              <Col span={4}>
+              <FormItem label="" name='isActivated'>
+                <Select onChange = {this.activatedChange}>
+                    <Select.Option value={true}>activated</Select.Option>
+                    <Select.Option value={false}>deactivated</Select.Option>
+                    <Select.Option value={null}>all</Select.Option>
+                </Select>
+              </FormItem>
+              </Col>
+              <Col span={3}>
                 <FormItem>
                     <Button
                       type="primary"
@@ -352,78 +369,41 @@ export const UpdatePasswordForm = (props => {
         );
       };
     
-      handleSearch = (value,pagenation) => {
+      handleSearch = (value) => {
         const { dispatch, admins } = this.props;
+        let searchValue = {}
         if(typeof value === 'string'){
           value = value.trim().replace(/\s*/g,"")
         }
         if(!value){
-          dispatch({
-            type: "admins/get",
-            // payload: filterCriteria,
-            payload:{
-              pagination: {
-                page: 0,
-                pageSize: admins.pagenation.pageSize,
-              }
-            },
-          });
+          searchValue.name=''
         }
         else if (/^[a-zA-Z]/.test(value) && !value.includes("@") && value.length > 0) {
-          dispatch({
-            type: "admins/adminSearch",
-            payload: {
-              name: value,
-              pagination: {
-                page: 0,
-                pageSize: admins.pagenation.pageSize,
-              }
-            },
-          });
+          searchValue.name=value
         } else if (
           /[0-9]()/.test(value) &&
           !value.includes("@") &&
           value.length > 0
         ) {
-          value = value.replace(/-/g,"").replace(/\(/g,'').replace(/\)/g,'').replace(/^\+1/,'')
-          dispatch({
-            type: "admins/adminSearch",
-            payload: {
-              phone: value,
-              pagination: {
-                page: 0,
-                pageSize: admins.pagenation.pageSize,
-              }
-            },
-          });
+          searchValue.phone = value
         } else if (/@/.test(value) && value.includes("@") && value.length > 0) {
-          dispatch({
-            type: "admins/adminSearch",
-            payload: {
-              email: value,
-              pagination: {
-                page: 0,
-                pageSize: admins.pagenation.pageSize,
-              }
-            },
-          });
+          searchValue.email = value
         } else {
-          dispatch({
-            type: "admins/adminSearch",
-            payload: {
-              name: value.value,
-              pagination: {
-                page:value.page,
-                pageSize: admins.pagenation.pageSize,
-              }
-            },
-          });
-          return false
+          searchValue.name = value
         }
-        this.setState({
-          search:value
-        })
-        admins.pagenation.page = 0
+        this.setState({searchValue:{
+          ...this.state.searchValue,
+          name:null,
+          email:null,
+          phone:null,
+          ...searchValue,
+          pagination:{
+            ...this.state.searchValue.pagination,
+            page:0,
+          }
+        }},()=>{this.handleGetAdmins();console.log(this.state.searchValue);})
+
+
       };
     
       handleModalVisible = flag => {
@@ -489,7 +469,6 @@ export const UpdatePasswordForm = (props => {
     
       handleUpdate = (id, fields,areas) => {
         const { dispatch,admins } = this.props;
-        console.log(fields);
         if(fields.areaIds.includes('all')){
           fields.areaIds = areas.map(area => area.id);
         }

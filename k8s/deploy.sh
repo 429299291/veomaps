@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# test if directory is empty
+if [ ! -d "./dist" ] || [ -z "$(ls ./dist)" ] ; then
+  echo "Empty dist, exit"
+  exit
+fi
+
+apk update && apk add bash && apk add git
+set -e
+
 if [ "$CI_COMMIT_REF_NAME" == "master" ];
 then
   KUBE_NAMESPACE="prod"

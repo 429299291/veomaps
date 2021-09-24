@@ -37,24 +37,24 @@ export default [
           },
         ]
       },
-      {
-        path: "/shop-management",
-        icon: "shop",
-        name: "Shop Management",
-        authority: ["shop"],
-        routes: [
-          {
-            path: "/shop-management/order",
-            name: "Order",
-            component: "./Shop/Order",
-          },
-          {
-            path: "/shop-management/listing",
-            name: "Listing",
-            component: "./Shop/Listing",
-          }
-        ]
-      },
+      // {
+      //   path: "/shop-management",
+      //   icon: "shop",
+      //   name: "Shop Management",
+      //   authority: ["shop"],
+      //   routes: [
+      //     {
+      //       path: "/shop-management/order",
+      //       name: "Order",
+      //       component: "./Shop/Order",
+      //     },
+      //     {
+      //       path: "/shop-management/listing",
+      //       name: "Listing",
+      //       component: "./Shop/Listing",
+      //     }
+      //   ]
+      // },
       {
         path: "/ride/",
         name: "Riding Management",
@@ -162,11 +162,11 @@ export default [
             name: "Role Management",
             component: "./Employee/Role",
           },
-          {
-            path: "/employee-management/privilege",
-            name: "Privilege Management",
-            component: "./Employee/Privilege",
-          },
+          // {
+          //   path: "/employee-management/privilege",
+          //   name: "Privilege Management",
+          //   component: "./Employee/Privilege",
+          // },
           {
             path: "/employee-management/admin",
             name: "Admin Management",
@@ -193,13 +193,13 @@ export default [
             component: "./Technician/Violation",
             authority: ["technician.violation"],
           },
-          {
-            path: "/technician-management/techmetrics",
-            name: "Tech Metrics",
-            // icon: "user",
-            component: "./Technician/TechMetrics",
-            authority: ["technician.metric"],
-          }
+          // {
+          //   path: "/technician-management/techmetrics",
+          //   name: "Tech Metrics",
+          //   // icon: "user",
+          //   component: "./Technician/TechMetrics",
+          //   authority: ["technician.metric"],
+          // }
         ]
       },
         {

@@ -298,13 +298,13 @@ class Dashboard extends Component {
       // }
 
 
-    dispatch({
-      type: "dashboard/fetchDailyRideCounts",
-      params: {
-        areaId: selectedAreaId,
-        midnight: moment().tz("America/Chicago").startOf("day").unix()
-      }
-    });
+    // dispatch({
+    //   type: "dashboard/fetchDailyRideCounts",
+    //   params: {
+    //     areaId: selectedAreaId,
+    //     midnight: moment().tz("America/Chicago").startOf("day").unix()
+    //   }
+    // });
 
   }
 
@@ -483,18 +483,18 @@ getRangeEnd(end) {
     //   return;
     // }
 
-    dispatch({
-      type: "dashboard/fetchConnectivityByPeriod",
-      params: Object.assign(
-        {}, 
-        countParams, 
-        { 
-          offset: offset, 
-          areaId: selectedAreaId  ? selectedAreaId : -1,
-          start: rangePickerValue[0].unix(),
-          end: rangePickerValue[1].unix(), 
-        })
-    });
+    // dispatch({
+    //   type: "dashboard/fetchConnectivityByPeriod",
+    //   params: Object.assign(
+    //     {}, 
+    //     countParams, 
+    //     { 
+    //       offset: offset, 
+    //       areaId: selectedAreaId  ? selectedAreaId : -1,
+    //       start: rangePickerValue[0].unix(),
+    //       end: rangePickerValue[1].unix(), 
+    //     })
+    // });
 
 
 

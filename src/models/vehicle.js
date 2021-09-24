@@ -156,15 +156,15 @@ export default {
         message.error("fail to get vehicle status" + data);
       }
     },
-    *getRef({ id, onSuccess }, { call, put }) {
-      const response = yield call(getRef, id); // get
+    // *getRef({ id, onSuccess }, { call, put }) {
+    //   const response = yield call(getRef, id); // get
 
-      if (response) {
-        typeof onSuccess === "function" && onSuccess(response);
-      } else {
-        //message.error(`Get Ref Fail`);
-      }
-    },
+    //   if (response) {
+    //     typeof onSuccess === "function" && onSuccess(response);
+    //   } else {
+    //     //message.error(`Get Ref Fail`);
+    //   }
+    // },
     *restart({vehicleId, onSuccess}, {call, put}) {
       const data = yield call(restart, vehicleId);
       if (data) {
