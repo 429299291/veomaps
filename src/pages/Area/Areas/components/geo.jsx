@@ -815,14 +815,15 @@ class geo extends PureComponent {
         type: "geo/uploadImg",
         hubsId: selectedExistedPrimeLocation.id,
         onSuccess:url => {
-          this.setState({uploadImgUrl:url},()=>{return resolve(file);})
+          this.setState({uploadImgUrl:url},()=>{resolve(file);})
         }
       });
-      return resolve(file);
+      // resolve(file);
   
     }).then(
       msg=>{
-        console.log(msg);
+        console.log('msg');
+        return resolve(file)
       },
       error=>{
 
