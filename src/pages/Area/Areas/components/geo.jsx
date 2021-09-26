@@ -797,7 +797,18 @@ class geo extends PureComponent {
         this.getAreaGeoInfoFirst()
     }
   }
-
+  urlGetImg(){
+    console.log(this);
+    const { dispatch } = this.props;
+    const {selectedExistedPrimeLocation} = this.state
+    dispatch({
+      type: "geo/uploadImg",
+      hubsId: selectedExistedPrimeLocation.id,
+      onSuccess:url => {
+        this.setState({uploadImgUrl:url},()=>{console.log(this.state.uploadImgUrl);})
+      }
+    });
+  }
   beforeUpload(file) {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
@@ -807,28 +818,18 @@ class geo extends PureComponent {
     if (!isLt5M) {
       message.error('Image must smaller than 5MB!');
     }
+    // return (new Promise((resolve, reject) => {
+    //   if (!isJpgOrPng) {
+    //     message.error('上传图片只能是 JPG 格式!')
+    //     reject()
+    //   }
+    //   // setTimeout(() => {
+    //   //   resolve(file)
+    //   // }, 1000);
+    //   resolve(file)
+    // }))
 
-    return new Promise((resolve, reject) => {
-      const { dispatch } = this.props;
-      const {selectedExistedPrimeLocation} = this.state
-      dispatch({
-        type: "geo/uploadImg",
-        hubsId: selectedExistedPrimeLocation.id,
-        onSuccess:url => {
-          this.setState({uploadImgUrl:url},()=>{return resolve(file);})
-        }
-      });
-      return resolve(file);
-  
-    }).then(
-      msg=>{
-        console.log(msg);
-      },
-      error=>{
-
-      }
-    );
-   // return isJpgOrPng && isLt5M;
+   return isJpgOrPng && isLt5M;
   }
 
   getBase64(img, callback) {
@@ -840,6 +841,7 @@ class geo extends PureComponent {
   handleChange = info => {
     // const { dispatch } = this.props;
     // const {selectedExistedPrimeLocation} = this.state
+    // console.log('change');
     // dispatch({
     //   type: "geo/uploadImg",
     //   hubsId: selectedExistedPrimeLocation.id,
@@ -1159,6 +1161,7 @@ class geo extends PureComponent {
                   name="avatar"
                   listType="picture-card"
                   className="avatar-uploader"
+                  onClick={this.urlGetImg.bind(this)}
                   action={this.state.uploadImgUrl}
                   showUploadList={false}                          
                   beforeUpload={this.beforeUpload}
