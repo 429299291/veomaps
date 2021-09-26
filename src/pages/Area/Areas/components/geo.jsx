@@ -798,16 +798,15 @@ class geo extends PureComponent {
     }
   }
   urlGetImg(){
-    console.log(this);
-    const { dispatch } = this.props;
-    const {selectedExistedPrimeLocation} = this.state
-    dispatch({
-      type: "geo/uploadImg",
-      hubsId: selectedExistedPrimeLocation.id,
-      onSuccess:url => {
-        this.setState({uploadImgUrl:url},()=>{console.log(this.state.uploadImgUrl);})
-      }
-    });
+    // const { dispatch } = this.props;
+    // const {selectedExistedPrimeLocation} = this.state
+    // dispatch({
+    //   type: "geo/uploadImg",
+    //   hubsId: selectedExistedPrimeLocation.id,
+    //   onSuccess:url => {
+    //     this.setState({uploadImgUrl:url},()=>{console.log(this.state.uploadImgUrl);})
+    //   }
+    // });
   }
   beforeUpload(file) {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -927,7 +926,6 @@ class geo extends PureComponent {
   };
 
   handleUploadHubImage = () => {
-
     const {dispatch, selectedAreaId, geo} = this.props;
     const {selectedExistedPrimeLocation} = this.state;
     this.setState({hubImageLoading: true});
@@ -941,7 +939,7 @@ class geo extends PureComponent {
           processData: false,
           data: this.state.uploadFileData,
           headers: {
-            'Access-Control-Allow-Headers': '*'
+            'Access-Control-Allow-Headers': '*',
           },
           success: () => {
             
@@ -974,9 +972,6 @@ class geo extends PureComponent {
 
       }
   });
-
-
-    
 
   }
 
@@ -1162,7 +1157,7 @@ class geo extends PureComponent {
                   listType="picture-card"
                   className="avatar-uploader"
                   onClick={this.urlGetImg.bind(this)}
-                  action={this.state.uploadImgUrl}
+                  // action={this.state.uploadImgUrl}
                   showUploadList={false}                          
                   beforeUpload={this.beforeUpload}
                   onChange={this.handleChange}
@@ -1173,9 +1168,7 @@ class geo extends PureComponent {
                 {
                    hubUploadImageUrl && <div style={{marginTop:" 0.5em"}}>
                       <Button type="primary" onClick={this.handleUploadHubImage} disabled={hubImageLoading}> Upload </Button>
-
                       <Button  style={{marginLeft:" 0.5em"}}  onClick={() => this.setState({hubUploadImageUrl: null})} disabled={hubImageLoading}> Reset </Button>
-                    
                     </div> 
                 }
 
