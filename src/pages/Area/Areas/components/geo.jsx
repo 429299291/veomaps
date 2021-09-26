@@ -809,7 +809,6 @@ class geo extends PureComponent {
     });
   }
   beforeUpload(file) {
-    console.log('before');
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
       message.error('You can only upload JPG/PNG file!');
@@ -834,7 +833,6 @@ class geo extends PureComponent {
   uploadHeadImg(info){
     const {dispatch, selectedAreaId, geo} = this.props;
     const {selectedExistedPrimeLocation} = this.state;
-    console.log(info.file);
     reqwest({
       url: this.state.uploadImgUrl,
       method: 'put',
@@ -848,8 +846,7 @@ class geo extends PureComponent {
           dispatch({
             type: "geo/getFences",
             areaId: selectedAreaId,
-            onSuccess: primeLocations => {                  
-              console.log(primeLocations);
+            onSuccess: primeLocations => {   
               this.setState({
                 uploadFileData: null,
                 hubImageLoading: false,
@@ -878,16 +875,6 @@ class geo extends PureComponent {
   }
 
   handleChange = info => {
-    // const { dispatch } = this.props;
-    // const {selectedExistedPrimeLocation} = this.state
-    // console.log('change');
-    // dispatch({
-    //   type: "geo/uploadImg",
-    //   hubsId: selectedExistedPrimeLocation.id,
-    //   onSuccess:url => {
-    //     this.setState({uploadImgUrl:url})
-    //   }
-    // });
     if (info.file.status === 'uploading') {
       this.setState({ hubUploadLoading: true });
       return;
@@ -969,89 +956,19 @@ class geo extends PureComponent {
     const {dispatch, selectedAreaId, geo} = this.props;
     const {selectedExistedPrimeLocation} = this.state;
     this.setState({hubImageLoading: true});
-    console.log('img');
-    reqwest({
-      url: this.state.uploadImgUrl,
-      method: 'put',
-      processData: false,
-      data: this.state.uploadFileData,
-      headers: {
-        'Access-Control-Allow-Headers': '*',
-      },
-      success: () => {
-        
-        setTimeout(() => {
-          dispatch({
-            type: "geo/getFences",
-            areaId: selectedAreaId,
-            onSuccess: primeLocations => {                  
-
-              this.setState({
-                uploadFileData: null,
-                hubImageLoading: false,
-                hubUploadImageUrl: null,
-                selectedExistedPrimeLocation: primeLocations.filter(hub => hub.id === selectedExistedPrimeLocation.id)[0]
-              });
-              message.success('upload successfully.');
-
-            }
-          });
-          
-        }, 2000);
-      },
-      error: () => {
-        this.setState({
-          hubImageLoading: false,
-        });
-        message.error('upload failed.');
-      },
-    });
-  //   dispatch({
-  //     type: "areas/getHubUploadUrl",
-  //     hubId: selectedExistedPrimeLocation.id,
-  //     onSuccess: url => {
-  //       reqwest({
-  //         url: url,
-  //         method: 'put',
-  //         processData: false,
-  //         data: this.state.uploadFileData,
-  //         headers: {
-  //           'Access-Control-Allow-Headers': '*',
-  //         },
-  //         success: () => {
-            
-  //           setTimeout(() => {
-  //             dispatch({
-  //               type: "geo/getFences",
-  //               areaId: selectedAreaId,
-  //               onSuccess: primeLocations => {                  
-
-  //                 this.setState({
-  //                   uploadFileData: null,
-  //                   hubImageLoading: false,
-  //                   hubUploadImageUrl: null,
-  //                   selectedExistedPrimeLocation: primeLocations.filter(hub => hub.id === selectedExistedPrimeLocation.id)[0]
-  //                 });
-  //                 message.success('upload successfully.');
-
-  //               }
-  //             });
-              
-  //           }, 2000);
-  //         },
-  //         error: () => {
-  //           this.setState({
-  //             hubImageLoading: false,
-  //           });
-  //           message.error('upload failed.');
-  //         },
-  //       });
-
-  //     }
-  // });
-
   }
+  onPreview = async file => {
+    console.log('file');
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
 
+    this.setState({
+      previewImage: file.url || file.preview,
+      previewVisible: true,
+      previewTitle: file.name || file.url.substring(file.url.lastIndexOf('/') + 1),
+    });
+  };
   renderHeader = (areas, isEditing) => {
     const {
       isEditingFence,
@@ -1082,10 +999,11 @@ class geo extends PureComponent {
           <div className="ant-upload-text">Upload</div>
         </div>
       );
-     
       const { hubUploadImageUrl } = this.state;
-
-
+      const selectedExistedPrimeLocationId = selectedExistedPrimeLocation ? selectedExistedPrimeLocation.id : null
+      let imgList = (this.props.geo.primeLocations && selectedExistedPrimeLocation) ? this.props.geo.primeLocations.filter(data=>{return data.id == selectedExistedPrimeLocationId}) : []
+      imgList = imgList.length>0 ? imgList[0].stagingUrl : ''
+      this.setState({hubUploadImageUrl : imgList})
     return (
       <div>
                 <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
@@ -1238,6 +1156,8 @@ class geo extends PureComponent {
                   customRequest={this.uploadHeadImg.bind(this)}
                   showUploadList={false}                          
                   beforeUpload={this.beforeUpload}
+                  fileList={[{uid:'01',url:imgList}]}
+                  onPreview={this.onPreview}
                   onChange={this.handleChange}
                 >
                 {hubUploadImageUrl ? <img src={hubUploadImageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
