@@ -807,7 +807,28 @@ class geo extends PureComponent {
     if (!isLt5M) {
       message.error('Image must smaller than 5MB!');
     }
-    return isJpgOrPng && isLt5M;
+
+    return new Promise((resolve, reject) => {
+      const { dispatch } = this.props;
+      const {selectedExistedPrimeLocation} = this.state
+      dispatch({
+        type: "geo/uploadImg",
+        hubsId: selectedExistedPrimeLocation.id,
+        onSuccess:url => {
+          this.setState({uploadImgUrl:url},()=>{return resolve(file);})
+        }
+      });
+      return resolve(file);
+  
+    }).then(
+      msg=>{
+        console.log(msg);
+      },
+      error=>{
+
+      }
+    );
+   // return isJpgOrPng && isLt5M;
   }
 
   getBase64(img, callback) {
@@ -817,15 +838,15 @@ class geo extends PureComponent {
   }
 
   handleChange = info => {
-    const { dispatch } = this.props;
-    const {selectedExistedPrimeLocation} = this.state
-    dispatch({
-      type: "geo/uploadImg",
-      hubsId: selectedExistedPrimeLocation.id,
-      onSuccess:url => {
-        this.setState({uploadImgUrl:url})
-      }
-    });
+    // const { dispatch } = this.props;
+    // const {selectedExistedPrimeLocation} = this.state
+    // dispatch({
+    //   type: "geo/uploadImg",
+    //   hubsId: selectedExistedPrimeLocation.id,
+    //   onSuccess:url => {
+    //     this.setState({uploadImgUrl:url})
+    //   }
+    // });
     if (info.file.status === 'uploading') {
       this.setState({ hubUploadLoading: true });
       return;
