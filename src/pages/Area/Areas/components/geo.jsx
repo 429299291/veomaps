@@ -818,20 +818,59 @@ class geo extends PureComponent {
     if (!isLt5M) {
       message.error('Image must smaller than 5MB!');
     }
-    // return (new Promise((resolve, reject) => {
-    //   if (!isJpgOrPng) {
-    //     message.error('上传图片只能是 JPG 格式!')
-    //     reject()
-    //   }
-    //   // setTimeout(() => {
-    //   //   resolve(file)
-    //   // }, 1000);
-    //   resolve(file)
-    // }))
+    return (new Promise((resolve, reject) => {
+      if (!isJpgOrPng) {
+        message.error('上传图片只能是 JPG 格式!')
+        reject()
+      }
+      setTimeout(() => {
+        resolve(file)
+      }, 3000);
+      // resolve(file)
+    }))
 
    return isJpgOrPng && isLt5M;
   }
+  uploadHeadImg(info){
+    const {dispatch, selectedAreaId, geo} = this.props;
+    const {selectedExistedPrimeLocation} = this.state;
+    console.log(info.file);
+    reqwest({
+      url: this.state.uploadImgUrl,
+      method: 'put',
+      processData: false,
+      data: info.file,
+      headers: {
+        'Access-Control-Allow-Headers': '*',
+      },
+      success: () => {
+        setTimeout(() => {
+          dispatch({
+            type: "geo/getFences",
+            areaId: selectedAreaId,
+            onSuccess: primeLocations => {                  
+              console.log(primeLocations);
+              this.setState({
+                uploadFileData: null,
+                hubImageLoading: false,
+                hubUploadImageUrl: null,
+                selectedExistedPrimeLocation: primeLocations.filter(hub => hub.id === selectedExistedPrimeLocation.id)[0]
+              });
+              message.success('upload successfully.');
 
+            }
+          });
+          
+        }, 2000);
+      },
+      error: () => {
+        this.setState({
+          hubImageLoading: false,
+        });
+        message.error('upload failed.');
+      },
+    });
+  }
   getBase64(img, callback) {
     const reader = new FileReader();
     reader.addEventListener('load', () => callback(reader.result));
@@ -930,6 +969,7 @@ class geo extends PureComponent {
     const {dispatch, selectedAreaId, geo} = this.props;
     const {selectedExistedPrimeLocation} = this.state;
     this.setState({hubImageLoading: true});
+    console.log('img');
     reqwest({
       url: this.state.uploadImgUrl,
       method: 'put',
@@ -1194,7 +1234,8 @@ class geo extends PureComponent {
                   listType="picture-card"
                   className="avatar-uploader"
                   onClick={this.urlGetImg.bind(this)}
-                  // action={this.state.uploadImgUrl}
+                  action={this.state.uploadImgUrl}
+                  customRequest={this.uploadHeadImg.bind(this)}
                   showUploadList={false}                          
                   beforeUpload={this.beforeUpload}
                   onChange={this.handleChange}
