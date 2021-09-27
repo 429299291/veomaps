@@ -25,22 +25,13 @@ import {
   Checkbox,
   Spin
 } from "antd";
-
+const Option = Select.Option;
 import reqwest from "reqwest";
-
 import { LoadingOutlined, PlusOutlined,WarningOutlined,PlusSquareOutlined } from '@ant-design/icons';
-
-
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
-
 import {fenceType, fenceTypeColor} from "@/constant";
-
 import NumberInput from "@/components/share/NumberInput";
-
 const FormItem = Form.Item;
-
-
-
 import { compose, withProps } from "recompose";
 import {
   withScriptjs,
@@ -869,7 +860,6 @@ class geo extends PureComponent {
   }
 
   handleChange = info => {
-    console.log(info);
     if (info.file.status === 'uploading') {
       this.setState({ hubUploadLoading: true });
       return;
@@ -886,12 +876,8 @@ class geo extends PureComponent {
       );
     }
   };
-
-
-
   handleUpdateFence = updatedFence => {
     const { dispatch } = this.props;
-
     dispatch({
       type: "geo/updateFence",
       id: updatedFence.id,
