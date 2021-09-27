@@ -844,11 +844,11 @@ class geo extends PureComponent {
               this.setState({
                 uploadFileData: null,
                 hubImageLoading: false,
+                hubUploadLoading:false,
                 hubUploadImageUrl: null,
                 selectedExistedPrimeLocation: primeLocations.filter(hub => hub.id === selectedExistedPrimeLocation.id)[0]
               });
-              message.success('upload successfully.');
-
+              // message.success('upload successfully.');
             }
           });
           
@@ -876,19 +876,14 @@ class geo extends PureComponent {
     }
     if (info.file.status === 'done') {
       // Get this url from response in real world.
-      this.setState({
-        hubUploadImageUrl:'',
-        hubUploadLoading: false,
-        uploadFileData: info.file.originFileObj
-      })
-      // this.getBase64(info.file.originFileObj, hubUploadImageUrl =>{
-      //   this.setState({
-      //     hubUploadImageUrl,
-      //     hubUploadLoading: false,
-      //     uploadFileData: info.file.originFileObj
-      //   })
-      // }
-      // );
+      this.getBase64(info.file.originFileObj, hubUploadImageUrl =>{
+        this.setState({
+          hubUploadImageUrl,
+          hubUploadLoading: false,
+          uploadFileData: info.file.originFileObj
+        })
+      }
+      );
     }
   };
 
@@ -952,11 +947,12 @@ class geo extends PureComponent {
     }
   };
 
-  handleUploadHubImage = () => {
-    const {dispatch, selectedAreaId, geo} = this.props;
-    const {selectedExistedPrimeLocation} = this.state;
-    this.setState({hubImageLoading: true});
-  }
+  // handleUploadHubImage = () => {
+  //   console.log('---');
+  //   const {dispatch, selectedAreaId, geo} = this.props;
+  //   const {selectedExistedPrimeLocation} = this.state;
+  //   this.setState({hubImageLoading: true});
+  // }
   onPreview = async file => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
@@ -978,7 +974,8 @@ class geo extends PureComponent {
       isEditingPrimeLocation,
       editingPrimeLocation,
       selectedExistedPrimeLocation,
-      hubImageLoading
+      hubImageLoading,
+      hubUploadLoading
     } = this.state;
 
     const isAbleToEncloseEditingFence =
@@ -1124,11 +1121,11 @@ class geo extends PureComponent {
                   customRequest={this.uploadHeadImg.bind(this)}
                   showUploadList={false}                          
                   beforeUpload={this.beforeUpload}
-                  fileList={[{uid:'01',url:imgList,status: 'done'}]}
+                  fileList={[{uid:'01',url:imgList,status: 'uploading'}]}
                   onPreview={this.onPreview}
                   onChange={this.handleChange}
                 >
-                {hubUploadImageUrl ? <img src={hubUploadImageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+                {hubUploadImageUrl && !hubUploadLoading ? <img src={hubUploadImageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
                 </Upload>
                 {/* {
                    hubUploadImageUrl && <div style={{marginTop:" 0.5em"}}>
