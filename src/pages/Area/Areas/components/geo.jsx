@@ -503,7 +503,8 @@ class geo extends PureComponent {
     selectedExistedFence: null,
     isDeleteModalVisible: false,
     isParkingCheckStart: false,
-    uploadImgUrl:''
+    uploadImgUrl:'',
+    hubUploadLoading:false
   };
 
   componentDidMount() {
@@ -804,7 +805,7 @@ class geo extends PureComponent {
       type: "geo/uploadImg",
       hubsId: selectedExistedPrimeLocation.id,
       onSuccess:url => {
-        this.setState({uploadImgUrl:url},()=>{console.log(this.state.uploadImgUrl);})
+        this.setState({uploadImgUrl:url})
       }
     });
   }
@@ -817,16 +818,9 @@ class geo extends PureComponent {
     if (!isLt5M) {
       message.error('Image must smaller than 5MB!');
     }
-    return (new Promise((resolve, reject) => {
-      if (!isJpgOrPng) {
-        message.error('上传图片只能是 JPG 格式!')
-        reject()
-      }
-      setTimeout(() => {
-        resolve(file)
-      }, 3000);
-      // resolve(file)
-    }))
+    // return (new Promise((resolve, reject) => {
+    //   resolve(file)
+    // }))
 
    return isJpgOrPng && isLt5M;
   }
@@ -875,20 +869,26 @@ class geo extends PureComponent {
   }
 
   handleChange = info => {
+    console.log(info);
     if (info.file.status === 'uploading') {
       this.setState({ hubUploadLoading: true });
       return;
     }
     if (info.file.status === 'done') {
       // Get this url from response in real world.
-      this.getBase64(info.file.originFileObj, hubUploadImageUrl =>{
-        this.setState({
-          hubUploadImageUrl,
-          hubUploadLoading: false,
-          uploadFileData: info.file.originFileObj
-        })
-      }
-      );
+      this.setState({
+        hubUploadImageUrl:'',
+        hubUploadLoading: false,
+        uploadFileData: info.file.originFileObj
+      })
+      // this.getBase64(info.file.originFileObj, hubUploadImageUrl =>{
+      //   this.setState({
+      //     hubUploadImageUrl,
+      //     hubUploadLoading: false,
+      //     uploadFileData: info.file.originFileObj
+      //   })
+      // }
+      // );
     }
   };
 
@@ -958,7 +958,6 @@ class geo extends PureComponent {
     this.setState({hubImageLoading: true});
   }
   onPreview = async file => {
-    console.log('file');
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
     }
@@ -994,8 +993,8 @@ class geo extends PureComponent {
 
       const uploadButton = (
         <div>
-          <Icon type={this.state.loading ? 'loading' : 'plus'} />
-          {this.state.loading ? <LoadingOutlined /> : <PlusSquareOutlined /> }
+          <Icon type={this.state.hubUploadLoading ? 'loading' : 'plus'} />
+          {this.state.hubUploadLoading ? <LoadingOutlined /> : <PlusSquareOutlined /> }
           <div className="ant-upload-text">Upload</div>
         </div>
       );
@@ -1103,7 +1102,7 @@ class geo extends PureComponent {
 
         {selectedExistedPrimeLocation && 
           <div>
-            <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
+            <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow} style={{position:'relative'}}>
             
               <Col sm={4} >
                 <NumberInput addonBefore="Minimum" value={selectedExistedPrimeLocation.minimum} onChange={minimum =>  this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, minimum: minimum === "" ? null : minimum}})} /> 
@@ -1112,12 +1111,32 @@ class geo extends PureComponent {
               <Col sm={4} >
                   <NumberInput addonBefore="Target" value={selectedExistedPrimeLocation.target}   onChange={target => this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, target: target ===  "" ? null : target}})}  />
               </Col>
-              
-
               <Col sm={6} >
                   <Input addonBefore="Description" value={selectedExistedPrimeLocation.description}   onChange={e => this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, description: e.target.value ===  "" ? null : e.target.value}})}  />
               </Col>
-
+              <Col sm={5} style={{position:'absolute',right:'20rem',top:'-2rem'}}>
+                <Upload
+                  name="avatar"
+                  listType="picture-card"
+                  className="avatar-uploader"
+                  onClick={this.urlGetImg.bind(this)}
+                  action={this.state.uploadImgUrl}
+                  customRequest={this.uploadHeadImg.bind(this)}
+                  showUploadList={false}                          
+                  beforeUpload={this.beforeUpload}
+                  fileList={[{uid:'01',url:imgList,status: 'done'}]}
+                  onPreview={this.onPreview}
+                  onChange={this.handleChange}
+                >
+                {hubUploadImageUrl ? <img src={hubUploadImageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+                </Upload>
+                {/* {
+                   hubUploadImageUrl && <div style={{marginTop:" 0.5em"}}>
+                      <Button type="primary" onClick={this.handleUploadHubImage} disabled={hubImageLoading}> Upload </Button>
+                      <Button  style={{marginLeft:" 0.5em"}}  onClick={() => this.setState({hubUploadImageUrl: null})} disabled={hubImageLoading}> Reset </Button>
+                    </div> 
+                } */}
+              </Col> 
               
             </Row>
             <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
@@ -1144,45 +1163,19 @@ class geo extends PureComponent {
                   </Select> 
               </Col>
             </Row>
-            
-            <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
-               <Col sm={4} >
-                <Upload
-                  name="avatar"
-                  listType="picture-card"
-                  className="avatar-uploader"
-                  onClick={this.urlGetImg.bind(this)}
-                  action={this.state.uploadImgUrl}
-                  customRequest={this.uploadHeadImg.bind(this)}
-                  showUploadList={false}                          
-                  beforeUpload={this.beforeUpload}
-                  fileList={[{uid:'01',url:imgList}]}
-                  onPreview={this.onPreview}
-                  onChange={this.handleChange}
-                >
-                {hubUploadImageUrl ? <img src={hubUploadImageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
-                  
-                </Upload>
-                {
-                   hubUploadImageUrl && <div style={{marginTop:" 0.5em"}}>
-                      <Button type="primary" onClick={this.handleUploadHubImage} disabled={hubImageLoading}> Upload </Button>
-                      <Button  style={{marginLeft:" 0.5em"}}  onClick={() => this.setState({hubUploadImageUrl: null})} disabled={hubImageLoading}> Reset </Button>
-                    </div> 
-                }
-
-              </Col> 
-            
-              <Col sm={12} >
+                {/* show big picture */}
+              {/* <Col sm={12} >
+                <p>999</p>
                   { hubImageLoading ? 
                     <div style={{paddingLeft: "300px", paddingTop: "200px"}}>
+                      99999
                       <Spin size="large"  />
                     </div>
                     :
                     selectedExistedPrimeLocation.stagingUrl && <img style={{ maxWidth: '100%', maxHeight: "400px" }} src={selectedExistedPrimeLocation.stagingUrl}></img> 
                   }
-                </Col>
+                </Col> */}
 
-            </Row>
 
           </div>
           
