@@ -292,19 +292,16 @@ class Dashboard extends Component {
 
   loadDailyRideCount() {
       const { dispatch, selectedAreaId } = this.props;
-
       // if (!authority.includes("get.daily.ride.count")) {
       //   return;
       // }
-
-
-    // dispatch({
-    //   type: "dashboard/fetchDailyRideCounts",
-    //   params: {
-    //     areaId: selectedAreaId,
-    //     midnight: moment().tz("America/Chicago").startOf("day").unix()
-    //   }
-    // });
+    dispatch({
+      type: "dashboard/fetchDailyRideCounts",
+      params: {
+        areaId: selectedAreaId,
+        midnight: moment().tz("America/Chicago").startOf("day").unix()
+      }
+    });
 
   }
 
@@ -682,7 +679,6 @@ getRangeEnd(end) {
       rangePickerValue,
       areaIsChanged
     } = this.state;
-
     const salesExtra = (
       <div className={styles.salesExtraWrap}>
         <div className={styles.salesExtra}>
@@ -825,14 +821,8 @@ getRangeEnd(end) {
       }
 
     }
-                              
-                 
-    
       let dayDiff = this.getRangeEnd(rangePickerValue[1]).diff(rangePickerValue[0], 'days');
-
       if (dayDiff === 0) dayDiff = 1;
-
-
       const dailyRideCount = dashboard.dailyRideCount;
 
       const batteryState = dashboard.batteryState;
@@ -865,16 +855,16 @@ getRangeEnd(end) {
                     <Icon type="info-circle-o" />
                   </Tooltip>
                 }
-                total={activeRideCountLoading ? "loading" :  dailyRideCount.currentActiveRideCount}
-                footer={
-                  <Field
-                    label="Total Ride Today"
-                    value={activeRideCountLoading ? "loading" : `${dailyRideCount.todayRideCount}`}
-                  />
-                }
-                contentHeight={60}
+                total={activeRideCountLoading ? "loading" :  dailyRideCount.totalSize}
+                // footer={
+                //   <Field
+                //     label="Total Ride Today"
+                //     value={activeRideCountLoading ? "loading" : `${dailyRideCount.todayRideCount}`}
+                //   />
+                // }
+                // contentHeight={60}
               >
-                <Trend flag={dailyRideCount.todayRideCount - dailyRideCount.lastWeekRideCount > 0 ? "up" : "down"} style={{ marginRight: 16 }}>
+                {/* <Trend flag={dailyRideCount.todayRideCount - dailyRideCount.lastWeekRideCount > 0 ? "up" : "down"} style={{ marginRight: 16 }}>
                   <FormattedMessage
                     id="app.analysis.week"
                     defaultMessage="Weekly Changes"
@@ -887,7 +877,7 @@ getRangeEnd(end) {
                     defaultMessage="Daily Changes"
                   />
                   <span className={styles.trendText}>{Math.round(((dailyRideCount.todayRideCount - dailyRideCount.yesterdayRideCount) /dailyRideCount.yesterdayRideCount) * 100)}%</span>
-                </Trend>
+                </Trend> */}
               </ChartCard>
             </Col>
           }
