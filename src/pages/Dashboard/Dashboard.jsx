@@ -1095,8 +1095,8 @@ getRangeEnd(end) {
                   </Row>
                   </TabPane> 
               }
-              { 
-                /*authority.includes("admin")&& */   <TabPane
+              {/* { 
+                <TabPane
                   tab="Vehicle Connectivity"
                   key="connectivity"
                 >
@@ -1113,7 +1113,7 @@ getRangeEnd(end) {
                     {this.getRankingBoard()}
                   </Row>
                   </TabPane> 
-              }
+              } */}
               { 
                /*authority.includes("admin")&& */ 
                 <TabPane
