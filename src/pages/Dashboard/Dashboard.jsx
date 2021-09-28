@@ -119,7 +119,7 @@ class Dashboard extends Component {
         this.loadDailyRideRevenue();
         this.loadStripeRevenue();
         this.setState({areaIsChanged: false});
-      },30000);
+      },10000);
 
     });
   }
