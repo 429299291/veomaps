@@ -295,11 +295,22 @@ class Dashboard extends Component {
       // if (!authority.includes("get.daily.ride.count")) {
       //   return;
       // }
+      let payload = selectedAreaId ? { areaIds : [selectedAreaId] }: {}
+      payload = Object.assign(payload,{
+          "pagination": {
+              "page": 0,
+              "pageSize": 10,
+              "sort": {
+                  "sortBy": "start",
+                  "direction": "desc"
+              }
+          }
+      })
     dispatch({
       type: "dashboard/fetchDailyRideCounts",
       params: {
-        areaId: selectedAreaId,
-        midnight: moment().tz("America/Chicago").startOf("day").unix()
+        ...payload
+        // midnight: moment().tz("America/Chicago").startOf("day").unix()
       }
     });
 
