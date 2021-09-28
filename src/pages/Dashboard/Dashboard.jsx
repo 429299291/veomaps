@@ -297,6 +297,7 @@ class Dashboard extends Component {
       // }
       let payload = selectedAreaId ? { areaIds : [selectedAreaId] }: {}
       payload = Object.assign(payload,{
+        notEnded:true,
           "pagination": {
               "page": 0,
               "pageSize": 10,
