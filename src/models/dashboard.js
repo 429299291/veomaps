@@ -191,8 +191,7 @@ export default {
 
     *fetchDailyRideCounts({params}, { call, put }) {
 
-      const response = yield call(getDailyRideCount, params);
-
+      let response = yield call(getDailyRideCount, params);
       if (response) {
         yield put({
           type: "save",

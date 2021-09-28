@@ -44,9 +44,25 @@ export async function getStripeNetRefund(params) {
   });
 }
 
+// export async function getDailyRideCount(params) {
+//   return request(`/admins/dashboard/daily_ride_count?${stringify(params, { indices: false })}`, {
+//     method: "GET"
+//   });
+// }
 export async function getDailyRideCount(params) {
-  return request(`/admins/dashboard/daily_ride_count?${stringify(params, { indices: false })}`, {
-    method: "GET"
+  return request(`/api/admins/rides/search`, {
+    method: "POST",
+    body:{
+      // notEnded:true,
+      "pagination": {
+        "page": 0,
+        "pageSize": 10,
+        "sort": {
+          "direction": "desc",
+          "sortBy": "start"
+        }
+      }
+    }
   });
 }
 

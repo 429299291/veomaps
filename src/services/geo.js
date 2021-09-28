@@ -1,8 +1,16 @@
 import { stringify } from "qs";
 import request from "@/utils/request";
 
+// export async function createPrimeLocation(primeLocation) {
+//   return request(`/admins/prime-locations`, {
+//     method: "POST",
+//     body: {
+//       ...primeLocation
+//     }
+//   });
+// }
 export async function createPrimeLocation(primeLocation) {
-  return request(`/admins/prime-locations`, {
+  return request(`/api/admins/areas/${primeLocation.areaId}/hubs`, {
     method: "POST",
     body: {
       ...primeLocation
