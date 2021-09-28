@@ -53,17 +53,9 @@ export async function getDailyRideCount(params) {
   return request(`/api/admins/rides/search`, {
     method: "POST",
     body:{
-      // notEnded:true,
-      "pagination": {
-        "page": 0,
-        "pageSize": 10,
-        "sort": {
-          "direction": "desc",
-          "sortBy": "start"
-        }
-      }
+      ...params
     }
-  });
+  })
 }
 
 export async function getWeeklyBatteryState(params) {
