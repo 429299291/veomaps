@@ -15,13 +15,13 @@ import {
     },
   
     effects: {
-      *get({ payload }, { call, put }) {
-        const response = yield call(getAdminDeposits, payload);
-  
+      *get({ payload,onSuccess }, { call, put }) {
+        let response = yield call(getAdminDeposits, payload);
+        onSuccess(response.page,response.pageSize,response.totalSize)
+        response = response.content
         if (Array.isArray(response)) {
           response.map(deposit => (deposit.key = deposit.id));
         }
-  
         yield put({
           type: "save",
           payload: Array.isArray(response) ? response : []
