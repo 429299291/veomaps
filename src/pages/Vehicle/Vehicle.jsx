@@ -1218,6 +1218,7 @@ class Vehicle extends PureComponent {
   }
 
   handleSearch = fieldsValue => {
+    console.log(fieldsValue);
     const { dispatch,  selectedAreaId,vehicles } = this.props;
     const { filterCriteria, selectedTab } = this.state;
     // form.validateFields((err, fieldsValue) => {
@@ -1269,7 +1270,6 @@ class Vehicle extends PureComponent {
         //   values.imei = null;
         //   values.vehicleNumber = null;
         // }
-        values.vehicleTypes = values.vehicleType ? [values.vehicleType] : null;
         // if (values.idleQuery.idleDays) {
         //   values.idleQuery = {idleDays: values.idleDays};
         // } else {
@@ -1298,9 +1298,9 @@ class Vehicle extends PureComponent {
           values.lockStatus = values.locked  ? "1" : "0";
         }
 
-        if (values.statuses) {
-          values.errorStatus = values.statuses;
-        }
+        // if (values.statuses) {
+        //   values.errorStatus = values.statuses;
+        // }
 
         if (values.vehicleBattery) {
           values.vehiclePower = values.vehicleBattery;
@@ -1315,6 +1315,7 @@ class Vehicle extends PureComponent {
         vehicles.total === 0 ? vehicles.total = 1 : null
         selectedAreaId ? values.pagination.pageSize = vehicles.total : null
       }
+      values.vehicleTypes = values.vehicleType ? [...values.vehicleType] : null;
     // if(!fieldsValue){
     //   values={
     //     areaIds: selectedAreaId ? [selectedAreaId] : [],
