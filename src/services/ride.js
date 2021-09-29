@@ -69,16 +69,16 @@ export async function updateRide(id, params) {
     }
   });
 }
-export async function getRideImage(rideId) {
-  return request(`/admins/rides/${rideId}/image`, {
-    method: "GET"
-  });
-}
 // export async function getRideImage(rideId) {
-//   return request(`/api/admins/rides/${rideId}/image-download-url`, {
+//   return request(`/admins/rides/${rideId}/image`, {
 //     method: "GET"
 //   });
 // }
+export async function getRideImage(rideId) {
+  return request(`/api/admins/rides/${rideId}/photos/download-url`, {
+    method: "GET"
+  });
+}
 
 export async function getRideDetail(id) {
   return request(`/api/admins/rides/${id}`, {

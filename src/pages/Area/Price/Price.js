@@ -374,7 +374,7 @@ class Price extends PureComponent {
     vehicleType !== null && vehicleType ? filterCriteria.pagination.page = 0 : null
     dispatch({
       type: "price/get",
-      payload: Object.assign({}, filterCriteria,selectedAreaId ? {areaId: selectedAreaId} : null),
+      payload: Object.assign({}, filterCriteria,selectedAreaId ? {areaIds: [selectedAreaId]} : null),
       onSuccess: (data,total,page) => {
         this.setState({selectedRows:data})
         this.setState({total:total})
