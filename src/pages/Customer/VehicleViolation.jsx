@@ -393,7 +393,7 @@ class VehicleViolation extends PureComponent {
     selectedRecordDetail: {},
     searchOldData:{}
   };
-  columns = [
+  columns = [////1111111
     {
       title: "Customer Phone",
       render: (text,record) => <a onClick={() => this.setState({selectedCustomerId: record.customerId},() =>  this.handleCustomerDetailModalVisible(true))}>{formatPhoneNumber(record.phone+"")}</a>
@@ -494,14 +494,8 @@ class VehicleViolation extends PureComponent {
       });
     }
   };
-
-
   handleVehicleDetailModalVisible = flag => this.setState({vehicleDetailModalVisible: flag})
-
-
-  handleCustomerDetailModalVisible = flag => this.setState({customerDetailModalVisible: flag})
-
-
+  handleCustomerDetailModalVisible = flag => {this.setState({customerDetailModalVisible: flag},()=>{console.log(this.state.customerDetailModalVisible);})}
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.selectedAreaId !== this.props.selectedAreaId) {
       this.getViolations();
@@ -691,6 +685,8 @@ class VehicleViolation extends PureComponent {
       selectedRidePathInfo,
       rideImageUrl
     } = this.state;
+    console.log(selectedCustomerId);
+    console.log(customerDetailModalVisible);
     const updateMethods = {
       handleModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
