@@ -494,14 +494,8 @@ class VehicleViolation extends PureComponent {
       });
     }
   };
-
-
   handleVehicleDetailModalVisible = flag => this.setState({vehicleDetailModalVisible: flag})
-
-
-  handleCustomerDetailModalVisible = flag => this.setState({customerDetailModalVisible: flag})
-
-
+  handleCustomerDetailModalVisible = flag => {this.setState({customerDetailModalVisible: flag})}
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.selectedAreaId !== this.props.selectedAreaId) {
       this.getViolations();
