@@ -99,8 +99,6 @@ export default {
     },
     *image({ rideId, onSuccess, onError }, { call, put }) {
       const url = yield call(getRideImage, rideId);
-      console.log('---');
-
       if (url && typeof url === "string") {
         onSuccess(url);
       } else {

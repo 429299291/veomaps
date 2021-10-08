@@ -495,7 +495,8 @@ class geo extends PureComponent {
     isDeleteModalVisible: false,
     isParkingCheckStart: false,
     uploadImgUrl:'',
-    hubUploadLoading:false
+    hubUploadLoading:false,
+    getFencesNewData:false
   };
 
   componentDidMount() {
@@ -529,7 +530,10 @@ class geo extends PureComponent {
     this.cancelEditing();
     dispatch({
       type: "geo/getFences",
-      areaId: areaId
+      areaId: areaId,
+      getFencesNew:()=>{this.setState({
+        getFencesNewData:true
+      })}
     });
   };
   checkParking = newPoint => {
@@ -787,6 +791,7 @@ class geo extends PureComponent {
     if (prevProps.selectedAreaId !== this.props.selectedAreaId && this.props.selectedAreaId) {
         // this.getAreaGeoInfo();
         this.getAreaGeoInfoFirst()
+    }else{
     }
   }
   urlGetImg(){
@@ -1265,8 +1270,6 @@ class geo extends PureComponent {
       isDeleteModalVisible
     } = this.state;
     const isEditing = isEditingCenter || isEditingFence || isEditingPrimeLocation;
-
-
     return (
       <PageHeaderWrapper title="Geo Management">
         {selectedAreaId && <Card bordered={true}>
@@ -1322,7 +1325,9 @@ class geo extends PureComponent {
               <div>{this.renderHeader(areas.data, isEditing)}</div>
             )}
             <div style={{ marginBottom: "1em"}} />
-            <MyMapComponent
+            {
+              this.state.getFencesNewData &&
+              <MyMapComponent
               onMapClick={this.handleMapClick}
               handleExistedFenceClick={this.handleExistedFenceClick}
               handleExistedPrimeLocationClick={this.handleExistedPrimeLocationClick}
@@ -1331,7 +1336,8 @@ class geo extends PureComponent {
               fences={geo.fences}
               primeLocations={geo.primeLocations}
               setCircleRef={this.setCircleRef}
-            />
+            /> 
+            }
           </div>
           <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
             <Col md={24} sm={24} style={{ float: "right" }}>

@@ -99,11 +99,10 @@ export default {
       }
     },
 
-    *getFences({ areaId, onSuccess }, { call, put }) {
+    *getFences({ areaId, onSuccess,getFencesNew }, { call, put }) {
       const response = yield call(getFencesByAreaId, areaId);
-
+      getFencesNew()
       const isArray = Array.isArray(response);
-
       if (isArray) {
         //sort fences by fencetype so geo fence always be the first one to render so other fences in geofence will have higher priority of click event.
         //geoFence 0 and subGeoFence 5 should always has priority, so the response should be organized into form like [0,5,...]
