@@ -75,6 +75,7 @@ const RenderSimpleForm=(props)=> {
       setTimeout(() => {
         const start = props.filterCriteria.timeRange.start;
         const end = props.filterCriteria.timeRange.end;
+        console.log(start);
         start ? formData.timeRange = [moment(start, dateFormat), moment(end, dateFormat)] : null
       }, 20);
     }
@@ -818,8 +819,8 @@ class Ride extends PureComponent {
     if (fieldsValue) {
       if(fieldsValue.timeRange){
         fieldsValue.timeRange ={
-          start:moment(fieldsValue.timeRange[0]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss"),
-          end:moment(fieldsValue.timeRange[1]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss")
+          start:moment(fieldsValue.timeRange[0]).format("YYYY-MM-DDTHH:mm:ss"),
+          end:moment(fieldsValue.timeRange[1]).format("YYYY-MM-DDTHH:mm:ss")
         }
     }
     // if (fieldsValue.phone){
@@ -875,9 +876,7 @@ class Ride extends PureComponent {
   handleDetailModalVisible = (flag, record) => {
     const { dispatch } = this.props;
     const { filterCriteria, rideImageUrl } = this.state;
-
     if (!!flag) {
-
       record.imageId && dispatch({
         type: "rides/image",
         rideId: record.id,
