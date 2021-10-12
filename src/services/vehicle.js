@@ -111,9 +111,9 @@ export async function updateAllLocations(params, id) {
 
 export async function alertVehicle(vehicleId) {
   return request(
-    `/admins/vehicles/${vehicleId}/find`,
+    `/api/admins/vehicles/${vehicleId}/find`,
     {
-      method: "POST"
+      method: "GET"
     }
   );
 }
