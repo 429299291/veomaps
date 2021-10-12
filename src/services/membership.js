@@ -11,7 +11,7 @@ import request from "@/utils/request";
 // }
 export async function getAdminMemberships(params) {
   return request(
-    `/api/admins/areas/${params.areaId}/memberships`,
+    `/api/admins/areas/${params.areaId}/memberships/search${params.name? `?name=${params.name}` :''}`,
     {
       method: "GET"
     }
@@ -25,8 +25,8 @@ export async function getMembershipDetail(id) {
   });
 }
 
-export async function createMembership(membership) {
-  return request(`/admins/memberships`, {
+export async function createMembership(areaId,membership) {
+  return request(`/api/admins/areas/${areaId}/memberships`, {
     method: "POST",
     body: {
       ...membership
@@ -34,15 +34,15 @@ export async function createMembership(membership) {
   });
 }
 
-export async function removeMembership(id) {
-  return request(`/admins/memberships/${id}`, {
+export async function removeMembership(areaId,id) {
+  return request(`/api/admins/areas/${areaId}/memberships/${id}`, {
     method: "DELETE"
   });
 }
 
 export async function updateMembership(id, params) {
-  return request(`/admins/memberships/${id}`, {
-    method: "PUT",
+  return request(`/api/admins/areas/${params.areaId}/memberships/${id}`, {
+    method: "PATCH",
     body: {
       ...params
     }
