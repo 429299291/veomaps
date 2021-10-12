@@ -892,7 +892,7 @@ class Membership extends PureComponent {
     
     return (
       <PageHeaderWrapper title="Membership List">
-        <Card bordered={false}>
+        <Card bordered={false} style={{display:selectedAreaId ? 'block': 'none'}}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>
               <RenderSimpleForm areas={this.props.areas} handleSearch={handleSearch} handleFormReset={this.handleFormReset}/>
