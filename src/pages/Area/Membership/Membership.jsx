@@ -80,6 +80,7 @@ const CreateForm = (props => {
     areas
   } = props;
   const [form] = Form.useForm()
+  form.resetFields()
   const okHandle = () => {
     form.submit()
     // form.validateFields((err, fieldsValue) => {
@@ -344,13 +345,13 @@ const CreateForm = (props => {
       <p>Policies:</p>
       <Row span={24}>
         <Form.Item label="Split" name={['policies','split']}>
-          <InputNumber addonbefore="+" addonafter="$" min={0}/>
+          <InputNumber min={0}/>
         </Form.Item>
         <Form.Item label="Unlock Fee" name={['policies','unlockFee']}>
-          <InputNumber addonbefore="+" addonafter="$" min={0}/>
+          <InputNumber min={0}/>
         </Form.Item>
         <Form.Item label="Fee" name={['policies','fee']}>
-          <InputNumber addonbefore="+" addonafter="$" min={0}/>
+          <InputNumber min={0}/>
         </Form.Item>
       </Row>
       {/* {areas && (
