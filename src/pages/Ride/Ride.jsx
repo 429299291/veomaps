@@ -278,15 +278,18 @@ import scooter from "../../assets/scooter-pin-lockedbackend.png";
 import EBike from "../../assets/pedal-bike-pinbackend.png";
 import COSMO from "../../assets/cosmo_normal.png";
 const vehicleTypeIcon = [Bicycle, scooter,EBike,COSMO];
-const lockOperationWay = [
-  "GPRS",
-  "BLUETOOTH",
-  "ADMIN",
-  "ABORT",
-  "TIMEOUT",
-  "PRE_AUTH_FAIL",
-  "REACH_MAX"
-];
+import {
+  lockOperationWay,
+} from "@/constant";
+// const lockOperationWay = [
+//   "GPRS",
+//   "BLUETOOTH",
+//   "ADMIN",
+//   "ABORT",
+//   "TIMEOUT",
+//   "PRE_AUTH_FAIL",
+//   "REACH_MAX"
+// ];
 const rideState = ["unconfirmed", "success", "error"];
 const rideStateColor = ["#e5bb02", "#0be024", "#ff0000"];
 
