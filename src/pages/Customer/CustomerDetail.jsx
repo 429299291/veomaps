@@ -611,7 +611,18 @@ const UpdateForm = (props => {
         </Select>
       </FormItem> */}
 
-      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Low Income" name='lowIncome'>
+<FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Low Income" name='lowIncome'>
+        <Select placeholder="select" style={{ width: "100%" }}>
+          <Option key={1} value={true}>
+            Yes
+          </Option>
+          <Option key={0} value={false}>
+            No
+          </Option>
+        </Select>
+      </FormItem>
+
+      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Quiz Taken" name='quizTaken'>
         <Select placeholder="select" style={{ width: "100%" }}>
           <Option key={1} value={true}>
             Yes
