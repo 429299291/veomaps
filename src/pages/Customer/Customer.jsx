@@ -462,10 +462,8 @@ class Customer extends PureComponent {
         //   .format("YYYY-MM-DDTHH:mm:ssZ");
         fieldsValue.timeRange = {
           start:moment(fieldsValue.created[0])
-          .utcOffset(0)
           .format("YYYY-MM-DDTHH:mm:ss"),
           end:moment(fieldsValue.created[1])
-          .utcOffset(0)
           .format("YYYY-MM-DDTHH:mm:ss")
         }
         fieldsValue.created = undefined;

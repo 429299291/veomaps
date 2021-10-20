@@ -75,7 +75,6 @@ const RenderSimpleForm=(props)=> {
       setTimeout(() => {
         const start = props.filterCriteria.timeRange.start;
         const end = props.filterCriteria.timeRange.end;
-        console.log(start);
         start ? formData.timeRange = [moment(start, dateFormat), moment(end, dateFormat)] : null
       }, 20);
     }
@@ -391,7 +390,7 @@ const RefundForm = (props => {
         label="Refund Type"
         name='refundType'
       >
-          <Select>
+          <Select style={{ width: 200 }}>
             <Option value={"DEPOSIT"}>Deposit</Option>
             <Option value={"CREDIT_CARD"}>Credit Card</Option>
           </Select>
@@ -444,27 +443,28 @@ const RefundForm = (props => {
         label="Refund Way"
         name='refundWay'
       >
-          <Select onChange={refundWayChange}>
+          <Select onChange={refundWayChange} style={{ width: 200 }}>
             <Option value={"FULLY_REFUND"}>Fully Refund</Option>
             <Option value={"PARTIAL_REFUND"}>Partial Refund</Option>
           </Select>
       </FormItem>
 
       <Form.Item
-      noStyle
+      labelCol={{ span: 6 }}
+      wrapperCol={{ span: 18 }}
       shouldUpdate={(prevValues, currentValues) => prevValues.refundWay !== currentValues.refundWay}
     >
       {({ getFieldValue }) =>
         getFieldValue('refundWay') == 'PARTIAL_REFUND' ? (
           <Row>
             <Col>
-            <span> originally {ride.minutes} minutes.  Refund Ride as</span>
+            <span style={{paddingLeft:'90px'}}> originally {ride.minutes} minutes.  Refund Ride as</span>
             </Col>
             <Col span={2}>
               <FormItem
                 name='minutes'
                 >
-                  <InputNumber style={{width:'auto'}}/>
+                  <InputNumber style={{width:'auto'}} min={0}/>
               </FormItem>
             </Col>
             <Col>minutes</Col>
@@ -567,6 +567,7 @@ const RefundForm = (props => {
                   <th>refund to deposit</th>
                   <th>refund to ride credit</th>
                   <th>refund to credit card</th>
+                  <th>refund hold capture</th>
                 </tr>
                 <tr>
                   <th>
@@ -581,6 +582,9 @@ const RefundForm = (props => {
                   </th>
                   <th>
                     ${rideRefundCalculateResult.refundDetail.refundToCard}
+                  </th>
+                  <th>
+                    ${rideRefundCalculateResult.refundDetail.refundHoldCapture}
                   </th>
                 </tr>
               </tbody>
@@ -781,12 +785,19 @@ class Ride extends PureComponent {
     params.lockMethod === null ? delete params.lockMethod : null
     params.unlockMethod === null ? delete params.unlockMethod : null
     this.setState({ filterCriteria: params });
+    console.log(params.timeRange);
     if(params.timeRange){
       params.timeRange ={
-        start:moment(params.timeRange[0]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss"),
-        end:moment(params.timeRange[1]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss")
+        start:moment(params.timeRange[0]).format("YYYY-MM-DDTHH:mm:ss"),
+        end:moment(params.timeRange[1]).format("YYYY-MM-DDTHH:mm:ss")
       }
   }
+  //   if(params.timeRange){
+  //     params.timeRange ={
+  //       start:moment(params.timeRange[0]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss"),
+  //       end:moment(params.timeRange[1]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss")
+  //     }
+  // }
     dispatch({
       type: "rides/get",
       payload: params
