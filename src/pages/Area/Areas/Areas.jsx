@@ -120,7 +120,7 @@ const Areas = (props) => {
         ridePhotoEnabled:values.feature.ridePhotoEnabled,
         billingAddressEnabled:values.feature.billingAddressEnabled,
         taxRate:values.feature.taxRate,
-        quizEnabled:values.feature.quizEnabled,
+        quiz:values.feature.quiz,
         areaAvailability:{
           isOpen:values.feature.areaAvailability.isOpen == 'null'? null:values.feature.areaAvailability.isOpen,
           timeZone:values.feature.areaAvailability.isOpen == 'null'?values.feature.areaAvailability.timeZone:null,
@@ -490,7 +490,12 @@ const Areas = (props) => {
                           </Form.Item>
                       </Col>
                       <Col span={12}>
-                          <Form.Item  label="Enable Quiz" {...tailLayout} name={['feature', 'quizEnabled']} valuePropName="checked">
+                          <Form.Item  label="Enable Quiz" {...tailLayout} name={['feature', 'quiz','enable']} valuePropName="checked">
+                            <Switch size="small"/>
+                          </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                          <Form.Item  label="Enable quiz mandatory" {...tailLayout} name={['feature', 'quiz','mandatory']} valuePropName="checked">
                             <Switch size="small"/>
                           </Form.Item>
                       </Col>
