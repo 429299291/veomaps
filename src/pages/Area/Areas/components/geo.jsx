@@ -386,11 +386,15 @@ const CreateFenceForm = (props => {
             </Select.Option>
       </Select>
       </FormItem>
+      {/* active time */}
+      {
+        fence &&
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Active Time" name='activeTimeRange'
       initialValue= {(fence && fence.activeTimeRange) ? fence.activeTimeRange : {weekDayDTO: {start: null, end: null}, weekendDTO: {start: null, end: null}, timeZone: null}}
       >
         <DynamicFenceConfigForm />
       </FormItem>
+      }
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Note" name='note'>
         <Input placeholder="Please Input" />
       </FormItem>
