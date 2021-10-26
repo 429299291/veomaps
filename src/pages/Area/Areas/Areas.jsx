@@ -301,7 +301,7 @@ const Areas = (props) => {
                   <Input/>
                 </Form.Item>
               </Col>
-            <Col span={24}>
+            <Col span={24} style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}>
             <Card title="Area  Basic" type="inner" size="small">
             <Row>
             <Col span={12}>
@@ -332,7 +332,7 @@ const Areas = (props) => {
             </Row>
             </Card>
             </Col>
-            <Col span={24}>
+            <Col span={24} style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}>
             <Card title="Age" type="inner" size="small">
             <Row>
             <Col span={12}>
@@ -351,7 +351,7 @@ const Areas = (props) => {
             </Row>
             </Card>
             </Col>
-            <Col span={24}>
+            <Col span={24} style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}>
             <Card title="Free Ride Time" type="inner" size="small">
             <Row justify="space-between">
             <Col span={12}>
@@ -388,14 +388,14 @@ const Areas = (props) => {
             </Col>
             </Row>
 
-            <Col span={24}>
+            <Col span={24} style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}>
               <Card title="Violation Fine Configuration" type="inner" size="small">
                 <Row>
                   <ViolationFine tags={violationFineDatas} getViolationFineDatas={getViolationFineDatas.bind(this)}></ViolationFine>
                 </Row>
               </Card>
             </Col>
-            <Col span={24}>
+            <Col span={24} style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}>
             <Card title="Bussiness Hour" type="inner" size="small">
             <Row justify="space-between">
             <Col span={11}>
@@ -453,7 +453,7 @@ const Areas = (props) => {
               </Row>
             </Card>
             </Col>
-              <Col span={24} className={styles.submit}>
+              <Col span={24} className={styles.submit} style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}>
                 <Collapse defaultActiveKey={['0']} onChange={PanelCallback}>
                   <Panel header="show more control" key="1">
                   <Row>
@@ -525,7 +525,6 @@ const Areas = (props) => {
                   </Panel>
                 </Collapse>
               </Col>
-
               <Row className={styles.submit}> 
               <Button onClick={onClose} style={{ marginRight: 8 }}>
                  Cancel
