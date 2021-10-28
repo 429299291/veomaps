@@ -1382,9 +1382,9 @@ class geo extends PureComponent {
           Area you sure you want to delete
           <p style={{color:'#f00'}}>
           {`${selectedExistedFence ? `fence:   ${selectedExistedFence.name} \n
-            with type:  ${fenceType[selectedExistedFence.fenceType]}` : "this circle"} ?`}
+            with type: ${fenceType[selectedExistedFence.fenceType]}` : "this circle"} ?`}
           {/* {`${(selectedExistedFence && selectedExistedFence.fenceType == 0) ? `fence:   ${selectedExistedFence.name}` : "this circle"}`} */}
-          {selectedExistedFence && selectedExistedFence.fenceType == 0 ? <p>Please type to confirm:<Input onChange={this.geofenceOnDelete} style={{width:'200px'}} placeholder="Input Fence Type" /></p>:''}
+          {selectedExistedFence && selectedExistedFence.fenceType == 0 ? <p>Please type “geofence” to delete<Input onChange={this.geofenceOnDelete} style={{width:'200px'}} placeholder="Input Fence Type" /></p>:''}
           </p>
           </p>
         </Modal>
