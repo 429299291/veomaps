@@ -500,7 +500,8 @@ class geo extends PureComponent {
     isParkingCheckStart: false,
     uploadImgUrl:'',
     hubUploadLoading:false,
-    getFencesNewData:false
+    getFencesNewData:false,
+    fenceDelete:true
   };
 
   componentDidMount() {
@@ -1195,17 +1196,13 @@ class geo extends PureComponent {
   };
 
   handleDelete= () => {
-
     const { selectedExistedFence , selectedExistedPrimeLocation} = this.state;
-
     if (selectedExistedFence) {
       this.handleDeleteFence();
     }
-
     if (selectedExistedPrimeLocation) {
       this.handleDeletePrimeLocation();
     }
-
   }
 
   handleDeletePrimeLocation = () => {
@@ -1240,16 +1237,19 @@ class geo extends PureComponent {
   };
 
   shouldShowEditButton = () => {
-
     const {
       selectedExistedPrimeLocation,
       selectedExistedFence
     } = this.state;
-
    return (selectedExistedFence);
-
   }
-
+  geofenceOnDelete = (e)=>{
+    if(e.target.value == 'geofence'){
+      this.setState({fenceDelete:false})
+    }else{
+      this.setState({fenceDelete:true})
+    }
+  }
   render() {
     const {
       geo,
@@ -1296,8 +1296,10 @@ class geo extends PureComponent {
                   )}
                     <Button
                       type="danger"
-                      onClick={() =>
+                      onClick={() =>{
+                        selectedExistedFence.fenceType == 0 ? this.setState({fenceDelete:true}) : this.setState({fenceDelete:false});
                         this.setState({ isDeleteModalVisible: true })
+                      }
                       }
                       disabled={isEditing}
                       className={styles.editButton}
@@ -1372,6 +1374,7 @@ class geo extends PureComponent {
           onOk={this.handleDelete}
           onCancel={() => this.setState({ isDeleteModalVisible: false })}
           okText="Delete"
+          okButtonProps={{ disabled: this.state.fenceDelete }}
           okType="danger"
         >
           <p style={{fontSize: "2em"}}>
@@ -1380,9 +1383,9 @@ class geo extends PureComponent {
           <p style={{color:'#f00'}}>
           {`${selectedExistedFence ? `fence:   ${selectedExistedFence.name} \n
             with type:  ${fenceType[selectedExistedFence.fenceType]}` : "this circle"} ?`}
+          {/* {`${(selectedExistedFence && selectedExistedFence.fenceType == 0) ? `fence:   ${selectedExistedFence.name}` : "this circle"}`} */}
+          {selectedExistedFence && selectedExistedFence.fenceType == 0 ? <p>Please type to confirm:<Input onChange={this.geofenceOnDelete} style={{width:'200px'}} placeholder="Input Fence Type" /></p>:''}
           </p>
-            {/* {`Area you sure you want to delete \n  ${selectedExistedFence ? `fence:   ${selectedExistedFence.name} \n
-            with type:  ${fenceType[selectedExistedFence.fenceType]}` : "this circle"} ?`} */}
           </p>
         </Modal>
       </PageHeaderWrapper>
