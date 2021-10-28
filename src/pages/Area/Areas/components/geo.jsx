@@ -1380,12 +1380,11 @@ class geo extends PureComponent {
           {/* <p style={{fontSize: "2em"}}> */}
           <WarningOutlined style={{color:'#ffb74d'}}/>
           Area you sure you want to delete
-          <p style={{color:'#f00'}}>
+          {/* <p style={{color:'#f00'}}>
           {`${selectedExistedFence ? `fence:   ${selectedExistedFence.name} \n
             with type: ${fenceType[selectedExistedFence.fenceType]}` : "this circle"} ?`}
-          {/* {`${(selectedExistedFence && selectedExistedFence.fenceType == 0) ? `fence:   ${selectedExistedFence.name}` : "this circle"}`} */}
-          </p>
-          {selectedExistedFence && selectedExistedFence.fenceType == 0 ? <span>Please type “geofence” to delete<Input onChange={this.geofenceOnDelete} style={{width:'200px'}} placeholder="Input Fence Type" /></span>:''}
+          </p> */}
+          {/* {selectedExistedFence && selectedExistedFence.fenceType == 0 ? <span>Please type “geofence” to delete<Input onChange={this.geofenceOnDelete} style={{width:'200px'}} placeholder="Input Fence Type" /></span>:''} */}
           {/* </p> */}
         </Modal>
       </PageHeaderWrapper>
