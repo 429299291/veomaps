@@ -120,7 +120,7 @@ const RenderSimpleForm=(props)=> {
                 <InputNumber placeholder="Please Phone Number" style={{width: "100%"}}/>
             </FormItem>
           </Col>
-          <Col span={5}>
+          <Col span={6}>
             <FormItem
               label="Status"
               name='status'
