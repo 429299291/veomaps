@@ -667,6 +667,11 @@ class Ride extends PureComponent {
       render: val => <span>{lockOperationWay[val]}</span>
     },
     {
+      title: "Host",
+      dataIndex: "isHost",
+      render: val => val ? 'host' : 'guest'
+    },
+    {
       title: "Start",
       dataIndex: "start",
       sorter: true,
