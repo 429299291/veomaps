@@ -1377,7 +1377,7 @@ class geo extends PureComponent {
           okButtonProps={{ disabled: this.state.fenceDelete }}
           okType="danger"
         >
-          {/* <p style={{fontSize: "2em"}}> */}
+          <p style={{fontSize: "2em"}}>
           <WarningOutlined style={{color:'#ffb74d'}}/>
           Area you sure you want to delete
           {/* <p style={{color:'#f00'}}>
@@ -1385,7 +1385,7 @@ class geo extends PureComponent {
             with type: ${fenceType[selectedExistedFence.fenceType]}` : "this circle"} ?`}
           </p> */}
           {/* {selectedExistedFence && selectedExistedFence.fenceType == 0 ? <span>Please type “geofence” to delete<Input onChange={this.geofenceOnDelete} style={{width:'200px'}} placeholder="Input Fence Type" /></span>:''} */}
-          {/* </p> */}
+          </p>
         </Modal>
       </PageHeaderWrapper>
     );
