@@ -24,6 +24,7 @@ import {
   Table,
   Checkbox,
   Switch,
+  Space,
   Spin
 } from "antd";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
@@ -60,7 +61,6 @@ const REFUND_REASON = ["first timer forgot to lock", "first timer locked outside
 
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    
 // const AddCouponForm = (props => {
 //   const { coupons } = props;
 //   const [form]= Form.useForm();
@@ -1071,7 +1071,9 @@ class CustomerDetail extends PureComponent {
     needPickupFee: null,
     customerActiveDays: null,
     customerTransactions: null,
-    customerApprovedViolationCount: "Loading"
+    customerApprovedViolationCount: "Loading",
+    isRefundModalVisible:false,
+    amountTips:'inline-block'
   };
 
   // customerCouponColumns = [
@@ -1216,7 +1218,16 @@ class CustomerDetail extends PureComponent {
       title: "Created",
       dataIndex: "created",
       render: value =>  <span>{ moment(value).format("YYYY-MM-DD HH:mm:ss")} </span>
-    }
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (text,record) => (
+        // <Space size="middle">
+          <a onClick={this.refundShowModal}>Refund</a>
+        // </Space>
+      ),
+    },
   ];
 
 
@@ -1304,6 +1315,19 @@ class CustomerDetail extends PureComponent {
 
   handleRefundReasonChange = reason => {
     this.setState({refundReason: reason})
+  }
+  refundHandleCancel = () => {
+    this.setState({isRefundModalVisible:false});
+  };
+  refundShowModal=()=>{
+    this.setState({isRefundModalVisible:true});
+  }
+  customerRefundMethod=(value)=>{
+    console.log(value);
+    this.setState({isRefundModalVisible:false});
+  }
+  amountChangeTips=(value)=>{
+    value ? this.setState({amountTips:'none'}) : this.setState({amountTips:'inline-block'})
   }
 
   handleGetCoupons = () => {
@@ -1647,7 +1671,40 @@ class CustomerDetail extends PureComponent {
                 />
               )}
             </Card> }
-
+            <Modal title="Refund Detail" visible={this.state.isRefundModalVisible} onOk={this.customerRefundMethod} onCancel={this.refundHandleCancel}>
+                <Form
+                name="basic"
+                initialValues={{ remember: true }}
+                // onFinish={onFinish}
+                // onFinishFailed={onFinishFailed}
+                autoComplete="off"
+              >
+                <Form.Item
+                  label="Type"
+                  name="type"
+                  rules={[{ required: true, message: 'Please select type!' }]}
+                >
+                      <Select defaultValue="TO_DEPOSIT" style={{ width: 120 }}>
+                        <Option value="TO_DEPOSIT">Deposit</Option>
+                        <Option value="TO_CARD">Credit Card</Option>
+                      </Select>
+                </Form.Item>
+                <Form.Item
+                  label="Note"
+                  name="note"
+                  rules={[{ required: true, message: 'Please input note!' }]}
+                >
+                  <Input />
+                </Form.Item>
+                <Form.Item
+                  label='Amount'
+                  name='amount'
+                >
+                  <InputNumber formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} onChange={this.amountChangeTips} defaultValue={0} min={0}/>
+                  <span style={{marginLeft:'20px',color:'#999',display:this.state.amountTips}}>0 is the refund of all</span>
+                </Form.Item>
+              </Form>
+            </Modal>
             {
             <Card title="Payment History" style={{ marginTop: "2em" }}>
               <Table
