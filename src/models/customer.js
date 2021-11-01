@@ -12,7 +12,8 @@ import {
   getCustomerTransactions,
   refund,
   updateMembership,
-  getTempCode
+  getTempCode,
+  customerRefund
 } from "@/services/customer";
 import { message } from "antd";
 
@@ -115,6 +116,9 @@ export default {
       } else {
         message.error(`Refund Fail!`);
       }
+    },
+    *customerRefund({transactionId,payload},{call,put}){
+      const data = yield call(customerRefund,transactionId, payload)
     },
     *getMembership({  customerId, onSuccess }, { call, put }) {
       const data = yield call(getMembership, customerId);
