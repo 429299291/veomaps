@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# npm install
-npm install npm@6.14.12
+npm install
+
 if [ "$CI_COMMIT_REF_NAME" == "master" ];
 then
     sed -i 's/dev/prod/g' src/utils/request.js
