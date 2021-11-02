@@ -345,14 +345,17 @@ class Promo extends PureComponent {
     },
     {
       title: "Valid Days",
+      sorter: (a, b) => a.days - b.days,
       dataIndex: "days"
     },
     {
       title: "Ride Credit",
+      sorter: (a, b) => a.rideCredit - b.rideCredit,
       dataIndex: "rideCredit"
     },
     {
       title: "Redeem Count",
+      sorter: (a, b) => a.redeemCount - b.redeemCount,
       dataIndex: "redeemCount"
     },
     {

@@ -650,10 +650,12 @@ class Ride extends PureComponent {
     },
     {
       title: "Charge",
+      sorter: (a, b) => a.charge - b.charge,
       dataIndex: "charge"
     },
     {
       title: "Tax",
+      sorter: (a, b) => a.tax - b.tax,
       dataIndex: "tax"
     },
     {
@@ -674,13 +676,11 @@ class Ride extends PureComponent {
     {
       title: "Start",
       dataIndex: "start",
-      sorter: true,
       render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
     },
     {
       title: "End",
       dataIndex: "end",
-      sorter: true,
       render: (val, record) => {
         const endTime = val
           ? moment(val).format("YYYY-MM-DD HH:mm:ss")
@@ -695,6 +695,7 @@ class Ride extends PureComponent {
     },
     {
       title: "Minutes",
+      sorter: (a, b) => a.minutes - b.minutes,
       render: (text, record) => {
         const minutsDiff = record.end
           ? record.minutes
@@ -704,6 +705,7 @@ class Ride extends PureComponent {
     },
     {
       title: "Distance",
+      sorter: (a, b) => a.distance - b.distance,
       dataIndex: "distance"
     },
     {

@@ -72,7 +72,8 @@ const errorStatusIndexs = {
   3: "Deactivated",
   5: "Rebalance",
   6: "Maintain",
-  7: "Out of Service"
+  7: "Out of Service",
+  8:"SLA"
 };
 
 const errorStatus = Object.keys(errorStatusIndexs);
@@ -762,6 +763,7 @@ class Vehicle extends PureComponent {
     {
       title: "IoT Power",
       dataIndex: "iotBattery",
+      sorter: (a, b) => a.iotBattery - b.iotBattery,
       render(val) {
         return <p>{roundTo2Decimal(val > 100 ? getPowerPercent(val)  : val) + "%"}</p>;
       }
@@ -781,26 +783,24 @@ class Vehicle extends PureComponent {
     },
     {
       title: "HeartTime",
+      key:"heartime",
       dataIndex: "heartTime",
-      sorter: true,
       render: val => <span>{formatTime(val)}</span>
     },
     {
       title: "Ride Count",
+      sorter: (a, b) => a.rideCount - b.rideCount,
       dataIndex: "rideCount",
-      sorter: true,
       render: val => <span>{val}</span>
     },
     {
       title: "Last Ride Time",
       dataIndex: "lastRideTime",
-      sorter: true,
       render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
     },
     {
       title: "Last Drop Off Time",
       dataIndex: "lastDropOffTime",
-      sorter: true,
       render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
     },
     {

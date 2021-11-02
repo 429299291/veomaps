@@ -342,7 +342,6 @@ class Customer extends PureComponent {
     {
       title: "Full Name",
       dataIndex: "fullName",
-      sorter: true
     },
     {
       title: "Area",

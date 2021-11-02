@@ -1269,15 +1269,13 @@ class CustomerDetail extends PureComponent {
       dataIndex: "created",
       render: value =>  <span>{ moment(value).format("YYYY-MM-DD HH:mm:ss")} </span>
     },
-    {
-      title: 'Action',
-      key: 'action',
-      render: (text,record) => (
-        // <Space size="middle">
-          <a onClick={()=>{this.refundShowModal(record.id)}}>Refund</a>
-        // </Space>
-      ),
-    },
+    // {
+    //   title: 'Action',
+    //   key: 'action',
+    //   render: (text,record) => (
+    //       (record.type == 7 || record.type == 8 || record.type == 10 || record.type == 3) ? <a onClick={()=>{this.refundShowModal(record.id)}}>Refund</a> : ''
+    //   ),
+    // },
   ];
 
 
@@ -1728,7 +1726,7 @@ class CustomerDetail extends PureComponent {
             {
               <Fefundmodal isRefundModalVisible = {this.state.isRefundModalVisible} customerRefundMethod={this.customerRefundMethod} refundHandleCancel={this.refundHandleCancel}></Fefundmodal>
             }
-            {
+            {/* {
             <Card title="Payment History" style={{ marginTop: "2em" }}>
               <Table
                 dataSource={customerPayments}
@@ -1747,7 +1745,7 @@ class CustomerDetail extends PureComponent {
                   refundReason={refundReason}
                 />
               )}
-            </Card>}
+            </Card>} */}
 
             {/* {(
               <Card title="Customer Coupons" style={{ marginTop: "2em" }}>
