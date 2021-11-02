@@ -224,10 +224,12 @@ class Deposit extends PureComponent {
     },
     {
       title: "Deposit",
+      sorter: (a, b) => a.deposit - b.deposit,
       dataIndex: "deposit"
     },
     {
       title: "Ride Credit",
+      sorter: (a, b) => a.rideCredit - b.rideCredit,
       dataIndex: "rideCredit"
     },
     {

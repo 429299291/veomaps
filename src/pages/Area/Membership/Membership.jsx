@@ -675,14 +675,17 @@ class Membership extends PureComponent {
     },
     {
       title: "Price",
+      sorter: (a, b) => a.price - b.price,
       dataIndex: "price"
     },
     {
       title: "Free Minutes",
+      sorter: (a, b) => a.unitCount - b.unitCount,
       dataIndex: "unitCount"
     },
     {
       title: "Priority",
+      sorter: (a, b) => a.priority - b.priority,
       dataIndex: "priority"
     },
     {
