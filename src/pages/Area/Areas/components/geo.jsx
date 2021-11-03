@@ -386,11 +386,15 @@ const CreateFenceForm = (props => {
             </Select.Option>
       </Select>
       </FormItem>
+      {/* active time */}
+      {
+        fence &&
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Active Time" name='activeTimeRange'
       initialValue= {(fence && fence.activeTimeRange) ? fence.activeTimeRange : {weekDayDTO: {start: null, end: null}, weekendDTO: {start: null, end: null}, timeZone: null}}
       >
         <DynamicFenceConfigForm />
       </FormItem>
+      }
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Note" name='note'>
         <Input placeholder="Please Input" />
       </FormItem>
@@ -495,7 +499,9 @@ class geo extends PureComponent {
     isDeleteModalVisible: false,
     isParkingCheckStart: false,
     uploadImgUrl:'',
-    hubUploadLoading:false
+    hubUploadLoading:false,
+    getFencesNewData:false,
+    fenceDelete:true
   };
 
   componentDidMount() {
@@ -529,7 +535,10 @@ class geo extends PureComponent {
     this.cancelEditing();
     dispatch({
       type: "geo/getFences",
-      areaId: areaId
+      areaId: areaId,
+      getFencesNew:()=>{this.setState({
+        getFencesNewData:true
+      })}
     });
   };
   checkParking = newPoint => {
@@ -787,6 +796,7 @@ class geo extends PureComponent {
     if (prevProps.selectedAreaId !== this.props.selectedAreaId && this.props.selectedAreaId) {
         // this.getAreaGeoInfo();
         this.getAreaGeoInfoFirst()
+    }else{
     }
   }
   urlGetImg(){
@@ -1186,17 +1196,13 @@ class geo extends PureComponent {
   };
 
   handleDelete= () => {
-
     const { selectedExistedFence , selectedExistedPrimeLocation} = this.state;
-
     if (selectedExistedFence) {
       this.handleDeleteFence();
     }
-
     if (selectedExistedPrimeLocation) {
       this.handleDeletePrimeLocation();
     }
-
   }
 
   handleDeletePrimeLocation = () => {
@@ -1231,16 +1237,19 @@ class geo extends PureComponent {
   };
 
   shouldShowEditButton = () => {
-
     const {
       selectedExistedPrimeLocation,
       selectedExistedFence
     } = this.state;
-
    return (selectedExistedFence);
-
   }
-
+  geofenceOnDelete = (e)=>{
+    if(e.target.value == 'geofence'){
+      this.setState({fenceDelete:false})
+    }else{
+      this.setState({fenceDelete:true})
+    }
+  }
   render() {
     const {
       geo,
@@ -1265,8 +1274,6 @@ class geo extends PureComponent {
       isDeleteModalVisible
     } = this.state;
     const isEditing = isEditingCenter || isEditingFence || isEditingPrimeLocation;
-
-
     return (
       <PageHeaderWrapper title="Geo Management">
         {selectedAreaId && <Card bordered={true}>
@@ -1289,8 +1296,10 @@ class geo extends PureComponent {
                   )}
                     <Button
                       type="danger"
-                      onClick={() =>
+                      onClick={() =>{
+                        selectedExistedFence.fenceType == 0 ? this.setState({fenceDelete:true}) : this.setState({fenceDelete:false});
                         this.setState({ isDeleteModalVisible: true })
+                      }
                       }
                       disabled={isEditing}
                       className={styles.editButton}
@@ -1322,7 +1331,9 @@ class geo extends PureComponent {
               <div>{this.renderHeader(areas.data, isEditing)}</div>
             )}
             <div style={{ marginBottom: "1em"}} />
-            <MyMapComponent
+            {
+              this.state.getFencesNewData &&
+              <MyMapComponent
               onMapClick={this.handleMapClick}
               handleExistedFenceClick={this.handleExistedFenceClick}
               handleExistedPrimeLocationClick={this.handleExistedPrimeLocationClick}
@@ -1331,7 +1342,8 @@ class geo extends PureComponent {
               fences={geo.fences}
               primeLocations={geo.primeLocations}
               setCircleRef={this.setCircleRef}
-            />
+            /> 
+            }
           </div>
           <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
             <Col md={24} sm={24} style={{ float: "right" }}>
@@ -1362,6 +1374,7 @@ class geo extends PureComponent {
           onOk={this.handleDelete}
           onCancel={() => this.setState({ isDeleteModalVisible: false })}
           okText="Delete"
+          okButtonProps={{ disabled: this.state.fenceDelete }}
           okType="danger"
         >
           <p style={{fontSize: "2em"}}>
@@ -1369,10 +1382,9 @@ class geo extends PureComponent {
           Area you sure you want to delete
           <p style={{color:'#f00'}}>
           {`${selectedExistedFence ? `fence:   ${selectedExistedFence.name} \n
-            with type:  ${fenceType[selectedExistedFence.fenceType]}` : "this circle"} ?`}
+            with type: ${fenceType[selectedExistedFence.fenceType]}` : "this circle"} ?`}
           </p>
-            {/* {`Area you sure you want to delete \n  ${selectedExistedFence ? `fence:   ${selectedExistedFence.name} \n
-            with type:  ${fenceType[selectedExistedFence.fenceType]}` : "this circle"} ?`} */}
+          {selectedExistedFence && selectedExistedFence.fenceType == 0 ? <span>Please type “geofence” to delete<Input onChange={this.geofenceOnDelete} style={{width:'200px'}} placeholder="Input Fence Type" /></span>:''}
           </p>
         </Modal>
       </PageHeaderWrapper>

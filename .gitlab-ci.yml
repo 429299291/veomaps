@@ -14,7 +14,7 @@ stages:
 
 root-build:
   stage: package
-  image: node:latest
+  image: node:16
   script:
     - /bin/bash ./k8s/package.sh
   artifacts:

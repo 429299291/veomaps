@@ -188,7 +188,6 @@ class Notifications extends PureComponent {
     {
       title: "Date",
       dataIndex: "created",
-      sorter: true,
       render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
     }
   ];

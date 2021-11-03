@@ -385,6 +385,7 @@ const UpdateForm = (props => {
         >
               <Select placeholder="select" style={{ width: "100%" }}>
                 <Option value={0} >Normal</Option>
+                <Option value={8} >SLA</Option>
                 <Option value={1} >Error</Option>
                 <Option value={3} >Deativated</Option>
                 <Option disabled={true} value={5} >Rebalance</Option>
