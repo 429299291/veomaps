@@ -50,8 +50,8 @@ export default {
         onError && onError();
       }
     },
-    *remove({ id, payload, onSuccess, onError }, { call, put }) {
-      const response = yield call(removeMembership, id); // delete
+    *remove({areaId, id, payload, onSuccess, onError }, { call, put }) {
+      const response = yield call(removeMembership,areaId, id); // delete
 
       if (response) {
         message.success(`Add Success, ID : ${response}`);
@@ -61,8 +61,8 @@ export default {
         onError && onError();
       }
     },
-    *add({ payload, onSuccess, onError }, { call, put }) {
-      const response = yield call(createMembership, payload); // delete
+    *add({areaId, payload, onSuccess, onError }, { call, put }) {
+      const response = yield call(createMembership,areaId, payload); // delete
 
       if (response) {
         message.success(`Add Success, ID : ${response}`);

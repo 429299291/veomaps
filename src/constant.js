@@ -45,7 +45,10 @@ const transactionType = [
   "Violation Revert",
   "Shop Order",
   "Auto Reload",
-  "Hold Captured"
+  "Hold Captured",
+  "Deposit Refund",
+  "Hold Captured Refund",
+  "Shop Order Refund"
 ];
 
 const parkingViolationType = [
@@ -72,6 +75,16 @@ const technicianActionTypes = [
   "Start Swap Battery",
   "End Swap Battery",
 ]
+const lockOperationWay = [
+  "GPRS",
+  "BLUETOOTH",
+  "ADMIN",
+  "UNKNOWN",
+  "TIMEOUT",
+  "OUT-OF-BALANCE",
+  "REACH_MAXIMUM",
+  "SERVICE_OFF"
+];
 
 const vehicleType = ["Bicycle", "Scooter", "E-Bike", "COSMO"];
 
@@ -80,7 +93,6 @@ const operationStatus = ["NORMAL", "MANTAINANCE"];
 const connectStatus = ["Offline", "Online"];
 const lockStatus = ["Unlock", "lock"];
 const rideType = ["USING", "FINISHED"];
-const lockOperationWay = ["GPRS", "BLUETOOTH", "ADMIN", "UNKNOWN"];
 const rideState = ["unconfirmed","success","error"];
 const rideStateColor = ["#e5bb02","#0be024","#ff0000"];
 const violateType = ["Normal", "In restricted fence", "out of geo fence", "out of force parking zone", "unknown"];

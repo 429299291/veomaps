@@ -24,6 +24,8 @@ import {
   Table,
   Checkbox,
   Switch,
+  Tooltip,
+  Space,
   Spin
 } from "antd";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
@@ -60,7 +62,78 @@ const REFUND_REASON = ["first timer forgot to lock", "first timer locked outside
 
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    
+const Fefundmodal = (props)=>{
+  const [form] = Form.useForm();
+  form.resetFields()
+  const [amountTips, setAmountTips] = useState('inline-block'); 
+  const onFinish =(values)=>{
+    console.log(values);
+  }
+  const onFinishFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+  };
+  const amountChangeTips=(value)=>{
+    value ? setAmountTips('none') : setAmountTips('inline-block')
+  }
+  return (
+    <Modal title="Refund Detail" visible={props.isRefundModalVisible} onOk={()=>{props.customerRefundMethod(form.getFieldsValue(true))}} onCancel={props.refundHandleCancel}>
+    <Form
+    name="basic"
+    form={form}
+    initialValues={{ type: 'TO_DEPOSIT',amount:0 }}
+    onFinish={onFinish}
+    onFinishFailed={onFinishFailed}
+    // autoComplete="off"
+  >
+    <Form.Item
+      label="Type"
+      name="type"
+      rules={[{ required: true, message: 'Please select type!' }]}
+    >
+          <Select style={{ width: 120 }}>
+            <Option value="TO_DEPOSIT">Deposit</Option>
+            <Option value="TO_CARD">Credit Card</Option>
+          </Select>
+    </Form.Item>
+    <Space>
+    <Form.Item
+      label='Amount'
+      name='amount'
+    >
+      <InputNumber formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} min={0} style={{ width: 120 }}/>
+      {/* <span style={{marginLeft:'20px',color:'#999',display:amountTips}}>0 is the refund of all</span> */}
+    </Form.Item>
+    <Tooltip title="Useful information">
+    {/* <span style={{marginLeft:'20px',color:'#999',display:amountTips,paddingBottom:'20px'}}>0 is the refund of all</span> */}
+    <span style={{marginLeft:'20px',color:'#999',display:"inline-block",paddingBottom:'20px'}}>0 is the refund of all</span>
+    </Tooltip>
+    </Space>
+    <Form.Item
+      label="Refund Reason"
+      name="refundReason"
+      rules={[{ required: true, message: 'Please input Refund Reason!' }]}
+    >
+          <Select style={{ width: 200 }}>
+            <Option value="Other">Other</Option>
+            <Option value="Lock Issue">Lock Issue</Option>
+            <Option value="Accidental Deposit">Accidental Deposit</Option>
+            <Option value="No Longer in Market">No Longer in Market</Option>
+            <Option value="Fraud">Fraud</Option>
+            <Option value="Scooter Issue">Scooter Issue</Option>
+            <Option value="App Issue">App Issue</Option>
+            <Option value="Phone Issue">Phone Issue</Option>
+          </Select>
+    </Form.Item>
+    <Form.Item
+      label="Note"
+      name="note"
+    >
+      <Input />
+    </Form.Item>
+  </Form>
+</Modal>
+  )
+}
 // const AddCouponForm = (props => {
 //   const { coupons } = props;
 //   const [form]= Form.useForm();
@@ -228,7 +301,6 @@ const MembershipForm = (props => {
           >
               <Select 
                   placeholder="select" style={{ width: "100%" }} 
-                  defaultValue ={activeMembership ? activeMembership.id : undefined}
                   onChange={val => setAllowToBuy(!activeMembership && !!val)}    
                   disabled={!!activeMembership}            
               >
@@ -282,7 +354,7 @@ const EndRideForm = (props => {
       forceRender
       onCancel={() => handleEndRideVisible(false)}
     >
-      <Form>
+      <Form form={form}>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
@@ -611,7 +683,18 @@ const UpdateForm = (props => {
         </Select>
       </FormItem> */}
 
-      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Low Income" name='lowIncome'>
+<FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Low Income" name='lowIncome'>
+        <Select placeholder="select" style={{ width: "100%" }}>
+          <Option key={1} value={true}>
+            Yes
+          </Option>
+          <Option key={0} value={false}>
+            No
+          </Option>
+        </Select>
+      </FormItem>
+
+      <FormItem labelCol={{ span: 10 }} wrapperCol={{ span: 10 }} label="Is Quiz Taken" name='quizTaken'>
         <Select placeholder="select" style={{ width: "100%" }}>
           <Option key={1} value={true}>
             Yes
@@ -1060,7 +1143,9 @@ class CustomerDetail extends PureComponent {
     needPickupFee: null,
     customerActiveDays: null,
     customerTransactions: null,
-    customerApprovedViolationCount: "Loading"
+    customerApprovedViolationCount: "Loading",
+    isRefundModalVisible:false,
+    transactionId:null
   };
 
   // customerCouponColumns = [
@@ -1205,7 +1290,14 @@ class CustomerDetail extends PureComponent {
       title: "Created",
       dataIndex: "created",
       render: value =>  <span>{ moment(value).format("YYYY-MM-DD HH:mm:ss")} </span>
-    }
+    },
+    // {
+    //   title: 'Action',
+    //   key: 'action',
+    //   render: (text,record) => (
+    //       ((record.type == 7 && !record.refunded) || (record.type == 8 && !record.refunded && record.stripeChargeId) || (!record.refunded && record.type == 10) || (!record.refunded && record.type == 3)) ? <a onClick={()=>{this.refundShowModal(record.id)}}>Refund</a> : ''
+    //   ),
+    // },
   ];
 
 
@@ -1293,6 +1385,23 @@ class CustomerDetail extends PureComponent {
 
   handleRefundReasonChange = reason => {
     this.setState({refundReason: reason})
+  }
+  refundHandleCancel = () => {
+    this.setState({isRefundModalVisible:false});
+  };
+  refundShowModal=(value)=>{
+    this.setState({transactionId:value})
+    this.setState({isRefundModalVisible:true});
+  }
+  customerRefundMethod=(value)=>{
+    const { dispatch } = this.props;
+    value.amount == 0 ? value.amount = null : null
+    dispatch({
+      type: "customers/customerRefund",
+      payload: value,
+      transactionId:this.state.transactionId
+    }).then(this.setState({isRefundModalVisible:false}));
+    // this.setState({isRefundModalVisible:false});
   }
 
   handleGetCoupons = () => {
@@ -1636,8 +1745,10 @@ class CustomerDetail extends PureComponent {
                 />
               )}
             </Card> }
-
             {
+              <Fefundmodal isRefundModalVisible = {this.state.isRefundModalVisible} customerRefundMethod={this.customerRefundMethod} refundHandleCancel={this.refundHandleCancel}></Fefundmodal>
+            }
+            {/* {
             <Card title="Payment History" style={{ marginTop: "2em" }}>
               <Table
                 dataSource={customerPayments}
@@ -1656,7 +1767,7 @@ class CustomerDetail extends PureComponent {
                   refundReason={refundReason}
                 />
               )}
-            </Card>}
+            </Card>} */}
 
             {/* {(
               <Card title="Customer Coupons" style={{ marginTop: "2em" }}>

@@ -317,10 +317,12 @@ class Price extends PureComponent {
     },
     {
       title: "Price",
+      sorter: (a, b) => a.price - b.price,
       dataIndex: "price"
     },
     {
       title: "Frequency",
+      sorter: (a, b) => a.frequency - b.frequency,
       dataIndex: "frequency"
     },
     {
@@ -330,6 +332,7 @@ class Price extends PureComponent {
     },
     {
       title: "Unlock Fee",
+      sorter: (a, b) => a.unlockFee - b.unlockFee,
       dataIndex: "unlockFee"
     },
     {

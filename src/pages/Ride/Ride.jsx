@@ -277,15 +277,18 @@ import scooter from "../../assets/scooter-pin-lockedbackend.png";
 import EBike from "../../assets/pedal-bike-pinbackend.png";
 import COSMO from "../../assets/cosmo_normal.png";
 const vehicleTypeIcon = [Bicycle, scooter,EBike,COSMO];
-const lockOperationWay = [
-  "GPRS",
-  "BLUETOOTH",
-  "ADMIN",
-  "ABORT",
-  "TIMEOUT",
-  "PRE_AUTH_FAIL",
-  "REACH_MAX"
-];
+import {
+  lockOperationWay,
+} from "@/constant";
+// const lockOperationWay = [
+//   "GPRS",
+//   "BLUETOOTH",
+//   "ADMIN",
+//   "ABORT",
+//   "TIMEOUT",
+//   "PRE_AUTH_FAIL",
+//   "REACH_MAX"
+// ];
 const rideState = ["unconfirmed", "success", "error"];
 const rideStateColor = ["#e5bb02", "#0be024", "#ff0000"];
 
@@ -387,7 +390,7 @@ const RefundForm = (props => {
         label="Refund Type"
         name='refundType'
       >
-          <Select>
+          <Select style={{ width: 200 }}>
             <Option value={"DEPOSIT"}>Deposit</Option>
             <Option value={"CREDIT_CARD"}>Credit Card</Option>
           </Select>
@@ -440,27 +443,28 @@ const RefundForm = (props => {
         label="Refund Way"
         name='refundWay'
       >
-          <Select onChange={refundWayChange}>
+          <Select onChange={refundWayChange} style={{ width: 200 }}>
             <Option value={"FULLY_REFUND"}>Fully Refund</Option>
             <Option value={"PARTIAL_REFUND"}>Partial Refund</Option>
           </Select>
       </FormItem>
 
       <Form.Item
-      noStyle
+      labelCol={{ span: 6 }}
+      wrapperCol={{ span: 18 }}
       shouldUpdate={(prevValues, currentValues) => prevValues.refundWay !== currentValues.refundWay}
     >
       {({ getFieldValue }) =>
         getFieldValue('refundWay') == 'PARTIAL_REFUND' ? (
           <Row>
             <Col>
-            <span> originally {ride.minutes} minutes.  Refund Ride as</span>
+            <span style={{paddingLeft:'90px'}}> originally {ride.minutes} minutes.  Refund Ride as</span>
             </Col>
             <Col span={2}>
               <FormItem
                 name='minutes'
                 >
-                  <InputNumber style={{width:'auto'}}/>
+                  <InputNumber style={{width:'auto'}} min={0}/>
               </FormItem>
             </Col>
             <Col>minutes</Col>
@@ -563,6 +567,7 @@ const RefundForm = (props => {
                   <th>refund to deposit</th>
                   <th>refund to ride credit</th>
                   <th>refund to credit card</th>
+                  <th>refund hold capture</th>
                 </tr>
                 <tr>
                   <th>
@@ -577,6 +582,9 @@ const RefundForm = (props => {
                   </th>
                   <th>
                     ${rideRefundCalculateResult.refundDetail.refundToCard}
+                  </th>
+                  <th>
+                    ${rideRefundCalculateResult.refundDetail.refundHoldCapture}
                   </th>
                 </tr>
               </tbody>
@@ -642,10 +650,12 @@ class Ride extends PureComponent {
     },
     {
       title: "Charge",
+      sorter: (a, b) => a.charge - b.charge,
       dataIndex: "charge"
     },
     {
       title: "Tax",
+      sorter: (a, b) => a.tax - b.tax,
       dataIndex: "tax"
     },
     {
@@ -659,15 +669,18 @@ class Ride extends PureComponent {
       render: val => <span>{lockOperationWay[val]}</span>
     },
     {
+      title: "Host",
+      dataIndex: "isHost",
+      render: val => val ? 'host' : 'guest'
+    },
+    {
       title: "Start",
       dataIndex: "start",
-      sorter: true,
       render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
     },
     {
       title: "End",
       dataIndex: "end",
-      sorter: true,
       render: (val, record) => {
         const endTime = val
           ? moment(val).format("YYYY-MM-DD HH:mm:ss")
@@ -682,6 +695,7 @@ class Ride extends PureComponent {
     },
     {
       title: "Minutes",
+      sorter: (a, b) => a.minutes - b.minutes,
       render: (text, record) => {
         const minutsDiff = record.end
           ? record.minutes
@@ -691,6 +705,7 @@ class Ride extends PureComponent {
     },
     {
       title: "Distance",
+      sorter: (a, b) => a.distance - b.distance,
       dataIndex: "distance"
     },
     {
@@ -777,12 +792,19 @@ class Ride extends PureComponent {
     params.lockMethod === null ? delete params.lockMethod : null
     params.unlockMethod === null ? delete params.unlockMethod : null
     this.setState({ filterCriteria: params });
+    console.log(params.timeRange);
     if(params.timeRange){
       params.timeRange ={
-        start:moment(params.timeRange[0]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss"),
-        end:moment(params.timeRange[1]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss")
+        start:moment(params.timeRange[0]).format("YYYY-MM-DDTHH:mm:ss"),
+        end:moment(params.timeRange[1]).format("YYYY-MM-DDTHH:mm:ss")
       }
   }
+  //   if(params.timeRange){
+  //     params.timeRange ={
+  //       start:moment(params.timeRange[0]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss"),
+  //       end:moment(params.timeRange[1]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss")
+  //     }
+  // }
     dispatch({
       type: "rides/get",
       payload: params
@@ -818,8 +840,8 @@ class Ride extends PureComponent {
     if (fieldsValue) {
       if(fieldsValue.timeRange){
         fieldsValue.timeRange ={
-          start:moment(fieldsValue.timeRange[0]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss"),
-          end:moment(fieldsValue.timeRange[1]).utcOffset(0).format("YYYY-MM-DDTHH:mm:ss")
+          start:moment(fieldsValue.timeRange[0]).format("YYYY-MM-DDTHH:mm:ss"),
+          end:moment(fieldsValue.timeRange[1]).format("YYYY-MM-DDTHH:mm:ss")
         }
     }
     // if (fieldsValue.phone){
@@ -875,9 +897,7 @@ class Ride extends PureComponent {
   handleDetailModalVisible = (flag, record) => {
     const { dispatch } = this.props;
     const { filterCriteria, rideImageUrl } = this.state;
-
     if (!!flag) {
-
       record.imageId && dispatch({
         type: "rides/image",
         rideId: record.id,

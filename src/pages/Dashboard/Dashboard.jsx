@@ -635,7 +635,6 @@ getRangeEnd(end) {
   getRankingBoard = () => {
 
     const { dashboard, areaNames } = this.props;
-
   return <Col xl={8} lg={12} md={12} sm={24} xs={24}>
   <div className={styles.salesRank}>
     <h4 className={styles.rankingTitle}>
@@ -1017,7 +1016,7 @@ getRangeEnd(end) {
             <Tabs
               tabBarExtraContent={salesExtra}
               size="large"
-              tabBarStyle={{ marginBottom: 24 }}
+              tabBarStyle={{ marginBottom: 24,marginLeft:30 }}
             >
              { /*authority.includes("admin")&& */  
              <TabPane
@@ -1044,7 +1043,7 @@ getRangeEnd(end) {
                       />
                     </div>
                   </Col>
-                 {this.getRankingBoard()}
+                 {areaNames && dashboard.ridePerVehicleRank && this.getRankingBoard()}
                 </Row>
               </TabPane> }
               { 
@@ -1072,7 +1071,7 @@ getRangeEnd(end) {
                         />
                       </div>
                     </Col>
-                    {this.getRankingBoard()}
+                    {areaNames && dashboard.ridePerVehicleRank && this.getRankingBoard()}
                   </Row>
                   </TabPane> 
               }
@@ -1092,7 +1091,7 @@ getRangeEnd(end) {
                         />
                       </div>
                     </Col>
-                   {this.getRankingBoard()}
+                   {areaNames && dashboard.ridePerVehicleRank && this.getRankingBoard()}
                   </Row>
                   </TabPane> 
               }
@@ -1157,7 +1156,7 @@ getRangeEnd(end) {
                       }
                                
                     </Col>
-                    {this.getRankingBoard()}
+                    {areaNames && dashboard.ridePerVehicleRank && this.getRankingBoard()}
                   </Row>
                   </TabPane> 
               }
