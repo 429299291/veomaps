@@ -24,6 +24,7 @@ import {
   Table,
   Checkbox,
   Switch,
+  Tooltip,
   Space,
   Spin
 } from "antd";
@@ -94,20 +95,41 @@ const Fefundmodal = (props)=>{
             <Option value="TO_CARD">Credit Card</Option>
           </Select>
     </Form.Item>
-    <Form.Item
-      label="Note"
-      name="note"
-      rules={[{ required: true, message: 'Please input note!' }]}
-    >
-      <Input />
-    </Form.Item>
+    <Space>
     <Form.Item
       label='Amount'
       name='amount'
     >
-      <InputNumber formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} onChange={amountChangeTips} min={0}/>
+      <InputNumber formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} min={0} style={{ width: 120 }}/>
+      {/* <span style={{marginLeft:'20px',color:'#999',display:amountTips}}>0 is the refund of all</span> */}
     </Form.Item>
-    <span style={{marginLeft:'20px',color:'#999',display:amountTips}}>0 is the refund of all</span>
+    <Tooltip title="Useful information">
+    {/* <span style={{marginLeft:'20px',color:'#999',display:amountTips,paddingBottom:'20px'}}>0 is the refund of all</span> */}
+    <span style={{marginLeft:'20px',color:'#999',display:"inline-block",paddingBottom:'20px'}}>0 is the refund of all</span>
+    </Tooltip>
+    </Space>
+    <Form.Item
+      label="Refund Reason"
+      name="refundReason"
+      rules={[{ required: true, message: 'Please input Refund Reason!' }]}
+    >
+          <Select style={{ width: 200 }}>
+            <Option value="Other">Other</Option>
+            <Option value="Lock Issue">Lock Issue</Option>
+            <Option value="Accidental Deposit">Accidental Deposit</Option>
+            <Option value="No Longer in Market">No Longer in Market</Option>
+            <Option value="Fraud">Fraud</Option>
+            <Option value="Scooter Issue">Scooter Issue</Option>
+            <Option value="App Issue">App Issue</Option>
+            <Option value="Phone Issue">Phone Issue</Option>
+          </Select>
+    </Form.Item>
+    <Form.Item
+      label="Note"
+      name="note"
+    >
+      <Input />
+    </Form.Item>
   </Form>
 </Modal>
   )
@@ -332,7 +354,7 @@ const EndRideForm = (props => {
       forceRender
       onCancel={() => handleEndRideVisible(false)}
     >
-      <Form>
+      <Form form={form}>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
@@ -1273,7 +1295,7 @@ class CustomerDetail extends PureComponent {
     //   title: 'Action',
     //   key: 'action',
     //   render: (text,record) => (
-    //       (record.type == 7 || record.type == 8 || record.type == 10 || record.type == 3) ? <a onClick={()=>{this.refundShowModal(record.id)}}>Refund</a> : ''
+    //       (record.type == 7 || (record.type == 8 && record.stripeChargeId) || record.type == 10 || record.type == 3) ? <a onClick={()=>{this.refundShowModal(record.id)}}>Refund</a> : ''
     //   ),
     // },
   ];
@@ -1378,7 +1400,7 @@ class CustomerDetail extends PureComponent {
       type: "customers/customerRefund",
       payload: value,
       transactionId:this.state.transactionId
-    },()=>{this.setState({isRefundModalVisible:false})});
+    }).then(this.setState({isRefundModalVisible:false}));
     // this.setState({isRefundModalVisible:false});
   }
 
