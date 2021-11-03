@@ -45,7 +45,10 @@ const transactionType = [
   "Violation Revert",
   "Shop Order",
   "Auto Reload",
-  "Hold Captured"
+  "Hold Captured",
+  "Deposit Refund",
+  "Hold Captured Refund",
+  "Shop Order Refund"
 ];
 
 const parkingViolationType = [
