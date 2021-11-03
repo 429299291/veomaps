@@ -1295,7 +1295,7 @@ class CustomerDetail extends PureComponent {
     //   title: 'Action',
     //   key: 'action',
     //   render: (text,record) => (
-    //       (record.type == 7 || (record.type == 8 && record.stripeChargeId) || record.type == 10 || record.type == 3) ? <a onClick={()=>{this.refundShowModal(record.id)}}>Refund</a> : ''
+    //       ((record.type == 7 && !record.refunded) || (record.type == 8 && !record.refunded && record.stripeChargeId) || (!record.refunded && record.type == 10) || (!record.refunded && record.type == 3)) ? <a onClick={()=>{this.refundShowModal(record.id)}}>Refund</a> : ''
     //   ),
     // },
   ];
