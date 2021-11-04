@@ -119,6 +119,12 @@ export default {
     },
     *customerRefund({transactionId,payload},{call,put}){
       const data = yield call(customerRefund,transactionId, payload)
+      if (data) {
+        message.success("Refund Success!");
+        onSuccess();
+      } else {
+        message.error(`Refund Fail!`);
+      }
     },
     *getMembership({  customerId, onSuccess }, { call, put }) {
       const data = yield call(getMembership, customerId);

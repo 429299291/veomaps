@@ -845,12 +845,13 @@ getRangeEnd(end) {
       const totalRideMinutes = dashboard.totalRideMinutes;
 
       const totalRideDistance = dashboard.totalRideDistance;
-      
+      console.log(batteryState);
       const weeklyBatterySwap = batteryState.weeklyBatterySwap
       &&  batteryState.weeklyBatterySwap
       .map( group => {
         return {x: moment().dayOfYear(group.dayOfYear).format("MM/DD"), y: group.total};
       });
+      console.log(weeklyBatterySwap);
     return (
       <GridContent >
         <Row gutter={24} style={{marginTop: "2em"}}>
