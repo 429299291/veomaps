@@ -89,7 +89,6 @@ export default {
       }
     },
     *getRefundCalculateResult({ id, payload, onSuccess }, { call, put }) {
-      console.log('models');
       const data = yield call(getRefundCalculateResult, id, payload);
       if (data) {
         onSuccess && onSuccess(data);
