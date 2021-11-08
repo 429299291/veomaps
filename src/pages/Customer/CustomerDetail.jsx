@@ -67,7 +67,6 @@ const Fefundmodal = (props)=>{
   const [form] = Form.useForm();
   form.resetFields()
   const [amountTips, setAmountTips] = useState('inline-block'); 
-  console.log(props);
   const onFinish =(values)=>{
     console.log(values);
   }
@@ -82,7 +81,7 @@ const Fefundmodal = (props)=>{
     <Form
     name="basic"
     form={form}
-    initialValues={{ type: 'TO_DEPOSIT',amount:0 }}
+    initialValues={{ type: 'TO_CARD',amount:0 }}
     onFinish={onFinish}
     onFinishFailed={onFinishFailed}
     // autoComplete="off"
@@ -1148,6 +1147,10 @@ class CustomerDetail extends PureComponent {
     customerApprovedViolationCount: "Loading",
     isRefundModalVisible:false,
     isRefundModalVisibleForRide:false,
+    ride:{
+      id:null,
+      minutes:99
+    },
     transactionId:null,
     rideRefundCalculateResult:null
   };
@@ -1299,7 +1302,7 @@ class CustomerDetail extends PureComponent {
       title: 'Action',
       key: 'action',
       render: (text,record) => (
-          ((record.type == 7 && !record.refunded) || (record.type == 8 && !record.refunded && record.stripeChargeId) || (!record.refunded && record.type == 10) || (!record.refunded && record.type == 3)) ? <a onClick={()=>{this.refundShowModal(record.id,record.type)}}>Refund</a> : ''
+          ((record.type == 7 && !record.refunded) || (record.type == 8 && !record.refunded && record.stripeChargeId) || (!record.refunded && record.type == 10) || (!record.refunded && record.type == 3)) ? <a onClick={()=>{this.refundShowModal(record.serviceId,record.type,record.minutes)}}>Refund</a> : ''
       ),
     },
   ];
@@ -1371,7 +1374,7 @@ class CustomerDetail extends PureComponent {
     this.handleGetCustomerRides(customerId);
     this.handleGetCustomerPayments(customerId);
     this.handleGetAvailableCustomerMemberships();
-    this.handleGetCustomerTransactions(customerId);
+    this.handleGetCustomerTransactions();
     // this.handleGetCustomerApprovedViolationCount(customerId);
   };
 
@@ -1393,11 +1396,16 @@ class CustomerDetail extends PureComponent {
     this.setState({isRefundModalVisible:false});
     this.setState({isRefundModalVisibleForRide:false})
   };
-  refundShowModal=(value,type)=>{
+  refundShowModal=(value,type,minutes)=>{
     this.setState({transactionId:value})
     type == 7 ? this.setState({isRefundModalVisibleForRide:true}) :  this.setState({isRefundModalVisible:true});
+    this.setState({ride:{
+      id:value,
+      minutes:minutes
+    }}) 
   }
   customerRefundMethod=(value)=>{
+    console.log(this.state.transactionId);
     const { dispatch } = this.props;
     value.amount == 0 ? value.amount = null : null
     dispatch({
@@ -1438,10 +1446,11 @@ class CustomerDetail extends PureComponent {
       type: "rides/refund",
       payload: payload,
       id: rideId || 224896,
-    }.then(()=>{
+    }).then(()=>{
       this.setState({isRefundModalVisible:false});
       this.setState({isRefundModalVisibleForRide:false})
-    }));
+      this.handleGetCustomerTransactions(this.state.transactionPagination.page)
+    });
     this.handleRefundModalVisible();
   };
 
@@ -1601,7 +1610,7 @@ class CustomerDetail extends PureComponent {
 
   handleGetCustomerTransactions = (initPage) => {
     const { dispatch, customerId } = this.props;
-
+//111
     dispatch({
       type: "customers/getTransactions",
       payload:{
@@ -1617,9 +1626,6 @@ class CustomerDetail extends PureComponent {
       },
       onSuccess: (response,page,pageSize,total) => {
         this.setState({customerTransactions: response})
-        console.log(page);
-        console.log(pageSize);
-        console.log(total);
         this.setState({
           transactionPagination :{
             page:page,
@@ -1787,6 +1793,7 @@ class CustomerDetail extends PureComponent {
           <RideRefundForm
             isModalVisible={this.state.isRefundModalVisibleForRide}
             handleModalVisible={this.handleRefundModalVisible}
+            ride={this.state.ride}
             handleRefundRide={this.handleRefundRide}
             handleGetRideRefundCalculateResult={
               this.handleGetRideRefundCalculateResult

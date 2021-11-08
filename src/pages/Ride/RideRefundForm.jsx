@@ -30,14 +30,10 @@ function RideRefundForm (props) {
         isModalVisible,
         handleModalVisible,
         handleRefundRide,
-        // ride,
+        ride,
         handleGetRideRefundCalculateResult,
         rideRefundCalculateResult
       } = props;
-      const ride = {
-          id: 224896,
-          minutes:1
-      }
       useEffect(() => {
         setShouldOkButtonDisable ((form.getFieldValue("refundWay") == "PARTIAL_REFUND") && !rideRefundCalculateResult);
      }, [rideRefundCalculateResult])
@@ -79,7 +75,7 @@ function RideRefundForm (props) {
         >
           <Form form={form} 
           initialValues={{
-            refundType:'DEPOSIT',
+            refundType:'CREDIT_CARD',
             // refundReason:'Lock Issue',
             refundReason:1,
             refundWay:'Fully Refund'
@@ -241,7 +237,7 @@ function RideRefundForm (props) {
     
                       <th>
                         $
-                        {-1 *
+                        {(-1 *
                           (rideRefundCalculateResult.rideTransaction
                             .depositChange +
                             rideRefundCalculateResult.rideTransaction
@@ -249,7 +245,7 @@ function RideRefundForm (props) {
                             rideRefundCalculateResult.rideTransaction
                               .paymentCharge) -
                           rideRefundCalculateResult.billingInfo.subTotal -
-                          rideRefundCalculateResult.billingInfo.tax}
+                          rideRefundCalculateResult.billingInfo.tax).toFixed(2)}
                       </th>
                     </tr>
                   </tbody>

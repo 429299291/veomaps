@@ -72,7 +72,7 @@ export default {
       const isSuccess = yield call(refundRide, id, payload);
 
       if (isSuccess) {
-        onSuccess();
+        onSuccess && onSuccess();
         message.success("Successfuly Refund this Ride.");
       } else {
         message.error("Fail to Refund this Ride");
