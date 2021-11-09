@@ -104,15 +104,18 @@ const connectStatus = ["Offline", "Online"];
 const lockStatus = ["Unlock", "lock"];
 const rideType = ["USING", "FINISHED"];
 const vehicleType = ["Bicycle", "Scooter", "E-Bike", "COSMO"];
-const lockOperationWay = [
-  "GPRS",
-  "BLUETOOTH",
-  "ADMIN",
-  "ABORT",
-  "TIMEOUT",
-  "PRE_AUTH_FAIL",
-  "REACH_MAX"
-];
+import {
+  lockOperationWay,
+} from "@/constant";
+// const lockOperationWay = [
+//   "GPRS",
+//   "BLUETOOTH",
+//   "ADMIN",
+//   "ABORT",
+//   "TIMEOUT",
+//   "PRE_AUTH_FAIL",
+//   "REACH_MAX"
+// ];
 const rideState = ["unconfirmed", "success", "error"];
 const rideStateColor = ["#e5bb02", "#0be024", "#ff0000"];
 
@@ -712,11 +715,12 @@ class Ride extends PureComponent {
       dispatch({
         type: "rides/billingInfo",
         id: record.id,
-
-        onSuccess: billingInfo =>
+        onSuccess: billingInfo =>{
+          console.log(billingInfo);
           this.setState({
             selectedRideBillingInfo: billingInfo
           })
+        }
       });
 
       this.setState({

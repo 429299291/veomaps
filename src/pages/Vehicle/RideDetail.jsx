@@ -33,11 +33,11 @@ class RideDetail extends PureComponent {
   formatValue = key => {
     const { ride } = this.props;
     const value = ride[key];
-
     switch (key) {
       case "vehicleType":
         return vehicleType[value];
       case "lockMethod":
+        return lockOperationWay[value];
       case "unlockMethod":
         return lockOperationWay[value];
       case "violateType":

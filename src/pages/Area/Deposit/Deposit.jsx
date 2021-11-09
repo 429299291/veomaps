@@ -36,7 +36,164 @@ const getValue = obj =>
     .join(",");
 
 const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "COSMO"];
+const CreateForm = (props => {
+  const {
+    modalVisible,
+    handleAdd,
+    handleModalVisible,
+    deposits,
+    areas
+  } = props;
+  const [form] = Form.useForm()
+  const okHandle = () => {
+    form.submit()
+    // form.validateFields((err, fieldsValue) => {
+    //   if (err) return;
+    //   form.resetFields();
 
+    //   handleAdd(fieldsValue);
+    // });
+  };
+  return (
+    <Modal
+      destroyOnClose
+      forceRender
+      title="Add"
+      visible={modalVisible}
+      onOk={okHandle}
+      onCancel={() => handleModalVisible()}
+    >
+      <Form onFinish ={()=>{handleAdd(form.getFieldsValue(true))}} form={form}>
+      <FormItem labelCol={{ span: 5 }} 
+        name='description'
+        rules={
+          [
+            {
+              required: true,
+              message: "name is required",
+              min: 1
+            }
+          ]
+        }
+        wrapperCol={{ span: 15 }} label="Description">
+          <Input placeholder="Please Input" />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        name='deposit'
+        rules={
+          [
+            {
+              required: true
+            }
+          ]
+        }
+        label="Deposit"
+      >
+        <InputNumber placeholder="Please Input" />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        name='rideCredit'
+        rules={
+          [
+            {
+              required: true
+            }
+          ]
+        }
+        label="Ride Credits"
+      >
+        <InputNumber placeholder="Please Input" />
+      </FormItem>
+      </Form>
+    </Modal>
+  );
+});
+
+const UpdateForm = (props => {
+  const {
+    modalVisible,
+    handleUpdate,
+    handleModalVisible,
+    record,
+    areas,
+    selectedAreaId
+  } = props;
+  const [form] = Form.useForm()
+  form.setFieldsValue(record)
+  const okHandle = () => {
+    form.submit()
+    // if (form.isFieldsTouched())
+    //   form.validateFields((err, fieldsValue) => {
+    //     if (err) return;
+    //     form.resetFields();
+
+    //     handleUpdate(record.id, fieldsValue);
+    //   });
+    // else handleModalVisible();
+  };
+
+  return (
+    <Modal
+      destroyOnClose
+      title="Update"
+      visible={modalVisible}
+      onOk={okHandle}
+      forceRender
+      onCancel={() => handleModalVisible()}
+    >
+      <Form form={form} onFinish={()=>{handleUpdate(record.id, form.getFieldsValue(true))}}>
+      <FormItem labelCol={{ span: 5 }} 
+        name='description'
+        rules={
+          [
+            {
+              required: true,
+              message: "name is required",
+              min: 1
+            }
+          ]
+        }
+        wrapperCol={{ span: 15 }} label="Description">
+        <Input placeholder="Please Input" />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        label="Deposit"
+        name='deposit'
+        rules={
+          [
+            {
+              required: true
+            }
+          ]
+        }
+      >
+       <InputNumber placeholder="Please Input" />
+      </FormItem>
+      <FormItem
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 15 }}
+        name='rideCredit'
+        label="Ride Credits"
+        rules={
+          [
+            {
+              required: true
+            }
+          ]
+        }
+      >
+       <InputNumber placeholder="Please Input" />
+      </FormItem>
+      </Form>
+    </Modal>
+  );
+});
 
 /* eslint react/no-multi-comp:0 */
 class Deposit extends PureComponent {
@@ -46,7 +203,17 @@ class Deposit extends PureComponent {
     generateCodeDepositVisible: false,
     expandForm: false,
     selectedRows: [],
-    filterCriteria: {},
+    filterCriteria: {
+        pagination: {
+            page: 0,
+            pageSize: 10,
+            total:null,
+            "sort": {
+                "direction": "desc",
+                "sortBy": "created"
+            }
+        }
+    },
     selectedRecord: {}
   };
 
@@ -57,10 +224,12 @@ class Deposit extends PureComponent {
     },
     {
       title: "Deposit",
+      sorter: (a, b) => a.deposit - b.deposit,
       dataIndex: "deposit"
     },
     {
       title: "Ride Credit",
+      sorter: (a, b) => a.rideCredit - b.rideCredit,
       dataIndex: "rideCredit"
     },
     {
@@ -109,25 +278,34 @@ class Deposit extends PureComponent {
   handleGetDeposits = () => {
     const { dispatch, selectedAreaId } = this.props;
     const { filterCriteria } = this.state;
-
     dispatch({
       type: "deposits/get",
-      payload: selectedAreaId ? Object.assign({}, filterCriteria, {areaId: selectedAreaId}) :  filterCriteria
+      payload: selectedAreaId ? Object.assign({}, filterCriteria, {areaIds: [selectedAreaId]}) :  filterCriteria,
+      onSuccess:(page,pageSize,total)=>{
+        this.setState({
+          ...filterCriteria,
+          filterCriteria:{
+            pagination:{
+              ...filterCriteria.pagination,
+              page:page,
+              total:total,
+              pageSize:pageSize,            },
+          }
+        })
+      }
     });
   };
 
-  handleStandardTableChange = (filtersArg, sorter) => {
-    const {   } = this.state;
-
-    const params = {
-      ...filterCriteria
-    };
-
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
-
-    this.setState({ filterCriteria: params }, () => this.handleGetDeposits());
+  handleStandardTableChange = (pageData, sorter) => {
+    const { filterCriteria } = this.state;
+    console.log(pageData);
+    this.setState({ filterCriteria: {
+      ...filterCriteria,
+      pagination:{
+        ...filterCriteria.pagination,
+        page:pageData.current,
+        pageSize:pageData.pageSize,      }
+    } }, () => this.handleGetDeposits());
   };
 
   handleFormReset = () => {
@@ -186,8 +364,8 @@ class Deposit extends PureComponent {
   };
 
   handleAdd = fields => {
-    const { dispatch } = this.props;
-
+    const { dispatch,selectedAreaId } = this.props;
+    fields.areaId = selectedAreaId
     dispatch({
       type: "deposits/add",
       payload: fields,
@@ -211,7 +389,7 @@ class Deposit extends PureComponent {
   };
 
   render() {
-    const { deposits, loading, areas } = this.props;
+    const { deposits, loading, areas,selectedAreaId } = this.props;
     const {
       createModalVisible,
       updateModalVisible,
@@ -232,210 +410,13 @@ class Deposit extends PureComponent {
       handleModalVisible: this.handleGenerateCodeDepositModalVisible,
       handleGenerateDepositWithCode: this.handleGenerateDepositWithCode
     };
-    const CreateForm = (props => {
-      const {
-        modalVisible,
-        handleAdd,
-        handleModalVisible,
-        deposits,
-        areas
-      } = props;
-      const [form] = Form.useForm()
-      const okHandle = () => {
-        form.submit()
-        // form.validateFields((err, fieldsValue) => {
-        //   if (err) return;
-        //   form.resetFields();
-    
-        //   handleAdd(fieldsValue);
-        // });
-      };
-      return (
-        <Modal
-          destroyOnClose
-          forceRender
-          title="Add"
-          visible={modalVisible}
-          onOk={okHandle}
-          onCancel={() => handleModalVisible()}
-        >
-          <Form onFinish ={()=>{handleAdd(form.getFieldsValue(true))}} form={form}>
-          <FormItem labelCol={{ span: 5 }} 
-            name='description'
-            rules={
-              [
-                {
-                  required: true,
-                  message: "name is required",
-                  min: 1
-                }
-              ]
-            }
-            wrapperCol={{ span: 15 }} label="Description">
-              <Input placeholder="Please Input" />
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            name='deposit'
-            rules={
-              [
-                {
-                  required: true
-                }
-              ]
-            }
-            label="Deposit"
-          >
-            <InputNumber placeholder="Please Input" />
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            name='rideCredit'
-            rules={
-              [
-                {
-                  required: true
-                }
-              ]
-            }
-            label="Ride Credits"
-          >
-            <InputNumber placeholder="Please Input" />
-          </FormItem>
-          {areas && (
-            <FormItem labelCol={{ span: 5 }} 
-              name='areaId'
-              rules={
-                [
-                  {
-                    required: true
-                  }
-                ]
-              }
-              wrapperCol={{ span: 15 }} label="Area">
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  {areas.map(area => (
-                    <Option key={area.id} value={area.id}>
-                      {area.name}
-                    </Option>
-                  ))}
-                </Select>
-            </FormItem>
-          )}
-          </Form>
-        </Modal>
-      );
-    });
-    
-    const UpdateForm = (props => {
-      const {
-        modalVisible,
-        handleUpdate,
-        handleModalVisible,
-        record,
-        areas
-      } = props;
-      const [form] = Form.useForm()
-      form.setFieldsValue(record)
-      const okHandle = () => {
-        form.submit()
-        // if (form.isFieldsTouched())
-        //   form.validateFields((err, fieldsValue) => {
-        //     if (err) return;
-        //     form.resetFields();
-    
-        //     handleUpdate(record.id, fieldsValue);
-        //   });
-        // else handleModalVisible();
-      };
-    
-      return (
-        <Modal
-          destroyOnClose
-          title="Update"
-          visible={modalVisible}
-          onOk={okHandle}
-          forceRender
-          onCancel={() => handleModalVisible()}
-        >
-          <Form form={form} onFinish={()=>{handleUpdate(record.id, form.getFieldsValue(true))}}>
-          <FormItem labelCol={{ span: 5 }} 
-            name='description'
-            rules={
-              [
-                {
-                  required: true,
-                  message: "name is required",
-                  min: 1
-                }
-              ]
-            }
-            wrapperCol={{ span: 15 }} label="Description">
-            <Input placeholder="Please Input" />
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            label="Deposit"
-            name='deposit'
-            rules={
-              [
-                {
-                  required: true
-                }
-              ]
-            }
-          >
-           <InputNumber placeholder="Please Input" />
-          </FormItem>
-          <FormItem
-            labelCol={{ span: 5 }}
-            wrapperCol={{ span: 15 }}
-            name='rideCredit'
-            label="Ride Credits"
-            rules={
-              [
-                {
-                  required: true
-                }
-              ]
-            }
-          >
-           <InputNumber placeholder="Please Input" />
-          </FormItem>
-          {areas && (
-            <FormItem labelCol={{ span: 5 }} 
-              name='areaId'
-              rules={
-                [
-                  {
-                    required: true
-                  }
-                ]
-              }
-              wrapperCol={{ span: 15 }} label="Area">
-              
-                <Select placeholder="select" style={{ width: "100%" }}>
-                  {areas.map(area => (
-                    <Option key={area.id} value={area.id}>
-                      {area.name}
-                    </Option>
-                  ))}
-                </Select>
-            </FormItem>
-          )}
-          </Form>
-        </Modal>
-      );
-    });
 
     return (
       <PageHeaderWrapper title="Deposit List">
         <Card bordered={false}>
           <div className={styles.tableList}>
-          
+          {
+            selectedAreaId && 
             <div className={styles.tableListOperator}>
                 <Button
                   type="primary"
@@ -443,12 +424,12 @@ class Deposit extends PureComponent {
                 >
                   Add
                 </Button>
-
             </div>
+          }
             { deposits.data && areas && areas.areaNames && 
               <StandardTable
               loading={loading}
-              data={{ list: deposits.data, pagination: {} }}
+              data={{ list: deposits.data, pagination:this.state.filterCriteria.pagination }}
               columns={this.columns}
               onChange={this.handleStandardTableChange}
             />

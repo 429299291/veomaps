@@ -91,9 +91,7 @@ export default {
       });
     },
     *getHubUploadUrl({ hubId, onSuccess }, { call, put }) {
-
       const response = yield call(getHubImageUploadUrl, hubId);
-
       if (typeof onSuccess == "function") {
         onSuccess(response);
       }

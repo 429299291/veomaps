@@ -25,22 +25,13 @@ import {
   Checkbox,
   Spin
 } from "antd";
-
+const Option = Select.Option;
 import reqwest from "reqwest";
-
 import { LoadingOutlined, PlusOutlined,WarningOutlined,PlusSquareOutlined } from '@ant-design/icons';
-
-
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
-
 import {fenceType, fenceTypeColor} from "@/constant";
-
 import NumberInput from "@/components/share/NumberInput";
-
 const FormItem = Form.Item;
-
-
-
 import { compose, withProps } from "recompose";
 import {
   withScriptjs,
@@ -395,11 +386,15 @@ const CreateFenceForm = (props => {
             </Select.Option>
       </Select>
       </FormItem>
+      {/* active time */}
+      {
+        fence &&
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Active Time" name='activeTimeRange'
       initialValue= {(fence && fence.activeTimeRange) ? fence.activeTimeRange : {weekDayDTO: {start: null, end: null}, weekendDTO: {start: null, end: null}, timeZone: null}}
       >
         <DynamicFenceConfigForm />
       </FormItem>
+      }
       <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Note" name='note'>
         <Input placeholder="Please Input" />
       </FormItem>
@@ -503,7 +498,10 @@ class geo extends PureComponent {
     selectedExistedFence: null,
     isDeleteModalVisible: false,
     isParkingCheckStart: false,
-    uploadImgUrl:''
+    uploadImgUrl:'',
+    hubUploadLoading:false,
+    getFencesNewData:false,
+    fenceDelete:true
   };
 
   componentDidMount() {
@@ -537,7 +535,10 @@ class geo extends PureComponent {
     this.cancelEditing();
     dispatch({
       type: "geo/getFences",
-      areaId: areaId
+      areaId: areaId,
+      getFencesNew:()=>{this.setState({
+        getFencesNewData:true
+      })}
     });
   };
   checkParking = newPoint => {
@@ -795,28 +796,10 @@ class geo extends PureComponent {
     if (prevProps.selectedAreaId !== this.props.selectedAreaId && this.props.selectedAreaId) {
         // this.getAreaGeoInfo();
         this.getAreaGeoInfoFirst()
+    }else{
     }
   }
-
-  beforeUpload(file) {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    if (!isJpgOrPng) {
-      message.error('You can only upload JPG/PNG file!');
-    }
-    const isLt5M = file.size / 1024 / 1024 < 5;
-    if (!isLt5M) {
-      message.error('Image must smaller than 5MB!');
-    }
-    return isJpgOrPng && isLt5M;
-  }
-
-  getBase64(img, callback) {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result));
-    reader.readAsDataURL(img);
-  }
-
-  handleChange = info => {
+  urlGetImg(){
     const { dispatch } = this.props;
     const {selectedExistedPrimeLocation} = this.state
     dispatch({
@@ -826,6 +809,67 @@ class geo extends PureComponent {
         this.setState({uploadImgUrl:url})
       }
     });
+  }
+  beforeUpload(file) {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file!');
+    }
+    const isLt5M = file.size / 1024 / 1024 < 5;
+    if (!isLt5M) {
+      message.error('Image must smaller than 5MB!');
+    }
+    // return (new Promise((resolve, reject) => {
+    //   resolve(file)
+    // }))
+
+   return isJpgOrPng && isLt5M;
+  }
+  uploadHeadImg(info){
+    const {dispatch, selectedAreaId, geo} = this.props;
+    const {selectedExistedPrimeLocation} = this.state;
+    reqwest({
+      url: this.state.uploadImgUrl,
+      method: 'put',
+      processData: false,
+      data: info.file,
+      headers: {
+        'Access-Control-Allow-Headers': '*',
+      },
+      success: () => {
+        setTimeout(() => {
+          dispatch({
+            type: "geo/getFences",
+            areaId: selectedAreaId,
+            onSuccess: primeLocations => {   
+              this.setState({
+                uploadFileData: null,
+                hubImageLoading: false,
+                hubUploadLoading:false,
+                hubUploadImageUrl: null,
+                selectedExistedPrimeLocation: primeLocations.filter(hub => hub.id === selectedExistedPrimeLocation.id)[0]
+              });
+              // message.success('upload successfully.');
+            }
+          });
+          
+        }, 2000);
+      },
+      error: () => {
+        this.setState({
+          hubImageLoading: false,
+        });
+        message.error('upload failed.');
+      },
+    });
+  }
+  getBase64(img, callback) {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => callback(reader.result));
+    reader.readAsDataURL(img);
+  }
+
+  handleChange = info => {
     if (info.file.status === 'uploading') {
       this.setState({ hubUploadLoading: true });
       return;
@@ -842,12 +886,8 @@ class geo extends PureComponent {
       );
     }
   };
-
-
-
   handleUpdateFence = updatedFence => {
     const { dispatch } = this.props;
-
     dispatch({
       type: "geo/updateFence",
       id: updatedFence.id,
@@ -903,60 +943,23 @@ class geo extends PureComponent {
     }
   };
 
-  handleUploadHubImage = () => {
+  // handleUploadHubImage = () => {
+  //   console.log('---');
+  //   const {dispatch, selectedAreaId, geo} = this.props;
+  //   const {selectedExistedPrimeLocation} = this.state;
+  //   this.setState({hubImageLoading: true});
+  // }
+  onPreview = async file => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
 
-    const {dispatch, selectedAreaId, geo} = this.props;
-    const {selectedExistedPrimeLocation} = this.state;
-    this.setState({hubImageLoading: true});
-    dispatch({
-      type: "areas/getHubUploadUrl",
-      hubId: selectedExistedPrimeLocation.id,
-      onSuccess: url => {
-        reqwest({
-          url: url,
-          method: 'put',
-          processData: false,
-          data: this.state.uploadFileData,
-          headers: {
-            'Access-Control-Allow-Headers': '*'
-          },
-          success: () => {
-            
-            setTimeout(() => {
-              dispatch({
-                type: "geo/getFences",
-                areaId: selectedAreaId,
-                onSuccess: primeLocations => {                  
-
-                  this.setState({
-                    uploadFileData: null,
-                    hubImageLoading: false,
-                    hubUploadImageUrl: null,
-                    selectedExistedPrimeLocation: primeLocations.filter(hub => hub.id === selectedExistedPrimeLocation.id)[0]
-                  });
-                  message.success('upload successfully.');
-
-                }
-              });
-              
-            }, 2000);
-          },
-          error: () => {
-            this.setState({
-              hubImageLoading: false,
-            });
-            message.error('upload failed.');
-          },
-        });
-
-      }
-  });
-
-
-    
-
-  }
-
+    this.setState({
+      previewImage: file.url || file.preview,
+      previewVisible: true,
+      previewTitle: file.name || file.url.substring(file.url.lastIndexOf('/') + 1),
+    });
+  };
   renderHeader = (areas, isEditing) => {
     const {
       isEditingFence,
@@ -967,7 +970,8 @@ class geo extends PureComponent {
       isEditingPrimeLocation,
       editingPrimeLocation,
       selectedExistedPrimeLocation,
-      hubImageLoading
+      hubImageLoading,
+      hubUploadLoading
     } = this.state;
 
     const isAbleToEncloseEditingFence =
@@ -982,15 +986,16 @@ class geo extends PureComponent {
 
       const uploadButton = (
         <div>
-          <Icon type={this.state.loading ? 'loading' : 'plus'} />
-          {this.state.loading ? <LoadingOutlined /> : <PlusSquareOutlined /> }
+          <Icon type={this.state.hubUploadLoading ? 'loading' : 'plus'} />
+          {this.state.hubUploadLoading ? <LoadingOutlined /> : <PlusSquareOutlined /> }
           <div className="ant-upload-text">Upload</div>
         </div>
       );
-     
       const { hubUploadImageUrl } = this.state;
-
-
+      const selectedExistedPrimeLocationId = selectedExistedPrimeLocation ? selectedExistedPrimeLocation.id : null
+      let imgList = (this.props.geo.primeLocations && selectedExistedPrimeLocation) ? this.props.geo.primeLocations.filter(data=>{return data.id == selectedExistedPrimeLocationId}) : []
+      imgList = imgList.length>0 ? imgList[0].stagingUrl : ''
+      this.setState({hubUploadImageUrl : imgList})
     return (
       <div>
                 <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
@@ -1090,7 +1095,7 @@ class geo extends PureComponent {
 
         {selectedExistedPrimeLocation && 
           <div>
-            <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
+            <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow} style={{position:'relative'}}>
             
               <Col sm={4} >
                 <NumberInput addonBefore="Minimum" value={selectedExistedPrimeLocation.minimum} onChange={minimum =>  this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, minimum: minimum === "" ? null : minimum}})} /> 
@@ -1099,12 +1104,32 @@ class geo extends PureComponent {
               <Col sm={4} >
                   <NumberInput addonBefore="Target" value={selectedExistedPrimeLocation.target}   onChange={target => this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, target: target ===  "" ? null : target}})}  />
               </Col>
-              
-
               <Col sm={6} >
                   <Input addonBefore="Description" value={selectedExistedPrimeLocation.description}   onChange={e => this.setState({selectedExistedPrimeLocation: {...selectedExistedPrimeLocation, description: e.target.value ===  "" ? null : e.target.value}})}  />
               </Col>
-
+              <Col sm={5} style={{position:'absolute',right:'20rem',top:'-2rem'}}>
+                <Upload
+                  name="avatar"
+                  listType="picture-card"
+                  className="avatar-uploader"
+                  onClick={this.urlGetImg.bind(this)}
+                  action={this.state.uploadImgUrl}
+                  customRequest={this.uploadHeadImg.bind(this)}
+                  showUploadList={false}                          
+                  beforeUpload={this.beforeUpload}
+                  fileList={[{uid:'01',url:imgList,status: 'uploading'}]}
+                  onPreview={this.onPreview}
+                  onChange={this.handleChange}
+                >
+                {hubUploadImageUrl && !hubUploadLoading ? <img src={hubUploadImageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+                </Upload>
+                {/* {
+                   hubUploadImageUrl && <div style={{marginTop:" 0.5em"}}>
+                      <Button type="primary" onClick={this.handleUploadHubImage} disabled={hubImageLoading}> Upload </Button>
+                      <Button  style={{marginLeft:" 0.5em"}}  onClick={() => this.setState({hubUploadImageUrl: null})} disabled={hubImageLoading}> Reset </Button>
+                    </div> 
+                } */}
+              </Col> 
               
             </Row>
             <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
@@ -1131,43 +1156,19 @@ class geo extends PureComponent {
                   </Select> 
               </Col>
             </Row>
-            
-            <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
-               <Col sm={4} >
-                <Upload
-                  name="avatar"
-                  listType="picture-card"
-                  className="avatar-uploader"
-                  action={this.state.uploadImgUrl}
-                  showUploadList={false}                          
-                  beforeUpload={this.beforeUpload}
-                  onChange={this.handleChange}
-                >
-                {hubUploadImageUrl ? <img src={hubUploadImageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
-                  
-                </Upload>
-                {
-                   hubUploadImageUrl && <div style={{marginTop:" 0.5em"}}>
-                      <Button type="primary" onClick={this.handleUploadHubImage} disabled={hubImageLoading}> Upload </Button>
-
-                      <Button  style={{marginLeft:" 0.5em"}}  onClick={() => this.setState({hubUploadImageUrl: null})} disabled={hubImageLoading}> Reset </Button>
-                    
-                    </div> 
-                }
-
-              </Col> 
-            
-              <Col sm={12} >
+                {/* show big picture */}
+              {/* <Col sm={12} >
+                <p>999</p>
                   { hubImageLoading ? 
                     <div style={{paddingLeft: "300px", paddingTop: "200px"}}>
+                      99999
                       <Spin size="large"  />
                     </div>
                     :
                     selectedExistedPrimeLocation.stagingUrl && <img style={{ maxWidth: '100%', maxHeight: "400px" }} src={selectedExistedPrimeLocation.stagingUrl}></img> 
                   }
-                </Col>
+                </Col> */}
 
-            </Row>
 
           </div>
           
@@ -1195,17 +1196,13 @@ class geo extends PureComponent {
   };
 
   handleDelete= () => {
-
     const { selectedExistedFence , selectedExistedPrimeLocation} = this.state;
-
     if (selectedExistedFence) {
       this.handleDeleteFence();
     }
-
     if (selectedExistedPrimeLocation) {
       this.handleDeletePrimeLocation();
     }
-
   }
 
   handleDeletePrimeLocation = () => {
@@ -1240,16 +1237,19 @@ class geo extends PureComponent {
   };
 
   shouldShowEditButton = () => {
-
     const {
       selectedExistedPrimeLocation,
       selectedExistedFence
     } = this.state;
-
    return (selectedExistedFence);
-
   }
-
+  geofenceOnDelete = (e)=>{
+    if(e.target.value == 'geofence'){
+      this.setState({fenceDelete:false})
+    }else{
+      this.setState({fenceDelete:true})
+    }
+  }
   render() {
     const {
       geo,
@@ -1274,8 +1274,6 @@ class geo extends PureComponent {
       isDeleteModalVisible
     } = this.state;
     const isEditing = isEditingCenter || isEditingFence || isEditingPrimeLocation;
-
-
     return (
       <PageHeaderWrapper title="Geo Management">
         {selectedAreaId && <Card bordered={true}>
@@ -1298,8 +1296,10 @@ class geo extends PureComponent {
                   )}
                     <Button
                       type="danger"
-                      onClick={() =>
+                      onClick={() =>{
+                        selectedExistedFence.fenceType == 0 ? this.setState({fenceDelete:true}) : this.setState({fenceDelete:false});
                         this.setState({ isDeleteModalVisible: true })
+                      }
                       }
                       disabled={isEditing}
                       className={styles.editButton}
@@ -1331,7 +1331,9 @@ class geo extends PureComponent {
               <div>{this.renderHeader(areas.data, isEditing)}</div>
             )}
             <div style={{ marginBottom: "1em"}} />
-            <MyMapComponent
+            {
+              this.state.getFencesNewData &&
+              <MyMapComponent
               onMapClick={this.handleMapClick}
               handleExistedFenceClick={this.handleExistedFenceClick}
               handleExistedPrimeLocationClick={this.handleExistedPrimeLocationClick}
@@ -1340,7 +1342,8 @@ class geo extends PureComponent {
               fences={geo.fences}
               primeLocations={geo.primeLocations}
               setCircleRef={this.setCircleRef}
-            />
+            /> 
+            }
           </div>
           <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
             <Col md={24} sm={24} style={{ float: "right" }}>
@@ -1371,6 +1374,7 @@ class geo extends PureComponent {
           onOk={this.handleDelete}
           onCancel={() => this.setState({ isDeleteModalVisible: false })}
           okText="Delete"
+          okButtonProps={{ disabled: this.state.fenceDelete }}
           okType="danger"
         >
           <p style={{fontSize: "2em"}}>
@@ -1378,10 +1382,9 @@ class geo extends PureComponent {
           Area you sure you want to delete
           <p style={{color:'#f00'}}>
           {`${selectedExistedFence ? `fence:   ${selectedExistedFence.name} \n
-            with type:  ${fenceType[selectedExistedFence.fenceType]}` : "this circle"} ?`}
+            with type: ${fenceType[selectedExistedFence.fenceType]}` : "this circle"} ?`}
           </p>
-            {/* {`Area you sure you want to delete \n  ${selectedExistedFence ? `fence:   ${selectedExistedFence.name} \n
-            with type:  ${fenceType[selectedExistedFence.fenceType]}` : "this circle"} ?`} */}
+          {selectedExistedFence && selectedExistedFence.fenceType == 0 ? <span>Please type “geofence” to delete<Input onChange={this.geofenceOnDelete} style={{width:'200px'}} placeholder="Input Fence Type" /></span>:''}
           </p>
         </Modal>
       </PageHeaderWrapper>

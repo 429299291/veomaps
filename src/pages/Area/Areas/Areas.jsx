@@ -120,6 +120,7 @@ const Areas = (props) => {
         ridePhotoEnabled:values.feature.ridePhotoEnabled,
         billingAddressEnabled:values.feature.billingAddressEnabled,
         taxRate:values.feature.taxRate,
+        quiz:values.feature.quiz,
         areaAvailability:{
           isOpen:values.feature.areaAvailability.isOpen == 'null'? null:values.feature.areaAvailability.isOpen,
           timeZone:values.feature.areaAvailability.isOpen == 'null'?values.feature.areaAvailability.timeZone:null,
@@ -300,7 +301,7 @@ const Areas = (props) => {
                   <Input/>
                 </Form.Item>
               </Col>
-            <Col span={24}>
+            <Col span={24} style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}>
             <Card title="Area  Basic" type="inner" size="small">
             <Row>
             <Col span={12}>
@@ -331,7 +332,7 @@ const Areas = (props) => {
             </Row>
             </Card>
             </Col>
-            <Col span={24}>
+            <Col span={24} style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}>
             <Card title="Age" type="inner" size="small">
             <Row>
             <Col span={12}>
@@ -350,7 +351,7 @@ const Areas = (props) => {
             </Row>
             </Card>
             </Col>
-            <Col span={24}>
+            <Col span={24} style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}>
             <Card title="Free Ride Time" type="inner" size="small">
             <Row justify="space-between">
             <Col span={12}>
@@ -387,14 +388,14 @@ const Areas = (props) => {
             </Col>
             </Row>
 
-            <Col span={24}>
+            <Col span={24} style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}>
               <Card title="Violation Fine Configuration" type="inner" size="small">
                 <Row>
                   <ViolationFine tags={violationFineDatas} getViolationFineDatas={getViolationFineDatas.bind(this)}></ViolationFine>
                 </Row>
               </Card>
             </Col>
-            <Col span={24}>
+            <Col span={24} style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}>
             <Card title="Bussiness Hour" type="inner" size="small">
             <Row justify="space-between">
             <Col span={11}>
@@ -452,7 +453,7 @@ const Areas = (props) => {
               </Row>
             </Card>
             </Col>
-              <Col span={24} className={styles.submit}>
+              <Col span={24} className={styles.submit} style={areas.selectedAreaId?{display:'inline-block'}:{display:'none'}}>
                 <Collapse defaultActiveKey={['0']} onChange={PanelCallback}>
                   <Panel header="show more control" key="1">
                   <Row>
@@ -489,6 +490,16 @@ const Areas = (props) => {
                           </Form.Item>
                       </Col>
                       <Col span={12}>
+                          <Form.Item  label="Enable Quiz" {...tailLayout} name={['feature', 'quiz','enable']} valuePropName="checked">
+                            <Switch size="small"/>
+                          </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                          <Form.Item  label="Enable quiz mandatory" {...tailLayout} name={['feature', 'quiz','mandatory']} valuePropName="checked">
+                            <Switch size="small"/>
+                          </Form.Item>
+                      </Col>
+                      <Col span={12}>
                           <Form.Item  label="Enable Ride Pre-Auth Fee" {...tailLayout} name={['feature', 'ridePreAuthFee']}>
                             <InputNumber min={1} max={245}/>
                           </Form.Item>
@@ -514,7 +525,6 @@ const Areas = (props) => {
                   </Panel>
                 </Collapse>
               </Col>
-
               <Row className={styles.submit}> 
               <Button onClick={onClose} style={{ marginRight: 8 }}>
                  Cancel

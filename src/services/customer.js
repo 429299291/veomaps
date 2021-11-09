@@ -94,7 +94,14 @@ export async function refund(id, params) {
     }
   });
 }
-
+export async function customerRefund(transactionId,payload) {
+  return request(`/api/admins/customers/transactions/${transactionId}/refund`, {
+    method: "POST",
+    body: {
+      ...payload
+    }
+  });
+}
 export async function getMembership(customerId) {
   return request(`/admins/memberships/customers/${customerId}`, {
     method: "GET"

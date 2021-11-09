@@ -317,10 +317,12 @@ class Price extends PureComponent {
     },
     {
       title: "Price",
+      sorter: (a, b) => a.price - b.price,
       dataIndex: "price"
     },
     {
       title: "Frequency",
+      sorter: (a, b) => a.frequency - b.frequency,
       dataIndex: "frequency"
     },
     {
@@ -330,6 +332,7 @@ class Price extends PureComponent {
     },
     {
       title: "Unlock Fee",
+      sorter: (a, b) => a.unlockFee - b.unlockFee,
       dataIndex: "unlockFee"
     },
     {
@@ -374,7 +377,7 @@ class Price extends PureComponent {
     vehicleType !== null && vehicleType ? filterCriteria.pagination.page = 0 : null
     dispatch({
       type: "price/get",
-      payload: Object.assign({}, filterCriteria,selectedAreaId ? {areaId: selectedAreaId} : null),
+      payload: Object.assign({}, filterCriteria,selectedAreaId ? {areaIds: [selectedAreaId]} : null),
       onSuccess: (data,total,page) => {
         this.setState({selectedRows:data})
         this.setState({total:total})

@@ -119,7 +119,7 @@ class Dashboard extends Component {
         this.loadDailyRideRevenue();
         this.loadStripeRevenue();
         this.setState({areaIsChanged: false});
-      },30000);
+      },10000);
 
     });
   }
@@ -292,19 +292,28 @@ class Dashboard extends Component {
 
   loadDailyRideCount() {
       const { dispatch, selectedAreaId } = this.props;
-
       // if (!authority.includes("get.daily.ride.count")) {
       //   return;
       // }
-
-
-    // dispatch({
-    //   type: "dashboard/fetchDailyRideCounts",
-    //   params: {
-    //     areaId: selectedAreaId,
-    //     midnight: moment().tz("America/Chicago").startOf("day").unix()
-    //   }
-    // });
+      let payload = selectedAreaId ? { areaIds : [selectedAreaId] }: {}
+      payload = Object.assign(payload,{
+        notEnded:true,
+          "pagination": {
+              "page": 0,
+              "pageSize": 10,
+              "sort": {
+                  "sortBy": "start",
+                  "direction": "desc"
+              }
+          }
+      })
+    dispatch({
+      type: "dashboard/fetchDailyRideCounts",
+      params: {
+        ...payload
+        // midnight: moment().tz("America/Chicago").startOf("day").unix()
+      }
+    });
 
   }
 
@@ -624,9 +633,7 @@ getRangeEnd(end) {
 
 
   getRankingBoard = () => {
-
     const { dashboard, areaNames } = this.props;
-
   return <Col xl={8} lg={12} md={12} sm={24} xs={24}>
   <div className={styles.salesRank}>
     <h4 className={styles.rankingTitle}>
@@ -682,7 +689,6 @@ getRangeEnd(end) {
       rangePickerValue,
       areaIsChanged
     } = this.state;
-
     const salesExtra = (
       <div className={styles.salesExtraWrap}>
         <div className={styles.salesExtra}>
@@ -825,14 +831,8 @@ getRangeEnd(end) {
       }
 
     }
-                              
-                 
-    
       let dayDiff = this.getRangeEnd(rangePickerValue[1]).diff(rangePickerValue[0], 'days');
-
       if (dayDiff === 0) dayDiff = 1;
-
-
       const dailyRideCount = dashboard.dailyRideCount;
 
       const batteryState = dashboard.batteryState;
@@ -844,7 +844,6 @@ getRangeEnd(end) {
       const totalRideMinutes = dashboard.totalRideMinutes;
 
       const totalRideDistance = dashboard.totalRideDistance;
-      
       const weeklyBatterySwap = batteryState.weeklyBatterySwap
       &&  batteryState.weeklyBatterySwap
       .map( group => {
@@ -865,16 +864,16 @@ getRangeEnd(end) {
                     <Icon type="info-circle-o" />
                   </Tooltip>
                 }
-                total={activeRideCountLoading ? "loading" :  dailyRideCount.currentActiveRideCount}
-                footer={
-                  <Field
-                    label="Total Ride Today"
-                    value={activeRideCountLoading ? "loading" : `${dailyRideCount.todayRideCount}`}
-                  />
-                }
-                contentHeight={60}
+                total={activeRideCountLoading ? "loading" :  dailyRideCount.totalSize}
+                // footer={
+                //   <Field
+                //     label="Total Ride Today"
+                //     value={activeRideCountLoading ? "loading" : `${dailyRideCount.todayRideCount}`}
+                //   />
+                // }
+                // contentHeight={60}
               >
-                <Trend flag={dailyRideCount.todayRideCount - dailyRideCount.lastWeekRideCount > 0 ? "up" : "down"} style={{ marginRight: 16 }}>
+                {/* <Trend flag={dailyRideCount.todayRideCount - dailyRideCount.lastWeekRideCount > 0 ? "up" : "down"} style={{ marginRight: 16 }}>
                   <FormattedMessage
                     id="app.analysis.week"
                     defaultMessage="Weekly Changes"
@@ -887,7 +886,7 @@ getRangeEnd(end) {
                     defaultMessage="Daily Changes"
                   />
                   <span className={styles.trendText}>{Math.round(((dailyRideCount.todayRideCount - dailyRideCount.yesterdayRideCount) /dailyRideCount.yesterdayRideCount) * 100)}%</span>
-                </Trend>
+                </Trend> */}
               </ChartCard>
             </Col>
           }
@@ -1015,7 +1014,7 @@ getRangeEnd(end) {
             <Tabs
               tabBarExtraContent={salesExtra}
               size="large"
-              tabBarStyle={{ marginBottom: 24 }}
+              tabBarStyle={{ marginBottom: 24,marginLeft:30 }}
             >
              { /*authority.includes("admin")&& */  
              <TabPane
@@ -1042,7 +1041,7 @@ getRangeEnd(end) {
                       />
                     </div>
                   </Col>
-                 {this.getRankingBoard()}
+                 {areaNames && dashboard.ridePerVehicleRank && this.getRankingBoard()}
                 </Row>
               </TabPane> }
               { 
@@ -1070,7 +1069,7 @@ getRangeEnd(end) {
                         />
                       </div>
                     </Col>
-                    {this.getRankingBoard()}
+                    {areaNames && dashboard.ridePerVehicleRank && this.getRankingBoard()}
                   </Row>
                   </TabPane> 
               }
@@ -1090,12 +1089,12 @@ getRangeEnd(end) {
                         />
                       </div>
                     </Col>
-                   {this.getRankingBoard()}
+                   {areaNames && dashboard.ridePerVehicleRank && this.getRankingBoard()}
                   </Row>
                   </TabPane> 
               }
-              { 
-                /*authority.includes("admin")&& */   <TabPane
+              {/* { 
+                <TabPane
                   tab="Vehicle Connectivity"
                   key="connectivity"
                 >
@@ -1112,7 +1111,7 @@ getRangeEnd(end) {
                     {this.getRankingBoard()}
                   </Row>
                   </TabPane> 
-              }
+              } */}
               { 
                /*authority.includes("admin")&& */ 
                 <TabPane
@@ -1155,7 +1154,7 @@ getRangeEnd(end) {
                       }
                                
                     </Col>
-                    {this.getRankingBoard()}
+                    {areaNames && dashboard.ridePerVehicleRank && this.getRankingBoard()}
                   </Row>
                   </TabPane> 
               }

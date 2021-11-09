@@ -78,6 +78,15 @@ const ViolationLocation = compose(
 });
 const RenderSimpleForm=(props)=> {
   const [form] = Form.useForm()
+  const dateFormat = 'YYYY-MM-DDTHH:mm:ss'
+  let resetData
+  if(props.searchOldData.timeRange){
+    resetData = {
+      ...props.searchOldData,
+      timeRange: [moment(props.searchOldData.timeRange.start, dateFormat), moment(props.searchOldData.timeRange.end, dateFormat)]
+    }
+  }
+  form.setFieldsValue(resetData)
   const handleFormReset = ()=>{
     props.handleFormReset()
     form.resetFields()
@@ -111,7 +120,7 @@ const RenderSimpleForm=(props)=> {
                 <InputNumber placeholder="Please Phone Number" style={{width: "100%"}}/>
             </FormItem>
           </Col>
-          <Col span={5}>
+          <Col span={6}>
             <FormItem
               label="Status"
               name='status'
@@ -494,14 +503,8 @@ class VehicleViolation extends PureComponent {
       });
     }
   };
-
-
   handleVehicleDetailModalVisible = flag => this.setState({vehicleDetailModalVisible: flag})
-
-
-  handleCustomerDetailModalVisible = flag => this.setState({customerDetailModalVisible: flag})
-
-
+  handleCustomerDetailModalVisible = flag => {this.setState({customerDetailModalVisible: flag})}
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.selectedAreaId !== this.props.selectedAreaId) {
       this.getViolations();
@@ -517,18 +520,11 @@ class VehicleViolation extends PureComponent {
           filterCriteria.phone = null;
       }
       if (fieldsValue.timeRange) {
-        // fieldsValue.timeRange.start = moment(fieldsValue.timeRange[0]).utcOffset(0).format(
-        //   "MM-DD-YYYY HH:mm:ss"
-        // );
-        // fieldsValue.timeRange.end = moment(fieldsValue.timeRange[1]).utcOffset(0).format(
-        //   "MM-DD-YYYY HH:mm:ss"
-        // );
-        // fieldsValue.timeRange = undefined;
         fieldsValue.timeRange={
-          start:moment(fieldsValue.timeRange[0]).utcOffset(0).format(
+          start:moment(fieldsValue.timeRange[0]).format(
             "YYYY-MM-DDTHH:mm:ss"
           ),
-          end:moment(fieldsValue.timeRange[1]).utcOffset(0).format(
+          end:moment(fieldsValue.timeRange[1]).format(
             "YYYY-MM-DDTHH:mm:ss"
           )
         }
@@ -711,7 +707,7 @@ class VehicleViolation extends PureComponent {
       <PageHeaderWrapper title="Violation List">
         <Card bordered={false}>
           <div className={styles.tableList}>
-            <div className={styles.tableListForm}><RenderSimpleForm getViolations={this.getViolations} handleFormReset={this.handleFormReset} /></div> 
+            <div className={styles.tableListForm}><RenderSimpleForm searchOldData ={this.state.searchOldData} getViolations={this.getViolations} handleFormReset={this.handleFormReset} /></div> 
             <div>Count: {total}</div>
             {areas && areas.areaNames &&
                           <StandardTable

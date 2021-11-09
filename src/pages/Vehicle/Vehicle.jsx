@@ -72,7 +72,8 @@ const errorStatusIndexs = {
   3: "Deactivated",
   5: "Rebalance",
   6: "Maintain",
-  7: "Out of Service"
+  7: "Out of Service",
+  8:"SLA"
 };
 
 const errorStatus = Object.keys(errorStatusIndexs);
@@ -127,13 +128,13 @@ const RenderSimpleForm=(props)=> {
   }
   return (
     <Form form={form}>
-      <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-        <Col md={5} sm={24}>
+      <Row>
+        <Col span={5}>
           <FormItem label="" name='numberOrImei'>
               <Search placeholder="number or imei" onPressEnter={()=>{props.handleSearch(form.getFieldsValue(true))}} onSearch={()=>{props.handleSearch(form.getFieldsValue(true))}}/>
           </FormItem>
         </Col>
-        <Col md={5} sm={24}>
+        <Col span={6} style={{padding: '0 20px'}}>
           <FormItem label="IOT Battery" name='iotBattery'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 <Option value={35}>Low Battery(35%)</Option>
@@ -142,7 +143,7 @@ const RenderSimpleForm=(props)=> {
               </Select>
           </FormItem>
         </Col>
-        <Col md={5} sm={24}>
+        <Col span={6}>
           <FormItem label="Connected" name='connected'>
               <Select placeholder="select" style={{ width: "100%" }}>
                 <Option value={false}>false</Option>
@@ -762,6 +763,7 @@ class Vehicle extends PureComponent {
     {
       title: "IoT Power",
       dataIndex: "iotBattery",
+      sorter: (a, b) => a.iotBattery - b.iotBattery,
       render(val) {
         return <p>{roundTo2Decimal(val > 100 ? getPowerPercent(val)  : val) + "%"}</p>;
       }
@@ -781,26 +783,24 @@ class Vehicle extends PureComponent {
     },
     {
       title: "HeartTime",
+      key:"heartime",
       dataIndex: "heartTime",
-      sorter: true,
       render: val => <span>{formatTime(val)}</span>
     },
     {
       title: "Ride Count",
+      sorter: (a, b) => a.rideCount - b.rideCount,
       dataIndex: "rideCount",
-      sorter: true,
       render: val => <span>{val}</span>
     },
     {
       title: "Last Ride Time",
       dataIndex: "lastRideTime",
-      sorter: true,
       render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
     },
     {
       title: "Last Drop Off Time",
       dataIndex: "lastDropOffTime",
-      sorter: true,
       render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
     },
     {
@@ -1218,6 +1218,7 @@ class Vehicle extends PureComponent {
   }
 
   handleSearch = fieldsValue => {
+    console.log(fieldsValue);
     const { dispatch,  selectedAreaId,vehicles } = this.props;
     const { filterCriteria, selectedTab } = this.state;
     // form.validateFields((err, fieldsValue) => {
@@ -1269,7 +1270,6 @@ class Vehicle extends PureComponent {
         //   values.imei = null;
         //   values.vehicleNumber = null;
         // }
-        values.vehicleTypes = values.vehicleType ? [values.vehicleType] : null;
         // if (values.idleQuery.idleDays) {
         //   values.idleQuery = {idleDays: values.idleDays};
         // } else {
@@ -1298,9 +1298,9 @@ class Vehicle extends PureComponent {
           values.lockStatus = values.locked  ? "1" : "0";
         }
 
-        if (values.statuses) {
-          values.errorStatus = values.statuses;
-        }
+        // if (values.statuses) {
+        //   values.errorStatus = values.statuses;
+        // }
 
         if (values.vehicleBattery) {
           values.vehiclePower = values.vehicleBattery;
@@ -1315,6 +1315,7 @@ class Vehicle extends PureComponent {
         vehicles.total === 0 ? vehicles.total = 1 : null
         selectedAreaId ? values.pagination.pageSize = vehicles.total : null
       }
+      values.vehicleTypes = values.vehicleType ? [...values.vehicleType] : null;
     // if(!fieldsValue){
     //   values={
     //     areaIds: selectedAreaId ? [selectedAreaId] : [],
