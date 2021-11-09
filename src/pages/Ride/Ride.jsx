@@ -344,14 +344,14 @@ const RefundForm = (props => {
 
   const onFinish=(fieldsValue)=>{
     const payload = {
-      refundType: fieldsValue.refundType,
+      type: fieldsValue.refundType,
       refundReason: refundReasons[fieldsValue.refundReason],
       note: fieldsValue.note
     };
 
     if (rideRefundCalculateResult) {
       const refundDetail = rideRefundCalculateResult.refundDetail;
-      payload.refundDetail = refundDetail;
+      payload.amount = refundDetail.refundTotal;
     }
     handleRefundRide(ride.id, payload);
   }
@@ -375,8 +375,7 @@ const RefundForm = (props => {
     >
       <Form form={form} 
       initialValues={{
-        refundType:'DEPOSIT',
-        // refundReason:'Lock Issue',
+        refundType:'TO_CARD',
         refundReason:1,
         refundWay:'Fully Refund'
       }}
@@ -388,8 +387,8 @@ const RefundForm = (props => {
         name='refundType'
       >
           <Select>
-            <Option value={"DEPOSIT"}>Deposit</Option>
-            <Option value={"CREDIT_CARD"}>Credit Card</Option>
+            <Option value={"TO_DEPOSIT"}>Deposit</Option>
+            <Option value={"TO_CARD"}>Credit Card</Option>
           </Select>
       </FormItem>
 
@@ -526,7 +525,10 @@ const RefundForm = (props => {
                         rideRefundCalculateResult.rideTransaction
                           .rideCreditChange -
                         rideRefundCalculateResult.rideTransaction
-                          .paymentCharge)}
+                          .paymentCharge -
+                          rideRefundCalculateResult.rideTransaction
+                          .holdCapture
+                          )}
                   </th>
                   <th>
                     $
@@ -542,7 +544,9 @@ const RefundForm = (props => {
                         rideRefundCalculateResult.rideTransaction
                           .rideCreditChange -
                         rideRefundCalculateResult.rideTransaction
-                          .paymentCharge) -
+                          .paymentCharge -
+                          rideRefundCalculateResult.rideTransaction
+                          .holdCapture) -
                       rideRefundCalculateResult.billingInfo.subTotal -
                       rideRefundCalculateResult.billingInfo.tax}
                   </th>

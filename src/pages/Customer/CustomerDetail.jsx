@@ -60,7 +60,79 @@ const REFUND_REASON = ["first timer forgot to lock", "first timer locked outside
 
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    
+
+const Fefundmodal = (props)=>{
+  const [form] = Form.useForm();
+  form.resetFields()
+  const [amountTips, setAmountTips] = useState('inline-block'); 
+  const onFinish =(values)=>{
+    console.log(values);
+  }
+  const onFinishFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+  };
+  const amountChangeTips=(value)=>{
+    value ? setAmountTips('none') : setAmountTips('inline-block')
+  }
+  return (
+    <Modal title="Refund Detail" visible={props.isRefundModalVisible} onOk={()=>{props.customerRefundMethod(form.getFieldsValue(true))}} onCancel={props.refundHandleCancel}>
+    <Form
+    name="basic"
+    form={form}
+    initialValues={{ type: 'TO_CARD',amount:0 }}
+    onFinish={onFinish}
+    onFinishFailed={onFinishFailed}
+    // autoComplete="off"
+  >
+    <Form.Item
+      label="Type"
+      name="type"
+      rules={[{ required: true, message: 'Please select type!' }]}
+    >
+          <Select style={{ width: 120 }}>
+            <Option value="TO_DEPOSIT">Deposit</Option>
+            <Option value="TO_CARD">Credit Card</Option>
+          </Select>
+    </Form.Item>
+    <Space>
+    <Form.Item
+      label='Amount'
+      name='amount'
+    >
+      <InputNumber formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} min={0} style={{ width: 120 }}/>
+      {/* <span style={{marginLeft:'20px',color:'#999',display:amountTips}}>0 is the refund of all</span> */}
+    </Form.Item>
+    <Tooltip title="Useful information">
+    {/* <span style={{marginLeft:'20px',color:'#999',display:amountTips,paddingBottom:'20px'}}>0 is the refund of all</span> */}
+    <span style={{marginLeft:'20px',color:'#999',display:"inline-block",paddingBottom:'20px'}}>0 is the refund of all</span>
+    </Tooltip>
+    </Space>
+    <Form.Item
+      label="Refund Reason"
+      name="refundReason"
+      rules={[{ required: true, message: 'Please input Refund Reason!' }]}
+    >
+          <Select style={{ width: 200 }}>
+            <Option value="Other">Other</Option>
+            <Option value="Lock Issue">Lock Issue</Option>
+            <Option value="Accidental Deposit">Accidental Deposit</Option>
+            <Option value="No Longer in Market">No Longer in Market</Option>
+            <Option value="Fraud">Fraud</Option>
+            <Option value="Scooter Issue">Scooter Issue</Option>
+            <Option value="App Issue">App Issue</Option>
+            <Option value="Phone Issue">Phone Issue</Option>
+          </Select>
+    </Form.Item>
+    <Form.Item
+      label="Note"
+      name="note"
+    >
+      <Input />
+    </Form.Item>
+  </Form>
+</Modal>
+  )
+}
 // const AddCouponForm = (props => {
 //   const { coupons } = props;
 //   const [form]= Form.useForm();
