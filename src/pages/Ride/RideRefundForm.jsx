@@ -43,15 +43,17 @@ function RideRefundForm (props) {
       };
     
       const onFinish=(fieldsValue)=>{
+
+
         const payload = {
-          refundType: fieldsValue.refundType,
+          type: fieldsValue.refundType,
           refundReason: refundReasons[fieldsValue.refundReason],
           note: fieldsValue.note
         };
     
         if (rideRefundCalculateResult) {
           const refundDetail = rideRefundCalculateResult.refundDetail;
-          payload.refundDetail = refundDetail;
+          payload.amount = refundDetail.refundTotal;
         }
         handleRefundRide(ride.id, payload);
       }
@@ -75,7 +77,7 @@ function RideRefundForm (props) {
         >
           <Form form={form} 
           initialValues={{
-            refundType:'CREDIT_CARD',
+            refundType:'TO_CARD',
             // refundReason:'Lock Issue',
             refundReason:1,
             refundWay:'Fully Refund'
@@ -88,8 +90,8 @@ function RideRefundForm (props) {
             name='refundType'
           >
               <Select style={{ width: 200 }}>
-                <Option value={"DEPOSIT"}>Deposit</Option>
-                <Option value={"CREDIT_CARD"}>Credit Card</Option>
+                <Option value={"TO_DEPOSIT"}>Deposit</Option>
+                <Option value={"TO_CARD"}>Credit Card</Option>
               </Select>
           </FormItem>
     
@@ -221,18 +223,20 @@ function RideRefundForm (props) {
                     <tr>
                       <th>
                         $
-                        {-1 *
+                        {(-1 *
                           (rideRefundCalculateResult.rideTransaction
                             .depositChange +
                             rideRefundCalculateResult.rideTransaction
                               .rideCreditChange -
                             rideRefundCalculateResult.rideTransaction
-                              .paymentCharge)}
+                              .paymentCharge -
+                              rideRefundCalculateResult.rideTransaction
+                              .holdCapture)).toFixed(2)}
                       </th>
                       <th>
                         $
-                        {rideRefundCalculateResult.billingInfo.subTotal +
-                          rideRefundCalculateResult.billingInfo.tax}
+                        {(rideRefundCalculateResult.billingInfo.subTotal +
+                          rideRefundCalculateResult.billingInfo.tax).toFixed(2)}
                       </th>
     
                       <th>
@@ -243,7 +247,9 @@ function RideRefundForm (props) {
                             rideRefundCalculateResult.rideTransaction
                               .rideCreditChange -
                             rideRefundCalculateResult.rideTransaction
-                              .paymentCharge) -
+                              .paymentCharge-
+                              rideRefundCalculateResult.rideTransaction
+                              .holdCapture) -
                           rideRefundCalculateResult.billingInfo.subTotal -
                           rideRefundCalculateResult.billingInfo.tax).toFixed(2)}
                       </th>

@@ -63,6 +63,7 @@ const REFUND_REASON = ["first timer forgot to lock", "first timer locked outside
 
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
 const Fefundmodal = (props)=>{
   const [form] = Form.useForm();
   form.resetFields()
@@ -77,6 +78,7 @@ const Fefundmodal = (props)=>{
     value ? setAmountTips('none') : setAmountTips('inline-block')
   }
   return (
+
     <Modal title="Refund Detail" visible={props.isRefundModalVisible} onOk={()=>{props.customerRefundMethod(form.getFieldsValue(true))}} onCancel={()=>{props.refundHandleCancel()}}>
     <Form
     name="basic"
@@ -1300,7 +1302,7 @@ class CustomerDetail extends PureComponent {
       title: 'Action',
       key: 'action',
       render: (text,record) => (
-          ((record.type == 7 && !record.refunded) || (record.type == 8 && !record.refunded && record.stripeChargeId) || (!record.refunded && record.type == 10) || (!record.refunded && record.type == 3)) ? <a onClick={()=>{this.refundShowModal(record.serviceId,record.type,JSON.parse(record.metaData).minutes)}}>Refund</a> : ''
+          (((record.type == 7 && !record.refunded) || (record.type == 8 && !record.refunded && record.stripeChargeId) || (!record.refunded && record.type == 10) || (!record.refunded && record.type == 3)) && record.metaData && JSON.parse(record.metaData).minutes > 0) ? <a onClick={()=>{this.refundShowModal(JSON.parse(record.metaData).rideId,record.type,record.metaData ? JSON.parse(record.metaData).minutes : undefined)}}>Refund</a> : ''
       ),
     },
   ];
