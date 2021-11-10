@@ -604,13 +604,13 @@ const UpdateForm = (props => {
       message.error('No information was modified')
     }
   };
-  const checkMoneyFormat = (rule, value, callback) => {
-    if (isNumberRegex.test(value)) {
-      callback();
-      return;
-    }
-    callback("Credit Must be Number!");
-  };
+  // const checkMoneyFormat = (rule, value, callback) => {
+  //   if (isNumberRegex.test(value)) {
+  //     callback();
+  //     return;
+  //   }
+  //   callback("Credit Must be Number!");
+  // };
 
   const checkEmailFormat = (rule, value, callback) => {
     if (value === null || value === "" || isEmailRegex.test(value)) {
@@ -631,9 +631,11 @@ const UpdateForm = (props => {
         wrapperCol={{ span: 10 }}
         label="Ride Credit Amount"
         name='rideCredit'
-        rules={[{ validator: checkMoneyFormat }]}
+        rules={[
+          { required: true,message: 'Please input your ride credit' }
+        ]}
       >
-        <Input placeholder="Please Input" />
+        <InputNumber placeholder="Please Input" min={0} style={{width:'130px'}} formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}/>
       </FormItem>
 
       <FormItem
@@ -641,14 +643,10 @@ const UpdateForm = (props => {
         wrapperCol={{ span: 10 }}
         label="Deposit Amount"
         name='deposit'
-        rules={[{ validator: checkMoneyFormat }]}
+        rules={[{ required: true,message: 'Please input your deposit' }]}
       >
-        <Input placeholder="Please Input" />
+        <InputNumber placeholder="Please Input" min={0} style={{width:'130px'}} formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}/>
       </FormItem>
-
-
-
-      
       <FormItem
         labelCol={{ span: 10}}
         wrapperCol={{ span: 10 }}
@@ -1405,7 +1403,6 @@ class CustomerDetail extends PureComponent {
     }}) 
   }
   customerRefundMethod=(value)=>{
-    console.log(this.state.transactionId);
     const { dispatch } = this.props;
     value.amount == 0 ? value.amount = null : null
     dispatch({
