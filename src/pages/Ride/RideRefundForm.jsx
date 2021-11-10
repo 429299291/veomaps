@@ -223,7 +223,7 @@ function RideRefundForm (props) {
                     <tr>
                       <th>
                         $
-                        {-1 *
+                        {(-1 *
                           (rideRefundCalculateResult.rideTransaction
                             .depositChange +
                             rideRefundCalculateResult.rideTransaction
@@ -231,12 +231,12 @@ function RideRefundForm (props) {
                             rideRefundCalculateResult.rideTransaction
                               .paymentCharge -
                               rideRefundCalculateResult.rideTransaction
-                              .holdCapture)}
+                              .holdCapture)).toFixed(2)}
                       </th>
                       <th>
                         $
-                        {rideRefundCalculateResult.billingInfo.subTotal +
-                          rideRefundCalculateResult.billingInfo.tax}
+                        {(rideRefundCalculateResult.billingInfo.subTotal +
+                          rideRefundCalculateResult.billingInfo.tax).toFixed(2)}
                       </th>
     
                       <th>

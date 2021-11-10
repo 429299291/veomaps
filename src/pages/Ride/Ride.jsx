@@ -464,7 +464,7 @@ class Ride extends PureComponent {
     const meta = JSON.parse(ride.metaData);
 
     // return (authority.includes("refund.ride")) && ride.end && (!meta || !meta.refunded);
-    return ride.end && (!meta || !meta.refunded);
+    return ride.end && (!meta || !meta.refunded) && ride.minutes
   };
 
   handleGetRides = () => {
