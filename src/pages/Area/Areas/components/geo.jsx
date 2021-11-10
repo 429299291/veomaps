@@ -501,7 +501,7 @@ class geo extends PureComponent {
     uploadImgUrl:'',
     hubUploadLoading:false,
     getFencesNewData:false,
-    fenceDelete:true
+    fenceDelete:false
   };
 
   componentDidMount() {
