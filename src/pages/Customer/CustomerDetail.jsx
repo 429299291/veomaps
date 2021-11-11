@@ -1302,7 +1302,7 @@ class CustomerDetail extends PureComponent {
       title: 'Action',
       key: 'action',
       render: (text,record) => (
-          (((record.type == 7 && !record.refunded) || (record.type == 8 && !record.refunded && record.stripeChargeId) || (!record.refunded && record.type == 10) || (!record.refunded && record.type == 3)) && record.metaData && JSON.parse(record.metaData).minutes > 0) ? <a onClick={()=>{this.refundShowModal(JSON.parse(record.metaData).rideId,record.type,record.metaData ? JSON.parse(record.metaData).minutes : undefined)}}>Refund</a> : ''
+          ((record.type == 7 && record.metaData && JSON.parse(record.metaData).minutes > 0) || (record.type == 8 && record.stripeChargeId) || ( record.type == 10) || (record.type == 3)) && !record.refunded  ? <a onClick={()=>{this.refundShowModal(record.type==7 ? JSON.parse(record.metaData).rideId : record.id,record.type,record.metaData ? JSON.parse(record.metaData).minutes : undefined)}}>Refund</a> : ''
       ),
     },
   ];
@@ -1397,12 +1397,17 @@ class CustomerDetail extends PureComponent {
     this.setState({isRefundModalVisibleForRide:false})
   };
   refundShowModal=(value,type,minutes)=>{
-    this.setState({transactionId:value})
-    type == 7 ? this.setState({isRefundModalVisibleForRide:true}) :  this.setState({isRefundModalVisible:true});
-    this.setState({ride:{
-      id:value,
-      minutes:minutes
-    }}) 
+    if(type === 7){
+      this.setState({isRefundModalVisibleForRide:true})
+      this.setState({ride:{
+        id:value,
+        minutes:minutes
+      }}) 
+    }else{
+      this.setState({transactionId:value})
+      this.setState({isRefundModalVisible:true});
+    }
+
   }
   customerRefundMethod=(value)=>{
     const { dispatch } = this.props;
