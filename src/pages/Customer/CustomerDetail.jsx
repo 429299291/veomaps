@@ -1794,17 +1794,17 @@ class CustomerDetail extends PureComponent {
               )}
             </Card> }
             {this.state.isRefundModalVisibleForRide && (
-          <RideRefundForm
-            isModalVisible={this.state.isRefundModalVisibleForRide}
-            handleModalVisible={this.handleRefundModalVisible}
-            ride={this.state.ride}
-            handleRefundRide={this.handleRefundRide}
-            handleGetRideRefundCalculateResult={
-              this.handleGetRideRefundCalculateResult
-            }
-            rideRefundCalculateResult={this.state.rideRefundCalculateResult}
-          />
-        )}
+              <RideRefundForm
+                isModalVisible={this.state.isRefundModalVisibleForRide}
+                handleModalVisible={this.handleRefundModalVisible}
+                ride={this.state.ride}
+                handleRefundRide={this.handleRefundRide}
+                handleGetRideRefundCalculateResult={
+                  this.handleGetRideRefundCalculateResult
+                }
+                rideRefundCalculateResult={this.state.rideRefundCalculateResult}
+              />
+            )}
             {
               <Fefundmodal isRefundModalVisible = {this.state.isRefundModalVisible} customerRefundMethod={this.customerRefundMethod} refundHandleCancel={this.refundHandleCancel}   handleRefundRide={this.handleRefundRide} handleRefundModalVisible={this.handleRefundModalVisible}></Fefundmodal>
             }

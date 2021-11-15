@@ -77,6 +77,9 @@ export default {
       const pageSize = data.pageSize
       data = data.content
       if (data) {
+        data.forEach(element => {
+          element.key = element.id
+        });
         onSuccess && onSuccess(data,page,pageSize,total);
       } else {
         message.error("Get Transactions Fail!");
