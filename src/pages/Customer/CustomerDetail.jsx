@@ -1302,7 +1302,7 @@ class CustomerDetail extends PureComponent {
       title: 'Action',
       key: 'action',
       render: (text,record) => (
-          ((record.type == 7 && record.metaData && JSON.parse(record.metaData).minutes > 0) || (record.type == 8 && record.stripeChargeId) || ( record.type == 10) || (record.type == 3)) && !record.refunded  ? <a onClick={()=>{this.refundShowModal(record.type==7 ? JSON.parse(record.metaData).rideId : record.id,record.type,record.metaData ? JSON.parse(record.metaData).minutes : undefined)}}>Refund</a> : ''
+          ((record.type == 7 && record.metaData && JSON.parse(record.metaData).minutes > 0) || (record.type == 8 && record.stripeChargeId) || ( record.type == 10) || (record.type == 3)) && !record.refunded  ? <a onClick={()=>{this.refundShowModal(record.type==7 ? JSON.parse(record.metaData).rideId : record.id,record.type,record.type == 7 && record.metaData ? JSON.parse(record.metaData).minutes : undefined)}}>Refund</a> : ''
       ),
     },
   ];
