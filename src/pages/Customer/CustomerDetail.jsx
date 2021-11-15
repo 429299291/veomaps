@@ -1808,7 +1808,7 @@ class CustomerDetail extends PureComponent {
             {
               <Fefundmodal isRefundModalVisible = {this.state.isRefundModalVisible} customerRefundMethod={this.customerRefundMethod} refundHandleCancel={this.refundHandleCancel}   handleRefundRide={this.handleRefundRide} handleRefundModalVisible={this.handleRefundModalVisible}></Fefundmodal>
             }
-            {/* {
+            {
             <Card title="Payment History" style={{ marginTop: "2em" }}>
               <Table
                 dataSource={customerPayments}
@@ -1827,7 +1827,7 @@ class CustomerDetail extends PureComponent {
                   refundReason={refundReason}
                 />
               )}
-            </Card>} */}
+            </Card>}
 
             {/* {(
               <Card title="Customer Coupons" style={{ marginTop: "2em" }}>
