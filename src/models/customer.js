@@ -73,9 +73,14 @@ export default {
 
       let data = yield call(getCustomerTransactions, payload);
       const total = data.totalSize
+      const page = data.page
+      const pageSize = data.pageSize
       data = data.content
       if (data) {
-        onSuccess && onSuccess(data,total);
+        data.forEach(element => {
+          element.key = element.id
+        });
+        onSuccess && onSuccess(data,page,pageSize,total);
       } else {
         message.error("Get Transactions Fail!");
       }
@@ -121,7 +126,6 @@ export default {
       const data = yield call(customerRefund,transactionId, payload)
       if (data) {
         message.success("Refund Success!");
-        onSuccess();
       } else {
         message.error(`Refund Fail!`);
       }

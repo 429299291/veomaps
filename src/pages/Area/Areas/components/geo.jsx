@@ -501,7 +501,7 @@ class geo extends PureComponent {
     uploadImgUrl:'',
     hubUploadLoading:false,
     getFencesNewData:false,
-    fenceDelete:true
+    fenceDelete:false
   };
 
   componentDidMount() {
@@ -1297,7 +1297,7 @@ class geo extends PureComponent {
                     <Button
                       type="danger"
                       onClick={() =>{
-                        selectedExistedFence.fenceType == 0 ? this.setState({fenceDelete:true}) : this.setState({fenceDelete:false});
+                        selectedExistedFence.fenceType === 0 ? this.setState({fenceDelete:true}) : this.setState({fenceDelete:false});
                         this.setState({ isDeleteModalVisible: true })
                       }
                       }

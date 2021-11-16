@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment,useState,useEffect } from "react";
 import { connect } from "dva";
 import moment from "moment";
+import RideRefundForm from "@/pages/Ride/RideRefundForm";
 import {
   Row,
   Col,
@@ -62,6 +63,7 @@ const REFUND_REASON = ["first timer forgot to lock", "first timer locked outside
 
 const isNumberRegex = /^-?\d*\.?\d{1,2}$/;
 const isEmailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
 const Fefundmodal = (props)=>{
   const [form] = Form.useForm();
   form.resetFields()
@@ -76,11 +78,12 @@ const Fefundmodal = (props)=>{
     value ? setAmountTips('none') : setAmountTips('inline-block')
   }
   return (
-    <Modal title="Refund Detail" visible={props.isRefundModalVisible} onOk={()=>{props.customerRefundMethod(form.getFieldsValue(true))}} onCancel={props.refundHandleCancel}>
+
+    <Modal title="Refund Detail" visible={props.isRefundModalVisible} onOk={()=>{props.customerRefundMethod(form.getFieldsValue(true))}} onCancel={()=>{props.refundHandleCancel()}}>
     <Form
     name="basic"
     form={form}
-    initialValues={{ type: 'TO_DEPOSIT',amount:0 }}
+    initialValues={{ type: 'TO_CARD',amount:0 }}
     onFinish={onFinish}
     onFinishFailed={onFinishFailed}
     // autoComplete="off"
@@ -603,13 +606,13 @@ const UpdateForm = (props => {
       message.error('No information was modified')
     }
   };
-  const checkMoneyFormat = (rule, value, callback) => {
-    if (isNumberRegex.test(value)) {
-      callback();
-      return;
-    }
-    callback("Credit Must be Number!");
-  };
+  // const checkMoneyFormat = (rule, value, callback) => {
+  //   if (isNumberRegex.test(value)) {
+  //     callback();
+  //     return;
+  //   }
+  //   callback("Credit Must be Number!");
+  // };
 
   const checkEmailFormat = (rule, value, callback) => {
     if (value === null || value === "" || isEmailRegex.test(value)) {
@@ -630,9 +633,11 @@ const UpdateForm = (props => {
         wrapperCol={{ span: 10 }}
         label="Ride Credit Amount"
         name='rideCredit'
-        rules={[{ validator: checkMoneyFormat }]}
+        rules={[
+          { required: true,message: 'Please input your ride credit' }
+        ]}
       >
-        <Input placeholder="Please Input" />
+        <InputNumber placeholder="Please Input" min={0} style={{width:'130px'}} formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}/>
       </FormItem>
 
       <FormItem
@@ -640,14 +645,10 @@ const UpdateForm = (props => {
         wrapperCol={{ span: 10 }}
         label="Deposit Amount"
         name='deposit'
-        rules={[{ validator: checkMoneyFormat }]}
+        rules={[{ required: true,message: 'Please input your deposit' }]}
       >
-        <Input placeholder="Please Input" />
+        <InputNumber placeholder="Please Input" min={0} style={{width:'130px'}} formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}/>
       </FormItem>
-
-
-
-      
       <FormItem
         labelCol={{ span: 10}}
         wrapperCol={{ span: 10 }}
@@ -1145,7 +1146,13 @@ class CustomerDetail extends PureComponent {
     customerTransactions: null,
     customerApprovedViolationCount: "Loading",
     isRefundModalVisible:false,
-    transactionId:null
+    isRefundModalVisibleForRide:false,
+    ride:{
+      id:null,
+      minutes:99
+    },
+    transactionId:null,
+    rideRefundCalculateResult:null
   };
 
   // customerCouponColumns = [
@@ -1295,7 +1302,7 @@ class CustomerDetail extends PureComponent {
       title: 'Action',
       key: 'action',
       render: (text,record) => (
-          ((record.type == 7 && !record.refunded) || (record.type == 8 && !record.refunded && record.stripeChargeId) || (!record.refunded && record.type == 10) || (!record.refunded && record.type == 3)) ? <a onClick={()=>{this.refundShowModal(record.id)}}>Refund</a> : ''
+          ((record.type == 7 && record.metaData && JSON.parse(record.metaData).minutes > 0) || (record.type == 8 && record.stripeChargeId) || ( record.type == 10) || (record.type == 3)) && !record.refunded  ? <a onClick={()=>{this.refundShowModal(record.type==7 ? JSON.parse(record.metaData).rideId : record.id,record.type,record.type == 7 && record.metaData ? JSON.parse(record.metaData).minutes : undefined)}}>Refund</a> : ''
       ),
     },
   ];
@@ -1367,7 +1374,7 @@ class CustomerDetail extends PureComponent {
     this.handleGetCustomerRides(customerId);
     this.handleGetCustomerPayments(customerId);
     this.handleGetAvailableCustomerMemberships();
-    this.handleGetCustomerTransactions(customerId);
+    this.handleGetCustomerTransactions();
     // this.handleGetCustomerApprovedViolationCount(customerId);
   };
 
@@ -1378,7 +1385,6 @@ class CustomerDetail extends PureComponent {
     });
   };
 
-
   handleRefundTypeChange = type => {
     this.setState({refundType: type})
   }
@@ -1388,10 +1394,20 @@ class CustomerDetail extends PureComponent {
   }
   refundHandleCancel = () => {
     this.setState({isRefundModalVisible:false});
+    this.setState({isRefundModalVisibleForRide:false})
   };
-  refundShowModal=(value)=>{
-    this.setState({transactionId:value})
-    this.setState({isRefundModalVisible:true});
+  refundShowModal=(value,type,minutes)=>{
+    if(type === 7){
+      this.setState({isRefundModalVisibleForRide:true})
+      this.setState({ride:{
+        id:value,
+        minutes:minutes
+      }}) 
+    }else{
+      this.setState({transactionId:value})
+      this.setState({isRefundModalVisible:true});
+    }
+
   }
   customerRefundMethod=(value)=>{
     const { dispatch } = this.props;
@@ -1400,7 +1416,10 @@ class CustomerDetail extends PureComponent {
       type: "customers/customerRefund",
       payload: value,
       transactionId:this.state.transactionId
-    }).then(this.setState({isRefundModalVisible:false}));
+    }).then(
+      // this.setState({isRefundModalVisible:false})
+      ()=>{this.setState({isRefundModalVisible:false});this.setState({isRefundModalVisibleForRide:false});this.handleGetCustomerTransactions(this.state.transactionPagination.page)}
+      );
     // this.setState({isRefundModalVisible:false});
   }
 
@@ -1425,7 +1444,36 @@ class CustomerDetail extends PureComponent {
     });
     this.handleEndRideVisible();
   };
+  handleRefundRide = (rideId, payload) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "rides/refund",
+      payload: payload,
+      id: rideId || 224896,
+    }).then(()=>{
+      this.setState({isRefundModalVisible:false});
+      this.setState({isRefundModalVisibleForRide:false})
+      this.handleGetCustomerTransactions(this.state.transactionPagination.page)
+    });
+    this.handleRefundModalVisible();
+  };
 
+  handleGetRideRefundCalculateResult = (id, payload) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "rides/getRefundCalculateResult",
+      payload: payload,
+      id: id || 224896,
+      onSuccess: result => this.setState({ rideRefundCalculateResult: result })
+    });
+  };
+  handleRefundModalVisible = (flag) => {
+    this.setState({
+      isRefundModalVisible: !!flag,
+      isRefundModalVisibleForRide: !!flag,
+      rideRefundCalculateResult: null
+    });
+  };
   // handleAddCustomerCoupon = fieldsValue => {
   //   const { dispatch, customerId } = this.props;
   //   if(fieldsValue.start&&fieldsValue.couponId){
@@ -1532,17 +1580,47 @@ class CustomerDetail extends PureComponent {
     });
 
   };
-
-
-  handleGetCustomerTransactions = () => {
+  TransactionsPaginationChange =(page)=>{
     const { dispatch, customerId } = this.props;
-
     dispatch({
       type: "customers/getTransactions",
       payload:{
         customerId,
         pagination:{
-          page:0,
+          page:page.current-1,
+          pageSize:page.pageSize,
+          sort:{
+            direction:'desc',
+            sortBy:'created'
+          }
+        }
+      },
+      onSuccess: (response,page,pageSize,total) => {
+        this.setState({customerTransactions: response})
+        this.setState({
+          transactionPagination :{
+            page:page,
+            pageSize:pageSize,
+            total:total,
+            sort:{
+              sortBy:'start',
+              direction:'desc'
+            }
+          }
+        })
+      }
+    });
+  }
+
+  handleGetCustomerTransactions = (initPage) => {
+    const { dispatch, customerId } = this.props;
+//111
+    dispatch({
+      type: "customers/getTransactions",
+      payload:{
+        customerId,
+        pagination:{
+          page:initPage || 0,
           pageSize:10,
           sort:{
             direction:'desc',
@@ -1550,11 +1628,12 @@ class CustomerDetail extends PureComponent {
           }
         }
       },
-      onSuccess: (response,total) => {
-        console.log(response);
+      onSuccess: (response,page,pageSize,total) => {
         this.setState({customerTransactions: response})
         this.setState({
-          transactionPagination : {
+          transactionPagination :{
+            page:page,
+            pageSize:pageSize,
             total:total
           }
         })
@@ -1618,37 +1697,6 @@ class CustomerDetail extends PureComponent {
       handleEndRide: this.handleEndRide,
       handleEndRideVisible: this.handleEndRideVisible
     };
-    const TransactionsPaginationChange =(page)=>{
-      const { dispatch, customerId } = this.props;
-      dispatch({
-        type: "customers/getTransactions",
-        payload:{
-          customerId,
-          pagination:{
-            page:page.current-1,
-            pageSize:page.pageSize,
-            sort:{
-              direction:'desc',
-              sortBy:'created'
-            }
-          }
-        },
-        onSuccess: (response,total) => {
-          this.setState({customerTransactions: response})
-          this.setState({
-            transactionPagination :{
-              page:page.current,
-              pageSize:page.pageSize,
-              total:total,
-              sort:{
-                sortBy:'start',
-                direction:'desc'
-              }
-            }
-          })
-        }
-      });
-    }
     const refundMethod = {
       handleRefundFormVisible: this.handleRefundFormVisible,
       handleRefund: this.handleRefund,
@@ -1714,7 +1762,7 @@ class CustomerDetail extends PureComponent {
 
               <Table
                 dataSource={customerTransactions}
-                onChange = {TransactionsPaginationChange}
+                onChange = {this.TransactionsPaginationChange}
                 columns={this.customerTransactionColumn}
                 pagination={transactionPagination}
                 scroll={{ x: 1300 }}
@@ -1745,8 +1793,20 @@ class CustomerDetail extends PureComponent {
                 />
               )}
             </Card> }
+            {this.state.isRefundModalVisibleForRide && (
+              <RideRefundForm
+                isModalVisible={this.state.isRefundModalVisibleForRide}
+                handleModalVisible={this.handleRefundModalVisible}
+                ride={this.state.ride}
+                handleRefundRide={this.handleRefundRide}
+                handleGetRideRefundCalculateResult={
+                  this.handleGetRideRefundCalculateResult
+                }
+                rideRefundCalculateResult={this.state.rideRefundCalculateResult}
+              />
+            )}
             {
-              <Fefundmodal isRefundModalVisible = {this.state.isRefundModalVisible} customerRefundMethod={this.customerRefundMethod} refundHandleCancel={this.refundHandleCancel}></Fefundmodal>
+              <Fefundmodal isRefundModalVisible = {this.state.isRefundModalVisible} customerRefundMethod={this.customerRefundMethod} refundHandleCancel={this.refundHandleCancel}   handleRefundRide={this.handleRefundRide} handleRefundModalVisible={this.handleRefundModalVisible}></Fefundmodal>
             }
             {
             <Card title="Payment History" style={{ marginTop: "2em" }}>

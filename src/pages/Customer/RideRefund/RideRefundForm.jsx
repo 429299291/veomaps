@@ -92,8 +92,6 @@ class RideRefundForm extends PureComponent {
           params.depositRefund = fieldsValue.depositRefund;
           params.paymentRefund = fieldsValue.paymentRefund;
         }
-
-        //params.refundAmount = amount - 0.3 - amount*0.029 - 1;
       
 
         handleRefund(customer.id, params);
