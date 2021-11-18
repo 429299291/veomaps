@@ -83,12 +83,12 @@ const Fefundmodal = (props)=>{
     <Form
     name="basic"
     form={form}
-    initialValues={{ type: 'TO_CARD',amount:0 }}
+    initialValues={{ amount:0 }}
     onFinish={onFinish}
     onFinishFailed={onFinishFailed}
     // autoComplete="off"
   >
-    <Form.Item
+    {/* <Form.Item
       label="Type"
       name="type"
       rules={[{ required: true, message: 'Please select type!' }]}
@@ -97,7 +97,7 @@ const Fefundmodal = (props)=>{
             <Option value="TO_DEPOSIT">Deposit</Option>
             <Option value="TO_CARD">Credit Card</Option>
           </Select>
-    </Form.Item>
+    </Form.Item> */}
     <Space>
     <Form.Item
       label='Amount'
@@ -846,7 +846,6 @@ const RefundForm = (props => {
   const okHandle = () => {
       let fieldsValue = form.getFieldsValue(true)
       const params = {}
-
       params.stripeChargeId = selectedCharge.stripeChargeId;
       params.pickupFee = fieldsValue.pickupFee;
       params.refundNote = (refundReason ?  refundReason : "") + "|"  + fieldsValue.refundNote;
@@ -861,19 +860,13 @@ const RefundForm = (props => {
         case REFUND_TYPE.OTHER:
           params.refundAmount = fieldsValue.refundAmount;
           break;
-
       }
-
       handleRefund(customer.id, params);
       handleRefundFormVisible(false);
-
   };
-
   const handleNote = val => {
     const len = val.length;
-
     const splitNote = val.split("|");
-
     if (val) {
       if (splitNote.length == 2) {
         return "Note: " + splitNote[1] + ". " + "Reason: " + REFUND_REASON[parseInt(splitNote[0], 10)];
@@ -1302,7 +1295,7 @@ class CustomerDetail extends PureComponent {
       title: 'Action',
       key: 'action',
       render: (text,record) => (
-          ((record.type == 7 && record.metaData && JSON.parse(record.metaData).minutes > 0) || (record.type == 8 && record.stripeChargeId) || ( record.type == 10) || (record.type == 3)) && !record.refunded  ? <a onClick={()=>{this.refundShowModal(record.type==7 ? JSON.parse(record.metaData).rideId : record.id,record.type,record.type == 7 && record.metaData ? JSON.parse(record.metaData).minutes : undefined)}}>Refund</a> : ''
+          ((record.type == 7 && record.metaData && this.isJSON(record.metaData) && JSON.parse(record.metaData).minutes > 0) || (record.type == 8 && record.stripeChargeId) || ( record.type == 10) || (record.type == 3) ) && !record.refunded  ? <a onClick={()=>{this.refundShowModal(record.type==7 ? JSON.parse(record.metaData).rideId : record.id,record.type,record.type == 7 && record.metaData ? JSON.parse(record.metaData).minutes : undefined)}}>Refund</a> : ''
       ),
     },
   ];
@@ -1363,8 +1356,23 @@ class CustomerDetail extends PureComponent {
   handleNeedPickupFee = value => {
     this.setState({needPickupFee: value})
   }
+  isJSON(str) {
+    if (typeof str == 'string') {
+        try {
+            var obj=JSON.parse(str);
+            if(typeof obj == 'object' && obj ){
+                return true;
+            }else{
+                return false;
+            }
 
-
+        } catch(e) {
+            console.log('error：'+str+'!!!'+e);
+            return false;
+        }
+    }
+    console.log('It is not a string!')
+}
 
 
   componentDidMount = () => {
@@ -1411,6 +1419,7 @@ class CustomerDetail extends PureComponent {
   }
   customerRefundMethod=(value)=>{
     const { dispatch } = this.props;
+    value.type = 'TO_CARD'
     value.amount == 0 ? value.amount = null : null
     dispatch({
       type: "customers/customerRefund",
@@ -1614,7 +1623,6 @@ class CustomerDetail extends PureComponent {
 
   handleGetCustomerTransactions = (initPage) => {
     const { dispatch, customerId } = this.props;
-//111
     dispatch({
       type: "customers/getTransactions",
       payload:{
