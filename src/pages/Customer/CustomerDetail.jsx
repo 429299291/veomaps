@@ -1295,7 +1295,7 @@ class CustomerDetail extends PureComponent {
       title: 'Action',
       key: 'action',
       render: (text,record) => (
-          ((record.type == 7 && record.metaData && this.isJSON(record.metaData) && JSON.parse(record.metaData).minutes > 0) || (record.type == 8 && record.stripeChargeId) || ( record.type == 10) || (record.type == 3) ) && !record.refunded  ? <a onClick={()=>{this.refundShowModal(record.type==7 ? JSON.parse(record.metaData).rideId : record.id,record.type,record.type == 7 && record.metaData ? JSON.parse(record.metaData).minutes : undefined)}}>Refund</a> : ''
+          ((record.type == 7 && record.metaData && this.isJSON(record.metaData) && JSON.parse(record.metaData).minutes > 0) || (record.type == 8 && record.stripeChargeId) || ( record.type == 10) || (record.type == 3)) && !record.refunded  ? <a onClick={()=>{this.refundShowModal(record.type==7 ? JSON.parse(record.metaData).rideId : record.id,record.type,record.type == 7 && record.metaData ? JSON.parse(record.metaData).minutes : undefined)}}>Refund</a> : ''
       ),
     },
   ];
@@ -1366,6 +1366,16 @@ class CustomerDetail extends PureComponent {
                 return false;
             }
 
+  isJSON(str) {
+    if (typeof str == 'string') {
+        try {
+            var obj=JSON.parse(str);
+            if(typeof obj == 'object' && obj ){
+                return true;
+            }else{
+                return false;
+            }
+
         } catch(e) {
             console.log('error：'+str+'!!!'+e);
             return false;
@@ -1373,8 +1383,6 @@ class CustomerDetail extends PureComponent {
     }
     console.log('It is not a string!')
 }
-
-
   componentDidMount = () => {
     const {customerId} = this.props;
 
