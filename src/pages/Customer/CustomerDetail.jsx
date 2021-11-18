@@ -1356,7 +1356,7 @@ class CustomerDetail extends PureComponent {
   handleNeedPickupFee = value => {
     this.setState({needPickupFee: value})
   }
-  isJSON(str) {
+  isJSON = (str) => {
     if (typeof str == 'string') {
         try {
             var obj=JSON.parse(str);
@@ -1365,7 +1365,6 @@ class CustomerDetail extends PureComponent {
             }else{
                 return false;
             }
-
         } catch(e) {
             console.log('error：'+str+'!!!'+e);
             return false;
