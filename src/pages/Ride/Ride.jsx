@@ -462,7 +462,6 @@ class Ride extends PureComponent {
 
   isRideRefundable = ride => {
     const meta = JSON.parse(ride.metaData);
-
     // return (authority.includes("refund.ride")) && ride.end && (!meta || !meta.refunded);
     return ride.end && (!meta || !meta.refunded) && ride.minutes
   };
@@ -702,14 +701,12 @@ class Ride extends PureComponent {
 
   handleRefundRide = (rideId, payload) => {
     const { dispatch } = this.props;
-
     dispatch({
       type: "rides/refund",
       payload: payload,
       id: rideId,
       onSuccess: this.handleGetRides
     });
-
     this.handleRefundModalVisible();
   };
 

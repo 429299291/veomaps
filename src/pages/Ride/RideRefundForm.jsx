@@ -43,14 +43,12 @@ function RideRefundForm (props) {
       };
     
       const onFinish=(fieldsValue)=>{
-
-
         const payload = {
-          type: fieldsValue.refundType,
+          // type: fieldsValue.refundType,
+          type: 'TO_CARD',
           refundReason: refundReasons[fieldsValue.refundReason],
           note: fieldsValue.note
         };
-    
         if (rideRefundCalculateResult) {
           const refundDetail = rideRefundCalculateResult.refundDetail;
           payload.amount = refundDetail.refundTotal;
@@ -77,13 +75,13 @@ function RideRefundForm (props) {
         >
           <Form form={form} 
           initialValues={{
-            refundType:'TO_CARD',
+            // refundType:'TO_CARD',
             // refundReason:'Lock Issue',
             refundReason:1,
             refundWay:'Fully Refund'
           }}
           onFinish={()=>{onFinish(form.getFieldsValue(true))}}>
-          <FormItem
+          {/* <FormItem
             labelCol={{ span: 6 }}
             wrapperCol={{ span: 18 }}
             label="Refund Type"
@@ -93,7 +91,7 @@ function RideRefundForm (props) {
                 <Option value={"TO_DEPOSIT"}>Deposit</Option>
                 <Option value={"TO_CARD"}>Credit Card</Option>
               </Select>
-          </FormItem>
+          </FormItem> */}
     
           <FormItem
             labelCol={{ span: 6 }}
@@ -172,10 +170,10 @@ function RideRefundForm (props) {
                   type="primary"
                   onClick={ () => {
                     const minutes = form.getFieldValue("minutes");
-                    const refundType = form.getFieldValue("refundType");
+                    // const refundType = form.getFieldValue("refundType");
                     handleGetRideRefundCalculateResult(ride.id, {
                       minutes: minutes,
-                      refundType: refundType
+                      refundType: 'TO_CARD'
                     });
                   }}
                 >
