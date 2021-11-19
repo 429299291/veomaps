@@ -27,6 +27,7 @@ import {
   Switch,
   Tooltip,
   Space,
+  Typography,
   Spin
 } from "antd";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
@@ -74,12 +75,16 @@ const Fefundmodal = (props)=>{
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
+  const onChange = (e) => {
+    console.log(`checked = ${e.target.checked}`);
+  }
   const amountChangeTips=(value)=>{
     value ? setAmountTips('none') : setAmountTips('inline-block')
   }
   return (
 
     <Modal title="Refund Detail" visible={props.isRefundModalVisible} onOk={()=>{props.customerRefundMethod(form.getFieldsValue(true))}} onCancel={()=>{props.refundHandleCancel()}}>
+    {/* <Modal title="Refund Detail" visible={props.isRefundModalVisible} onOk={()=>{console.log(form.getFieldsValue(true))}} onCancel={()=>{props.refundHandleCancel()}}> */}
     <Form
     name="basic"
     form={form}
@@ -111,6 +116,13 @@ const Fefundmodal = (props)=>{
     <span style={{marginLeft:'20px',color:'#999',display:"inline-block",paddingBottom:'20px'}}>0 is the refund of all</span>
     </Tooltip>
     </Space>
+    <Form.Item name='customerFault' label='Customer Fault' valuePropName="checked">
+      <Checkbox onChange={onChange}>
+          <Tooltip title="will deduct Stripe transaction fee from total refund amount">
+            <Typography.Link href="#API">Customer Fault</Typography.Link>
+          </Tooltip>
+      </Checkbox>
+    </Form.Item>
     <Form.Item
       label="Refund Reason"
       name="refundReason"
