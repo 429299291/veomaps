@@ -1356,6 +1356,11 @@ class CustomerDetail extends PureComponent {
   handleNeedPickupFee = value => {
     this.setState({needPickupFee: value})
   }
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> e89b8aa42223058da470a8cef1fb3c88a809091c
   isJSON = (str) => {
     if (typeof str == 'string') {
         try {

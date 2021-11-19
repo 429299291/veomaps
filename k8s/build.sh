@@ -12,7 +12,7 @@ fi
 
 # login to ecr
 echo "[*] Login to ECR"
-token=$(aws ecr get-login-password)
+token=$(aws ecr get-login-password --region us-east-2)
 result=$(docker login --username AWS -p $token 488938767527.dkr.ecr.us-east-2.amazonaws.com)
 if [ "$result" != "Login Succeeded" ] ; then
   echo "Login to ECR Failed. Please contact li.zhou@veoride.com for further instructions."
