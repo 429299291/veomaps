@@ -111,10 +111,8 @@ const Fefundmodal = (props)=>{
       <InputNumber formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} min={0} style={{ width: 120 }}/>
       {/* <span style={{marginLeft:'20px',color:'#999',display:amountTips}}>0 is the refund of all</span> */}
     </Form.Item>
-    <Tooltip title="Useful information">
-    {/* <span style={{marginLeft:'20px',color:'#999',display:amountTips,paddingBottom:'20px'}}>0 is the refund of all</span> */}
-    <span style={{marginLeft:'20px',color:'#999',display:"inline-block",paddingBottom:'20px'}}>0 is the refund of all</span>
-    </Tooltip>
+    <span style={{marginLeft:'20px',color:'#999',display:amountTips,paddingBottom:'20px'}}>0 is the refund of all</span>
+    {/* <span style={{marginLeft:'20px',color:'#999',display:"inline-block",paddingBottom:'20px'}}>0 is the refund of all</span> */}
     </Space>
     <Form.Item name='customerFault' label='Customer Fault' valuePropName="checked">
       <Checkbox onChange={onChange}>

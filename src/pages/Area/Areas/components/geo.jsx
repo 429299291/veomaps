@@ -27,7 +27,7 @@ import {
 } from "antd";
 const Option = Select.Option;
 import reqwest from "reqwest";
-import { LoadingOutlined, PlusOutlined,WarningOutlined,PlusSquareOutlined } from '@ant-design/icons';
+import { LoadingOutlined, PlusOutlined,WarningOutlined,PlusSquareOutlined,FileProtectOutlined } from '@ant-design/icons';
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
 import {fenceType, fenceTypeColor} from "@/constant";
 import NumberInput from "@/components/share/NumberInput";
@@ -991,6 +991,9 @@ class geo extends PureComponent {
           <div className="ant-upload-text">Upload</div>
         </div>
       );
+      const confirm = () => {
+        message.info('Clicked on Yes.');
+      }
       const { hubUploadImageUrl } = this.state;
       const selectedExistedPrimeLocationId = selectedExistedPrimeLocation ? selectedExistedPrimeLocation.id : null
       let imgList = (this.props.geo.primeLocations && selectedExistedPrimeLocation) ? this.props.geo.primeLocations.filter(data=>{return data.id == selectedExistedPrimeLocationId}) : []

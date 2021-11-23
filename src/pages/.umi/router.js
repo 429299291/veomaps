@@ -169,6 +169,12 @@ let routes = [
             "exact": true
           },
           {
+            "path": "/area/policy-management/",
+            "name": "Policy Management",
+            "component": dynamic({ loader: () => import('../Area/Policy/Policy'), loading: require('/Users/zhudongdong/Desktop/fixjson/home/src/components/PageLoading/index').default }),
+            "exact": true
+          },
+          {
             "component": () => React.createElement(require('/Users/zhudongdong/Desktop/fixjson/home/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })
           }
         ]

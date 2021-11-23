@@ -12,7 +12,8 @@ import {
   getAreasAll,
   addArea,//
   updateAreaNew,//
-  getHubImageUploadUrl
+  getHubImageUploadUrl,
+  getPolicies
 } from "@/services/area";
 import { message } from "antd";
 
@@ -171,6 +172,19 @@ export default {
         onSuccess && onSuccess(response);
       } else {
         message.error(`Get area feature fail: ` + response);
+      }
+    },
+    *getPolicies({areaId,onSuccess},{call,put}){
+      let response = yield call(getPolicies,areaId)
+      response = response.policies
+      response.map(data =>{
+        data.dataIndex = data.published_date
+      })
+      if ( response ){
+        console.log(response);
+        onSuccess && onSuccess(response) 
+      }else{
+        return []
       }
     }
 
