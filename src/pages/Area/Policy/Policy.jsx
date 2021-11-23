@@ -57,14 +57,14 @@ const Policy = (props) => {
   ]
   useEffect(() => {
     getPolicyData()
- }, [props.areas.selectedAreaId])
+ }, [props.areas.selectedAreaId == 95])
  const [policyData, setPolicyData] = useState([]);
   const getPolicyData = () => {
     const {dispatch,areas} = props
     if(areas.selectedAreaId){
       dispatch({
         type:'areas/getPolicies',
-        areaId:95 || areas.selectedAreaId,
+        areaId:areas.selectedAreaId,
         onSuccess:(data)=>{
           setPolicyData(data)
         }
