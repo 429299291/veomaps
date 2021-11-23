@@ -117,4 +117,8 @@ export async function updateAreaNew(areaId,params) {
     }
   });
 }
-
+export async function getPolicies(areaId){
+  return request(`/api/admins/mds/${areaId}/policies`,{
+    method:'GET'
+  })
+}
