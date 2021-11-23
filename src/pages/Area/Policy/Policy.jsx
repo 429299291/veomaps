@@ -66,7 +66,6 @@ const Policy = (props) => {
     }else{
       dispatch({
         type:'areas/getPolicies',
-        // areaId:areas.selectedAreaId == 88 ? 95 : areas.selectedAreaId,
         areaId:areas.selectedAreaId,
         onSuccess:(data)=>{
           setPolicyData(data)
