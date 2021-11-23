@@ -176,7 +176,7 @@ export default {
     },
     *getPolicies({areaId,onSuccess},{call,put}){
       let response = yield call(getPolicies,areaId)
-      response = response.policies
+      response = response ? response.policies : []
       response.map(data =>{
         data.dataIndex = data.published_date
       })
