@@ -284,12 +284,8 @@ const MembershipForm = (props => {
   const { memberships, handleBuyMembership } = props;
   const [form] = Form.useForm();
   const activeMembership = memberships.filter(m => m.activated).reduce((o , m) => m, null);
-
   const [allowToBuy, setAllowToBuy] = useState(false); 
-
   const [isLoading, setIsLoading] = useState(false);
-
-
   const okHandle = () => {
     let fieldsValue = form.getFieldsValue(true)
     if(!fieldsValue.selectedMembership) return false
@@ -315,10 +311,11 @@ const MembershipForm = (props => {
               <Select 
                   placeholder="select" style={{ width: "100%" }} 
                   onChange={val => setAllowToBuy(!activeMembership && !!val)}    
-                  disabled={!!activeMembership}            
+                  // disabled={!!activeMembership}     
+                  defaultValue={activeMembership ? activeMembership.id : ''}       
               >
                 { (activeMembership ? [activeMembership] : memberships).map((membership, index) => (
-                  <Option key={index} value={membership.id}>
+                  <Option key={index} value={membership.id} disabled={membership.activated} >
                     { membership.name + "," + membership.description}
                   </Option>
                 ))}
