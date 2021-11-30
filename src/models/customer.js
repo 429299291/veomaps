@@ -107,6 +107,7 @@ export default {
       const data = yield call(buyMembership, customerId, planId);
 
       if (data) {
+        message.success("Buy Membership Success!");
         onSuccess && onSuccess(data);
       } else {
         onFail && onFail();
