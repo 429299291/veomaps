@@ -300,7 +300,11 @@ const MembershipForm = (props => {
       {isLoading ?
         <Spin size="large" />
         :
-        <Form form={form}>
+        <Form form={form}
+        initialValues={{
+          selectedMembership:activeMembership ? activeMembership.id : ''
+        }}
+        >
         {memberships && (
           <FormItem
             labelCol={{ span: 5 }}
@@ -312,7 +316,6 @@ const MembershipForm = (props => {
                   placeholder="select" style={{ width: "100%" }} 
                   onChange={val => setAllowToBuy(!activeMembership && !!val)}    
                   // disabled={!!activeMembership}     
-                  defaultValue={activeMembership ? activeMembership.id : ''}       
               >
                 { (activeMembership ? [activeMembership] : memberships).map((membership, index) => (
                   <Option key={index} value={membership.id} disabled={membership.activated} >
@@ -349,7 +352,6 @@ const EndRideForm = (props => {
   } = props;
   const [form] = Form.useForm()
   const okHandle = () => {
-
       handleEndRide(ride.id, form.getFieldsValue(true));
   };
 
