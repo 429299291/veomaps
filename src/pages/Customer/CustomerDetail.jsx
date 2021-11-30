@@ -27,6 +27,7 @@ import {
   Switch,
   Tooltip,
   Space,
+  Typography,
   Spin
 } from "antd";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
@@ -74,21 +75,25 @@ const Fefundmodal = (props)=>{
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
+  const onChange = (e) => {
+    console.log(`checked = ${e.target.checked}`);
+  }
   const amountChangeTips=(value)=>{
     value ? setAmountTips('none') : setAmountTips('inline-block')
   }
   return (
 
     <Modal title="Refund Detail" visible={props.isRefundModalVisible} onOk={()=>{props.customerRefundMethod(form.getFieldsValue(true))}} onCancel={()=>{props.refundHandleCancel()}}>
+    {/* <Modal title="Refund Detail" visible={props.isRefundModalVisible} onOk={()=>{console.log(form.getFieldsValue(true))}} onCancel={()=>{props.refundHandleCancel()}}> */}
     <Form
     name="basic"
     form={form}
-    initialValues={{ type: 'TO_CARD',amount:0 }}
+    initialValues={{ amount:0 }}
     onFinish={onFinish}
     onFinishFailed={onFinishFailed}
     // autoComplete="off"
   >
-    <Form.Item
+    {/* <Form.Item
       label="Type"
       name="type"
       rules={[{ required: true, message: 'Please select type!' }]}
@@ -97,7 +102,7 @@ const Fefundmodal = (props)=>{
             <Option value="TO_DEPOSIT">Deposit</Option>
             <Option value="TO_CARD">Credit Card</Option>
           </Select>
-    </Form.Item>
+    </Form.Item> */}
     <Space>
     <Form.Item
       label='Amount'
@@ -106,11 +111,16 @@ const Fefundmodal = (props)=>{
       <InputNumber formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} min={0} style={{ width: 120 }}/>
       {/* <span style={{marginLeft:'20px',color:'#999',display:amountTips}}>0 is the refund of all</span> */}
     </Form.Item>
-    <Tooltip title="Useful information">
-    {/* <span style={{marginLeft:'20px',color:'#999',display:amountTips,paddingBottom:'20px'}}>0 is the refund of all</span> */}
-    <span style={{marginLeft:'20px',color:'#999',display:"inline-block",paddingBottom:'20px'}}>0 is the refund of all</span>
-    </Tooltip>
+    <span style={{marginLeft:'20px',color:'#999',display:amountTips,paddingBottom:'20px'}}>0 is the refund of all</span>
+    {/* <span style={{marginLeft:'20px',color:'#999',display:"inline-block",paddingBottom:'20px'}}>0 is the refund of all</span> */}
     </Space>
+    <Form.Item name='customerFault' label='Customer Fault' valuePropName="checked">
+      <Checkbox onChange={onChange}>
+          <Tooltip title="will deduct Stripe transaction fee from total refund amount">
+            <Typography.Link href="#API">Customer Fault</Typography.Link>
+          </Tooltip>
+      </Checkbox>
+    </Form.Item>
     <Form.Item
       label="Refund Reason"
       name="refundReason"
@@ -274,12 +284,8 @@ const MembershipForm = (props => {
   const { memberships, handleBuyMembership } = props;
   const [form] = Form.useForm();
   const activeMembership = memberships.filter(m => m.activated).reduce((o , m) => m, null);
-
   const [allowToBuy, setAllowToBuy] = useState(false); 
-
   const [isLoading, setIsLoading] = useState(false);
-
-
   const okHandle = () => {
     let fieldsValue = form.getFieldsValue(true)
     if(!fieldsValue.selectedMembership) return false
@@ -294,7 +300,11 @@ const MembershipForm = (props => {
       {isLoading ?
         <Spin size="large" />
         :
-        <Form form={form}>
+        <Form form={form}
+        initialValues={{
+          selectedMembership:activeMembership ? activeMembership.id : ''
+        }}
+        >
         {memberships && (
           <FormItem
             labelCol={{ span: 5 }}
@@ -305,10 +315,10 @@ const MembershipForm = (props => {
               <Select 
                   placeholder="select" style={{ width: "100%" }} 
                   onChange={val => setAllowToBuy(!activeMembership && !!val)}    
-                  disabled={!!activeMembership}            
+                  // disabled={!!activeMembership}     
               >
                 { (activeMembership ? [activeMembership] : memberships).map((membership, index) => (
-                  <Option key={index} value={membership.id}>
+                  <Option key={index} value={membership.id} disabled={membership.activated} >
                     { membership.name + "," + membership.description}
                   </Option>
                 ))}
@@ -342,7 +352,6 @@ const EndRideForm = (props => {
   } = props;
   const [form] = Form.useForm()
   const okHandle = () => {
-
       handleEndRide(ride.id, form.getFieldsValue(true));
   };
 
@@ -846,7 +855,6 @@ const RefundForm = (props => {
   const okHandle = () => {
       let fieldsValue = form.getFieldsValue(true)
       const params = {}
-
       params.stripeChargeId = selectedCharge.stripeChargeId;
       params.pickupFee = fieldsValue.pickupFee;
       params.refundNote = (refundReason ?  refundReason : "") + "|"  + fieldsValue.refundNote;
@@ -861,19 +869,13 @@ const RefundForm = (props => {
         case REFUND_TYPE.OTHER:
           params.refundAmount = fieldsValue.refundAmount;
           break;
-
       }
-
       handleRefund(customer.id, params);
       handleRefundFormVisible(false);
-
   };
-
   const handleNote = val => {
     const len = val.length;
-
     const splitNote = val.split("|");
-
     if (val) {
       if (splitNote.length == 2) {
         return "Note: " + splitNote[1] + ". " + "Reason: " + REFUND_REASON[parseInt(splitNote[0], 10)];
@@ -1363,8 +1365,6 @@ class CustomerDetail extends PureComponent {
   handleNeedPickupFee = value => {
     this.setState({needPickupFee: value})
   }
-
-
   isJSON = (str) => {
     if (typeof str == 'string') {
         try {
@@ -1426,6 +1426,7 @@ class CustomerDetail extends PureComponent {
   }
   customerRefundMethod=(value)=>{
     const { dispatch } = this.props;
+    value.type = 'TO_CARD'
     value.amount == 0 ? value.amount = null : null
     dispatch({
       type: "customers/customerRefund",
@@ -1629,7 +1630,6 @@ class CustomerDetail extends PureComponent {
 
   handleGetCustomerTransactions = (initPage) => {
     const { dispatch, customerId } = this.props;
-//111
     dispatch({
       type: "customers/getTransactions",
       payload:{

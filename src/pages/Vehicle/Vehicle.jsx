@@ -122,6 +122,14 @@ const RenderSimpleForm=(props)=> {
   // const handleSearch=()=>{
   //   form.submit()
   // }
+  let resetDatas
+  if(props.resetDatas){
+    resetDatas = {
+      ...props.resetDatas,
+      numberOrImei:(props.resetDatas.vehicleNumber || props.resetDatas.imei) ? props.resetDatas.vehicleNumber ?props.resetDatas.vehicleNumber : props.resetDatas.imei :''
+    }
+  }
+  form.setFieldsValue(resetDatas)
   const handleFormReset = ()=>{
     props.handleFormReset()
     form.resetFields()
@@ -175,8 +183,14 @@ const RenderAdvancedForm=(props)=> {
   const [form] = Form.useForm()
   // form.setFieldsValue()
   // const { areas }= this.props;
-
-
+  let resetDatas
+  if(props.resetDatas){
+    resetDatas = {
+      ...props.resetDatas,
+      numberOrImei:(props.resetDatas.vehicleNumber || props.resetDatas.imei) ? props.resetDatas.vehicleNumber ?props.resetDatas.vehicleNumber : props.resetDatas.imei :''
+    }
+  }
+  form.setFieldsValue(resetDatas)
   const checkIdleDays = (rule, value, callback) => {
     if (value === undefined || ( value > 0 && Number.isInteger(value))) {
       callback();
@@ -1218,7 +1232,6 @@ class Vehicle extends PureComponent {
   }
 
   handleSearch = fieldsValue => {
-    console.log(fieldsValue);
     const { dispatch,  selectedAreaId,vehicles } = this.props;
     const { filterCriteria, selectedTab } = this.state;
     // form.validateFields((err, fieldsValue) => {
@@ -1495,7 +1508,7 @@ class Vehicle extends PureComponent {
 
   renderForm() {
     const { expandForm } = this.state;
-    return expandForm ? <RenderAdvancedForm handleSearch={this.handleSearch} handleFormReset={this.handleFormReset} toggleForm={this.toggleForm} /> : <RenderSimpleForm toggleForm={this.toggleForm} handleSearch={this.handleSearch} handleFormReset={this.handleFormReset}/>;
+    return expandForm ? <RenderAdvancedForm resetDatas={this.state.filterCriteria} handleSearch={this.handleSearch} handleFormReset={this.handleFormReset} toggleForm={this.toggleForm} /> : <RenderSimpleForm resetDatas={this.state.filterCriteria} toggleForm={this.toggleForm} handleSearch={this.handleSearch} handleFormReset={this.handleFormReset}/>;
   }
 
 

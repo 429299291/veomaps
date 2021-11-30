@@ -144,11 +144,15 @@ export default [
           {
             path: "/area/price-management/",
             name: "Price Management",
-            // icon: "wallet",
             authority: "area.price",
             component: "./Area/Price/Price"
           },
-
+          {
+            path: "/area/policy-management/",
+            name: "Policy Management",
+            // authority: "area.price",
+            component: "./Area/Policy/Policy"
+          },
         ]
       },
       {

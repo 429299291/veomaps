@@ -308,4 +308,5 @@ export default {
   'menu.Technician Management.Violation Management':'Violation Management',
   'menu.Technician Management.Tech Metrics':'Tech Metrics',
   'menu.account.settings':'settings',
+  'menu.Area Management.Policy Management':'Policy Management'
 };
