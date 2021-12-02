@@ -150,13 +150,13 @@ const CreateForm = (props => {
         name='vehicleType'
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}
-        rules={
-          [
-            {
-              required: true
-            }
-          ]
-        }
+        // rules={
+        //   [
+        //     {
+        //       required: true
+        //     }
+        //   ]
+        // }
       >
          <Select placeholder="select" style={{ width: "100%" }}>
             {vehicleType.map((interval, index) => (

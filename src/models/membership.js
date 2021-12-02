@@ -68,7 +68,7 @@ export default {
         message.success(`Add Success, ID : ${response}`);
         onSuccess && onSuccess();
       } else {
-        message.error(`Add Fail.`);
+        // message.error(`Add Fail.`);
         onError && onError();
       }
     }
