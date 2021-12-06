@@ -1257,7 +1257,6 @@ class Vehicle extends PureComponent {
       }
     }
       let values;
-
       if (selectedTab == 1) {
        values = Object.assign({}, filterCriteria, fieldsValue, {
           pagination: {
@@ -1296,8 +1295,7 @@ class Vehicle extends PureComponent {
         delete values.locationCriteria
         
       } else {
-        values = Object.assign({}, filterCriteria, fieldsValue);
-
+        values = Object.assign({}, fieldsValue,filterCriteria);
         if (values.connected !== null && values.connected !== undefined) {
           values.connectStatus = values.connected ? "1" : "0";
 
@@ -1328,7 +1326,7 @@ class Vehicle extends PureComponent {
         vehicles.total === 0 ? vehicles.total = 1 : null
         selectedAreaId ? values.pagination.pageSize = vehicles.total : null
       }
-      values.vehicleTypes = values.vehicleType ? [...values.vehicleType] : null;
+      values.vehicleType ? values.vehicleTypes = [...values.vehicleType] : null;
     // if(!fieldsValue){
     //   values={
     //     areaIds: selectedAreaId ? [selectedAreaId] : [],
@@ -1346,7 +1344,6 @@ class Vehicle extends PureComponent {
         () => {
           switch (selectedTab) {
             case "1":
-
             this.handleGetListVehicles();
             break;
           case "2":
