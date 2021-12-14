@@ -122,6 +122,18 @@ let routes = [
             "exact": true
           },
           {
+            "path": "/customer-management/campaign",
+            "name": "Campaign",
+            "component": dynamic({ loader: () => import('../Customer/Campaign/campaign'), loading: require('/Users/zhudongdong/Desktop/home/src/components/PageLoading/index').default }),
+            "exact": true
+          },
+          {
+            "path": "/customer-management/notification",
+            "name": "Notification",
+            "component": dynamic({ loader: () => import('../Customer/Notification/Notification'), loading: require('/Users/zhudongdong/Desktop/home/src/components/PageLoading/index').default }),
+            "exact": true
+          },
+          {
             "component": () => React.createElement(require('/Users/zhudongdong/Desktop/home/node_modules/umi-build-dev/lib/plugins/404/NotFound.js').default, { pagesPath: 'src/pages', hasRoutesInConfig: true })
           }
         ]

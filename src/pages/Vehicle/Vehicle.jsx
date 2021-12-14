@@ -1326,7 +1326,7 @@ class Vehicle extends PureComponent {
         vehicles.total === 0 ? vehicles.total = 1 : null
         selectedAreaId ? values.pagination.pageSize = vehicles.total : null
       }
-      values.vehicleTypes ? values.vehicleTypes = [...values.vehicleType] : null;
+      values.vehicleType ? values.vehicleTypes = [...values.vehicleType] : null;
     // if(!fieldsValue){
     //   values={
     //     areaIds: selectedAreaId ? [selectedAreaId] : [],

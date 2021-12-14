@@ -96,7 +96,17 @@ export default [
             name: "Violation",
             authority: ["customer.violation"],
             component: "./Customer/VehicleViolation",
-          }
+          },
+          {
+            path: "/customer-management/campaign",
+            name: "Campaign",
+            component: "./Customer/Campaign/campaign",
+          },
+          {
+            path: "/customer-management/notification",
+            name: "Notification",
+            component: "./Customer/Notification/Notification",
+          },
         ]
       },
       {
