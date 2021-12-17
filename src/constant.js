@@ -7,7 +7,8 @@ const fenceType = [
   "sub-geofence",
   "no-ride-zone",
   "Low Speed Zone",
-  "Ghost(Buffer) Zone"
+  "Ghost(Buffer) Zone",
+  "sidewalk"
 ];
 
 const fenceTypeColor = [
@@ -19,7 +20,8 @@ const fenceTypeColor = [
   "#b72126",
   "#333333",
   "#eff53d",
-  "#336600"
+  "#336600",
+  "#A8FF24"
 ];
 
 const violationStatus = [

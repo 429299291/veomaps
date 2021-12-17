@@ -455,17 +455,12 @@ getRangeEnd(end) {
         })
     });
   }
-
   getStripeRevenueByPeriod() {
-
     const { dispatch, selectedAreaId } = this.props;
-
     const {countParams, offset, rangePickerValue} = this.state;
-
     // if (!authority.includes("get.stripe.revenue.by.period")) {
     //   return;
     // }
-
     dispatch({
       type: "dashboard/fetchStripRevenueByPeriod",
       params: Object.assign(
@@ -763,73 +758,36 @@ getRangeEnd(end) {
     } 
 
     const formatAllDayData = data => {
-
       const {countParams} = this.state;
-
       if (data === undefined || data.length === 0 ||  countParams.period !== "day" || isNaN(data[0].x)) {
-
         if (Array.isArray(data)) {
-
           const sortedData = [...data].sort((x, y) => {
-
             const xSplit = x.x.split("-");
-
             const ySplit = y.x.split("-");
-
             const xInt = (parseInt(xSplit[0]) * 10000) + (parseInt(xSplit[1]) * 100) + (parseInt(xSplit[2]));
-
             const yInt = (parseInt(ySplit[0]) * 10000) + (parseInt(ySplit[1]) * 100) + (parseInt(ySplit[2]));
-
             return xInt - yInt;
-
           });
-
           return sortedData;
-
         } else {
-
           return data;
-
         }
-
-        
-
       } else {
-
           const result = 
-          
             data.sort((x, y) => {
-
             const xInt = parseInt(x.x, 10); 
-
             const yInt = parseInt(y.x, 10); 
-
-
             return xInt - yInt
-
             })
             .map(item => {
-
-
               const intX = parseInt(item.x);
-
               const formatTime = (( intX - 1) % 12) + ((intX < 12) ? "AM" : "PM");
-
               item.temp = formatTime;
-
               item.x = formatTime;
-
-
               return item;
-
             })
-
             return result;
-
-
-
       }
-
     }
       let dayDiff = this.getRangeEnd(rangePickerValue[1]).diff(rangePickerValue[0], 'days');
       if (dayDiff === 0) dayDiff = 1;
@@ -849,6 +807,10 @@ getRangeEnd(end) {
       .map( group => {
         return {x: moment().dayOfYear(group.dayOfYear).format("MM/DD"), y: group.total};
       });
+      console.log(dashboard.stripeRevenueData);
+      console.log(weeklyBatterySwap);
+      console.log(formatAllDayData(dashboard.stripeRevenueData));
+      // weeklyBatterySwapLoading && console.log((weeklyBatterySwap[weeklyBatterySwap.length - 1] && numeral(weeklyBatterySwap[weeklyBatterySwap.length - 1].y).format("0,0")));
     return (
       <GridContent >
         <Row gutter={24} style={{marginTop: "2em"}}>
@@ -922,9 +884,7 @@ getRangeEnd(end) {
                   <MiniBar color="#975FE4" data={weeklyBatterySwap} />
                 </ChartCard>
               </Col>
-
             }
-
           {/*authority.includes("admin")&& */  stripeRevenue &&
             <Col {...topColResponsiveProps}>
               <ChartCard
@@ -938,7 +898,7 @@ getRangeEnd(end) {
                   </Tooltip>
                 }
                 loading={stripeRevenueLoading}
-                total={ stripeRevenueLoading ? "loading" : (stripeRevenue.dailyRevenue / 100)}
+                total={ stripeRevenueLoading ? "loading" : (stripeRevenue.todayRevenue / 100)}
                 footer={
                   <Field
                     label="Total Revenue"
@@ -947,19 +907,19 @@ getRangeEnd(end) {
                 }
                 contentHeight={60}
               >
-                <Trend flag={stripeRevenue.dailyRevenue - stripeRevenue.lastWeekRevenue > 0 ? "up" : "down"} style={{ marginRight: 16 }}>
+                <Trend flag={stripeRevenue.todayRevenue - stripeRevenue.lastWeekTodayRevenue > 0 ? "up" : "down"} style={{ marginRight: 16 }}>
                   <FormattedMessage
                     id="app.analysis.week"
                     defaultMessage="Weekly Changes"
                   />
-                  <span className={styles.trendText}> {stripeRevenueLoading ? "loading" : Math.round(((stripeRevenue.dailyRevenue - stripeRevenue.lastWeekRevenue) /stripeRevenue.lastWeekRevenue) * 100)}%</span>
+                  <span className={styles.trendText}> {stripeRevenueLoading ? "loading" : Math.round(((stripeRevenue.todayRevenue - stripeRevenue.lastWeekTodayRevenue) /stripeRevenue.lastWeekTodayRevenue) * 100)}%</span>
                 </Trend>
-                <Trend flag={stripeRevenue.dailyRevenue - stripeRevenue.yesterdayRevenue > 0 ? "up" : "down"}>
+                <Trend flag={stripeRevenue.todayRevenue - stripeRevenue.yesterdayRevenue > 0 ? "up" : "down"}>
                   <FormattedMessage
                     id="app.analysis.day"
                     defaultMessage="Daily Changes"
                   />
-                  <span className={styles.trendText}>{stripeRevenueLoading ? "loading"  : Math.round(((stripeRevenue.dailyRevenue - stripeRevenue.yesterdayRevenue) /stripeRevenue.yesterdayRevenue) * 100)}%</span>
+                  <span className={styles.trendText}>{stripeRevenueLoading ? "loading"  : Math.round(((stripeRevenue.todayRevenue - stripeRevenue.yesterdayRevenue) /stripeRevenue.yesterdayRevenue) * 100)}%</span>
                 </Trend>
               </ChartCard>
             </Col>
@@ -978,7 +938,7 @@ getRangeEnd(end) {
                   </Tooltip>
                 }
                 loading={dailyRideRevenueLoading}
-                total={ dailyRideRevenueLoading ? "loading" : (dailyRideRevenue.dailyRevenue)}
+                total={ dailyRideRevenueLoading ? "loading" : (dailyRideRevenue.todayRevenue)}
                 footer={
                   <Field
                     label="Total Revenue"
@@ -987,19 +947,19 @@ getRangeEnd(end) {
                 }
                 contentHeight={60}
               >
-                <Trend flag={dailyRideRevenue.dailyRevenue - dailyRideRevenue.lastWeekRevenue > 0 ? "up" : "down"} style={{ marginRight: 16 }}>
+                <Trend flag={dailyRideRevenue.todayRevenue - dailyRideRevenue.lastWeekTodayRevenue > 0 ? "up" : "down"} style={{ marginRight: 16 }}>
                   <FormattedMessage
                     id="app.analysis.week"
                     defaultMessage="Weekly Changes"
                   />
-                  <span className={styles.trendText}> {Math.round(((dailyRideRevenue.dailyRevenue - dailyRideRevenue.lastWeekRevenue) /dailyRideRevenue.lastWeekRevenue) * 100)}%</span>
+                  <span className={styles.trendText}> {Math.round(((dailyRideRevenue.todayRevenue - dailyRideRevenue.lastWeekTodayRevenue) /dailyRideRevenue.lastWeekTodayRevenue) * 100)}%</span>
                 </Trend>
-                <Trend flag={dailyRideRevenue.dailyRevenue - dailyRideRevenue.yesterdayRevenue > 0 ? "up" : "down"}>
+                <Trend flag={dailyRideRevenue.todayRevenue - dailyRideRevenue.yesterdayRevenue > 0 ? "up" : "down"}>
                   <FormattedMessage
                     id="app.analysis.day"
                     defaultMessage="Daily Changes"
                   />
-                  <span className={styles.trendText}>{Math.round(((dailyRideRevenue.dailyRevenue - dailyRideRevenue.yesterdayRevenue) /dailyRideRevenue.yesterdayRevenue) * 100)}%</span>
+                  <span className={styles.trendText}>{Math.round(((dailyRideRevenue.todayRevenue - dailyRideRevenue.yesterdayRevenue) /dailyRideRevenue.yesterdayRevenue) * 100)}%</span>
                 </Trend>
               </ChartCard>
             </Col>

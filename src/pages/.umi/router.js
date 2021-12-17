@@ -129,7 +129,7 @@ let routes = [
           },
           {
             "path": "/customer-management/notification",
-            "name": "Notification",
+            "name": "In-App Notification",
             "component": dynamic({ loader: () => import('../Customer/Notification/Notification'), loading: require('/Users/zhudongdong/Desktop/home/src/components/PageLoading/index').default }),
             "exact": true
           },

@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from "react";
+import React, { PureComponent, Fragment,useState } from "react";
 import { connect } from "dva";
 import moment from "moment";
 import {
@@ -14,7 +14,9 @@ import {
   Divider,
   Modal,
   InputNumber,
-  DatePicker
+  DatePicker,
+  Switch,
+  Slider
 } from "antd";
 const { RangePicker } = DatePicker;
 import StandardTable from "@/components/StandardTable";
@@ -27,19 +29,17 @@ import styles from "./Notification.less";
 const Option = Select.Option;
 const UpdateDetail = (props) => {
     const [form] = Form.useForm()
+    const [phoneOnChangeVisible, setPhoneOnChangeVisible] = useState(false); 
     const {handleupdateVisible,recordData,dispatch,addOrUpdate,recordId,selectedAreaId} = props
     if(addOrUpdate){
-      form.resetFields()
+      phoneOnChangeVisible ? null : form.resetFields()
     }else{
-      console.log(recordData);
       const newUpdataData = {
-        amount:recordData.amount,
-        category:recordData.category,
-        segment:recordData.segment,
+        title:recordData.title,
+        text:recordData.text,
         begin:moment(recordData.begin,"YYYY-MM-DD HH:mm" ),
-        expiration:moment(recordData.expiration,"YYYY-MM-DD HH:mm" )
+        expire:moment(recordData.expire,"YYYY-MM-DD HH:mm" )
       }
-      console.log(newUpdataData);
       form.setFieldsValue(newUpdataData)
     }
     // props.addOrUpdate ? form.resetFields() : form.setFieldsValue(recordData)
@@ -47,9 +47,17 @@ const UpdateDetail = (props) => {
         handleupdateVisible(false);
     };
     const onFinish = (values) => {
-        values.segment.areaId = selectedAreaId
+        values.segment.phone ? values.segment.areaId = null : values.segment.areaId = selectedAreaId
+        console.log(values);
+        let requestData
         handleupdateVisible(false);
         if(props.addOrUpdate){
+          if(values.segment.rideCount){
+            values.segment.minRideCount = values.segment.rideCount[0]
+            values.segment.maxRideCount = values.segment.rideCount[1]
+            delete values.segment.rideCount
+          }
+          console.log(values);
           dispatch({
             type: "notification/add",
             payload:{
@@ -72,6 +80,9 @@ const UpdateDetail = (props) => {
     const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
     };
+    const phoneOnChange = (val)=>{
+      val ? setPhoneOnChangeVisible(true) :setPhoneOnChangeVisible(false)
+    }
     const timeOnOk=(value)=> {
       console.log('onOk: ', value);
     }
@@ -81,31 +92,103 @@ const UpdateDetail = (props) => {
                 name="basic"
                 // labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
-                initialValues={{ }}
+                initialValues={{pushNotification:true,}}
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
                 autoComplete="off"
                 form={form}
                 >
-                <Form.Item
-                    label="type"
-                    name="type"
-                    rules={[{ required: true, message: 'Please input your type!' }]}
+                {/* <Form.Item
+                    label="Category"
+                    name="category"
+                    rules={[{ required: true, message: 'Please input your category!' }]}
                 >
-                        <Select style={{ width: 120 }}>
-                            {types.forEach((item) =>{
-                                console.log(item);
-                               return <Option value={item}>{item}</Option>
-                            })}
-                        </Select>
+                    {addOrUpdate ? 
+                    <Select style={{ width: 120 }}>
+                    {types.map((interval, index) => (
+                    <Option key={index} value={index}>
+                        {interval}
+                    </Option>
+                    ))}
+                </Select>
+                :null   
+                }
+                </Form.Item> */}
+                {addOrUpdate &&
+                        <Form.Item
+                        label="Category"
+                        name="category"
+                        rules={[{ required: true, message: 'Please input your category!' }]}
+                    >
+                    <Select style={{ width: 120 }}>
+                    {types.map((interval, index) => (
+                    <Option key={index} value={interval}>
+                        {interval}
+                    </Option>
+                    ))}
+                </Select>
                 </Form.Item>
+                }
+                {addOrUpdate && 
+                  <Form.Item
+                      label="Push Notification"
+                      name="pushNotification"
+                  >
+                      <Switch />
+                  </Form.Item>
+                }
                 <Form.Item
-                    label="Message"
-                    name="message"
-                    rules={[{ required: true, message: 'Please input your message!' }]}
+                    label="Title"
+                    name="title"
+                    rules={[{ required: true, message: 'Please input your title!' }]}
                 >
                     <Input/>
                 </Form.Item>
+                <Form.Item
+                    label="Text"
+                    name="text"
+                    rules={[{ required: true, message: 'Please input your text!' }]}
+                >
+                    <Input/>
+                </Form.Item>
+                <Form.Item label="begin" name="begin" rules={[{ required: true, message: 'Please input your begin time!' }]}>
+                  <DatePicker showTime format="YYYY-MM-DD HH:mm"/>
+                </Form.Item>
+                <Form.Item label="expire" name="expire" rules={[{ required: true, message: 'Please input your expire time!' }]}>
+                  <DatePicker showTime format="YYYY-MM-DD HH:mm"/>
+                </Form.Item>
+                {addOrUpdate && 
+                <Form.Item
+                    label="phone"
+                    name={["segment","phone"]}
+                >
+                    <InputNumber min={1000000000} max={9999999999} style={{ width: 150 }} onChange={phoneOnChange}/>
+                </Form.Item>                
+                }
+                {addOrUpdate && 
+                <Form.Item
+                    label="Inactive Days"
+                    name={["segment","inactiveDays"]}
+                >
+                    <InputNumber min={0} max={999} style={{ width: 150 }} disabled={phoneOnChangeVisible}/>
+                </Form.Item>                
+                }
+                {addOrUpdate && 
+                <Form.Item
+                    label="Percentage"
+                    name={["segment","percentage"]}
+                >
+                    <InputNumber min={0} max={100} style={{ width: 150 }} disabled={phoneOnChangeVisible}/>
+                </Form.Item>                
+                }
+                {addOrUpdate && 
+                <Form.Item
+                    label="Ride Count"
+                    name={["segment","rideCount"]}
+                >
+                    <Slider range max={50} disabled={phoneOnChangeVisible}/>
+                </Form.Item>                
+                }
                 <Row className={styles.submit}> 
                   <Button onClick={handleCancel} style={{ marginRight: 8 }}>
                     Cancel
@@ -142,21 +225,30 @@ class Campaign extends PureComponent {
   };
   columns = [
     {
-      title: "Email",
-      dataIndex: "email",
+      title: "Category",
+      dataIndex: "category",
     },
     {
-      title: "Message",
-      dataIndex: "message",
+      title: "Title",
+      dataIndex: "title",
     },
     {
-      title: "Type",
-      dataIndex: "type",
-      render:val=> <span>{types[val]}</span>
+      title: "Text",
+      dataIndex: "text",
     },
     {
-      title: "Created",
-      dataIndex: "created",
+      title: "Push Notification",
+      dataIndex: "pushNotification",
+      render:val => <span>{val ? "true" : "false"}</span>
+    },
+    {
+      title: "Begin",
+      dataIndex: "begin",
+      render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
+    },
+    {
+      title: "Expire",
+      dataIndex: "expire",
       render: val => <span>{moment(val).format("YYYY-MM-DD HH:mm:ss")}</span>
     },
     {

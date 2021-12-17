@@ -433,7 +433,6 @@ class Technician extends PureComponent {
   handleSearch = values => {
     const { dispatch, technicians } = this.props;
     const { filterCriteria } = this.state;
-
     let result = technicians;
     if(values.name){
       if(
@@ -458,7 +457,7 @@ class Technician extends PureComponent {
       delete(values.email)
       delete(values.phone)
     }
-    this.setState({ filterCriteria: values },()=>{
+    this.setState({ filterCriteria: {...values} },()=>{
       this.handleGetTechnicians()
     });
   };

@@ -308,5 +308,11 @@ export default {
   'menu.Technician Management.Violation Management':'Violation Management',
   'menu.Technician Management.Tech Metrics':'Tech Metrics',
   'menu.account.settings':'settings',
-  'menu.Area Management.Policy Management':'Policy Management'
+  'menu.Area Management.Policy Management':'Policy Management',
+  'app.dashboard.rides-ranking': "Rides/Vehicles Ranking",
+  "app.dashboard.rides-trend": "Riding Trend",
+  "app.dashboard.customers": "Customers",
+  "menu.Customer Management.Campaign": "Campaign",
+  "menu.Customer Management.Notification":"notifications",
+  "app.dashboard.customers-trend": "Customers Trend",
 };

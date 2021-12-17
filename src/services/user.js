@@ -20,11 +20,11 @@ export async function accountLogin(params) {
 //     method: "GET"
 //   });
 // }
-export async function getMe() {
-  return request("/admins/me", {
-    method: "GET"
-  });
-}
+// export async function getMe() {
+//   return request("/admins/me", {
+//     method: "GET"
+//   });
+// }
 
 export async function getNewMe() {
   return request("/api/admins", {
@@ -32,11 +32,11 @@ export async function getNewMe() {
   });
 }
 
-export async function updateToken() {
-  return request("/admins/auth/new_token", {
-    method: "GET"
-  });
-}
+// export async function updateToken() {
+//   return request("/admins/auth/new_token", {
+//     method: "GET"
+//   });
+// }
 
 
 

@@ -35,7 +35,6 @@ const getValue = obj =>
     .map(key => obj[key])
     .join(",");
 
-const vehicleType = ["Bicycle", "Scooter", "E-Vehicle", "COSMO"];
 const CreateForm = (props => {
   const {
     modalVisible,

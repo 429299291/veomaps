@@ -104,7 +104,7 @@ export default [
           },
           {
             path: "/customer-management/notification",
-            name: "Notification",
+            name: "In-App Notification",
             component: "./Customer/Notification/Notification",
           },
         ]

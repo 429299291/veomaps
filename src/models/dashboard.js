@@ -122,13 +122,12 @@ export default {
 
     *fetchStripRevenueByPeriod({params}, { call, put }) {
       const response = yield call(getStripRevenueByPeriod, params);
-
       if (response) {
-
         yield put({
           type: "save",
           payload: {
-            stripeRevenueData: response.map(item =>{return {x: item.x, y: item.y / 100} })
+            // stripeRevenueData: response.map(item =>{return {x: item.x, y: item.y / 100} })
+            stripeRevenueData: response.map(item =>{return {x: item.x, y: item.y} })
           }
         });
       }
@@ -136,27 +135,16 @@ export default {
 
     *fetchConnectivityByPeriod({params}, { call, put }) {
       const response = yield call(getConnectivityByPeriod, params);
-
       if (response) {
-
-
         response.sort((a, b) => {
-
           const aDateString = a.x.split(' ').join('');
-
           const bDateString = b.x.split(' ').join('');
-
           const ax = new Date(aDateString );
-          
           const bx = new Date(bDateString );
-        
          return ax.getTime() - bx.getTime();
         });
-
         const vehicleTypes = ['bike', 'scooter', 'ebike', 'COSMO']
-
         vehicleTypes[null] = 'all';
-
         const formatResponse = response.map(item => {
             Object.keys(item.y).map(key => {
               
@@ -166,7 +154,6 @@ export default {
 
             })
         }); 
-
         yield put({
           type: "save",
           payload: {
@@ -178,7 +165,6 @@ export default {
 
     *getRidePerVehicleRank({params}, { call, put }) {
       const response = yield call(getRidePerVehicleRank, params);
-
       if (response) {
         yield put({
           type: "save",
@@ -190,7 +176,6 @@ export default {
     },
 
     *fetchDailyRideCounts({params}, { call, put }) {
-
       let response = yield call(getDailyRideCount, params);
       if (response) {
         yield put({
@@ -217,7 +202,6 @@ export default {
 
     *fetchStripeNetCharge({params}, { call, put }) {
       const response = yield call(getStripeNetCharge, params);
-
       if (!isNaN(response)) {
         yield put({
           type: "save",
@@ -230,7 +214,6 @@ export default {
 
     *fetchStripeNetRefund({params}, { call, put }) {
       const response = yield call(getStripeNetRefund, params);
-
       if (!isNaN(response)) {
         yield put({
           type: "save",
@@ -259,7 +242,6 @@ export default {
 
     *fetchWeeklyBatteryState({params}, { call, put }) {
       const response = yield call(getWeeklyBatteryState, params);
-
       if (response) {
         yield put({
           type: "save",
@@ -271,9 +253,7 @@ export default {
     },
 
     *fetchStripeDailyRevenue({params}, { call, put }) {
-
       const response = yield call(getStripeDailyRevenue, params);
-
       if (response) {
         yield put({
           type: "save",

@@ -5,7 +5,7 @@ import { setAuthority } from "@/utils/authority";
 import { getPageQuery } from "@/utils/utils";
 import { reloadAuthorized } from "@/utils/Authorized";
 import { notification,message } from "antd";
-import { accountLogin, updateToken, verifyPhoneNumber} from "../services/user";
+import { accountLogin, verifyPhoneNumber} from "../services/user";
 import { ACCESS_TOKEN, TOKEN_CREATE_DATE } from "../utils/request";
 import router from 'umi/router';
 export default {
@@ -50,25 +50,28 @@ export default {
       const millSecondDiff =
         new Date().getTime() -
         parseInt(localStorage.getItem(TOKEN_CREATE_DATE));
-        console.log(localStorage.getItem(TOKEN_CREATE_DATE));
-
       const daysDiff = Math.floor(millSecondDiff / (1000 * 60 * 60 * 24 * 90));
-      console.log(millSecondDiff);
-      console.log(daysDiff);
-      if (daysDiff < 1) return;
-      const response = yield call(updateToken, payload);
-      if (response && response.accessToken) {
-        localStorage.setItem(ACCESS_TOKEN, response.accessToken);
-        localStorage.setItem(
-          TOKEN_CREATE_DATE,
-          new Date().getTime().toString()
-        );
-      } else {
+      if (daysDiff < 1){
+        return
+      }else{
         notification.error({
           message: "Token Refresh Failed"
         });
         router.push('/user/login');
       }
+      // const response = yield call(updateToken, payload);
+      // if (response && response.accessToken) {
+      //   localStorage.setItem(ACCESS_TOKEN, response.accessToken);
+      //   localStorage.setItem(
+      //     TOKEN_CREATE_DATE,
+      //     new Date().getTime().toString()
+      //   );
+      // } else {
+      //   notification.error({
+      //     message: "Token Refresh Failed"
+      //   });
+      //   router.push('/user/login');
+      // }
     },
 
     *getCaptcha({ payload }, { call }) {

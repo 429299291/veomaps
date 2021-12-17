@@ -19,9 +19,10 @@ export async function getTechnicians(params) {
 }
 //api2
 export async function getTechniciansAll(params) {
+  params.status==2 ? delete params.status : null
   return request(`/api/admins/technicians/search`,{
     method:'POST',
-    body:params.status !== 2 ? {...params} : {}
+    body: {...params}
   }
   );
 }

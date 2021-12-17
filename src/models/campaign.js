@@ -22,6 +22,7 @@ import {
         },
         *update({ id, payload, onSuccess, onError }, { call, put }) {
         const response = yield call(updateCampaigns, payload); // put
+        console.log(response);
         if (response) {
           onSuccess && onSuccess();
         } else {

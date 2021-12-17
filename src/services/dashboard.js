@@ -70,18 +70,39 @@ export async function getDailyRideRevenue(params) {
   });
 }
 
+// export async function getStripeDailyRevenue(params) {
+//   return request(`/api/admins/dashboard/stripe_revenue?${stringify(params, { indices: false })}`, {
+//     method: "GET"
+//   });
+// }
 export async function getStripeDailyRevenue(params) {
-  return request(`/api/admins/dashboard/stripe_revenue?${stringify(params, { indices: false })}`, {
-    method: "GET"
+  return request(`/api/admins/dashboard/customer/revenue/statistics`, {
+    method: "POST",
+    body:{
+      areaIds:[params.areaId],
+      midnight:params.midnight
+    }
   });
 }
 
 
+// export async function getStripRevenueByPeriod(params) {
+//   return request(`/api/admins/dashboard/stripe_revenue_by_period?${stringify(params, { indices: false })}`, {
+//     method: "GET"
+//   });
+// }
 export async function getStripRevenueByPeriod(params) {
-  return request(`/api/admins/dashboard/stripe_revenue_by_period?${stringify(params, { indices: false })}`, {
-    method: "GET"
+  return request(`/api/admins/dashboard/customer/${params.period}/revenue/histogram`, {
+    method: "POST",
+    body:{
+      areaIds:[params.areaId],
+      beginTime:params.start,
+      endTime:params.end,
+      offset:params.offset
+    }
   });
 }
+
 
 export async function getConnectivityByPeriod(params) {
   return request(`/api/admins/dashboard/connectivity?${stringify(params, { indices: false })}`, {
