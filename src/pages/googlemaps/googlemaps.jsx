@@ -1,15 +1,14 @@
 import React, { useState, useRef, useCallback,PureComponent } from "react";
-import { LoadScript } from "react-google-maps";
+import { LoadScript, GoogleMap, Polygon } from "@react-google-maps/api";
 import { connect } from "dva";
 
-import "./googlemaps.less";
+import styles from "./googlemaps.less";
 function googlemaps (props){
   const [path, setPath] = useState([
     { lat: 52.52549080781086, lng: 13.398118538856465 },
     { lat: 52.48578559055679, lng: 13.36653284549709 },
     { lat: 52.48871246221608, lng: 13.44618372440334 }
   ]);
-
   // Define refs for Polygon instance and listeners
   const polygonRef = useRef(null);
   const listenersRef = useRef([]);
@@ -30,9 +29,9 @@ function googlemaps (props){
   // Bind refs to current Polygon and listeners
   const onLoad = useCallback(
     polygon => {
-      this.polygonRef.current = polygon;
+      polygonRef.current = polygon;
       const path = polygon.getPath();
-      this.listenersRef.current.push(
+      listenersRef.current.push(
         path.addListener("set_at", onEdit),
         path.addListener("insert_at", onEdit),
         path.addListener("remove_at", onEdit)
@@ -43,12 +42,14 @@ function googlemaps (props){
 
   // Clean up refs
   const onUnmount = useCallback(() => {
-    this.listenersRef.current.forEach(lis => lis.remove());
-    this.polygonRef.current = null;
+    listenersRef.current.forEach(lis => lis.remove());
+    polygonRef.current = null;
   }, []);
+
+  console.log("The path state is", path);
   // render(){
     return (
-        <div>
+        <div className={styles.App}>
           <LoadScript
             id="script-loader"
             googleMapsApiKey="AIzaSyDdCuc9RtkM-9wV9e3OrULPj67g2CHIdZI"
@@ -56,7 +57,7 @@ function googlemaps (props){
             region="us"
           >
             <GoogleMap
-              mapContainerClassName="App-map"
+              mapContainerClassName={styles.Appmap}
               center={{ lat: 52.52047739093263, lng: 13.36653284549709 }}
               zoom={12}
               version="weekly"
