@@ -5,7 +5,7 @@ import {
   Row,
   Col,
   Card,
-  message,
+  message,Form, Input, Button, Checkbox
 } from "antd";
 import styles from "./googlemaps.less";
 let allPolygonBuffs = []
@@ -43,6 +43,7 @@ function googlemaps (props){
 const [editableHandler,setEditableHandler] = useState(false)
 const [editIndex,setEditIndex] = useState(null)
 const [clickPolygonReset,setClickPolygonReset] = useState(null)
+const [form] = Form.useForm()
   const polygonRef = useRef(null);
   const listenersRef = useRef([]);
 
@@ -51,7 +52,7 @@ const [clickPolygonReset,setClickPolygonReset] = useState(null)
     polygonRef.current = allPolygonBuffs[index]
     if(index !== editIndex && editableHandler) return
     if (index === null){
-      message.error('check error')
+      message.error('Edit not saved')
       setEditableHandler(false)
       return
     }
@@ -83,6 +84,7 @@ const [clickPolygonReset,setClickPolygonReset] = useState(null)
     [onEdit]
   );
   const setActivePolygon =(index)=>{
+    form.setFieldsValue(paths[index])
     const path = allPolygonBuffs[index].getPath();
     listenersRef.current.push(
       path.addListener("set_at", onEdit),
@@ -104,6 +106,15 @@ const [clickPolygonReset,setClickPolygonReset] = useState(null)
       setEditableHandler(false);
     }
   }
+  //form
+  const onFinish = (values) => {
+    console.log('Success:', values);
+  };
+
+  const onFinishFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+  };
+
     return (
         <div className={styles.App}>
           <LoadScript
@@ -145,10 +156,29 @@ const [clickPolygonReset,setClickPolygonReset] = useState(null)
               }
               {editableHandler && editIndex !== null && 
                 <InfoWindow position={paths[editIndex].path[0]} onClose={infowindowOnClose}>
-                  <div>
-                    <span>{paths[editIndex].name}</span>
-                    <br />
-                  </div>
+                    <Form
+                    name="basic"
+                    labelCol={{ span: 8 }}
+                    wrapperCol={{ span: 16 }}
+                    initialValues={{}}
+                    onFinish={onFinish}
+                    onFinishFailed={onFinishFailed}
+                    autoComplete="off"
+                    form={form}
+                  >
+                    <Form.Item
+                      label="Username"
+                      name="name"
+                      rules={[{ required: true, message: 'Please input your username!' }]}
+                    >
+                      <Input />
+                    </Form.Item>
+                    <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                      <Button type="primary" htmlType="submit">
+                        Submit
+                      </Button>
+                    </Form.Item>
+                  </Form>
                 </InfoWindow>}
             </GoogleMap>
           </LoadScript>
