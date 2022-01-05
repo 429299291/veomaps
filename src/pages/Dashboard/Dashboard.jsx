@@ -190,14 +190,14 @@ class Dashboard extends Component {
 
     // }
 
-      dispatch({
-        type: "dashboard/fetchStripeNetDeposit",
-        params: { 
-          areaId: selectedAreaId,
-          start: rangePickerValue[0].unix(),
-          end: rangePickerValue[1].unix()
-        }
-      });
+      // dispatch({
+      //   type: "dashboard/fetchStripeNetDeposit",
+      //   params: { 
+      //     areaId: selectedAreaId,
+      //     start: rangePickerValue[0].unix(),
+      //     end: rangePickerValue[1].unix()
+      //   }
+      // });
 
  
 

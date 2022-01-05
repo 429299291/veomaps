@@ -139,6 +139,16 @@ export default {
         onError && onError();
       }
     },
+    *updateFence({payload, onSuccess, onError }, { call, put }) {
+      const response = yield call(updateFence, payload); // post
+      if (response) {
+        message.success(`update Success, ID : ${response}`);
+        onSuccess && onSuccess();
+      } else {
+        message.error(`Add Fail.`);
+        onError && onError();
+      }
+    },
     
     *removeFence({ id, onSuccess, onError }, { call, put }) {
       const response = yield call(deleteFence, id); // delete
@@ -150,18 +160,18 @@ export default {
         onError && onError();
       }
     },
-    *updateFence({ id, payload, onSuccess, onError }, { call, put }) {
-      const response = yield call(updateFence, id, payload); // put
+    // *updateFence({ id, payload, onSuccess, onError }, { call, put }) {
+    //   const response = yield call(updateFence, id, payload); // put
 
-      response ? onSuccess(response) : onError();
+    //   response ? onSuccess(response) : onError();
 
-      if (response) {
-        message.success(`Update Success!`);
-        onSuccess();
-      } else {
-        message.error(`Update Fail.`);
-      }
-    },
+    //   if (response) {
+    //     message.success(`Update Success!`);
+    //     onSuccess();
+    //   } else {
+    //     message.error(`Update Fail.`);
+    //   }
+    // },
     *getCenter({ areaId }, { call, put }) {
       // api for handler agin
       let response = yield call(getAreaCenterByAreaId, areaId);

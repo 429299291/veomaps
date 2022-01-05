@@ -142,13 +142,16 @@ const MyMapComponentNew = (props)=>{
     fences,
     updateAllPolygonBuffs,
     allPolygonBuffs,
+    addPolygonBuffs,
+    updateAddPolygonBuffs,
     primeLocations,
     onMapClick,
     isEditingCenter,
     editingCenter,
     isEditingFence,
-    // editingFence,
+    editingFence,
     isEditingFenceClosed,
+    selectedAreaId,
     // handleExistedFenceClick,
     isEditingPrimeLocation,
     editingPrimeLocation,
@@ -156,10 +159,12 @@ const MyMapComponentNew = (props)=>{
     // handleExistedPrimeLocationClick,
     selectedExistedPrimeLocation,
     // selectedGeoObject
+    getAreaGeoInfo,
+    updateIsDeleteModalVisible,
+    dispatch
   } = props;
   const centerToRender = isEditingCenter && editingCenter ? editingCenter : center;
   // const path = !!(isEditingFence && editingFence) ? editingFence.fenceCoordinates : [];
-
   // const dashLineDot = {
   //   path: window.google.maps.SymbolPath.CIRCLE,
   //   fillOpacity: 1,
@@ -167,31 +172,41 @@ const MyMapComponentNew = (props)=>{
   // };
   // new polygon    /////////////////////////////////////////////
   let allPolygonBuffsFirst = []
-  const options = {
-    strokeColor: "#FF0000",
-    strokeOpacity: 0.8,
-    strokeWeight: 2,
-    fillColor: "#FF0000",
-    fillOpacity: 0.35,
-    clickable: true,
-    draggable: false,
-    visible: true,
-    // zIndex: 1
-  };
+  const options = (fenceTypeIndex)=>{
+    return{
+      strokeColor: fenceTypeColor[fenceTypeIndex],
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: fenceTypeColor[fenceTypeIndex],
+      fillOpacity: 0.35,
+      clickable: true,
+      draggable: false,
+      visible: true,
+      // zIndex: 1
+    }
+  }
   const [polygonPaths, setPolygonPaths] = useState([])
+  const [addPolygonPaths, setAddPolygonPaths] = useState([])
+  useEffect(()=>{
+    if (!center) return
+    setAddPolygonPaths([{lat:center.lat-0.01,lng:center.lng-0.01},{lat:center.lat+0.01,lng:center.lng-0.01},{lat:center.lat,lng:center.lng+0.01}])
+  },[isEditingFence])
   useEffect(()=>{
     setPolygonPaths(fences)
   },[fences])
   const [editableHandler,setEditableHandler] = useState(false)
+  const [isDeleteModalVisible,setIsDeleteModalVisible] = useState(false)
   const [editIndex,setEditIndex] = useState(null)
+  const [geofenceOnDeleteToConfirmData,setGeofenceOnDeleteToConfirmData] = useState(false)
   const [clickPolygonReset,setClickPolygonReset] = useState(null)
   const [form] = Form.useForm()
   const polygonRef = useRef(null);
   const listenersRef = useRef([]);
   const polygonOnEdit = (index) => {
-    polygonRef.current = allPolygonBuffs[index]
-    console.log(index,editIndex);
-    // if(index !== editIndex && editableHandler) return
+    console.log(allPolygonBuffs);
+    console.log(addPolygonBuffs);
+    // polygonRef.current = allPolygonBuffs[index]
+    polygonRef.current = isEditingFence ? addPolygonBuffs : allPolygonBuffs[index]
     if (index === null){
       message.error('Edit not saved')
       setEditableHandler(false)
@@ -199,15 +214,22 @@ const MyMapComponentNew = (props)=>{
     }else{
       setEditableHandler(true)
       if (polygonRef.current) {
+        console.log(polygonRef.current);
         const nextPath = polygonRef.current
           .getPath()
           .getArray()
           .map(latLng => {
             return { lat: latLng.lat(), lng: latLng.lng() };
           });
-          let newpaths = [...polygonPaths]
-          newpaths[index].fenceCoordinates = nextPath
-          setPolygonPaths(newpaths);
+          console.log(nextPath);
+          if(isEditingFence){
+            editingFence.fenceCoordinates = nextPath
+            setAddPolygonPaths(nextPath)
+          }else{
+            let newpaths = [...polygonPaths]
+            newpaths[index].fenceCoordinates = nextPath
+            setPolygonPaths(newpaths);
+          }
       }
     }
   }
@@ -220,19 +242,23 @@ const MyMapComponentNew = (props)=>{
     (polygon) => {
       // await updateAllPolygonBuffs(polygon)
       allPolygonBuffsFirst.push(polygon)
+      console.log(polygon);
       allPolygonBuffsFirst.length ? updateAllPolygonBuffs(allPolygonBuffsFirst) : null
+      updateAddPolygonBuffs(polygon)
       setClickPolygonReset(polygon)
     },
     [polygonOnEdit]
   );
   const setActivePolygon =(index)=>{
     form.setFieldsValue(polygonPaths[index])
-    const path = allPolygonBuffs[index].getPath();
-    listenersRef.current.push(
-      path.addListener("set_at", polygonOnEdit),
-      path.addListener("insert_at", polygonOnEdit),
-      path.addListener("remove_at", polygonOnEdit)
-    );
+    if(allPolygonBuffs[index]){
+      const path = allPolygonBuffs[index].getPath();
+      listenersRef.current.push(
+        path.addListener("set_at", polygonOnEdit),
+        path.addListener("insert_at", polygonOnEdit),
+        path.addListener("remove_at", polygonOnEdit)
+      );
+    }
   }
   const polygonOnUnmount = useCallback(() => {
     console.log('unmount');
@@ -250,11 +276,37 @@ const MyMapComponentNew = (props)=>{
     setEditableHandler(false)
     polygonPaths[editIndex] = {...polygonPaths[editIndex],...values}
     console.log('Success:', {polygonPaths});
+    dispatch({
+      type: "geo/updateFence",
+      payload: Object.assign({}, polygonPaths[editIndex], {areaId: selectedAreaId}) ,
+      onSuccess: getAreaGeoInfo
+    });
   };
-
+  const onFenceDelete = ()=>{
+    polygonPaths[editIndex].fenceType == 0 ? setGeofenceOnDeleteToConfirmData(true) : null
+    setIsDeleteModalVisible(true)
+  }
+  const handleDeleteFence = ()=>{
+    setIsDeleteModalVisible(false)
+    setEditableHandler(false)
+    dispatch({
+      type: "geo/removeFence",
+      id: polygonPaths[editIndex].id,
+      onSuccess: getAreaGeoInfo,
+    });
+  }
+  const geofenceOnDeleteToConfirm = (e)=>{
+    console.log(e.target.value);
+    if(e.target.value == 'geofence'){
+      setGeofenceOnDeleteToConfirmData(false)
+    }else{
+      setGeofenceOnDeleteToConfirmData(true)
+    }
+  }
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
+  console.log(polygonPaths);
   return (
     <div className={styles.App}>
     <LoadScript
@@ -270,7 +322,7 @@ const MyMapComponentNew = (props)=>{
       onClick={onMapClick}
     >
       {centerToRender && <Marker position={centerToRender} />}
-      {isEditingFence &&
+      {/* {isEditingFence &&
         editingFence &&
         !isEditingFenceClosed && (
           <Polyline
@@ -282,7 +334,25 @@ const MyMapComponentNew = (props)=>{
               strokeWeight: 2
             }}
           />
-        )}
+        )} */}
+        {
+         isEditingFence && addPolygonPaths &&
+          <Polygon
+          editable = {true}
+          draggable={false}
+          options={options(0)}
+          onClick={() => {setActivePolygon(allPolygonBuffs.length+1)}}
+          onDblClick={polygonEndEdit}
+          // Event used when manipulating and adding points
+          onMouseUp={()=>{polygonOnEdit(allPolygonBuffs.length+1,setPolygonPaths);setEditIndex(allPolygonBuffs.length+1)}}
+          // onMouseUp={onEdit}
+          // Event used when dragging the whole Polygon
+          onDragEnd={()=>{polygonOnEdit(allPolygonBuffs.length+1,editIndex,editableHandler,allPolygonBuffs)}}
+          onLoad={polygonOnLoad}
+          onUnmount={polygonOnUnmount}
+          path={addPolygonPaths}
+        />
+        }
         {isEditingPrimeLocation &&
         editingPrimeLocation && (
           <Circle
@@ -339,11 +409,11 @@ const MyMapComponentNew = (props)=>{
                   draggable={false}
                   key={index}
                   path={path.fenceCoordinates}
-                  options={options}
-                  onClick={() => setActivePolygon(index)}
+                  options={options(path.fenceType)}
+                  onClick={isEditingCenter ? onMapClick :() => {setActivePolygon(index)}}
                   onDblClick={polygonEndEdit}
                   // Event used when manipulating and adding points
-                  onMouseUp={()=>{polygonOnEdit(((index==editIndex || editIndex == null)?index:null),setPolygonPaths);setEditIndex(index)}}
+                  onMouseUp={isEditingCenter?null : ()=>{polygonOnEdit(((index==editIndex || editIndex == null)?index:null),setPolygonPaths);setEditIndex(index)}}
                   // onMouseUp={onEdit}
                   // Event used when dragging the whole Polygon
                   onDragEnd={()=>{polygonOnEdit(((index==editIndex || editIndex == null)?index:null),editIndex,editableHandler,allPolygonBuffs)}}
@@ -352,7 +422,7 @@ const MyMapComponentNew = (props)=>{
                 />
                 ))
               }
-              {editableHandler && editIndex !== null && 
+              {editableHandler && editIndex !== null && !isEditingFence &&
                 <InfoWindow position={polygonPaths[editIndex].fenceCoordinates[0]} onClose={infowindowOnClose}>
                     <Form
                     name="basic"
@@ -384,12 +454,34 @@ const MyMapComponentNew = (props)=>{
                       </Select>
                     </Form.Item>
                     <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                      <Button htmlType="button" onClick={onFenceDelete}>
+                        Delete
+                      </Button>
                       <Button type="primary" htmlType="submit">
                         Submit
                       </Button>
                     </Form.Item>
                   </Form>
                 </InfoWindow>}
+                <Modal
+          title="Delete"
+          visible={isDeleteModalVisible}
+          onOk={handleDeleteFence}
+          onCancel={() => setIsDeleteModalVisible(false)}
+          okText="Delete"
+          okButtonProps={{ disabled:geofenceOnDeleteToConfirmData}}
+          okType="danger"
+        >
+          <p style={{fontSize: "2em"}}>
+          <WarningOutlined style={{color:'#ffb74d'}}/>
+          Area you sure you want to delete
+          <p style={{color:'#f00'}}>
+          {`${polygonPaths[editIndex] ? `fence:   ${polygonPaths[editIndex].name} \n
+            with type: ${fenceType[polygonPaths[editIndex].fenceType]}` : "this circle"} ?`}
+          </p>
+          {polygonPaths[editIndex] && polygonPaths[editIndex].fenceType == 0 ? <span>Please type “geofence” to delete<Input onChange={geofenceOnDeleteToConfirm} style={{width:'200px'}} placeholder="Input Fence Type" /></span>:''}
+          </p>
+        </Modal>
       {/* {fences.filter(fence => fence.fenceType === 5).map(fence => (
         <Polyline
           path={fence.fenceCoordinates}
@@ -416,291 +508,6 @@ const MyMapComponentNew = (props)=>{
     </div>
   );
 }
-const MyMapComponent = compose(
-  withProps({
-    googleMapURL:
-      "https://maps.googleapis.com/maps/api/js?key=AIzaSyDdCuc9RtkM-9wV9e3OrULPj67g2CHIdZI&v=3.exp&libraries=geometry,drawing,places",
-    loadingElement: <div style={{ height: `100%` }} />,
-    containerElement: <div style={{ height: `600px` }} />,
-    mapElement: <div style={{ height: `100%` }} />
-  }),
-  withScriptjs,
-  withGoogleMap
-)(props => {
-  const {
-    center,
-    fences,
-    primeLocations,
-    onMapClick,
-    isEditingCenter,
-    editingCenter,
-    isEditingFence,
-    editingFence,
-    isEditingFenceClosed,
-    handleExistedFenceClick,
-    isEditingPrimeLocation,
-    editingPrimeLocation,
-    setCircleRef,
-    handleExistedPrimeLocationClick,
-    selectedExistedPrimeLocation,
-    selectedGeoObject
-  } = props;
-
-  const centerToRender =
-    isEditingCenter && editingCenter ? editingCenter : center;
-
-  const path = !!(isEditingFence && editingFence)
-    ? editingFence.fenceCoordinates
-    : [];
-  const dashLineDot = {
-    path: window.google.maps.SymbolPath.CIRCLE,
-    fillOpacity: 1,
-    scale: 2
-  };
-  // new polygon    /////////////////////////////////////////////
-  let allPolygonBuffs = []
-  const options = {
-    strokeColor: "#FF0000",
-    strokeOpacity: 0.8,
-    strokeWeight: 2,
-    fillColor: "#FF0000",
-    fillOpacity: 0.35,
-    clickable: true,
-    draggable: false,
-    visible: true,
-    // zIndex: 1
-  };
-  const [polygonPaths, setPolygonPaths] = useState(fences)
-  const [editableHandler,setEditableHandler] = useState(false)
-  const [editIndex,setEditIndex] = useState(null)
-  const [clickPolygonReset,setClickPolygonReset] = useState(null)
-  const [form] = Form.useForm()
-  const polygonRef = useRef(null);
-  const listenersRef = useRef([]);
-  const polygonOnEdit = useCallback((index,editIndex,editableHandler) => {
-    polygonRef.current = allPolygonBuffs[index]
-    if(index !== editIndex && editableHandler) return
-    if (index === null){
-      message.error('Edit not saved')
-      setEditableHandler(false)
-      return
-    }
-    setEditableHandler(true)
-    if (polygonRef.current) {
-      const nextPath = polygonRef.current
-        .getPath()
-        .getArray()
-        .map(latLng => {
-          return { lat: latLng.lat(), lng: latLng.lng() };
-        });
-        let newpaths = [...polygonPaths]
-        newpaths[index].path = nextPath
-      setPaths(newpaths);
-    }
-  }, [setPolygonPaths]);
-  const polygonEndEdit = ()=>{
-    setEditableHandler(false)
-    setEditIndex(null)
-    console.log('endEdit');
-  }
-  const polygonOnLoad = useCallback(
-    (polygon) => {
-      console.log(polygon);
-      allPolygonBuffs.push(polygon)
-      setClickPolygonReset(polygon)
-    },
-    [polygonOnEdit]
-  );
-  const setActivePolygon =(index)=>{
-    form.setFieldsValue(polygonPaths[index])
-    console.log(allPolygonBuffs);
-    const path = allPolygonBuffs[index].getPath();
-    listenersRef.current.push(
-      path.addListener("set_at", polygonOnEdit),
-      path.addListener("insert_at", polygonOnEdit),
-      path.addListener("remove_at", polygonOnEdit)
-    );
-  }
-  const polygonOnUnmount = useCallback(() => {
-    console.log('unmount');
-    listenersRef.current.forEach(lis => lis.remove());
-    polygonRef.current = null;
-  }, []);
-  // infowindow
-  const infowindowOnClose =()=>{
-    if (editableHandler) {
-      setEditableHandler(false);
-    }
-  }
-  //form
-  const onFinish = (values) => {
-    console.log('Success:', values);
-  };
-
-  const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-  };
-  return (
-    <GoogleMap
-      defaultZoom={11}
-      center={center ? center : defaultCenter}
-      onClick={onMapClick}
-    >
-      {centerToRender && <Marker position={centerToRender} />}
-      {isEditingFence &&
-        editingFence &&
-        !isEditingFenceClosed && (
-          <Polyline
-            path={path}
-            geodesic={true}
-            options={{
-              strokeColor: fenceTypeColor[editingFence.fenceType],
-              strokeOpacity: 0.75,
-              strokeWeight: 2
-            }}
-          />
-        )}
-        {isEditingPrimeLocation &&
-        editingPrimeLocation && (
-          <Circle
-            center={editingPrimeLocation.center}
-            //default 5 meters radius of prime location
-            radius={editingPrimeLocation.radius}
-            editable={true}
-            ref={setCircleRef}
-            options={{
-              fillColor: "#ff9d00",
-              strokeColor: '#ff9d00',
-              strokeOpacity: 2,
-              strokeWeight: 2,
-              zIndex: 1
-            }}
-          />
-        )}
-        {
-          primeLocations.map(
-            circle => selectedExistedPrimeLocation && selectedExistedPrimeLocation.id === circle.id ? undefined : <Circle
-              center={circle.center}
-              radius={circle.radius}
-              key={circle.id}
-              
-              onClick={onMapClick}
-              options={{
-                fillColor: circle.turnedOn ? "#169902" : '#e81e1e',
-                strokeColor: circle.turnedOn ?  '#169902' : '#e81e1e',
-                strokeOpacity: 0.9,
-                strokeWeight: 2
-              }}
-            />)
-        }
-        
-      {isEditingFenceClosed && (
-        <Polygon
-          path={path}
-          geodesic={true}
-          options={{
-            strokeColor: fenceTypeColor[editingFence.fenceType],
-            strokeOpacity: 0.75,
-            strokeWeight: 2,
-            fillColor: fenceTypeColor[editingFence.fenceType],
-            fillOpacity: editingFence.fenceType == 0 ? 0 : 0.5,
-            zIndex: 0
-          }}
-        />
-      )}
-              {
-                polygonPaths.map((path,index)=>(
-                  <>
-                  <Polygon
-                  // Make the Polygon editable / draggable
-                  editable = {index == editIndex ? editableHandler :false}
-                  draggable={false}
-                  key={index}
-                  path={path.fenceCoordinates}
-                  options={options}
-                  onClick={() => setActivePolygon(index)}
-                  onDblClick={polygonEndEdit}
-                  // onMouseOver={}
-                  // Event used when manipulating and adding points
-                  onMouseUp={()=>{polygonOnEdit((index==editIndex || editIndex == null)?index:null);setEditIndex(index)}}
-                  // onMouseUp={onEdit}
-                  // Event used when dragging the whole Polygon
-                  onDragEnd={()=>{polygonOnEdit((index==editIndex || editIndex == null)?index:null)}}
-                  onLoad={polygonOnLoad}
-                  onUnmount={polygonOnUnmount}
-                />
-                </>
-                ))
-              }
-              {editableHandler && editIndex !== null && 
-                <InfoWindow position={polygonPaths[editIndex].fenceCoordinates[0]} onClose={infowindowOnClose}>
-                    <Form
-                    name="basic"
-                    labelCol={{ span: 8 }}
-                    wrapperCol={{ span: 16 }}
-                    initialValues={{}}
-                    onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
-                    autoComplete="off"
-                    form={form}
-                  >
-                    <Form.Item
-                      label="Username"
-                      name="name"
-                      rules={[{ required: true, message: 'Please input your username!' }]}
-                    >
-                      <Input />
-                    </Form.Item>
-                    <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                      <Button type="primary" htmlType="submit">
-                        Submit
-                      </Button>
-                    </Form.Item>
-                  </Form>
-                </InfoWindow>}
-      {/* {fences.map(fence => (
-        <Polygon
-          path={fence.fenceCoordinates}
-          geodesic={true}
-          key={fence.id}
-          onClick={onMapClick}
-          options={{
-            strokeColor: fenceTypeColor[fence.fenceType],
-            strokeOpacity: fence.fenceType === 5 ? 0 : (fence.turnedOn ? 0.75 : 0.4),
-            strokeWeight: fence.fenceType === 5 ? 0 : 2,
-            fillColor: fenceTypeColor[fence.fenceType],
-            fillOpacity:
-              fence.fenceType === 0 || fence.fenceType === 5 ? 0 : (fence.turnedOn ? 0.5 : 0.5) 
-          }}
-        />
-      ))} */}
-
-      {fences.filter(fence => fence.fenceType === 5).map(fence => (
-        <Polyline
-          path={fence.fenceCoordinates}
-          geodesic={true}
-          key={fence.id}
-          options={{
-            strokeColor: fenceTypeColor[fence.fenceType],
-            strokeOpacity: 0.75,
-            strokeWeight: 2,
-            icons: [
-              {
-                icon: dashLineDot,
-                offset: "0",
-                repeat: "10px"
-              }
-            ],
-            fillColor: fenceTypeColor[5],
-            fillOpacity: 0
-          }}
-        />
-      ))}
-
-    
-    </GoogleMap>
-  );
-});
 
 const CreateFenceForm = (props => {
   const {
@@ -905,7 +712,8 @@ class geo extends PureComponent {
     hubUploadLoading:false,
     getFencesNewData:false,
     fenceDelete:false,
-    allPolygonBuffs:[]
+    allPolygonBuffs:[],
+    addPolygonBuffs:[]
   };
 
   componentDidMount() {
@@ -916,6 +724,11 @@ class geo extends PureComponent {
   updateAllPolygonBuffs = (data)=>{
     this.setState({
       allPolygonBuffs:[...data]
+    })
+  }
+  updateAddPolygonBuffs = (data)=>{
+    this.setState({
+      addPolygonBuffs:data
     })
   }
   getAreaGeoInfo = () => {
@@ -1014,11 +827,11 @@ class geo extends PureComponent {
     const areaId = this.props.selectedAreaId;
 
     const newPoint = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+    console.log('newpoint',newPoint);
 
     //this.checkParking(newPoint);
 
     //this.checkPrimeLocation(newPoint);
-console.log('click');
     if (isEditingCenter) {
       this.setState({ editingCenter: newPoint });
     } else if (isEditingFence) {
@@ -1089,7 +902,11 @@ console.log('click');
     console.log(ref);
     this.cricelRef = ref;
   }
-
+  updateIsDeleteModalVisible = (value)=>{
+    this.setState({
+      isDeleteModalVisible:value
+    })
+  }
   handleCreateFenceNextStep = values => {
     const { selectedAreaId } = this.props;
     values.fenceCoordinates = [];
@@ -1145,7 +962,8 @@ console.log('click');
     }
 
     if (isEditingFence) {
-      editingFence.fenceCoordinates.push(editingFence.fenceCoordinates[0]);
+      console.log(editingFence);//99999
+      // editingFence.fenceCoordinates.push(editingFence.fenceCoordinates[0]);
       // if(editingFence.activeTimeRange.weekDayDTO){
       //   editingFence.activeTimeRange.weekDayDTO.start ? null : delete editingFence.activeTimeRange.weekDayDTO
       // }
@@ -1180,27 +998,15 @@ console.log('click');
           }) ,
           onSuccess: this.getAreaGeoInfo
         });
-
       } else {
-
         dispatch({
           type: "geo/addPrimeLocation",
           payload: Object.assign({}, {center: {lat: circle.center.lat(), lng: circle.center.lng()}, radius:  Math.round(circle.radius), areaId : selectedAreaId}) ,
           onSuccess: this.getAreaGeoInfo
         });
-
       }
-
-      
-
-
-
     }
-
-
   };
-
-
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.selectedAreaId !== this.props.selectedAreaId && this.props.selectedAreaId) {
         // this.getAreaGeoInfo();
@@ -1231,7 +1037,6 @@ console.log('click');
     // return (new Promise((resolve, reject) => {
     //   resolve(file)
     // }))
-
    return isJpgOrPng && isLt5M;
   }
   uploadHeadImg(info){
@@ -1299,7 +1104,6 @@ console.log('click');
     const { dispatch } = this.props;
     dispatch({
       type: "geo/updateFence",
-      id: updatedFence.id,
       payload: updatedFence,
       onSuccess: this.getAreaGeoInfo,
       onError: this.cancelEditing
@@ -1423,7 +1227,7 @@ console.log('click');
               <Button
                 type="primary"
                 onClick={() => this.handleSave()}
-                disabled={!isAbleToSave}
+                // disabled={!isAbleToSave}
                 className={styles.editButton}
               >
                 Save
@@ -1451,7 +1255,7 @@ console.log('click');
                   Close Fence
                 </Button>
               )}
-              {isEditingFence && (
+              {/* {isEditingFence && (
                 <Button
                   type="primary"
                   onClick={() => this.handleUndoFenceEditing()}
@@ -1459,7 +1263,7 @@ console.log('click');
                 >
                   Undo
                 </Button>
-              )}
+              )} */}
             </Col>
           ) : (
             <Col md={24} sm={24}>
@@ -1684,7 +1488,8 @@ console.log('click');
       selectedExistedFence,
       selectedExistedPrimeLocation,
       isDeleteModalVisible,
-      allPolygonBuffs
+      allPolygonBuffs,
+      addPolygonBuffs
     } = this.state;
     const isEditing = isEditingCenter || isEditingFence || isEditingPrimeLocation;
     return (
@@ -1755,9 +1560,15 @@ console.log('click');
               center={areaFeature && areaFeature.center}
               fences={geo.fences}
               updateAllPolygonBuffs={this.updateAllPolygonBuffs}
+              updateAddPolygonBuffs={this.updateAddPolygonBuffs}
               allPolygonBuffs={allPolygonBuffs}
+              addPolygonBuffs={addPolygonBuffs}
               primeLocations={geo.primeLocations}
               setCircleRef={this.setCircleRef}
+              selectedAreaId={selectedAreaId}
+              getAreaGeoInfo={this.getAreaGeoInfo}
+              dispatch={this.props.dispatch}
+              updateIsDeleteModalVisible={this.updateIsDeleteModalVisible}
             /> 
             }
           </div>
@@ -1784,7 +1595,7 @@ console.log('click');
           editingFence={editingFence}
           selectedExistedFence={selectedExistedFence}
         />
-        <Modal
+        {/* <Modal
           title="Delete"
           visible={isDeleteModalVisible}
           onOk={this.handleDelete}
@@ -1802,7 +1613,7 @@ console.log('click');
           </p>
           {selectedExistedFence && selectedExistedFence.fenceType == 0 ? <span>Please type “geofence” to delete<Input onChange={this.geofenceOnDelete} style={{width:'200px'}} placeholder="Input Fence Type" /></span>:''}
           </p>
-        </Modal>
+        </Modal> */}
       </PageHeaderWrapper>
     );
   }

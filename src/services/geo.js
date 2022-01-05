@@ -78,7 +78,6 @@ export async function getFencesByAreaId(areaId) {
 //   });
 // }
 export async function createFence(fence) {
-  console.log(fence);
   return request(`/api/admins/areas/fences`, {
     method: "POST",
     body: {
@@ -103,11 +102,12 @@ export async function examineParking(areaId, imei, lat, lng) {
 //     }
 //   });
 // }
-export async function updateFence(fenceId, area) {
-  return request(`/api/admins/areas/fences/${fenceId}`, {
+export async function updateFence(payload) {
+
+  return request(`/api/admins/areas/fences/${payload.id}`, {
     method: "PATCH",
     body: {
-      ...area
+      ...payload
     }
   });
 }
