@@ -180,12 +180,12 @@ const MyMapComponentNew = (props)=>{
       fillColor: fenceTypeColor[fenceTypeIndex],
       fillOpacity: 0.35,
       clickable: true,
-      draggable: false,
       visible: true,
       // zIndex: 1
     }
   }
   const [polygonPaths, setPolygonPaths] = useState([])
+  const [hasForceDatas, setHasForceDatas] = useState(false)  
   const [addPolygonPaths, setAddPolygonPaths] = useState([])
   useEffect(()=>{
     if (!center) return
@@ -306,7 +306,16 @@ const MyMapComponentNew = (props)=>{
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
+  const fenceTypeChange = (value)=>{
+    if(value == 0 || value == 5){
+      setHasForceDatas(true)
+    }else{
+      setHasForceDatas(false)
+    }
+  }
   console.log(polygonPaths);
+  const fence = polygonPaths[editIndex]
+  console.log(fence);
   return (
     <div className={styles.App}>
     <LoadScript
@@ -339,7 +348,7 @@ const MyMapComponentNew = (props)=>{
          isEditingFence && addPolygonPaths &&
           <Polygon
           editable = {true}
-          draggable={false}
+          draggable={true}
           options={options(0)}
           onClick={() => {setActivePolygon(allPolygonBuffs.length+1)}}
           onDblClick={polygonEndEdit}
@@ -406,7 +415,7 @@ const MyMapComponentNew = (props)=>{
                   <Polygon
                   // Make the Polygon editable / draggable
                   editable = {index == editIndex ? editableHandler :false}
-                  draggable={false}
+                  draggable={index == editIndex ? editableHandler :false}
                   key={index}
                   path={path.fenceCoordinates}
                   options={options(path.fenceType)}
@@ -414,9 +423,8 @@ const MyMapComponentNew = (props)=>{
                   onDblClick={polygonEndEdit}
                   // Event used when manipulating and adding points
                   onMouseUp={isEditingCenter?null : ()=>{polygonOnEdit(((index==editIndex || editIndex == null)?index:null),setPolygonPaths);setEditIndex(index)}}
-                  // onMouseUp={onEdit}
                   // Event used when dragging the whole Polygon
-                  onDragEnd={()=>{polygonOnEdit(((index==editIndex || editIndex == null)?index:null),editIndex,editableHandler,allPolygonBuffs)}}
+                  onDragEnd={()=>{polygonOnEdit(((index==editIndex || editIndex == null)?index:null),setPolygonPaths)}}
                   onLoad={polygonOnLoad}
                   onUnmount={polygonOnUnmount}
                 />
@@ -441,11 +449,42 @@ const MyMapComponentNew = (props)=>{
                     >
                       <Input />
                     </Form.Item>
-                    <Form.Item
-                      label="Type"
-                      name="fenceType"
+                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Activated"
+                            rules={
+                              [
+                                {
+                                  required: true,
+                                  message: "You have pick a Activa!",
+                                }
+                              ]
+                            }
+                      name='turnedOn'
                     >
                       <Select placeholder="select" style={{ width: "100%" }}>
+                        <Select.Option key={true} value={true}>
+                            True
+                          </Select.Option>
+                          <Select.Option key={false} value={false}>
+                            False
+                          </Select.Option>
+                    </Select>
+                    </FormItem>
+                    {
+                      fence &&
+                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Active Time" name='activeTimeRange'
+                    initialValue= {(fence && fence.activeTimeRange) ? fence.activeTimeRange : {weekDayDTO: {start: null, end: null}, weekendDTO: {start: null, end: null}, timeZone: null}}
+                    >
+                      <DynamicFenceConfigForm />
+                    </FormItem>
+                    }
+                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Note" name='note'>
+                      <Input placeholder="Please Input" />
+                    </FormItem>
+                    <Form.Item
+                      label="Fence Type"
+                      name="fenceType"
+                    >
+                      <Select placeholder="select" style={{ width: "100%" }} onChange={fenceTypeChange}>
                       {fenceType.map((fence, index) => (
                         <Select.Option key={index} value={index}>
                           {fence}
@@ -453,11 +492,50 @@ const MyMapComponentNew = (props)=>{
                       ))}
                       </Select>
                     </Form.Item>
+                    {
+                      hasForceDatas &&
+                      <FormItem
+                      labelCol={{ span: 10 }}
+                      wrapperCol={{ span: 10 }}
+                      label="Has Forced Parking"
+                      name='hasForce'
+                      rules={
+                        [
+                          {
+                            required: true,
+                            message: "You have to define if have forced parking area"
+                          }
+                        ]
+                      }
+                    >
+                        <Select placeholder="select" style={{ width: "100%" }}>
+                          <Select.Option key={1} value={true}>
+                            Yes
+                          </Select.Option>
+                          <Select.Option key={0} value={false}>
+                            No
+                          </Select.Option>
+                        </Select>
+                    </FormItem>
+                    }
+                    <FormItem
+                labelCol={{ span: 10 }}
+                wrapperCol={{ span: 10 }}
+                name={hasForceDatas? "forceVehicleTypes" : "vehicleTypes"}
+                label={(hasForceDatas? "Force " : "") + "Vehicle Type"}
+              >
+                  <Select placeholder="select" style={{ width: "100%" }} mode="multiple">
+                    <Option value={0}>Bike</Option>
+                    <Option value={1}>Scooter</Option>
+                    <Option value={2}>E-Bike</Option>
+                    <Option value={3}>COSMO</Option>
+                  </Select>
+              </FormItem>
                     <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
                       <Button htmlType="button" onClick={onFenceDelete}>
                         Delete
                       </Button>
-                      <Button type="primary" htmlType="submit">
+                      <Button type="primary" htmlType="submit" >
                         Submit
                       </Button>
                     </Form.Item>
@@ -682,10 +760,6 @@ const CreateFenceForm = (props => {
                     <Option value={1}>Scooter</Option>
                     <Option value={2}>E-Bike</Option>
                     <Option value={3}>COSMO</Option>
-                    {/* <Option value={0}>Bike</Option>
-                    <Option value={1}>Scooter</Option>
-                    <Option value={2}>E-Bike</Option>
-                    <Option value={3}>COSMO</Option> */}
                   </Select>
               </FormItem>) :null
             }
