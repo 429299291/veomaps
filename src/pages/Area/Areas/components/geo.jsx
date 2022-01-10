@@ -185,7 +185,7 @@ const MyMapComponentNew = (props)=>{
     }
   }
   const [polygonPaths, setPolygonPaths] = useState([])
-  const [hasForceDatas, setHasForceDatas] = useState(false)  
+  const [hasForceDatas, setHasForceDatas] = useState(true)  
   const [addPolygonPaths, setAddPolygonPaths] = useState([])
   useEffect(()=>{
     if (!center) return
@@ -251,6 +251,11 @@ const MyMapComponentNew = (props)=>{
   );
   const setActivePolygon =(index)=>{
     form.setFieldsValue(polygonPaths[index])
+    if(polygonPaths[index].fenceType == 0 || polygonPaths[index].fenceType == 5){
+      setHasForceDatas(true)
+    }else{
+      setHasForceDatas(false)
+    }
     if(allPolygonBuffs[index]){
       const path = allPolygonBuffs[index].getPath();
       listenersRef.current.push(
@@ -445,6 +450,7 @@ const MyMapComponentNew = (props)=>{
                     <Form.Item
                       label="name"
                       name="name"
+                      labelCol={{ span: 5 }} wrapperCol={{ span: 15 }}
                       rules={[{ required: true, message: 'Please input your username!' }]}
                     >
                       <Input />
@@ -483,6 +489,7 @@ const MyMapComponentNew = (props)=>{
                     <Form.Item
                       label="Fence Type"
                       name="fenceType"
+                      labelCol={{ span: 5 }} wrapperCol={{ span: 15 }}
                     >
                       <Select placeholder="select" style={{ width: "100%" }} onChange={fenceTypeChange}>
                       {fenceType.map((fence, index) => (
