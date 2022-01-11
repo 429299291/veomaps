@@ -190,6 +190,7 @@ const MyMapComponentNew = (props)=>{
   useEffect(()=>{
     if (!center) return
     setAddPolygonPaths([{lat:center.lat-0.01,lng:center.lng-0.01},{lat:center.lat+0.01,lng:center.lng-0.01},{lat:center.lat,lng:center.lng+0.01}])
+    setEditableHandler(isEditingFence)
   },[isEditingFence])
   useEffect(()=>{
     setPolygonPaths(fences)
@@ -197,6 +198,7 @@ const MyMapComponentNew = (props)=>{
   const [editableHandler,setEditableHandler] = useState(false)
   const [isDeleteModalVisible,setIsDeleteModalVisible] = useState(false)
   const [editIndex,setEditIndex] = useState(null)
+  const [addIndex,setAddIndex] = useState(null)
   const [geofenceOnDeleteToConfirmData,setGeofenceOnDeleteToConfirmData] = useState(false)
   const [clickPolygonReset,setClickPolygonReset] = useState(null)
   const [form] = Form.useForm()
@@ -312,6 +314,7 @@ const MyMapComponentNew = (props)=>{
     console.log('Failed:', errorInfo);
   };
   const fenceTypeChange = (value)=>{
+    setAddIndex(value)
     if(value == 0 || value == 5){
       setHasForceDatas(true)
     }else{
@@ -1043,7 +1046,6 @@ class geo extends PureComponent {
     }
 
     if (isEditingFence) {
-      console.log(editingFence);//99999
       // editingFence.fenceCoordinates.push(editingFence.fenceCoordinates[0]);
       // if(editingFence.activeTimeRange.weekDayDTO){
       //   editingFence.activeTimeRange.weekDayDTO.start ? null : delete editingFence.activeTimeRange.weekDayDTO
@@ -1057,6 +1059,10 @@ class geo extends PureComponent {
         payload: Object.assign({}, editingFence, {areaId: selectedAreaId}) ,
         onSuccess: this.getAreaGeoInfo
       });
+      console.log('save');
+      // this.setState({
+      //   isEditingFence:false
+      // })
     }
 
     if (isEditingPrimeLocation) {

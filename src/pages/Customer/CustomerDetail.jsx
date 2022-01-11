@@ -284,6 +284,8 @@ const MembershipForm = (props => {
   const { memberships, handleBuyMembership } = props;
   const [form] = Form.useForm();
   const activeMembership = memberships.filter(m => m.activated).reduce((o , m) => m, null);
+  console.log(memberships);
+  console.log(activeMembership);
   const [allowToBuy, setAllowToBuy] = useState(false); 
   const [isLoading, setIsLoading] = useState(false);
   const okHandle = () => {
@@ -294,6 +296,9 @@ const MembershipForm = (props => {
     const setNotLoadiing = () => setIsLoading(false);
     handleBuyMembership(fieldsValue.selectedMembership, setNotLoadiing);
 };
+const cancelAutoRenew = ()=>{
+  console.log('--');
+}
 
   return (
     <div>
@@ -329,12 +334,19 @@ const MembershipForm = (props => {
   
         <Row>
           <Col>
-            <Button
+          <Button
               type="primary"
               onClick={okHandle}
               disabled={!allowToBuy}
             >
               Buy Membership
+            </Button>
+            <Button
+              type="primary"
+              onClick={cancelAutoRenew}
+              disabled={!allowToBuy}
+            >
+              Cancel Auto Renew
             </Button>
           </Col>
         </Row>
