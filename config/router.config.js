@@ -62,11 +62,11 @@ export default [
         icon: "ride",
         authority: ["ride"],
       },
-      {
-        path: "/googlemaps/",
-        name: "googlemaps",
-        component: "./googlemaps/googlemaps",
-      },
+      // {
+      //   path: "/googlemaps/",
+      //   name: "googlemaps",
+      //   component: "./googlemaps/googlemaps",
+      // },
       {
         path: "/vehicle-management",
         icon: "car",

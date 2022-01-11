@@ -24,6 +24,13 @@ export async function getMembershipDetail(id) {
     method: "GET"
   });
 }
+export async function cancelAutoRenew(payload) {
+  return request(`/api/admins/customers/${payload.id}/memberships/cancel-auto-renew`,    
+  {
+    method: "POST",
+    body:{}
+  });
+}
 
 export async function createMembership(areaId,membership) {
   return request(`/api/admins/areas/${areaId}/memberships`, {

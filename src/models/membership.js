@@ -3,7 +3,8 @@ import {
   getMembershipDetail,
   createMembership,
   removeMembership,
-  updateMembership
+  updateMembership,
+  cancelAutoRenew
 } from "@/services/membership";
 import { message } from "antd";
 
@@ -37,6 +38,14 @@ export default {
       } else {
         message.error(`Get Membership Detail Fail, ID : ${membershipId}`);
         onError && onError();
+      }
+    },
+    *cancelAutoRenew({payload},{call,put}){
+      const response = yield call(cancelAutoRenew, payload); // put
+      if(response==false){
+        message.success(`cancel auto renew success,${response}`)
+      }else{
+        message.error(`cancel auto renew error,${response}`)
       }
     },
     *update({ id, payload, onSuccess, onError }, { call, put }) {

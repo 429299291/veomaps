@@ -74,12 +74,6 @@ let routes = [
         "exact": true
       },
       {
-        "path": "/googlemaps/",
-        "name": "googlemaps",
-        "component": dynamic({ loader: () => import('../googlemaps/googlemaps'), loading: require('/Users/zhudongdong/Desktop/home/src/components/PageLoading/index').default }),
-        "exact": true
-      },
-      {
         "path": "/vehicle-management",
         "icon": "car",
         "name": "Vehicle Management",

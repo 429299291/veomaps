@@ -281,11 +281,9 @@ const Fefundmodal = (props)=>{
 //   );
 // });
 const MembershipForm = (props => {
-  const { memberships, handleBuyMembership } = props;
+  const { memberships, handleBuyMembership,dispatch,customerId } = props;
   const [form] = Form.useForm();
   const activeMembership = memberships.filter(m => m.activated).reduce((o , m) => m, null);
-  console.log(memberships);
-  console.log(activeMembership);
   const [allowToBuy, setAllowToBuy] = useState(false); 
   const [isLoading, setIsLoading] = useState(false);
   const okHandle = () => {
@@ -297,7 +295,14 @@ const MembershipForm = (props => {
     handleBuyMembership(fieldsValue.selectedMembership, setNotLoadiing);
 };
 const cancelAutoRenew = ()=>{
-  console.log('--');
+  dispatch({
+    type: "memberships/cancelAutoRenew",
+    payload: {
+      id: customerId
+    },
+  }).then(()=>{
+
+  });
 }
 
   return (
@@ -344,7 +349,7 @@ const cancelAutoRenew = ()=>{
             <Button
               type="primary"
               onClick={cancelAutoRenew}
-              disabled={!allowToBuy}
+              disabled={ !activeMembership }
             >
               Cancel Auto Renew
             </Button>
@@ -1477,7 +1482,7 @@ class CustomerDetail extends PureComponent {
     dispatch({
       type: "rides/refund",
       payload: payload,
-      id: rideId || 224896,
+      id: rideId
     }).then(()=>{
       this.setState({isRefundModalVisible:false});
       this.setState({isRefundModalVisibleForRide:false})
@@ -1491,7 +1496,7 @@ class CustomerDetail extends PureComponent {
     dispatch({
       type: "rides/getRefundCalculateResult",
       payload: payload,
-      id: id || 224896,
+      id: id,
       onSuccess: result => this.setState({ rideRefundCalculateResult: result })
     });
   };
@@ -1530,8 +1535,6 @@ class CustomerDetail extends PureComponent {
 
   handleGetCustomerDetail = customerId => {
     const { dispatch } = this.props;
-
-
     dispatch({
       type: "customers/getCustomerDetail",
       customerId: customerId,
@@ -1568,7 +1571,6 @@ class CustomerDetail extends PureComponent {
 
   handleGetCustomerApprovedViolationCount = customerId => {
     const { dispatch } = this.props;
-
     dispatch({
       type: "violation/getCustomerApprovedViolationCount",
       customerId: customerId,
@@ -1718,7 +1720,8 @@ class CustomerDetail extends PureComponent {
       areas,
       isVisible,
       handleDetailVisible,
-      customer
+      customer,
+      customerId
     } = this.props;
     const endRideMethod = {
       handleEndRide: this.handleEndRide,
@@ -1736,7 +1739,7 @@ class CustomerDetail extends PureComponent {
       dispatch({
         type: "rides/getCustomerRides",
         payload:{
-          customerId: this.props.customerId,
+          customerId: customerId,
           pagination:{
             page: value.current-1,
             pageSize: value.pageSize || 10 ,
@@ -1884,6 +1887,8 @@ class CustomerDetail extends PureComponent {
               <Card title="Membership" style={{ marginTop: "2em" }}>
                 <MembershipForm
                     memberships={availableMemberships}
+                    customerId={customerId}
+                    dispatch = {this.props.dispatch}
                     handleBuyMembership={this.handleBuyMembership}
                   />
               </Card>
