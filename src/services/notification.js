@@ -21,11 +21,10 @@ export async function updateNotification(params) {
   return request(`/api/admins/customers/notifications/${params.id}/update`, {
     method: "POST",
     body:{
-        category:params.category,
-        amount:params.amount,
-        segment:params.segment,
+        title:params.title,
+        text:params.text,
         begin:params.begin,
-        expiration:params.expiration
+        expire:params.expire
       },
   });
 }

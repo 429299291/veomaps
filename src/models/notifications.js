@@ -17,7 +17,6 @@ import {
             onSuccess && onSuccess(response.content,response.page,response.pageSize,response.totalSize)
           },
         *add({ payload, onSuccess }, { call, put }) {
-          console.log('00000');
         const response = yield call(addNotification, payload);
         onSuccess && onSuccess()
         },

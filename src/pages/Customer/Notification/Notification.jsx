@@ -33,6 +33,7 @@ const UpdateDetail = (props) => {
     const {handleupdateVisible,recordData,dispatch,addOrUpdate,recordId,selectedAreaId} = props
     if(addOrUpdate){
       phoneOnChangeVisible ? null : form.resetFields()
+      // form.resetFields()
     }else{
       const newUpdataData = {
         title:recordData.title,
@@ -47,8 +48,9 @@ const UpdateDetail = (props) => {
         handleupdateVisible(false);
     };
     const onFinish = (values) => {
+      if(values.segment){
         values.segment.phone ? values.segment.areaId = null : values.segment.areaId = selectedAreaId
-        console.log(values);
+      }
         let requestData
         handleupdateVisible(false);
         if(props.addOrUpdate){
@@ -57,23 +59,22 @@ const UpdateDetail = (props) => {
             values.segment.maxRideCount = values.segment.rideCount[1]
             delete values.segment.rideCount
           }
-          console.log(values);
           dispatch({
             type: "notification/add",
             payload:{
              ... values
             },
             onSuccess: props.handleGetNotifications
-          });
+          }).then(()=>{setPhoneOnChangeVisible(false)});
         }else{
           values.id = recordId
           dispatch({
             type: "notification/update",
             payload:{
-             ... values
+             ...values
             },
             onSuccess: props.handleGetNotifications
-          });
+          }).then(()=>{setPhoneOnChangeVisible(false)});
         }
       };
     
@@ -92,7 +93,7 @@ const UpdateDetail = (props) => {
                 name="basic"
                 // labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
-                initialValues={{pushNotification:true,}}
+                initialValues={{pushNotification:false,}}
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
                 autoComplete="off"
@@ -134,7 +135,7 @@ const UpdateDetail = (props) => {
                       label="Push Notification"
                       name="pushNotification"
                   >
-                      <Switch />
+                      <Switch/>
                   </Form.Item>
                 }
                 <Form.Item
