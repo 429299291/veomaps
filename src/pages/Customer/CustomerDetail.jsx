@@ -281,7 +281,7 @@ const Fefundmodal = (props)=>{
 //   );
 // });
 const MembershipForm = (props => {
-  const { memberships, handleBuyMembership,dispatch,customerId } = props;
+  const { memberships, handleBuyMembership,dispatch,customerId,handleGetAvailableCustomerMemberships } = props;
   const [form] = Form.useForm();
   const activeMembership = memberships.filter(m => m.activated).reduce((o , m) => m, null);
   const [allowToBuy, setAllowToBuy] = useState(false); 
@@ -301,7 +301,7 @@ const cancelAutoRenew = ()=>{
       id: customerId
     },
   }).then(()=>{
-
+    handleGetAvailableCustomerMemberships()
   });
 }
 
@@ -343,6 +343,7 @@ const cancelAutoRenew = ()=>{
               type="primary"
               onClick={okHandle}
               disabled={!allowToBuy}
+              style={{ marginRight: "1em", marginTop: "0.5em" }}
             >
               Buy Membership
             </Button>
@@ -1889,6 +1890,7 @@ class CustomerDetail extends PureComponent {
                     memberships={availableMemberships}
                     customerId={customerId}
                     dispatch = {this.props.dispatch}
+                    handleGetAvailableCustomerMemberships={this.handleGetAvailableCustomerMemberships}
                     handleBuyMembership={this.handleBuyMembership}
                   />
               </Card>
