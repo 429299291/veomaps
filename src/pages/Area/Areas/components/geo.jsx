@@ -210,7 +210,7 @@ const MyMapComponentNew = (props)=>{
     // polygonRef.current = allPolygonBuffs[index]
     polygonRef.current = isEditingFence ? addPolygonBuffs : allPolygonBuffs[index]
     if (index === null){
-      message.error('Edit not saved')
+      // message.error('Edit not saved')
       setEditableHandler(false)
       return
     }else{
