@@ -30,9 +30,12 @@ const Option = Select.Option;
 const UpdateDetail = (props) => {
     const [form] = Form.useForm()
     const [phoneOnChangeVisible, setPhoneOnChangeVisible] = useState(false); 
+    const [noRefesh, setNoRefesh] = useState(false); 
+    const [categoryVisible, setCategoryVisible] = useState(false); 
+    const [categoryVisibleOn, setCategoryVisibleOn] = useState(false);     
     const {handleupdateVisible,recordData,dispatch,addOrUpdate,recordId,selectedAreaId} = props
     if(addOrUpdate){
-      phoneOnChangeVisible ? null : form.resetFields()
+      noRefesh ? null : form.resetFields()
       // form.resetFields()
     }else{
       const newUpdataData = {
@@ -42,6 +45,9 @@ const UpdateDetail = (props) => {
         expire:moment(recordData.expire,"YYYY-MM-DD HH:mm" )
       }
       form.setFieldsValue(newUpdataData)
+      if(noRefesh){
+        setNoRefesh(false)
+      }
     }
     // props.addOrUpdate ? form.resetFields() : form.setFieldsValue(recordData)
     const handleCancel = () => {
@@ -65,7 +71,7 @@ const UpdateDetail = (props) => {
              ... values
             },
             onSuccess: props.handleGetNotifications
-          }).then(()=>{setPhoneOnChangeVisible(false)});
+          });
         }else{
           values.id = recordId
           dispatch({
@@ -74,8 +80,11 @@ const UpdateDetail = (props) => {
              ...values
             },
             onSuccess: props.handleGetNotifications
-          }).then(()=>{setPhoneOnChangeVisible(false)});
+          });
         }
+        setNoRefesh(false)
+        setPhoneOnChangeVisible(false)
+        setCategoryVisibleOn(false)
       };
     
     const onFinishFailed = (errorInfo) => {
@@ -83,9 +92,21 @@ const UpdateDetail = (props) => {
     };
     const phoneOnChange = (val)=>{
       val ? setPhoneOnChangeVisible(true) :setPhoneOnChangeVisible(false)
+      setNoRefesh(true)
     }
     const timeOnOk=(value)=> {
       console.log('onOk: ', value);
+    }
+    const categoryOnChange = (value)=> {
+      if(value !== "ANNOUNCEMENT"){
+        setCategoryVisible(true)
+      }else{
+        setCategoryVisible(false)
+      }
+      setNoRefesh(true)
+    }
+    const pushNotificationChange =(value)=>{
+      value ? setCategoryVisibleOn(true) : setCategoryVisibleOn(false)
     }
     return (
         <Modal title={props.addOrUpdate?'Add Campaign':'Update Campaign'} getContainer={false} visible={props.updateVisible} getContainer={false} footer={null} onCancel={handleCancel}>
@@ -121,7 +142,7 @@ const UpdateDetail = (props) => {
                         name="category"
                         rules={[{ required: true, message: 'Please input your category!' }]}
                     >
-                    <Select style={{ width: 120 }}>
+                    <Select style={{ width: 120 }} onChange={categoryOnChange} disabled={categoryVisibleOn}>
                     {types.map((interval, index) => (
                     <Option key={index} value={interval}>
                         {interval}
@@ -135,7 +156,7 @@ const UpdateDetail = (props) => {
                       label="Push Notification"
                       name="pushNotification"
                   >
-                      <Switch/>
+                      <Switch disabled={categoryVisible} onChange={pushNotificationChange}/>
                   </Form.Item>
                 }
                 <Form.Item
@@ -279,25 +300,42 @@ class Campaign extends PureComponent {
   ];
 
   componentDidMount() {
-    this.handleGetNotifications();
+    this.props.selectedAreaId ? this.handleGetNotifications() : null;
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-
     if (prevProps.selectedAreaId !== this.props.selectedAreaId) {
       this.handleGetNotifications();
     }
   }
   handleGetNotifications = ()=>{
-    const { dispatch } = this.props;
-    dispatch({
-      type: "notification/get",
-      payload:{
-        areaId:this.props.selectedAreaId,
-        ...this.state.filterCriteria
-      },
-      onSuccess: this.getDatas
-    });
+    const { dispatch,selectedAreaId } = this.props;
+    if(selectedAreaId){
+      dispatch({
+        type: "notification/get",
+        payload:{
+          areaId:selectedAreaId,
+          ...this.state.filterCriteria
+        },
+        onSuccess: this.getDatas
+      });
+    }else{
+      this.setState({
+        campaignData : [],
+        filterCriteria:{
+          pagination:{
+            page:0,
+            pageSize: 10,
+            sort:{
+              sortBy:'created',
+              direction:'desc'
+            }
+          }
+        },
+        totalSize:0
+      })
+    }
+
   }
   handleStandardTableChange = (pageData, sorter) => {
     const { filterCriteria } = this.state;
