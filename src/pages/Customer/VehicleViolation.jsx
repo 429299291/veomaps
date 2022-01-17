@@ -69,7 +69,6 @@ const ViolationLocation = compose(
   withGoogleMap
 )(props => {
   const { location } = props;
-
   return (
     <GoogleMap defaultZoom={12} center={location}>
       <Marker position={location} label={"Location"} />

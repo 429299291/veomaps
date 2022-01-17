@@ -42,7 +42,7 @@ export default {
     },
     *cancelAutoRenew({payload},{call,put}){
       const response = yield call(cancelAutoRenew, payload); // put
-      if(response==false){
+      if(response){
         message.success(`cancel auto renew success,${response}`)
       }else{
         message.error(`cancel auto renew error,${response}`)
