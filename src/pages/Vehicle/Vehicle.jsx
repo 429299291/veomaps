@@ -31,6 +31,7 @@ const { Search,TextAdmin } = Input;
 const { RangePicker } = DatePicker;
 
 const TabPane = Tabs.TabPane;
+import { CloseCircleOutlined } from '@ant-design/icons';
 
 import StandardTable from "@/components/StandardTable";
 import PageHeaderWrapper from "@/components/PageHeaderWrapper";
@@ -305,7 +306,7 @@ const RenderAdvancedForm=(props)=> {
         </Col>
         <Col span={6}>
           <FormItem label="Offline Retrieve Attempts" name='retrievalTimes'>
-              <Select placeholder="select" style={{ width: "100%",color:"#f00" }} allowClear>
+              <Select placeholder="select" style={{ width: "100%",color:"#f00" }} allowClear clearIcon={<CloseCircleOutlined style={{color:"#f00"}}/>}>
               <Option value={0}>0</Option>
               <Option value={1}>1</Option>
               <Option value={2}>2</Option>
