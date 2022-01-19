@@ -63,9 +63,10 @@ export default {
     
     *offline_automation({ payload }, { call, put }) {
       const result = yield call(offline_automation, payload);
-      // if(result){
-      //   message.success('offline automation success')
-      // }else{
+      if(result){
+        message.success('offline automation success')
+      }
+      // else{
       //   message.error('offline automation error')
       // }
     },

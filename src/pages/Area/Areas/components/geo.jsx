@@ -244,7 +244,6 @@ const MyMapComponentNew = (props)=>{
     (polygon) => {
       // await updateAllPolygonBuffs(polygon)
       allPolygonBuffsFirst.push(polygon)
-      console.log(polygon);
       allPolygonBuffsFirst.length ? updateAllPolygonBuffs(allPolygonBuffsFirst) : null
       updateAddPolygonBuffs(polygon)
       setClickPolygonReset(polygon)
@@ -252,6 +251,7 @@ const MyMapComponentNew = (props)=>{
     [polygonOnEdit]
   );
   const setActivePolygon =(index)=>{
+    console.log(index);
     form.setFieldsValue(polygonPaths[index])
     if(polygonPaths[index].fenceType == 0 || polygonPaths[index].fenceType == 5){
       setHasForceDatas(true)
@@ -324,6 +324,13 @@ const MyMapComponentNew = (props)=>{
   console.log(polygonPaths);
   const fence = polygonPaths[editIndex]
   console.log(fence);
+  const deleteVertexNode = (mev)=> {
+    console.log('===');
+    console.log(mev);
+    if (mev.vertex != null) {
+      my_poly.getPath().removeAt(mev.vertex);
+    }
+  }
   return (
     <div className={styles.App}>
     <LoadScript
@@ -435,6 +442,7 @@ const MyMapComponentNew = (props)=>{
                   onDragEnd={()=>{polygonOnEdit(((index==editIndex || editIndex == null)?index:null),setPolygonPaths)}}
                   onLoad={polygonOnLoad}
                   onUnmount={polygonOnUnmount}
+                  onRightClick={deleteVertexNode}
                 />
                 ))
               }

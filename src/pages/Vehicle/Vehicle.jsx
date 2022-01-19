@@ -304,8 +304,8 @@ const RenderAdvancedForm=(props)=> {
           </FormItem>
         </Col>
         <Col span={6}>
-          <FormItem label="Offline Retrieve Attempts" name='retrievalTimes'>
-              <Select placeholder="select" style={{ width: "100%" }} allowClear>
+          <FormItem label="Retrieval Times" name='retrievalTimes'>
+              <Select placeholder="select" style={{ width: "100%",color:"#f00" }} allowClear>
               <Option value={0}>0</Option>
               <Option value={1}>1</Option>
               <Option value={2}>2</Option>
@@ -1690,6 +1690,11 @@ class Vehicle extends PureComponent {
     const rowSelection = {
       selectedRowKeys:selectedRowKeys,
       onChange: this.onSelectChange,
+      getCheckboxProps: (record) => ({
+        disabled: record.hasOfflineAutomated === true,
+        // Column configuration not to be checked
+        hasOfflineAutomated: record.hasOfflineAutomated,
+      }),
     };
     const retrieveHasSelected = selectedRowKeys.length > 0;
     const parentMethods = {
