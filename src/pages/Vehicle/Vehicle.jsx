@@ -304,7 +304,7 @@ const RenderAdvancedForm=(props)=> {
           </FormItem>
         </Col>
         <Col span={6}>
-          <FormItem label="Retrieval Times" name='retrievalTimes'>
+          <FormItem label="Offline Retrieve Attempts" name='retrievalTimes'>
               <Select placeholder="select" style={{ width: "100%",color:"#f00" }} allowClear>
               <Option value={0}>0</Option>
               <Option value={1}>1</Option>
@@ -1725,12 +1725,12 @@ class Vehicle extends PureComponent {
                 >
                 Add
               </Button>
-              <Button
+              {retrieveHasSelected && <Button
                 type="primary"
                 onClick={this.retrieveStart} disabled={!retrieveHasSelected} loading={retrieveLoading}
               >
-                Offline Retrieve Attempts
-              </Button>
+                Deactivate
+              </Button>}
             {/* {selectedAreaId >= 1 && authority.includes("vehicle") && 
                 <Button
                 type="primary"
