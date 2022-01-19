@@ -303,6 +303,16 @@ const RenderAdvancedForm=(props)=> {
             </Select>
           </FormItem>
         </Col>
+        <Col span={6}>
+          <FormItem label="Offline Retrieve Attempts" name='retrievalTimes'>
+              <Select placeholder="select" style={{ width: "100%" }} allowClear>
+              <Option value={0}>0</Option>
+              <Option value={1}>1</Option>
+              <Option value={2}>2</Option>
+              <Option value={3}>3+</Option>
+            </Select>
+          </FormItem>
+        </Col>
       </Row>
       <div style={{ overflow: "hidden" }}>
         <div style={{ marginBottom: 24 }}>
@@ -766,7 +776,10 @@ class Vehicle extends PureComponent {
     shoudlShowVehicles: true,
     heatMapMaxIntensity: 0,
     heatMapRadius: 15,
-    todayRange: {start: moment().startOf('day').format("MM-DD-YYYY HH:mm:ss"),end: moment().endOf('day').format("MM-DD-YYYY HH:mm:ss")} 
+    todayRange: {start: moment().startOf('day').format("MM-DD-YYYY HH:mm:ss"),end: moment().endOf('day').format("MM-DD-YYYY HH:mm:ss")} ,
+    selectedRowKeys:[],
+    retrieveLoading:false,
+    offline_automationVisible:false
   };
 
   columns = [
@@ -880,6 +893,11 @@ class Vehicle extends PureComponent {
         }
     }
     this.setState({ filterCriteria: params });
+    if(params.retrievalTimes >=0){
+      this.setState({offline_automationVisible:true})
+    }else{
+      this.setState({offline_automationVisible:false})
+    }
     dispatch({
       type: "vehicles/get",
       payload: params
@@ -1128,11 +1146,8 @@ class Vehicle extends PureComponent {
          
        </div>
   }
-
-  componentDidMount() {
-    
+  componentDidMount() {    
     this.handleSearch();
-
     if (this.props.isMobile ) {
       const input = document.getElementById("numberOrImei"); 
 
@@ -1142,12 +1157,10 @@ class Vehicle extends PureComponent {
       }
     }
   }
-
   isConnected(vehicle) {
     // const now = moment.utc();
     // const heartime = moment.utc(vehicle.heartTime);
     // return now.diff(heartime,'minutes') < 10 ? 'online' : 'offline';
-
     return vehicle.connected ? 'online' : 'offline';
   }
 
@@ -1163,6 +1176,11 @@ class Vehicle extends PureComponent {
     filterCriteria.connected === null ? delete filterCriteria.connected : null
     filterCriteria.provider === null ? delete filterCriteria.provider : null
     delete filterCriteria.vehicleType
+    if(filterCriteria.retrievalTimes >=0){
+      this.setState({offline_automationVisible:true})
+    }else{
+      this.setState({offline_automationVisible:false})
+    }
     dispatch({
       type: "vehicles/get",
       payload: filterCriteria
@@ -1189,6 +1207,11 @@ class Vehicle extends PureComponent {
     //   params.pagination.sort.sortBy = sorter.field;
       
     // }
+    if(params.retrievalTimes >=0){
+      this.setState({offline_automationVisible:true})
+    }else{
+      this.setState({offline_automationVisible:false})
+    }
     this.setState({ filterCriteria: params }, 
       () => dispatch({
       type: "vehicles/get",
@@ -1511,9 +1534,7 @@ class Vehicle extends PureComponent {
 
   //map vehicle list data
   getAreaGeoInfo = () => {
-
     const { dispatch, selectedAreaId } = this.props;
-
     dispatch({
       type: "geo/getFences",
       areaId: selectedAreaId
@@ -1620,17 +1641,30 @@ class Vehicle extends PureComponent {
 }
 
 
-handleShowingVehicles = val => {
-
-  this.setState({shoudlShowVehicles: val.target.checked});
-
-}
-
+    handleShowingVehicles = val => {
+      this.setState({shoudlShowVehicles: val.target.checked});
+    }
+    onSelectChange = selectedRowKeys => {
+      console.log('selectedRowKeys changed: ', selectedRowKeys);
+      this.setState({ selectedRowKeys });
+    };
+    retrieveStart = () => {
+      const {dispatch} = this.props
+      this.setState({ retrieveLoading: true });
+      dispatch({
+        type: "vehicles/offline_automation",
+        payload:this.state.selectedRowKeys,
+      }).then(()=>{
+        this.setState({
+          selectedRowKeys: [],
+          retrieveLoading: false,
+        });
+      });
+    };
   render() {
     const { vehicles, areas, loading, selectedAreaId, geo, areaNames, dispatch } = this.props;
     const center = geo.area && geo.area.center;
     const fences = geo.fences;
-    
     const {
       createModalVisible,
       updateModalVisible,
@@ -1648,9 +1682,16 @@ handleShowingVehicles = val => {
       heatMapMaxIntensity,
       heatMapRadius,
       currPosition,
-      shoudlShowVehicles
+      shoudlShowVehicles,
+      selectedRowKeys,
+      retrieveLoading,
+      offline_automationVisible
     } = this.state;
-
+    const rowSelection = {
+      selectedRowKeys:selectedRowKeys,
+      onChange: this.onSelectChange,
+    };
+    const retrieveHasSelected = selectedRowKeys.length > 0;
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible
@@ -1674,10 +1715,16 @@ handleShowingVehicles = val => {
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator} style={{display:'flex',justifyContent:'space-between'}}>
               <Button
-                type="primary"
-                onClick={() => this.handleModalVisible(true)}
-              >
+                  type="primary"
+                  onClick={() => this.handleModalVisible(true)}
+                >
                 Add
+              </Button>
+              <Button
+                type="primary"
+                onClick={this.retrieveStart} disabled={!retrieveHasSelected} loading={retrieveLoading}
+              >
+                Offline Retrieve Attempts
               </Button>
             {/* {selectedAreaId >= 1 && authority.includes("vehicle") && 
                 <Button
@@ -1711,6 +1758,7 @@ handleShowingVehicles = val => {
                  columns={this.columns}
                  onChange={this.handleStandardTableChange}
                  scroll={{ x: 1300 }}
+                 rowSelection={offline_automationVisible ? rowSelection : false}
                />
               }
 

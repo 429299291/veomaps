@@ -23,7 +23,8 @@ import {
   controlVehicleExtension,
   getVehicleSnapshot,
   handleGetPrimLocationSnapshot,
-  controlVoice
+  controlVoice,
+  offline_automation
 } from "@/services/vehicle";
 import { message } from "antd";
 
@@ -34,14 +35,12 @@ export default {
 
   state: {
     total: 0,
-    data: []
+    data: [],
   },
 
   effects: {
     *get({ payload }, { call, put }) {
-      //const total = yield call(countVehicles, payload);
       const result = yield call(getVehicles, payload);
-
       if (Array.isArray(result.content)) {
         result.content.map(vehicle => (vehicle.key = vehicle.id));
     }
@@ -49,7 +48,7 @@ export default {
       yield put({
         type: "save",
         data: Array.isArray(result.content) ? result.content : [],
-        total: result.totalSize
+        total: result.totalSize,
       });
     },
     *controlVoice({ payload }, { call, put }) {
@@ -60,6 +59,15 @@ export default {
       }else{
         message.error('voice error')
       }
+    },
+    
+    *offline_automation({ payload }, { call, put }) {
+      const result = yield call(offline_automation, payload);
+      // if(result){
+      //   message.success('offline automation success')
+      // }else{
+      //   message.error('offline automation error')
+      // }
     },
     
     *getVehicleSnapshot({ payload, onSuccess }, { call, put }) {
@@ -288,7 +296,7 @@ export default {
       return {
         ...state,
         data: action.data,
-        total: action.total
+        total: action.total,
       };
     }
   }

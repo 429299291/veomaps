@@ -8,10 +8,27 @@ import request from "@/utils/request";
 // }
 
 export async function getVehicles(params) {
-  return request(`/api/admins/vehicles/search`, {
-    method: "POST",
+  if(params.retrievalTimes>=0){
+    return request(`/api/admins/vehicles/search`, {
+      method: "POST",
+      body: {
+        retrievalTimes:params.retrievalTimes
+      }
+    });
+  }else{
+    return request(`/api/admins/vehicles/search`, {
+      method: "POST",
+      body: {
+        ...params
+      }
+    });
+  }
+}
+export async function offline_automation(params) {
+  return request(`/api/admins/vehicles/batch/offline/auto-update`, {
+    method: "PATCH",
     body: {
-      ...params
+      ids:params
     }
   });
 }
