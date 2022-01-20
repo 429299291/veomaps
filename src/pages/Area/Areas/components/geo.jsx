@@ -88,7 +88,7 @@ class DynamicFenceConfigForm extends PureComponent {
     const {value, onChange} = this.props;
     return <div>
               <Row> 
-                    <Col span={4} style={{marginBottom:'15px'}}> 
+                    <Col span={6} style={{marginBottom:'15px'}}> 
                         Weekday: 
                     </Col> 
                     <Col span={8}> 
@@ -102,7 +102,7 @@ class DynamicFenceConfigForm extends PureComponent {
               </Row>
 
               <Row>
-                    <Col span={4} style={{marginBottom:'15px'}}> 
+                    <Col span={6} style={{marginBottom:'15px'}}> 
                         Weekend: 
                     </Col> 
                     <Col span={8}> 
@@ -115,8 +115,8 @@ class DynamicFenceConfigForm extends PureComponent {
                 
               </Row>
               <Row> 
-              <Col span={5}> Time Zone: </Col>
-              <Col span={15}> 
+              <Col span={6}> Time Zone: </Col>
+              <Col span={18}> 
                   <Select 
                   // defaultValue={value.timeZone ? value.timeZone : undefined} 
                   onChange={val => this.triggerChange({timeZone: val})} style={{width: "100%"}}>
@@ -461,12 +461,12 @@ const MyMapComponentNew = (props)=>{
                     <Form.Item
                       label="name"
                       name="name"
-                      labelCol={{ span: 5 }} wrapperCol={{ span: 15 }}
+                      labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}
                       rules={[{ required: true, message: 'Please input your username!' }]}
                     >
                       <Input />
                     </Form.Item>
-                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Activated"
+                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 19 }} label="Activated"
                             rules={
                               [
                                 {
@@ -488,19 +488,19 @@ const MyMapComponentNew = (props)=>{
                     </FormItem>
                     {
                       fence &&
-                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Active Time" name='activeTimeRange'
+                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 19 }} label="Active Time" name='activeTimeRange'
                     initialValue= {(fence && fence.activeTimeRange) ? fence.activeTimeRange : {weekDayDTO: {start: null, end: null}, weekendDTO: {start: null, end: null}, timeZone: null}}
                     >
                       <DynamicFenceConfigForm />
                     </FormItem>
                     }
-                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="Note" name='note'>
+                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 19 }} label="Note" name='note'>
                       <Input placeholder="Please Input" />
                     </FormItem>
                     <Form.Item
                       label="Fence Type"
                       name="fenceType"
-                      labelCol={{ span: 5 }} wrapperCol={{ span: 15 }}
+                      labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}
                     >
                       <Select placeholder="select" style={{ width: "100%" }} onChange={fenceTypeChange}>
                       {fenceType.map((fence, index) => (
@@ -537,8 +537,8 @@ const MyMapComponentNew = (props)=>{
                     </FormItem>
                     }
                     <FormItem
-                labelCol={{ span: 10 }}
-                wrapperCol={{ span: 10 }}
+                labelCol={{ span: 5 }}
+                wrapperCol={{ span: 19 }}
                 name={hasForceDatas? "forceVehicleTypes" : "vehicleTypes"}
                 label={(hasForceDatas? "Force " : "") + "Vehicle Type"}
               >
@@ -1591,7 +1591,8 @@ class geo extends PureComponent {
       <PageHeaderWrapper title="Geo Management">
         {selectedAreaId && <Card bordered={true}>
           <div>
-            {!isEditing && selectedExistedFence ? (
+            {/* fence for cancel inforwindow */}
+            {!isEditing && selectedExistedFence && false ? (
               <Row
                 gutter={{ md: 8, lg: 24, xl: 48 }}
                 className={styles.editRow}
@@ -1690,7 +1691,7 @@ class geo extends PureComponent {
           editingFence={editingFence}
           selectedExistedFence={selectedExistedFence}
         />
-        {/* <Modal
+        <Modal
           title="Delete"
           visible={isDeleteModalVisible}
           onOk={this.handleDelete}
@@ -1708,7 +1709,7 @@ class geo extends PureComponent {
           </p>
           {selectedExistedFence && selectedExistedFence.fenceType == 0 ? <span>Please type “geofence” to delete<Input onChange={this.geofenceOnDelete} style={{width:'200px'}} placeholder="Input Fence Type" /></span>:''}
           </p>
-        </Modal> */}
+        </Modal>
       </PageHeaderWrapper>
     );
   }
