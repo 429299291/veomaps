@@ -330,7 +330,7 @@ const RenderAdvancedForm=(props)=> {
           <Button style={{ marginLeft: 8 }} onClick={()=>{form.resetFields();props.handleFormReset();setResetVisible(false)}} danger = {resetVisible ? true : false}>
             Reset
           </Button>
-          <a style={{ marginLeft: 8 }} onClick={()=>{props.toggleForm()}}>
+          <a style={{ marginLeft: 8 }} onClick={()=>{props.toggleForm()}} style={!resetVisible ? {display:"inline-block",marginLeft: "8px"}:{display:"none",marginLeft: "8px"} }>
             close <Icon type="up" />
           </a>
         </div>
@@ -1667,8 +1667,9 @@ class Vehicle extends PureComponent {
           selectedRowKeys: [],
           retrieveLoading: false,
         });
+        this.handleSearch()
       });
-    };
+    }
   render() {
     const { vehicles, areas, loading, selectedAreaId, geo, areaNames, dispatch } = this.props;
     const center = geo.area && geo.area.center;
