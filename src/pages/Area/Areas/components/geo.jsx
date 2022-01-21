@@ -206,10 +206,20 @@ const MyMapComponentNew = (props)=>{
   const polygonRef = useRef(null);
   const listenersRef = useRef([]);
   const polygonOnEdit = (index) => {
-    console.log(allPolygonBuffs);
-    console.log(addPolygonBuffs);
+    console.log(index);
+    console.log(editIndex);
     // polygonRef.current = allPolygonBuffs[index]
     polygonRef.current = isEditingFence ? addPolygonBuffs : allPolygonBuffs[index]
+    // if(editIndex == null){
+    //   setEditableHandler(true)
+    // }else if(index == null){
+    //   if(index === editIndex){
+    //     setEditableHandler(true)
+    //   }else{
+    //     setEditableHandler(false)
+    //   }
+    // }
+
     if (index === null){
       // message.error('Edit not saved')
       setEditableHandler(false)
@@ -217,7 +227,6 @@ const MyMapComponentNew = (props)=>{
     }else{
       setEditableHandler(true)
       if (polygonRef.current) {
-        console.log(polygonRef.current);
         const nextPath = polygonRef.current
           .getPath()
           .getArray()
@@ -252,7 +261,7 @@ const MyMapComponentNew = (props)=>{
     [polygonOnEdit]
   );
   const setActivePolygon =(index)=>{
-    console.log(index);
+    console.log('active'+index);
     form.setFieldsValue(polygonPaths[index])
     if(polygonPaths[index].fenceType == 0 || polygonPaths[index].fenceType == 5){
       setHasForceDatas(true)
@@ -322,12 +331,10 @@ const MyMapComponentNew = (props)=>{
       setHasForceDatas(false)
     }
   }
-  console.log(polygonPaths);
+  // console.log(polygonPaths);
   const fence = polygonPaths[editIndex]
-  console.log(fence);
+  // console.log(fence);
   const deleteVertexNode = (mev)=> {
-    console.log('===');
-    console.log(mev);
     if (mev.vertex != null) {
       my_poly.getPath().removeAt(mev.vertex);
     }
