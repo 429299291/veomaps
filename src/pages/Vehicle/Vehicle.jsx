@@ -185,7 +185,6 @@ const RenderAdvancedForm=(props)=> {
   // form.setFieldsValue()
   // const { areas }= this.props;
   let resetDatas
-  const [resetVisible, setResetVisible] = useState(false); 
   if(props.resetDatas){
     resetDatas = {
       ...props.resetDatas,
@@ -201,13 +200,7 @@ const RenderAdvancedForm=(props)=> {
 
     callback("Number must be larger than zero.");
   };
-  const OfflineChange = (value)=>{
-    if(value!==undefined){
-      setResetVisible(true)
-    }else{
-      setResetVisible(false)
-    }
-  }
+
   return (
     <Form  layout="inline" form= {form}>
       <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
@@ -313,7 +306,7 @@ const RenderAdvancedForm=(props)=> {
         </Col>
         <Col span={6}>
           <FormItem label="Offline Retrieve Attempts" name='retrievalTimes'>
-              <Select placeholder="select" style={{ width: "100%",color:"#f00" }} allowClear clearIcon={<CloseCircleOutlined style={{color:"#f00"}}/>} onChange={OfflineChange}>
+              <Select placeholder="select" style={{ width: "100%",color:"#f00" }} allowClear clearIcon={<CloseCircleOutlined style={{color:"#f00"}}/>}>
               <Option value={0}>0</Option>
               <Option value={1}>1</Option>
               <Option value={2}>2</Option>
@@ -327,10 +320,10 @@ const RenderAdvancedForm=(props)=> {
           <Button  onClick={()=>{props.handleSearch(form.getFieldsValue(true))}}>
             Search
           </Button>
-          <Button style={{ marginLeft: 8 }} onClick={()=>{form.resetFields();props.handleFormReset();setResetVisible(false)}} danger = {resetVisible ? true : false}>
+          <Button style={{ marginLeft: 8 }} onClick={()=>{form.resetFields();props.handleFormReset()}}>
             Reset
           </Button>
-          <a style={{ marginLeft: 8 }} onClick={()=>{props.toggleForm()}} style={!resetVisible ? {display:"inline-block",marginLeft: "8px"}:{display:"none",marginLeft: "8px"} }>
+          <a style={{ marginLeft: 8 }} onClick={()=>{props.toggleForm()}}>
             close <Icon type="up" />
           </a>
         </div>

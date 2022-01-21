@@ -9,10 +9,12 @@ import request from "@/utils/request";
 
 export async function getVehicles(params) {
   if(params.retrievalTimes>=0){
+    console.log(params);
     return request(`/api/admins/vehicles/search`, {
       method: "POST",
       body: {
-        retrievalTimes:params.retrievalTimes
+        retrievalTimes:params.retrievalTimes,
+        areaIds:params.areaIds ? [...params.areaIds] : []
       }
     });
   }else{

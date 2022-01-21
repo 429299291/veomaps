@@ -807,9 +807,7 @@ getRangeEnd(end) {
       .map( group => {
         return {x: moment().dayOfYear(group.dayOfYear).format("MM/DD"), y: group.total};
       });
-      console.log(dashboard.stripeRevenueData);
-      console.log(weeklyBatterySwap);
-      console.log(formatAllDayData(dashboard.stripeRevenueData));
+      console.log( dailyRideRevenue);
       // weeklyBatterySwapLoading && console.log((weeklyBatterySwap[weeklyBatterySwap.length - 1] && numeral(weeklyBatterySwap[weeklyBatterySwap.length - 1].y).format("0,0")));
     return (
       <GridContent >
@@ -898,7 +896,7 @@ getRangeEnd(end) {
                   </Tooltip>
                 }
                 loading={stripeRevenueLoading}
-                total={ stripeRevenueLoading ? "loading" : (stripeRevenue.todayRevenue / 100)}
+                total={ stripeRevenueLoading ? "loading" : (stripeRevenue.dailyRevenue / 100)}
                 footer={
                   <Field
                     label="Total Revenue"
@@ -907,19 +905,19 @@ getRangeEnd(end) {
                 }
                 contentHeight={60}
               >
-                <Trend flag={stripeRevenue.todayRevenue - stripeRevenue.lastWeekTodayRevenue > 0 ? "up" : "down"} style={{ marginRight: 16 }}>
+                <Trend flag={stripeRevenue.dailyRevenue - stripeRevenue.lastWeekRevenue > 0 ? "up" : "down"} style={{ marginRight: 16 }}>
                   <FormattedMessage
                     id="app.analysis.week"
                     defaultMessage="Weekly Changes"
                   />
-                  <span className={styles.trendText}> {stripeRevenueLoading ? "loading" : Math.round(((stripeRevenue.todayRevenue - stripeRevenue.lastWeekTodayRevenue) /stripeRevenue.lastWeekTodayRevenue) * 100)}%</span>
+                  <span className={styles.trendText}> {stripeRevenueLoading ? "loading" : Math.round(((stripeRevenue.dailyRevenue - stripeRevenue.lastWeekRevenue) /stripeRevenue.lastWeekRevenue) * 100)}%</span>
                 </Trend>
-                <Trend flag={stripeRevenue.todayRevenue - stripeRevenue.yesterdayRevenue > 0 ? "up" : "down"}>
+                <Trend flag={stripeRevenue.dailyRevenue - stripeRevenue.yesterdayRevenue > 0 ? "up" : "down"}>
                   <FormattedMessage
                     id="app.analysis.day"
                     defaultMessage="Daily Changes"
                   />
-                  <span className={styles.trendText}>{stripeRevenueLoading ? "loading"  : Math.round(((stripeRevenue.todayRevenue - stripeRevenue.yesterdayRevenue) /stripeRevenue.yesterdayRevenue) * 100)}%</span>
+                  <span className={styles.trendText}>{stripeRevenueLoading ? "loading"  : Math.round(((stripeRevenue.dailyRevenue - stripeRevenue.yesterdayRevenue) /stripeRevenue.yesterdayRevenue) * 100)}%</span>
                 </Trend>
               </ChartCard>
             </Col>

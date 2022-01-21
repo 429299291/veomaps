@@ -165,11 +165,12 @@ const MyMapComponentNew = (props)=>{
   } = props;
   const centerToRender = isEditingCenter && editingCenter ? editingCenter : center;
   // const path = !!(isEditingFence && editingFence) ? editingFence.fenceCoordinates : [];
-  // const dashLineDot = {
-  //   path: window.google.maps.SymbolPath.CIRCLE,
-  //   fillOpacity: 1,
-  //   scale: 2
-  // };
+  const dashLineDot = {
+    path: 'M 0,-1 0,1',
+    fillOpacity: 1,
+    scale: 2
+  };
+
   // new polygon    /////////////////////////////////////////////
   let allPolygonBuffsFirst = []
   const options = (fenceTypeIndex)=>{
@@ -178,7 +179,7 @@ const MyMapComponentNew = (props)=>{
       strokeOpacity: 0.8,
       strokeWeight: 2,
       fillColor: fenceTypeColor[fenceTypeIndex],
-      fillOpacity: 0.35,
+      fillOpacity:(fenceTypeIndex==0 || fenceTypeIndex==5)? 0 : 0.35,
       clickable: true,
       visible: true,
       // zIndex: 1
