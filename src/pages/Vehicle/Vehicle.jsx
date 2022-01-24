@@ -323,7 +323,7 @@ const RenderAdvancedForm=(props)=> {
           <Button style={{ marginLeft: 8 }} onClick={()=>{form.resetFields();props.handleFormReset()}}>
             Reset
           </Button>
-          <a style={{ marginLeft: 8 }} onClick={()=>{props.toggleForm()}}>
+          <a style={{ marginLeft: 8 }} onClick={()=>{props.toggleForm();form.resetFields();props.handleFormReset()}}>
             close <Icon type="up" />
           </a>
         </div>

@@ -692,7 +692,7 @@ class VehicleDetail extends PureComponent {
                   <Button onClick={e => {
                     this.handleRenderingOrderLocation(false);
                     e.stopPropagation();
-                  }} > Close </Button>
+                  }} > Close</Button>
 
             </div>
           
