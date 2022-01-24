@@ -407,7 +407,8 @@ const UpdateForm = (props => {
       >
         {({ getFieldValue }) =>
           (getFieldValue('status') === 1 || getFieldValue('status') === 8) ? (
-            <Form.Item name="userReportedNote" label="Status Note" rules={[{ required: true }]}>
+            <Form.Item name="userReportedNote" label="Status Note" rules={[{ required: true }]} labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}>
               <Input style={{width:"100&"}}/>
             </Form.Item>
           ) : null
