@@ -322,6 +322,7 @@ const UpdateForm = (props => {
   const [form] = Form.useForm()
   const [formT] = Form.useForm()
   const [voiceVisible, setVoiceVisible] = useState(false);
+  const [statusNote, setStatusNote] = useState(true);
   const [voiceSubmit, setVoiceSubmit] = useState(true);
   const [voiceTypeChange, setVoiceTypeChange] = useState(null);
   const [timesChange, setTimesChange] = useState(null);
@@ -337,7 +338,11 @@ const UpdateForm = (props => {
   const handleVoiceVisible = ()=>{
     setVoiceVisible(true)
   }
-  form.setFieldsValue(record)
+  
+  if(statusNote){
+    form.setFieldsValue(record)
+  }
+  // form.setFieldsValue(record)
   const okHandle = () => {
     form.submit()
   };
@@ -354,6 +359,9 @@ const UpdateForm = (props => {
   }
   const onChangeVoice =(value)=>{
     setVoiceTypeChange(value.target.value)
+  }
+  const statusOnChange = (value)=>{
+    setStatusNote(false)
   }
   return (
     <div>
@@ -383,7 +391,7 @@ const UpdateForm = (props => {
             ]
           }
         >
-              <Select placeholder="select" style={{ width: "100%" }}>
+              <Select placeholder="select" style={{ width: "100%" }} onChange={statusOnChange}>
                 <Option value={0} >Normal</Option>
                 <Option value={8} >SLA</Option>
                 <Option value={1} >Error</Option>
@@ -392,9 +400,19 @@ const UpdateForm = (props => {
                 <Option disabled={true} value={6} >Maintain</Option>
                 <Option disabled={true} value={7} >Out of Service</Option>
               </Select>
-
         </FormItem>
-
+        <Form.Item
+        noStyle
+        shouldUpdate={(prevValues, currentValues) => prevValues.status !== currentValues.status}
+      >
+        {({ getFieldValue }) =>
+          (getFieldValue('status') === 1 || getFieldValue('status') === 8) ? (
+            <Form.Item name="userReportedNote" label="Status Note" rules={[{ required: true }]}>
+              <Input style={{width:"100&"}}/>
+            </Form.Item>
+          ) : null
+        }
+      </Form.Item>
       <FormItem
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 15 }}

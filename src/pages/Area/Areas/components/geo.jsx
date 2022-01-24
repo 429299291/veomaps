@@ -165,11 +165,6 @@ const MyMapComponentNew = (props)=>{
   } = props;
   const centerToRender = isEditingCenter && editingCenter ? editingCenter : center;
   // const path = !!(isEditingFence && editingFence) ? editingFence.fenceCoordinates : [];
-  const dashLineDot = {
-    path: 'M 0,-1 0,1',
-    fillOpacity: 1,
-    scale: 2
-  };
 
   // new polygon    /////////////////////////////////////////////
   let allPolygonBuffsFirst = []
