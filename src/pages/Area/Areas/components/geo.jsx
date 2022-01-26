@@ -24,6 +24,8 @@ import {
   TimePicker,
   Checkbox,
   Spin,
+  Drawer,
+  Space
 } from "antd";
 const Option = Select.Option;
 import reqwest from "reqwest";
@@ -149,8 +151,8 @@ const MyMapComponentNew = (props)=>{
     isEditingCenter,
     editingCenter,
     isEditingFence,
-    editingFence,
     isEditingFenceClosed,
+    isEditingFenceClose,//close change isEditingFence
     selectedAreaId,
     // handleExistedFenceClick,
     isEditingPrimeLocation,
@@ -161,11 +163,11 @@ const MyMapComponentNew = (props)=>{
     // selectedGeoObject
     getAreaGeoInfo,
     updateIsDeleteModalVisible,
-    dispatch
+    dispatch,
+    cancelEditing
   } = props;
   const centerToRender = isEditingCenter && editingCenter ? editingCenter : center;
   // const path = !!(isEditingFence && editingFence) ? editingFence.fenceCoordinates : [];
-
   // new polygon    /////////////////////////////////////////////
   let allPolygonBuffsFirst = []
   const options = (fenceTypeIndex)=>{
@@ -181,19 +183,24 @@ const MyMapComponentNew = (props)=>{
     }
   }
   const [polygonPaths, setPolygonPaths] = useState([])
+  const [oldFences, setOldFences] = useState([])
+  const [oldFencesOn, setOldFencesOn] = useState(true)
   const [hasForceDatas, setHasForceDatas] = useState(true)  
   const [addPolygonPaths, setAddPolygonPaths] = useState([])
+  const [addPolygonOfClose, setAddPolygonOfClose] = useState(false)
   useEffect(()=>{
     if (!center) return
     setAddPolygonPaths([{lat:center.lat-0.01,lng:center.lng-0.01},{lat:center.lat+0.01,lng:center.lng-0.01},{lat:center.lat,lng:center.lng+0.01}])
     setEditableHandler(isEditingFence)
   },[isEditingFence])
   useEffect(()=>{
-    setPolygonPaths(fences)
+    setPolygonPaths([...fences])
+    console.log('===================');
   },[fences])
   const [editableHandler,setEditableHandler] = useState(false)
   const [isDeleteModalVisible,setIsDeleteModalVisible] = useState(false)
   const [editIndex,setEditIndex] = useState(null)
+  const [activeIndex,setActiveIndex] = useState(null)
   const [addIndex,setAddIndex] = useState(null)
   const [geofenceOnDeleteToConfirmData,setGeofenceOnDeleteToConfirmData] = useState(false)
   const [clickPolygonReset,setClickPolygonReset] = useState(null)
@@ -201,8 +208,6 @@ const MyMapComponentNew = (props)=>{
   const polygonRef = useRef(null);
   const listenersRef = useRef([]);
   const polygonOnEdit = (index) => {
-    console.log(index);
-    console.log(editIndex);
     // polygonRef.current = allPolygonBuffs[index]
     polygonRef.current = isEditingFence ? addPolygonBuffs : allPolygonBuffs[index]
     // if(editIndex == null){
@@ -218,8 +223,10 @@ const MyMapComponentNew = (props)=>{
     if (index === null){
       // message.error('Edit not saved')
       setEditableHandler(false)
+      setOldFencesOn(true)
       return
     }else{
+      console.log(polygonRef.current);
       setEditableHandler(true)
       if (polygonRef.current) {
         const nextPath = polygonRef.current
@@ -229,35 +236,59 @@ const MyMapComponentNew = (props)=>{
             return { lat: latLng.lat(), lng: latLng.lng() };
           });
           console.log(nextPath);
+          
+          if(oldFencesOn){
+            setOldFencesOn(false)
+            console.log(nextPath);
+            setOldFences(nextPath)
+          }
           if(isEditingFence){
-            editingFence.fenceCoordinates = nextPath
+            // editingFence.fenceCoordinates = nextPath
+            console.log('add');
             setAddPolygonPaths(nextPath)
           }else{
             let newpaths = [...polygonPaths]
             newpaths[index].fenceCoordinates = nextPath
             setPolygonPaths(newpaths);
+            console.log(newpaths);
           }
       }
     }
   }
   const polygonEndEdit = ()=>{
     setEditableHandler(false)
+    setOldFencesOn(true)
     setEditIndex(null)
     console.log('endEdit');
   }
   const polygonOnLoad = useCallback(
     (polygon) => {
-      // await updateAllPolygonBuffs(polygon)
       allPolygonBuffsFirst.push(polygon)
-      allPolygonBuffsFirst.length ? updateAllPolygonBuffs(allPolygonBuffsFirst) : null
+      if(addPolygonOfClose){
+        console.log(allPolygonBuffs);
+        setAddPolygonOfClose(false)
+      }else{
+        allPolygonBuffsFirst.length ? updateAllPolygonBuffs(allPolygonBuffsFirst) : null
+
+      }
+      // updateAddPolygonBuffs(polygon)
+      // setClickPolygonReset(polygon)
+    },
+    [polygonOnEdit]
+  );
+  const addPolygonOnLoad = useCallback(
+    (polygon) => {
+      // await updateAllPolygonBuffs(polygon)
       updateAddPolygonBuffs(polygon)
-      setClickPolygonReset(polygon)
+      console.log(polygon);
+      // setClickPolygonReset(polygon)
     },
     [polygonOnEdit]
   );
   const setActivePolygon =(index)=>{
     console.log('active'+index);
-    form.setFieldsValue(polygonPaths[index])
+    setActiveIndex(index)
+      form.setFieldsValue(polygonPaths[index])
     if(polygonPaths[index].fenceType == 0 || polygonPaths[index].fenceType == 5){
       setHasForceDatas(true)
     }else{
@@ -283,16 +314,40 @@ const MyMapComponentNew = (props)=>{
       setEditableHandler(false);
     }
   }
+  const drawerOnClose =()=>{
+    if(isEditingFence){
+      isEditingFenceClose(false)
+    }
+    setActiveIndex(null)
+    if (editableHandler) {
+      setEditableHandler(false);
+      setOldFencesOn(true)
+    }
+  }
   // form
   const onFinish = (values) => {
     setEditableHandler(false)
-    polygonPaths[editIndex] = {...polygonPaths[editIndex],...values}
+    setOldFencesOn(true)
+    console.log(editIndex);
     console.log('Success:', {polygonPaths});
-    dispatch({
-      type: "geo/updateFence",
-      payload: Object.assign({}, polygonPaths[editIndex], {areaId: selectedAreaId}) ,
-      onSuccess: getAreaGeoInfo
-    });
+    setActiveIndex(null)
+    if(isEditingFence){
+      values.fenceCoordinates = addPolygonPaths
+      dispatch({
+        type: "geo/addFence",
+        payload: Object.assign({}, values, {areaId: selectedAreaId}) ,
+        onSuccess:getAreaGeoInfo
+      });
+      setAddPolygonOfClose(true)
+    }else{
+      polygonPaths[editIndex] = {...polygonPaths[editIndex],...values}
+      dispatch({
+        type: "geo/updateFence",
+        payload: Object.assign({}, polygonPaths[editIndex], {areaId: selectedAreaId}) ,
+        onSuccess: getAreaGeoInfo
+      });
+    }
+    isEditingFenceClose(false)
   };
   const onFenceDelete = ()=>{
     polygonPaths[editIndex].fenceType == 0 ? setGeofenceOnDeleteToConfirmData(true) : null
@@ -301,6 +356,8 @@ const MyMapComponentNew = (props)=>{
   const handleDeleteFence = ()=>{
     setIsDeleteModalVisible(false)
     setEditableHandler(false)
+    setOldFencesOn(true)
+    setActiveIndex(null)
     dispatch({
       type: "geo/removeFence",
       id: polygonPaths[editIndex].id,
@@ -328,12 +385,15 @@ const MyMapComponentNew = (props)=>{
   }
   // console.log(polygonPaths);
   const fence = polygonPaths[editIndex]
+    // Update the document title using the browser API
+    if(isEditingFence && addIndex == null){form.resetFields()}
   // console.log(fence);
   const deleteVertexNode = (mev)=> {
     if (mev.vertex != null) {
       my_poly.getPath().removeAt(mev.vertex);
     }
   }
+  console.log(polygonPaths);
   return (
     <div className={styles.App}>
     <LoadScript
@@ -367,7 +427,7 @@ const MyMapComponentNew = (props)=>{
           <Polygon
           editable = {true}
           draggable={true}
-          options={options(0)}
+          options={options(addIndex)}
           onClick={() => {setActivePolygon(allPolygonBuffs.length+1)}}
           onDblClick={polygonEndEdit}
           // Event used when manipulating and adding points
@@ -375,7 +435,7 @@ const MyMapComponentNew = (props)=>{
           // onMouseUp={onEdit}
           // Event used when dragging the whole Polygon
           onDragEnd={()=>{polygonOnEdit(allPolygonBuffs.length+1,editIndex,editableHandler,allPolygonBuffs)}}
-          onLoad={polygonOnLoad}
+          onLoad={addPolygonOnLoad}
           onUnmount={polygonOnUnmount}
           path={addPolygonPaths}
         />
@@ -432,7 +492,7 @@ const MyMapComponentNew = (props)=>{
                 polygonPaths.map((path,index)=>(
                   <Polygon
                   // Make the Polygon editable / draggable
-                  editable = {index == editIndex ? editableHandler :false}
+                  editable = {(index == editIndex && !isEditingFence) ? editableHandler :false}
                   draggable={index == editIndex ? editableHandler :false}
                   key={index}
                   path={path.fenceCoordinates}
@@ -449,7 +509,148 @@ const MyMapComponentNew = (props)=>{
                 />
                 ))
               }
-              {editableHandler && editIndex !== null && !isEditingFence &&
+              {
+                      <Drawer
+                      title= {isEditingFence ? "Add Fence":"Fence Inforwindow"}
+                      placement="right"
+                      width={500}
+                      onClose={drawerOnClose}
+                      mask={false}
+                      // visible={editableHandler}
+                      visible={isEditingFence || activeIndex}
+                      // extra={
+                      //   <Space>
+                      //     <Button onClick={infowindowOnClose}>Cancel</Button>
+                      //     <Button type="primary" onClick={infowindowOnClose}>
+                      //       OK
+                      //     </Button>
+                      //   </Space>
+                      // }
+                    >
+                <Form
+                    name="basic"
+                    labelCol={{ span: 8 }}
+                    wrapperCol={{ span: 16 }}
+                    initialValues={{fenceType:0}}
+                    onFinish={onFinish}
+                    onFinishFailed={onFinishFailed}
+                    autoComplete="off"
+                    form={form}
+                  >
+                    <Form.Item
+                      label="name"
+                      name="name"
+                      labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}
+                      rules={[{ required: true, message: 'Please input your username!' }]}
+                    >
+                      <Input />
+                    </Form.Item>
+                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 19 }} label="Activated"
+                            rules={
+                              [
+                                {
+                                  required: true,
+                                  message: "You have pick a Activa!",
+                                }
+                              ]
+                            }
+                      name='turnedOn'
+                    >
+                      <Select placeholder="select" style={{ width: "100%" }}>
+                        <Select.Option key={true} value={true}>
+                            True
+                          </Select.Option>
+                          <Select.Option key={false} value={false}>
+                            False
+                          </Select.Option>
+                    </Select>
+                    </FormItem>
+                    {
+                      fence && !isEditingFence &&
+                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 19 }} label="Active Time" name='activeTimeRange'
+                    initialValue= {(fence && fence.activeTimeRange) ? fence.activeTimeRange : {weekDayDTO: {start: null, end: null}, weekendDTO: {start: null, end: null}, timeZone: null}}
+                    >
+                      <DynamicFenceConfigForm />
+                    </FormItem>
+                    }
+                    <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 19 }} label="Note" name='note'>
+                      <Input placeholder="Please Input" />
+                    </FormItem>
+                    <Form.Item
+                      label="Fence Type"
+                      name="fenceType"
+                      labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}
+                    >
+                      <Select placeholder="select" style={{ width: "100%" }} onChange={fenceTypeChange}>
+                      {fenceType.map((fence, index) => (
+                        <Select.Option key={index} value={index}>
+                          {fence}
+                        </Select.Option>
+                      ))}
+                      </Select>
+                    </Form.Item>
+                    {
+                      hasForceDatas && 
+                      <FormItem
+                      labelCol={{ span: 10 }}
+                      wrapperCol={{ span: 10 }}
+                      label="Has Forced Parking"
+                      name='hasForce'
+                      rules={
+                        [
+                          {
+                            required: true,
+                            message: "You have to define if have forced parking area"
+                          }
+                        ]
+                      }
+                    >
+                        <Select placeholder="select" style={{ width: "100%" }}>
+                          <Select.Option key={1} value={true}>
+                            Yes
+                          </Select.Option>
+                          <Select.Option key={0} value={false}>
+                            No
+                          </Select.Option>
+                        </Select>
+                    </FormItem>
+                    }
+                    {!isEditingFence &&<FormItem
+                labelCol={{ span: 5 }}
+                wrapperCol={{ span: 19 }}
+                name={hasForceDatas? "forceVehicleTypes" : "vehicleTypes"}
+                label={(hasForceDatas? "Force " : "") + "Vehicle Type"}
+              >
+                  <Select placeholder="select" style={{ width: "100%" }} mode="multiple">
+                    <Option value={0}>Bike</Option>
+                    <Option value={1}>Scooter</Option>
+                    <Option value={2}>E-Bike</Option>
+                    <Option value={3}>COSMO</Option>
+                  </Select>
+              </FormItem>}
+                    <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                      {!isEditingFence && activeIndex && oldFences !== polygonPaths[activeIndex].fenceCoordinates && editableHandler && <Button onClick={()=>{
+                        // activeIndex
+                        // console.log(polygonPaths[activeIndex]);
+                        console.log(oldFences);
+                        let newDatas = [...polygonPaths]
+                        newDatas[activeIndex] = {
+                          ...newDatas[activeIndex],
+                          fenceCoordinates:[...oldFences]
+                        }
+                        setPolygonPaths(newDatas)
+                      }} style={{marginRight:'10px'}}>Reset Path</Button>}
+                      <Button htmlType="button" onClick={isEditingFence?cancelEditing:onFenceDelete} danger style={{marginRight:'10px'}}>
+                        {isEditingFence?"cancel":"Delete"}
+                      </Button>
+                      <Button type="primary" htmlType="submit" >
+                        Submit
+                      </Button>
+                    </Form.Item>
+                  </Form>
+                    </Drawer>
+              }
+              {/* {editableHandler && editIndex !== null && !isEditingFence &&
                 <InfoWindow position={polygonPaths[editIndex].fenceCoordinates[0]} onClose={infowindowOnClose}>
                     <Form
                     name="basic"
@@ -561,7 +762,7 @@ const MyMapComponentNew = (props)=>{
                       </Button>
                     </Form.Item>
                   </Form>
-                </InfoWindow>}
+                </InfoWindow>} */}
                 <Modal
           title="Delete"
           visible={isDeleteModalVisible}
@@ -878,7 +1079,11 @@ class geo extends PureComponent {
     }
     
   }
-
+  isEditingFenceClose =(value)=>{
+    this.setState({
+      isEditingFence:value
+    })
+  }
   checkPrimeLocation = point => {
     const {
         selectedAreaId,
@@ -923,13 +1128,12 @@ class geo extends PureComponent {
 
     const newPoint = { lat: e.latLng.lat(), lng: e.latLng.lng() };
     console.log('newpoint',newPoint);
-
     //this.checkParking(newPoint);
-
     //this.checkPrimeLocation(newPoint);
     if (isEditingCenter) {
       this.setState({ editingCenter: newPoint });
-    } else if (isEditingFence) {
+    } else if (isEditingFence && editingFence) {
+      console.log(editingFence);
       this.setState({
         editingFence: {
           ...this.state.editingFence,
@@ -1666,8 +1870,10 @@ class geo extends PureComponent {
               setCircleRef={this.setCircleRef}
               selectedAreaId={selectedAreaId}
               getAreaGeoInfo={this.getAreaGeoInfo}
+              cancelEditing={this.cancelEditing}
               dispatch={this.props.dispatch}
               updateIsDeleteModalVisible={this.updateIsDeleteModalVisible}
+              isEditingFenceClose={this.isEditingFenceClose}
             /> 
             }
           </div>
@@ -1683,7 +1889,7 @@ class geo extends PureComponent {
             </Col>
           </Row>
         </Card> }
-        <CreateFenceForm
+        {/* <CreateFenceForm
           handleNext={
             selectedExistedFence
               ? this.handleEditFenceSubmit
@@ -1693,7 +1899,7 @@ class geo extends PureComponent {
           modalVisible={isEditingFenceModalVisible}
           editingFence={editingFence}
           selectedExistedFence={selectedExistedFence}
-        />
+        /> */}
         <Modal
           title="Delete"
           visible={isDeleteModalVisible}
