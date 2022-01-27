@@ -168,18 +168,6 @@ const MyMapComponentNew = (props)=>{
   // const path = !!(isEditingFence && editingFence) ? editingFence.fenceCoordinates : [];
   // new polygon    /////////////////////////////////////////////
   let allPolygonBuffsFirst = []
-  const options = (fenceTypeIndex)=>{
-    return{
-      strokeColor: fenceTypeColor[fenceTypeIndex],
-      strokeOpacity: 0.8,
-      strokeWeight: 2,
-      fillColor: fenceTypeColor[fenceTypeIndex],
-      fillOpacity:(fenceTypeIndex==0 || fenceTypeIndex==5)? 0 : 0.35,
-      clickable: true,
-      visible: true,
-      // zIndex:(fenceTypeIndex==0 || fenceTypeIndex==5)? 10 : 9,
-    }
-  }
   const [polygonPaths, setPolygonPaths] = useState([])
   const [oldFences, setOldFences] = useState([])
   const [oldFencesOn, setOldFencesOn] = useState(true)
@@ -196,6 +184,21 @@ const MyMapComponentNew = (props)=>{
   },[fences])
   const [editableHandler,setEditableHandler] = useState(false)
   const [isDeleteModalVisible,setIsDeleteModalVisible] = useState(false)
+  const [declineFenceData,setDeclineFenceData] = useState(0)
+  const options = (fenceTypeIndex,declineFenceData)=>{
+    return{
+      strokeColor: fenceTypeColor[fenceTypeIndex],
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: fenceTypeColor[fenceTypeIndex],
+      fillOpacity:(fenceTypeIndex==0 || fenceTypeIndex==5)? 0 : 0.35,
+      clickable: true,
+      visible: true,
+      zIndex:(fenceTypeIndex==0 || fenceTypeIndex==5)? 10- declineFenceData: 9-declineFenceData,
+      // zIndex:(fenceTypeIndex==0 || fenceTypeIndex==5)? 10:null,
+    }
+  }
+  console.log(declineFenceData);
   const [editIndex,setEditIndex] = useState(null)
   const [activeIndex,setActiveIndex] = useState(null)
   const [addIndex,setAddIndex] = useState(null)
@@ -213,15 +216,6 @@ const MyMapComponentNew = (props)=>{
   const polygonOnEdit = (index) => {
     // polygonRef.current = allPolygonBuffs[index]
     polygonRef.current = isEditingFence ? addPolygonBuffs : allPolygonBuffs[index]
-    // if(editIndex == null){
-    //   setEditableHandler(true)
-    // }else if(index == null){
-    //   if(index === editIndex){
-    //     setEditableHandler(true)
-    //   }else{
-    //     setEditableHandler(false)
-    //   }
-    // }
       setEditableHandler(true)
       if (polygonRef.current) {
         const nextPath = polygonRef.current
@@ -362,6 +356,7 @@ const MyMapComponentNew = (props)=>{
       onSuccess: getAreaGeoInfo,
     });
     setEditIndex(null)
+    setDeclineFenceData(0)
   }
   const geofenceOnDeleteToConfirm = (e)=>{
     console.log(e.target.value);
@@ -394,6 +389,12 @@ const MyMapComponentNew = (props)=>{
   }
   const handleZoomChanged=(newZoom)=>{
     newZoom ? setCurrentZoom(newZoom): null
+  }
+  const polygonOnZindexChanged = (value)=>{
+    console.log(value);
+  }
+  const DeclineFence =()=>{
+    setDeclineFenceData(declineFenceData+1)
   }
   // console.log(polygonPaths);
   return (
@@ -470,7 +471,7 @@ const MyMapComponentNew = (props)=>{
                   draggable={index == editIndex ? editableHandler :false}
                   key={index}
                   path={path.fenceCoordinates}
-                  options={options(path.fenceType)}
+                  options={options(path.fenceType,(editIndex == index && declineFenceData)? declineFenceData:0)}
                   onClick={isEditingCenter ? onMapClick :() => {setActivePolygon(index)}}
                   onDblClick={polygonEndEdit}
                   // onMouseUp={isEditingCenter?onMapClick : ()=>{polygonOnEdit(((index==editIndex || editIndex == null)?index:null),setPolygonPaths);if(!editIndex)setEditIndex(index)}}
@@ -478,6 +479,7 @@ const MyMapComponentNew = (props)=>{
                   onDragEnd={()=>{polygonOnEdit(((index==editIndex || editIndex == null)?index:null),setPolygonPaths)}}
                   onLoad={polygonOnLoad}
                   onUnmount={polygonOnUnmount}
+                  onZindexChanged={polygonOnZindexChanged}
                   onRightClick={deleteVertexNode}
                 />
                 ))
@@ -598,12 +600,15 @@ const MyMapComponentNew = (props)=>{
                         // activeIndex
                         // console.log(polygonPaths[activeIndex]);
                         let newDatas = [...polygonPaths]
-                        newDatas[activeIndex] = {
-                          ...newDatas[activeIndex],
+                        newDatas[editIndex] = {
+                          ...newDatas[editIndex],
                           fenceCoordinates:[...oldFences]
                         }
                         setPolygonPaths(newDatas)
                       }} style={{marginRight:'10px'}}>Reset Path</Button>}
+                      <Button htmlType="button" onClick={DeclineFence} style={{marginRight:'10px'}}>
+                      Decline fence
+                      </Button>
                       <Button htmlType="button" onClick={isEditingFence?cancelEditing:onFenceDelete} danger style={{marginRight:'10px'}}>
                         {isEditingFence?"cancel":"Delete"}
                       </Button>
