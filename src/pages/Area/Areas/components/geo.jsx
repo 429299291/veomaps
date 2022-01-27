@@ -612,7 +612,7 @@ const MyMapComponentNew = (props)=>{
                       <Button htmlType="button" onClick={isEditingFence?cancelEditing:onFenceDelete} danger style={{marginRight:'10px'}}>
                         {isEditingFence?"cancel":"Delete"}
                       </Button>
-                      <Button type="primary" htmlType="submit" >
+                      <Button type="primary" htmlType="submit" disabled={!(addPolygonPaths[0]&& addPolygonPaths[0].lat)}>
                         Submit
                       </Button>
                     </Form.Item>
