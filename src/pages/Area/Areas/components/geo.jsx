@@ -350,7 +350,12 @@ const MyMapComponentNew = (props)=>{
     isEditingFenceClose(false)
   };
   const onFenceDelete = ()=>{
-    polygonPaths[editIndex].fenceType == 0 ? setGeofenceOnDeleteToConfirmData(true) : null
+    // polygonPaths[editIndex].fenceType == 0 ? setGeofenceOnDeleteToConfirmData(true) : null
+    if(polygonPaths[editIndex].fenceType == 0){
+      setGeofenceOnDeleteToConfirmData(true)
+    }else{
+      setGeofenceOnDeleteToConfirmData(false)
+    }
     setIsDeleteModalVisible(true)
   }
   const handleDeleteFence = ()=>{
