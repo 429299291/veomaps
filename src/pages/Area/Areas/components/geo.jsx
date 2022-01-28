@@ -402,6 +402,7 @@ const MyMapComponentNew = (props)=>{
     setDeclineFenceData(!declineFenceData)
   }
   // console.log(polygonPaths);
+  console.log(editIndex);
   return (
     <div className={styles.App}>
     <LoadScript
@@ -459,8 +460,7 @@ const MyMapComponentNew = (props)=>{
               center={circle.center}
               radius={circle.radius}
               key={circle.id}
-              
-              onClick={onMapClick}
+              onClick={editIndex ? null : onMapClick}
               options={{
                 fillColor: circle.turnedOn ? "#169902" : '#e81e1e',
                 strokeColor: circle.turnedOn ?  '#169902' : '#e81e1e',
@@ -600,7 +600,7 @@ const MyMapComponentNew = (props)=>{
                     <Option value={3}>COSMO</Option>
                   </Select>
               </FormItem>}
-                    <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                    <Form.Item wrapperCol={{ offset: 0, span: 24 }}>
                       {!isEditingFence && activeIndex && oldFences !== polygonPaths[activeIndex].fenceCoordinates && editableHandler && <Button onClick={()=>{
                         // activeIndex
                         // console.log(polygonPaths[activeIndex]);
@@ -611,8 +611,8 @@ const MyMapComponentNew = (props)=>{
                         }
                         setPolygonPaths(newDatas)
                       }} style={{marginRight:'10px'}}>Reset Path</Button>}
-                      <Button htmlType="button" onClick={DeclineFence} style={{marginRight:'10px'}}>
-                      Decline fence
+                      <Button htmlType="button" onClick={DeclineFence} style={{marginRight:'10px',color:declineFenceData?"#f00":null}}>
+                      {!declineFenceData?"Decline Hierarchy": "Recovery Hierarchy"}
                       </Button>
                       <Button htmlType="button" onClick={isEditingFence?cancelEditing:onFenceDelete} danger style={{marginRight:'10px'}}>
                         {isEditingFence?"cancel":"Delete"}
