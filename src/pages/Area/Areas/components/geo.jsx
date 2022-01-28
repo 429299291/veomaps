@@ -194,8 +194,8 @@ const MyMapComponentNew = (props)=>{
       fillOpacity:(fenceTypeIndex==0 || fenceTypeIndex==5)? 0 : 0.35,
       clickable: true,
       visible: true,
-      zIndex:(fenceTypeIndex==0 || fenceTypeIndex==5)? 10- declineFenceData: 9-declineFenceData,
-      // zIndex:(fenceTypeIndex==0 || fenceTypeIndex==5)? 10:null,
+      // zIndex:(fenceTypeIndex==0 || fenceTypeIndex==5)? 10- declineFenceData: 9-declineFenceData,
+      zIndex:(fenceTypeIndex==0 || fenceTypeIndex==5)? 10:null,
     }
   }
   console.log(declineFenceData);
@@ -606,9 +606,9 @@ const MyMapComponentNew = (props)=>{
                         }
                         setPolygonPaths(newDatas)
                       }} style={{marginRight:'10px'}}>Reset Path</Button>}
-                      <Button htmlType="button" onClick={DeclineFence} style={{marginRight:'10px'}}>
+                      {/* <Button htmlType="button" onClick={DeclineFence} style={{marginRight:'10px'}}>
                       Decline fence
-                      </Button>
+                      </Button> */}
                       <Button htmlType="button" onClick={isEditingFence?cancelEditing:onFenceDelete} danger style={{marginRight:'10px'}}>
                         {isEditingFence?"cancel":"Delete"}
                       </Button>
