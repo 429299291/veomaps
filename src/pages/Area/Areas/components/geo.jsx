@@ -172,10 +172,10 @@ const MyMapComponentNew = (props)=>{
   const [oldFences, setOldFences] = useState([])
   const [oldFencesOn, setOldFencesOn] = useState(true)
   const [hasForceDatas, setHasForceDatas] = useState(true)  
-  const [addPolygonPaths, setAddPolygonPaths] = useState([])
+  const [addPolygonPaths, setAddPolygonPaths] = useState()
   const [addPolygonOfClose, setAddPolygonOfClose] = useState(false)
   useEffect(()=>{
-    if (!addFenceNewpoint) return
+    if (!addFenceNewpoint.hasOwnProperty("lat")) return
     setAddPolygonPaths([{lat:addFenceNewpoint.lat-0.001,lng:addFenceNewpoint.lng-0.001},{lat:addFenceNewpoint.lat+0.001,lng:addFenceNewpoint.lng-0.001},{lat:addFenceNewpoint.lat,lng:addFenceNewpoint.lng+0.001}])
     setEditableHandler(isEditingFence)
   },[addFenceNewpoint])
@@ -331,6 +331,7 @@ const MyMapComponentNew = (props)=>{
         onSuccess:getAreaGeoInfo
       });
       setAddPolygonOfClose(true)
+      setAddPolygonPaths(null)
     }else{
       polygonPaths[editIndex] = {...polygonPaths[editIndex],...values}
       dispatch({
@@ -402,7 +403,6 @@ const MyMapComponentNew = (props)=>{
     setDeclineFenceData(!declineFenceData)
   }
   // console.log(polygonPaths);
-  console.log(editIndex);
   return (
     <div className={styles.App}>
     <LoadScript
@@ -503,7 +503,7 @@ const MyMapComponentNew = (props)=>{
                     name="basic"
                     labelCol={{ span: 8 }}
                     wrapperCol={{ span: 16 }}
-                    initialValues={{fenceType:0}}
+                    initialValues={{fenceType:1}}
                     onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
                     autoComplete="off"
@@ -617,7 +617,7 @@ const MyMapComponentNew = (props)=>{
                       <Button htmlType="button" onClick={isEditingFence?cancelEditing:onFenceDelete} danger style={{marginRight:'10px'}}>
                         {isEditingFence?"cancel":"Delete"}
                       </Button>
-                      <Button type="primary" htmlType="submit" disabled={!(addPolygonPaths[0]&& addPolygonPaths[0].lat) && isEditingFence}>
+                      <Button type="primary" htmlType="submit" disabled={!(addPolygonPaths && addPolygonPaths[0]&& addPolygonPaths[0].lat) && isEditingFence}>
                         Submit
                       </Button>
                     </Form.Item>
