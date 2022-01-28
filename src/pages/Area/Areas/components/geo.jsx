@@ -184,8 +184,14 @@ const MyMapComponentNew = (props)=>{
   },[fences])
   const [editableHandler,setEditableHandler] = useState(false)
   const [isDeleteModalVisible,setIsDeleteModalVisible] = useState(false)
-  const [declineFenceData,setDeclineFenceData] = useState(0)
+  const [declineFenceData,setDeclineFenceData] = useState(false)
   const options = (fenceTypeIndex,declineFenceData)=>{
+    const zIndexA = (fenceTypeIndex)=>{
+      return fenceTypeIndex
+    }
+    const zIndexB = (fenceTypeIndex)=>{
+      return 10-fenceTypeIndex
+    }
     return{
       strokeColor: fenceTypeColor[fenceTypeIndex],
       strokeOpacity: 0.8,
@@ -194,11 +200,10 @@ const MyMapComponentNew = (props)=>{
       fillOpacity:(fenceTypeIndex==0 || fenceTypeIndex==5)? 0 : 0.35,
       clickable: true,
       visible: true,
-      // zIndex:(fenceTypeIndex==0 || fenceTypeIndex==5)? 10- declineFenceData: 9-declineFenceData,
-      zIndex:(fenceTypeIndex==0 || fenceTypeIndex==5)? 10:null,
+      zIndex:declineFenceData ? (fenceTypeIndex==0 || fenceTypeIndex==5)? 10:null :null
+      // zIndex:!declineFenceData ? zIndexA(fenceTypeIndex) : zIndexB(fenceTypeIndex)
     }
   }
-  console.log(declineFenceData);
   const [editIndex,setEditIndex] = useState(null)
   const [activeIndex,setActiveIndex] = useState(null)
   const [addIndex,setAddIndex] = useState(null)
@@ -356,7 +361,7 @@ const MyMapComponentNew = (props)=>{
       onSuccess: getAreaGeoInfo,
     });
     setEditIndex(null)
-    setDeclineFenceData(0)
+    setDeclineFenceData(false)
   }
   const geofenceOnDeleteToConfirm = (e)=>{
     console.log(e.target.value);
@@ -380,7 +385,7 @@ const MyMapComponentNew = (props)=>{
   // console.log(polygonPaths);
   const fence = polygonPaths[editIndex]
     // Update the document title using the browser API
-    if(isEditingFence && addIndex == null){form.resetFields()}
+    if(isEditingFence && addIndex == null && !addPolygonPaths){form.resetFields()}
   // console.log(fence);
   const deleteVertexNode = (mev)=> {
     if (mev.vertex != null) {
@@ -394,7 +399,7 @@ const MyMapComponentNew = (props)=>{
     console.log(value);
   }
   const DeclineFence =()=>{
-    setDeclineFenceData(declineFenceData+1)
+    setDeclineFenceData(!declineFenceData)
   }
   // console.log(polygonPaths);
   return (
@@ -471,7 +476,7 @@ const MyMapComponentNew = (props)=>{
                   draggable={index == editIndex ? editableHandler :false}
                   key={index}
                   path={path.fenceCoordinates}
-                  options={options(path.fenceType,(editIndex == index && declineFenceData)? declineFenceData:0)}
+                  options={options(path.fenceType,( declineFenceData)? declineFenceData:0)}
                   onClick={isEditingCenter ? onMapClick :() => {setActivePolygon(index)}}
                   onDblClick={polygonEndEdit}
                   // onMouseUp={isEditingCenter?onMapClick : ()=>{polygonOnEdit(((index==editIndex || editIndex == null)?index:null),setPolygonPaths);if(!editIndex)setEditIndex(index)}}
@@ -606,13 +611,13 @@ const MyMapComponentNew = (props)=>{
                         }
                         setPolygonPaths(newDatas)
                       }} style={{marginRight:'10px'}}>Reset Path</Button>}
-                      {/* <Button htmlType="button" onClick={DeclineFence} style={{marginRight:'10px'}}>
+                      <Button htmlType="button" onClick={DeclineFence} style={{marginRight:'10px'}}>
                       Decline fence
-                      </Button> */}
+                      </Button>
                       <Button htmlType="button" onClick={isEditingFence?cancelEditing:onFenceDelete} danger style={{marginRight:'10px'}}>
                         {isEditingFence?"cancel":"Delete"}
                       </Button>
-                      <Button type="primary" htmlType="submit" disabled={!(addPolygonPaths[0]&& addPolygonPaths[0].lat)}>
+                      <Button type="primary" htmlType="submit" disabled={!(addPolygonPaths[0]&& addPolygonPaths[0].lat) && isEditingFence}>
                         Submit
                       </Button>
                     </Form.Item>
@@ -1353,7 +1358,6 @@ class geo extends PureComponent {
       let imgList = (this.props.geo.primeLocations && selectedExistedPrimeLocation) ? this.props.geo.primeLocations.filter(data=>{return data.id == selectedExistedPrimeLocationId}) : []
       imgList = imgList.length>0 ? imgList[0].stagingUrl : ''
       this.setState({hubUploadImageUrl : imgList})
-      console.log(fenceEditActiveVisibleData);
     return (
       <div>
                 <Row gutter={{ md: 8, lg: 24, xl: 48 }} className={styles.editRow}>
