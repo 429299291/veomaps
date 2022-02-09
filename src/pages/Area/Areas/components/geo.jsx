@@ -853,7 +853,6 @@ class geo extends PureComponent {
     addPolygonBuffs:[],
     addFenceNewpoint:{},
     fenceEditActiveVisibleData:false
-    // fenceEditActiveVisibleData:false    
   };
 
   componentDidMount() {
