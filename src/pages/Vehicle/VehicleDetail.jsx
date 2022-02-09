@@ -322,7 +322,7 @@ const UpdateForm = (props => {
   const [form] = Form.useForm()
   const [formT] = Form.useForm()
   const [voiceVisible, setVoiceVisible] = useState(false);
-  const [statusNote, setStatusNote] = useState(true);
+  // const [statusNote, setStatusNote] = useState(true);
   const [voiceSubmit, setVoiceSubmit] = useState(true);
   const [voiceTypeChange, setVoiceTypeChange] = useState(null);
   const [timesChange, setTimesChange] = useState(null);
