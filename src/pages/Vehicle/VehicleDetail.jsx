@@ -342,7 +342,6 @@ const UpdateForm = (props => {
   if(statusNote){
     form.setFieldsValue(record)
   }
-  // form.setFieldsValue(record)
   const okHandle = () => {
     form.submit()
   };
