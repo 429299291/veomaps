@@ -200,7 +200,7 @@ const MyMapComponentNew = (props)=>{
       fillOpacity:(fenceTypeIndex==0 || fenceTypeIndex==5)? 0 : 0.35,
       clickable: true,
       visible: true,
-      zIndex:declineFenceData ? (fenceTypeIndex==0 || fenceTypeIndex==5)? 10:null :null
+      zIndex:declineFenceData ? (fenceTypeIndex==0 || fenceTypeIndex==5)? 5:null :null
       // zIndex:!declineFenceData ? zIndexA(fenceTypeIndex) : zIndexB(fenceTypeIndex)
     }
   }
@@ -450,7 +450,7 @@ const MyMapComponentNew = (props)=>{
               strokeColor: '#ff9d00',
               strokeOpacity: 2,
               strokeWeight: 2,
-              zIndex: 9
+              zIndex: 7
             }}
           />
         )}
